@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "أرسل التنزيلات من متصفحك إلى خادم DownloadPulse الخاص بك."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "غير مرتبط"
+  },
+  "optionsTitle": {
+    "message": "إعدادات إضافة DownloadPulse"
+  },
+  "popupConnect": {
+    "message": "الربط بنسخة DownloadPulse"
+  },
+  "popupProbing": {
+    "message": "جارٍ البحث عن DownloadPulse…"
+  },
+  "popupNotFound": {
+    "message": "لا يعمل أي DownloadPulse على هذا الكمبيوتر. شغّله وتحقق مجددًا، أو اربط المتصفح بخادم."
+  },
+  "popupCheckAgain": {
+    "message": "التحقق مجددًا"
+  },
+  "popupServerLabel": {
+    "message": "عنوان الخادم"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "الربط بهذا الخادم"
+  },
+  "popupWaiting": {
+    "message": "في علامة تبويب DownloadPulse التي فُتحت للتو، اختر «ربط» لإضافة هذا المتصفح."
+  },
+  "popupCode": {
+    "message": "الرمز:"
+  },
+  "popupCodeHint": {
+    "message": "يعرض DownloadPulse الرمز نفسه. لا تختر «ربط» إلا إذا تطابق الرمزان."
+  },
+  "popupCancel": {
+    "message": "إلغاء"
+  },
+  "popupStartAgain": {
+    "message": "البدء من جديد"
+  },
+  "popupConnected": {
+    "message": "مرتبط"
+  },
+  "popupServer": {
+    "message": "الخادم"
+  },
+  "popupAccount": {
+    "message": "الحساب"
+  },
+  "popupBrowser": {
+    "message": "المتصفح"
+  },
+  "failureUnreachable": {
+    "message": "يتعذر الوصول إلى ذلك الخادم. تحقق من العنوان ومن أن DownloadPulse قيد التشغيل."
+  },
+  "failureCertificate": {
+    "message": "يتعذر الوصول إلى ذلك الخادم بشكل آمن. إذا كان يستخدم شهادته الخاصة، فافتحه في علامة تبويب، واقبل الشهادة، ثم اربط المتصفح مرة أخرى."
+  },
+  "failureNotDownloadPulse": {
+    "message": "استجاب شيء ما على ذلك العنوان، لكنه ليس DownloadPulse."
+  },
+  "failureTooOld": {
+    "message": "إصدار DownloadPulse هذا قديم جدًا لربط المتصفحات. حدّثه، ثم اربط المتصفح مرة أخرى."
+  },
+  "failureDenied": {
+    "message": "رُفض الربط في DownloadPulse."
+  },
+  "failureExpired": {
+    "message": "انتهت صلاحية طلب الربط. ابدأ من جديد."
+  },
+  "failurePermission": {
+    "message": "لم يسمح المتصفح بالوصول إلى ذلك الخادم."
+  },
+  "failureUnauthorized": {
+    "message": "لم يعد DownloadPulse يقبل هذا المتصفح. اربطه مرة أخرى."
+  },
+  "failureFailed": {
+    "message": "حدث خطأ أثناء الربط. ابدأ من جديد."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$ على $SYSTEM$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "التنزيل باستخدام DownloadPulse"
+  },
+  "hoverSend": {
+    "message": "التنزيل باستخدام DownloadPulse"
+  },
+  "videoSend": {
+    "message": "تنزيل هذا الفيديو باستخدام DownloadPulse"
+  },
+  "pageActionSend": {
+    "message": "تنزيل هذا الفيديو باستخدام DownloadPulse"
+  },
+  "sendDone": {
+    "message": "أُرسل إلى DownloadPulse."
+  },
+  "sendFailed": {
+    "message": "تعذر إرسال ذلك إلى DownloadPulse."
+  },
+  "sendNotConnected": {
+    "message": "هذا المتصفح غير مرتبط بـ DownloadPulse. اربطه من زر شريط الأدوات."
+  },
+  "sendNothingFound": {
+    "message": "لم يُعثر على أي رابط في النص المحدد."
+  },
+  "sendLocalNetwork": {
+    "message": "هذا الرابط موجود على شبكتك المحلية. لا تسمح إعدادات «اتصالات الشبكة المحلية» في DownloadPulse به من متصفح؛ أضفه بدلًا من ذلك عبر «إضافة سريعة»."
+  },
+  "sendCollectionItem": {
+    "message": "يشير هذا الرابط إلى عنصر واحد في مجموعة. أضفه عبر «إضافة سريعة» في DownloadPulse لاختيار العنصر أو المجموعة كاملة."
+  },
+  "sendTooMany": {
+    "message": "لدى هذا المتصفح عدد كبير جدًا من التنزيلات غير المكتملة في DownloadPulse. حاول مرة أخرى عند اكتمال بعضها."
+  },
+  "sendTooLarge": {
+    "message": "هذا الملف أكبر مما يقبله DownloadPulse."
+  },
+  "sendInvalid": {
+    "message": "لا يمكن لـ DownloadPulse تنزيل هذا الرابط."
+  },
+  "sendRefused": {
+    "message": "رفض DownloadPulse هذا التنزيل."
+  },
+  "sendUnavailable": {
+    "message": "تعذر على DownloadPulse الوصول إلى ذلك المصدر حاليًا. حاول مرة أخرى لاحقًا."
+  },
+  "sendNoSiteAccess": {
+    "message": "لم يعد المتصفح يسمح لـ DownloadPulse بقراءة ذلك الموقع. اسمح بالوصول إلى الموقع لـ DownloadPulse في إعدادات الإضافات في المتصفح."
+  },
+  "sendCaptureFailed": {
+    "message": "تعذر جلب ذلك الملف من الموقع."
+  },
+  "sendCaptureWebPage": {
+    "message": "أعاد ذلك الموقع صفحة ويب بدلًا من الملف. قد تحتاج إلى تسجيل الدخول إليه أولًا."
+  },
+  "listTitle": {
+    "message": "التنزيلات من هذا المتصفح"
+  },
+  "listEmpty": {
+    "message": "لم يُرسل شيء من هذا المتصفح بعد."
+  },
+  "jobQueued": {
+    "message": "قيد الانتظار"
+  },
+  "jobWorking": {
+    "message": "قيد التحضير"
+  },
+  "jobDownloading": {
+    "message": "جارٍ التنزيل"
+  },
+  "jobPausedHere": {
+    "message": "متوقف مؤقتًا من هذا المتصفح"
+  },
+  "jobPausedServer": {
+    "message": "متوقف مؤقتًا في DownloadPulse"
+  },
+  "jobNeedsAttention": {
+    "message": "يحتاج إلى انتباهك في DownloadPulse"
+  },
+  "jobDone": {
+    "message": "مكتمل"
+  },
+  "jobFailed": {
+    "message": "فشل"
+  },
+  "jobRemoved": {
+    "message": "أُزيل"
+  },
+  "jobPause": {
+    "message": "إيقاف مؤقت"
+  },
+  "jobResume": {
+    "message": "استئناف"
+  },
+  "jobRemove": {
+    "message": "إزالة"
+  },
+  "controlSharedInterest": {
+    "message": "تحتاج طلبات أخرى إلى هذا التنزيل، لذا لا يمكن إيقافه مؤقتًا من هنا."
+  },
+  "controlGloballyPaused": {
+    "message": "كل شيء متوقف مؤقتًا في DownloadPulse حاليًا."
+  },
+  "controlPausedElsewhere": {
+    "message": "أُوقف هذا التنزيل مؤقتًا في DownloadPulse؛ استأنفه هناك."
+  },
+  "controlSettled": {
+    "message": "انتهى هذا التنزيل بالفعل."
+  },
+  "controlFailed": {
+    "message": "لم ينجح ذلك. حاول مرة أخرى."
+  },
+  "etaAbout": {
+    "message": "يتبقى نحو $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "جارٍ تقدير الوقت المتبقي"
+  },
+  "notifyCompleted": {
+    "message": "تم التنزيل: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "فشل: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "يحتاج إلى انتباهك في DownloadPulse: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "فتح DownloadPulse"
+  },
+  "optionsConnection": {
+    "message": "الربط"
+  },
+  "optionsNotConnected": {
+    "message": "هذا المتصفح غير مرتبط بـ DownloadPulse. اربطه من زر شريط الأدوات."
+  },
+  "optionsDisconnect": {
+    "message": "إلغاء الربط"
+  },
+  "optionsDisconnectHint": {
+    "message": "يؤدي إلغاء الربط إلى إزالة هذا المتصفح من حسابك في DownloadPulse. وتُحفظ التنزيلات التي أُرسلت بالفعل."
+  },
+  "optionsDisconnected": {
+    "message": "تم إلغاء الربط. لم يعد DownloadPulse يقبل هذا المتصفح."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "تم إلغاء الربط هنا، لكن تعذر الوصول إلى DownloadPulse. في DownloadPulse، من حسابي › المتصفحات المرتبطة، اختر «إلغاء الربط» لهذا المتصفح."
+  },
+  "optionsOnPages": {
+    "message": "على صفحات الويب"
+  },
+  "optionsHover": {
+    "message": "إظهار زر تنزيل بجانب روابط التنزيل"
+  },
+  "optionsVideo": {
+    "message": "إظهار زر تنزيل على مشغلات الفيديو"
+  },
+  "optionsOffSites": {
+    "message": "مواقع بلا أزرار تنزيل"
+  },
+  "optionsOffSitesHint": {
+    "message": "لا تظهر أزرار التنزيل على هذه المواقع (ونطاقاتها الفرعية). يظل النقر بزر الماوس الأيمن يعمل."
+  },
+  "optionsSiteLabel": {
+    "message": "الموقع المراد إضافته"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "إضافة موقع"
+  },
+  "optionsRemoveSite": {
+    "message": "إزالة"
+  },
+  "optionsNotifications": {
+    "message": "الإشعارات"
+  },
+  "optionsNotifyCompleted": {
+    "message": "عند اكتمال تنزيل"
+  },
+  "optionsNotifyFailed": {
+    "message": "عند فشل تنزيل"
+  },
+  "optionsNotifyAttention": {
+    "message": "عندما يحتاج تنزيل إلى انتباهك في DownloadPulse"
+  },
+  "popupSettings": {
+    "message": "الإعدادات"
+  },
+  "popupSiteOn": {
+    "message": "أزرار التنزيل على $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

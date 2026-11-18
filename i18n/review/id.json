@@ -1,0 +1,775 @@
+{
+  "schema": "downloadpulse-extension-review/1",
+  "locale": "id",
+  "about": "AI-generated (WS-E5), independently AI-reviewed by a different agent; the critical keys back-translated blind (target text only, neutral ids) and compared with the English by the task's author. No human review.",
+  "entries": {
+    "extName": {
+      "source": "71eaccce9a8c239b",
+      "translation": "71eaccce9a8c239b",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "extDescription": {
+      "source": "92075dfa7c44f0f8",
+      "translation": "74040fc29123bbee",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "actionTitle": {
+      "source": "71eaccce9a8c239b",
+      "translation": "71eaccce9a8c239b",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupNotConnected": {
+      "source": "0303e18246708180",
+      "translation": "1f37b8cddf77502d",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsTitle": {
+      "source": "131e80ceedad2f57",
+      "translation": "c8400015c742ba0a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupConnect": {
+      "source": "e357b958fa80f536",
+      "translation": "0c69e4f1e5a9f111",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupProbing": {
+      "source": "353056202aff3f41",
+      "translation": "df2d0f52f2153d02",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupNotFound": {
+      "source": "94a014e340b89f5d",
+      "translation": "8d135be41aff4048",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupCheckAgain": {
+      "source": "fb7099ad8e818d42",
+      "translation": "1c1dce4569748107",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupServerLabel": {
+      "source": "8be89710b2f1d0c5",
+      "translation": "7b11cac5ccb00379",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupServerPlaceholder": {
+      "source": "e66529a4b871b32e",
+      "translation": "e66529a4b871b32e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupConnectServer": {
+      "source": "6a8a0d54708b071f",
+      "translation": "b5698fc0a15a246e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupWaiting": {
+      "source": "8fd3a096abeb7a43",
+      "translation": "182cf6e8fcede968",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupCode": {
+      "source": "5f09e1f74a6d298c",
+      "translation": "f4e273a8cb76fa0c",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupCodeHint": {
+      "source": "da9f6305f6243d8d",
+      "translation": "b360c1832bd67546",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "ai-back-translation"
+      ],
+      "backTranslation": "DownloadPulse displays the same code. Choose \"Connect\" only if both match."
+    },
+    "popupCancel": {
+      "source": "19766ed6ccb2f4a3",
+      "translation": "5f52f732645aeeb9",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupStartAgain": {
+      "source": "962e64b761961fe0",
+      "translation": "4c03da777c581498",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupConnected": {
+      "source": "22965568d22a14ee",
+      "translation": "9f88a59d365bc208",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupServer": {
+      "source": "aef7de28d52977f1",
+      "translation": "7b11cac5ccb00379",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupAccount": {
+      "source": "7e1b0d5641f2640c",
+      "translation": "7cb3a729e6fe886a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupBrowser": {
+      "source": "d31de1a5c5c8ba2a",
+      "translation": "082d5c9fc371057d",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureUnreachable": {
+      "source": "0836b54a3f1b9939",
+      "translation": "8dbd3879a8e2b0a5",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureCertificate": {
+      "source": "a2d7739d5e764d78",
+      "translation": "fb326601e8010bab",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "ai-back-translation"
+      ],
+      "backTranslation": "That server cannot be reached securely. If that server uses its own certificate, open it in a tab, accept its certificate, then connect again."
+    },
+    "failureNotDownloadPulse": {
+      "source": "aa1f04ffb8e547c8",
+      "translation": "78adfe258349ebc6",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureTooOld": {
+      "source": "ea461312d64e96fa",
+      "translation": "def47f95d918e98b",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureDenied": {
+      "source": "f6f52e533f66ec81",
+      "translation": "9cee2b1d1359f814",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureExpired": {
+      "source": "023f7ebb68e885b0",
+      "translation": "5d0b0749a21c292a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failurePermission": {
+      "source": "685628f701e99310",
+      "translation": "f2da8d70e9188016",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureUnauthorized": {
+      "source": "10fd33673597ab06",
+      "translation": "d585f8e38a76d961",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureFailed": {
+      "source": "f63d09bde0eebad3",
+      "translation": "68ba565035bca7ce",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "pairingClientName": {
+      "source": "e73f61e082abcd28",
+      "translation": "7ac923509d5c4ff6",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "menuSend": {
+      "source": "17bd28b114e1a60b",
+      "translation": "ffbd0f25ed37eee1",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "hoverSend": {
+      "source": "17bd28b114e1a60b",
+      "translation": "ffbd0f25ed37eee1",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "videoSend": {
+      "source": "9385ab938fa896a8",
+      "translation": "856436574d4dc272",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "pageActionSend": {
+      "source": "9385ab938fa896a8",
+      "translation": "856436574d4dc272",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendDone": {
+      "source": "e4b5199e3f976815",
+      "translation": "a1f7c28e6b41b6b0",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendFailed": {
+      "source": "9f1530741a3b3c22",
+      "translation": "13f8c57e8328c30e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendNotConnected": {
+      "source": "4ab461c5c68445ee",
+      "translation": "edcccd4c06d2c539",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendNothingFound": {
+      "source": "b86f10b33badaab5",
+      "translation": "31ed246c9bc67c67",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendLocalNetwork": {
+      "source": "fd6a3674d3cff6fa",
+      "translation": "dc63c9606bed6d74",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendCollectionItem": {
+      "source": "ec6bf6104a0c5cf9",
+      "translation": "c2d0dc730f49a15a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendTooMany": {
+      "source": "1d55da7b3d048238",
+      "translation": "34a12f3e7d207b8c",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendTooLarge": {
+      "source": "1a35e48483358600",
+      "translation": "36781119acab2840",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendInvalid": {
+      "source": "899f36bc60f34781",
+      "translation": "7ea0ef169acba536",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendRefused": {
+      "source": "7f8d7000892d42b1",
+      "translation": "11df191ac910937c",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendUnavailable": {
+      "source": "0cd4d8b5cbf37f50",
+      "translation": "010de463cfcb83c7",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendNoSiteAccess": {
+      "source": "183ae264ce2b3cda",
+      "translation": "892f173493a67c01",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendCaptureFailed": {
+      "source": "381998a024f0ee74",
+      "translation": "6f9966b2f742559f",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendCaptureWebPage": {
+      "source": "2df757ee4291e566",
+      "translation": "43d02164cee27891",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "listTitle": {
+      "source": "d58dc2c14941acca",
+      "translation": "488cc08652135422",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "listEmpty": {
+      "source": "583a978106b31335",
+      "translation": "19c7edcc98351a52",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobQueued": {
+      "source": "6e293a8c009e0011",
+      "translation": "13f96091400ec9a6",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobWorking": {
+      "source": "cf1aa6cc5951b3f4",
+      "translation": "d202b3ef88256dcb",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobDownloading": {
+      "source": "37b345555d7ea6c1",
+      "translation": "a2703acf35b6310e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobPausedHere": {
+      "source": "387f58addcc2209c",
+      "translation": "aeb12ac2d9cbf834",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobPausedServer": {
+      "source": "7bcaa5b855bd0a2f",
+      "translation": "f33e68e91a5b2916",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobNeedsAttention": {
+      "source": "913f2245f10b20c2",
+      "translation": "2c7ae323dacd251c",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobDone": {
+      "source": "11a6767d5674c7e4",
+      "translation": "fee5c98985a57d26",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobFailed": {
+      "source": "031a8f0f659df890",
+      "translation": "ba86c6156725f1de",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobRemoved": {
+      "source": "4118fb4fed0ecec9",
+      "translation": "31fb2f6f113f91f0",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobPause": {
+      "source": "858e4ba7a29fd38b",
+      "translation": "5cf5b9f7006144c6",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobResume": {
+      "source": "d640c7421da06661",
+      "translation": "bae9e3381b9043fe",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "jobRemove": {
+      "source": "c3812fc4acb861d5",
+      "translation": "097900ea63e99bcd",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "controlSharedInterest": {
+      "source": "7765fd9dbb9de5ab",
+      "translation": "4a299ffee76888cd",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "controlGloballyPaused": {
+      "source": "5574226d2ef4bea2",
+      "translation": "cccf3932aa627173",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "controlPausedElsewhere": {
+      "source": "dc1fadc5228b2d62",
+      "translation": "f3e9a9893dfcac06",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "controlSettled": {
+      "source": "94efa35945b0fe1d",
+      "translation": "631988c4386fb318",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "controlFailed": {
+      "source": "d010a8621f3358d1",
+      "translation": "ec61cd6c884bf41e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "etaAbout": {
+      "source": "fe479452389bde3c",
+      "translation": "ea01a3091f51c807",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "etaEstimating": {
+      "source": "73573e60f5d8c0d1",
+      "translation": "7ac13ced6ad3dfbf",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "notifyCompleted": {
+      "source": "ab8d112a5584265d",
+      "translation": "7e13ff42f3be0110",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "notifyFailed": {
+      "source": "8c264bfbfb4b9a58",
+      "translation": "db8204bfbc67467f",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "notifyAttention": {
+      "source": "4bcd0ec442dafd3c",
+      "translation": "2250de85192032b0",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupOpenServer": {
+      "source": "183d1f93d1de838d",
+      "translation": "8453aae027c42ac4",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsConnection": {
+      "source": "639a40e82b9a96f0",
+      "translation": "117a68f1960ef18e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsNotConnected": {
+      "source": "4ab461c5c68445ee",
+      "translation": "edcccd4c06d2c539",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsDisconnect": {
+      "source": "acfc5be785a9bb3d",
+      "translation": "3ca93530639560c3",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsDisconnectHint": {
+      "source": "6eeeee2d863e9ca7",
+      "translation": "6f09cc86f84cb002",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "ai-back-translation"
+      ],
+      "backTranslation": "Disconnecting will remove this browser from your DownloadPulse account. Downloads already sent are still kept."
+    },
+    "optionsDisconnected": {
+      "source": "ebf968110e12c6c1",
+      "translation": "f954821e44493a6a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsDisconnectedLocally": {
+      "source": "a559a2cf5188a97e",
+      "translation": "684f716a3400db74",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "ai-back-translation"
+      ],
+      "backTranslation": "Disconnected here, but DownloadPulse could not be reached. In DownloadPulse, via My Account › Connected Browsers, choose \"Disconnect\" for this browser."
+    },
+    "optionsOnPages": {
+      "source": "93a6087b6aa5051e",
+      "translation": "8e5219d09be15b41",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsHover": {
+      "source": "0ab46989ea7f727e",
+      "translation": "a5c75c15a4a72080",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsVideo": {
+      "source": "269ce40ca1eedf82",
+      "translation": "83574960391646f5",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsOffSites": {
+      "source": "c9b6798c0031a125",
+      "translation": "56bbd5574ad8dec9",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsOffSitesHint": {
+      "source": "cba067a999de1803",
+      "translation": "eb772bc3150c2341",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsSiteLabel": {
+      "source": "f92972d567af4d66",
+      "translation": "184ccd36c68256f9",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsSitePlaceholder": {
+      "source": "a379a6f6eeafb9a5",
+      "translation": "a379a6f6eeafb9a5",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsAddSite": {
+      "source": "7187353ffba7aa8f",
+      "translation": "428dfef5fd3e114a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsRemoveSite": {
+      "source": "c3812fc4acb861d5",
+      "translation": "097900ea63e99bcd",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsNotifications": {
+      "source": "788011833a5a0f22",
+      "translation": "83aa85d3246206f7",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsNotifyCompleted": {
+      "source": "4495f9425cadd30b",
+      "translation": "b2144ece108bac26",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsNotifyFailed": {
+      "source": "79a6e5cc63ba4b2c",
+      "translation": "69e3bc609889e271",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsNotifyAttention": {
+      "source": "dd08f0a6cd136b01",
+      "translation": "e08478b9d13a0e14",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupSettings": {
+      "source": "74a883a037bc227f",
+      "translation": "25382c9c3281e4ff",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupSiteOn": {
+      "source": "d1a7498d0b23eeeb",
+      "translation": "72921ad9f10816f8",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    }
+  }
+}

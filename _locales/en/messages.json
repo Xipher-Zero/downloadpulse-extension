@@ -48,16 +48,16 @@
     "description": "Popup button: connect to the address entered."
   },
   "popupWaiting": {
-    "message": "Approve this browser in the DownloadPulse tab that just opened.",
-    "description": "Popup status while waiting for the person to approve on the server."
+    "message": "In the DownloadPulse tab that just opened, choose Connect to add this browser.",
+    "description": "Popup status while waiting for the person to approve on the server. 'Connect' is DownloadPulse's own button (DebridPulse key browser.pairing.approve): use that catalog's exact word."
   },
   "popupCode": {
     "message": "Code:",
     "description": "Popup: precedes the pairing code shown on both sides."
   },
   "popupCodeHint": {
-    "message": "DownloadPulse shows the same code. Only approve if they match.",
-    "description": "Popup: under the code."
+    "message": "DownloadPulse shows the same code. Only choose Connect if they match.",
+    "description": "Popup: under the code. CRITICAL (anti-phishing). 'Connect' is DownloadPulse's own button in its Connect a browser dialog (DebridPulse key browser.pairing.approve): use that catalog's exact word."
   },
   "popupCancel": {
     "message": "Cancel",
@@ -350,8 +350,8 @@
     "description": "Settings: after Disconnect, revoked on the server."
   },
   "optionsDisconnectedLocally": {
-    "message": "Disconnected here, but DownloadPulse couldn't be reached. Remove this browser in DownloadPulse under My Account › Connected browsers.",
-    "description": "Settings: after Disconnect when the server could not be reached."
+    "message": "Disconnected here, but DownloadPulse couldn't be reached. Disconnect this browser in DownloadPulse under My Account › Connected browsers.",
+    "description": "Settings: after Disconnect when the server could not be reached. CRITICAL. 'Disconnect' is DownloadPulse's own button there (DebridPulse key account.browsers.disconnect); 'My Account › Connected browsers' are account.title › account.browsers.title: use that catalog's exact words."
   },
   "optionsOnPages": {
     "message": "On web pages",

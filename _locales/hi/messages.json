@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "अपने ब्राउज़र से डाउनलोड अपने DownloadPulse सर्वर पर भेजें।"
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "कनेक्ट नहीं है"
+  },
+  "optionsTitle": {
+    "message": "DownloadPulse एक्सटेंशन की सेटिंग्स"
+  },
+  "popupConnect": {
+    "message": "किसी DownloadPulse इंस्टेंस से कनेक्ट करें"
+  },
+  "popupProbing": {
+    "message": "DownloadPulse खोजा जा रहा है…"
+  },
+  "popupNotFound": {
+    "message": "इस कंप्यूटर पर कोई DownloadPulse नहीं चल रहा है। उसे शुरू करें और फिर से जाँचें, या किसी सर्वर से कनेक्ट करें।"
+  },
+  "popupCheckAgain": {
+    "message": "फिर से जाँचें"
+  },
+  "popupServerLabel": {
+    "message": "सर्वर का पता"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "इस सर्वर से कनेक्ट करें"
+  },
+  "popupWaiting": {
+    "message": "अभी खुले DownloadPulse टैब में, इस ब्राउज़र को जोड़ने के लिए \"कनेक्ट करें\" चुनें।"
+  },
+  "popupCode": {
+    "message": "कोड:"
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse वही कोड दिखाता है। \"कनेक्ट करें\" केवल तभी चुनें जब दोनों मेल खाते हों।"
+  },
+  "popupCancel": {
+    "message": "रद्द करें"
+  },
+  "popupStartAgain": {
+    "message": "फिर से शुरू करें"
+  },
+  "popupConnected": {
+    "message": "कनेक्ट है"
+  },
+  "popupServer": {
+    "message": "सर्वर"
+  },
+  "popupAccount": {
+    "message": "खाता"
+  },
+  "popupBrowser": {
+    "message": "ब्राउज़र"
+  },
+  "failureUnreachable": {
+    "message": "उस सर्वर तक नहीं पहुँचा जा सकता। पता जाँचें और देखें कि DownloadPulse चल रहा है।"
+  },
+  "failureCertificate": {
+    "message": "उस सर्वर तक सुरक्षित रूप से नहीं पहुँचा जा सकता। यदि वह अपना स्वयं का प्रमाणपत्र उपयोग करता है, तो उसे किसी टैब में खोलें, प्रमाणपत्र स्वीकार करें, फिर दोबारा कनेक्ट करें।"
+  },
+  "failureNotDownloadPulse": {
+    "message": "उस पते पर किसी ने उत्तर दिया, लेकिन वह DownloadPulse नहीं है।"
+  },
+  "failureTooOld": {
+    "message": "यह DownloadPulse ब्राउज़र कनेक्ट करने के लिए बहुत पुराना है। इसे अपडेट करें, फिर दोबारा कनेक्ट करें।"
+  },
+  "failureDenied": {
+    "message": "DownloadPulse में कनेक्शन अस्वीकार कर दिया गया।"
+  },
+  "failureExpired": {
+    "message": "कनेक्शन अनुरोध की समय-सीमा समाप्त हो गई। फिर से शुरू करें।"
+  },
+  "failurePermission": {
+    "message": "ब्राउज़र ने उस सर्वर तक पहुँच की अनुमति नहीं दी।"
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse अब इस ब्राउज़र को स्वीकार नहीं करता। इसे फिर से कनेक्ट करें।"
+  },
+  "failureFailed": {
+    "message": "कनेक्ट करते समय कुछ गलत हो गया। फिर से शुरू करें।"
+  },
+  "pairingClientName": {
+    "message": "$SYSTEM$ पर $BROWSER$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "DownloadPulse से डाउनलोड करें"
+  },
+  "hoverSend": {
+    "message": "DownloadPulse से डाउनलोड करें"
+  },
+  "videoSend": {
+    "message": "यह वीडियो DownloadPulse से डाउनलोड करें"
+  },
+  "pageActionSend": {
+    "message": "यह वीडियो DownloadPulse से डाउनलोड करें"
+  },
+  "sendDone": {
+    "message": "DownloadPulse को भेजा गया।"
+  },
+  "sendFailed": {
+    "message": "इसे DownloadPulse को नहीं भेजा जा सका।"
+  },
+  "sendNotConnected": {
+    "message": "यह ब्राउज़र DownloadPulse से कनेक्ट नहीं है। इसे टूलबार बटन से कनेक्ट करें।"
+  },
+  "sendNothingFound": {
+    "message": "चयनित टेक्स्ट में कोई लिंक नहीं मिला।"
+  },
+  "sendLocalNetwork": {
+    "message": "वह लिंक आपके स्थानीय नेटवर्क पर है। DownloadPulse की \"स्थानीय नेटवर्क कनेक्शन\" सेटिंग्स ब्राउज़र से इसकी अनुमति नहीं देतीं; इसके बजाय इसे \"त्वरित जोड़ें\" से जोड़ें।"
+  },
+  "sendCollectionItem": {
+    "message": "वह लिंक किसी संग्रह के एक आइटम की ओर इंगित करता है। आइटम या पूरा संग्रह चुनने के लिए इसे DownloadPulse में \"त्वरित जोड़ें\" से जोड़ें।"
+  },
+  "sendTooMany": {
+    "message": "इस ब्राउज़र के DownloadPulse में बहुत अधिक अधूरे डाउनलोड हैं। कुछ पूरे होने पर फिर से प्रयास करें।"
+  },
+  "sendTooLarge": {
+    "message": "वह फ़ाइल DownloadPulse द्वारा स्वीकार की जाने वाली सीमा से बड़ी है।"
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse उस लिंक को डाउनलोड नहीं कर सकता।"
+  },
+  "sendRefused": {
+    "message": "DownloadPulse ने उस डाउनलोड को अस्वीकार कर दिया।"
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse अभी उस स्रोत तक नहीं पहुँच सका। बाद में फिर से प्रयास करें।"
+  },
+  "sendNoSiteAccess": {
+    "message": "ब्राउज़र अब DownloadPulse को उस साइट को पढ़ने की अनुमति नहीं देता। ब्राउज़र की एक्सटेंशन सेटिंग्स में DownloadPulse के लिए साइट पहुँच की अनुमति दें।"
+  },
+  "sendCaptureFailed": {
+    "message": "वह फ़ाइल साइट से प्राप्त नहीं की जा सकी।"
+  },
+  "sendCaptureWebPage": {
+    "message": "उस साइट ने फ़ाइल के बजाय एक वेब पेज लौटाया। आपको पहले उसमें साइन इन करना पड़ सकता है।"
+  },
+  "listTitle": {
+    "message": "इस ब्राउज़र से डाउनलोड"
+  },
+  "listEmpty": {
+    "message": "इस ब्राउज़र से अभी तक कुछ नहीं भेजा गया।"
+  },
+  "jobQueued": {
+    "message": "प्रतीक्षारत"
+  },
+  "jobWorking": {
+    "message": "तैयारी हो रही है"
+  },
+  "jobDownloading": {
+    "message": "डाउनलोड हो रहा है"
+  },
+  "jobPausedHere": {
+    "message": "इस ब्राउज़र से रोका गया"
+  },
+  "jobPausedServer": {
+    "message": "DownloadPulse में रोका गया"
+  },
+  "jobNeedsAttention": {
+    "message": "DownloadPulse में ध्यान देने की आवश्यकता है"
+  },
+  "jobDone": {
+    "message": "पूर्ण"
+  },
+  "jobFailed": {
+    "message": "विफल"
+  },
+  "jobRemoved": {
+    "message": "हटाया गया"
+  },
+  "jobPause": {
+    "message": "रोकें"
+  },
+  "jobResume": {
+    "message": "जारी रखें"
+  },
+  "jobRemove": {
+    "message": "हटाएँ"
+  },
+  "controlSharedInterest": {
+    "message": "अन्य अनुरोधों को इस डाउनलोड की आवश्यकता है, इसलिए इसे यहाँ से रोका नहीं जा सकता।"
+  },
+  "controlGloballyPaused": {
+    "message": "DownloadPulse में अभी सब कुछ रोका गया है।"
+  },
+  "controlPausedElsewhere": {
+    "message": "यह डाउनलोड DownloadPulse में रोका गया था; इसे वहीं जारी रखें।"
+  },
+  "controlSettled": {
+    "message": "यह डाउनलोड पहले ही पूरा हो चुका है।"
+  },
+  "controlFailed": {
+    "message": "ऐसा नहीं हो सका। फिर से प्रयास करें।"
+  },
+  "etaAbout": {
+    "message": "लगभग $TIME$ शेष",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "शेष समय का अनुमान लगाया जा रहा है"
+  },
+  "notifyCompleted": {
+    "message": "डाउनलोड हो गया: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "विफल: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "DownloadPulse में ध्यान देने की आवश्यकता है: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "DownloadPulse खोलें"
+  },
+  "optionsConnection": {
+    "message": "कनेक्शन"
+  },
+  "optionsNotConnected": {
+    "message": "यह ब्राउज़र DownloadPulse से कनेक्ट नहीं है। इसे टूलबार बटन से कनेक्ट करें।"
+  },
+  "optionsDisconnect": {
+    "message": "डिस्कनेक्ट करें"
+  },
+  "optionsDisconnectHint": {
+    "message": "डिस्कनेक्ट करने से यह ब्राउज़र आपके DownloadPulse खाते से हट जाता है। पहले से भेजे गए डाउनलोड बने रहते हैं।"
+  },
+  "optionsDisconnected": {
+    "message": "डिस्कनेक्ट हो गया। DownloadPulse अब इस ब्राउज़र को स्वीकार नहीं करता।"
+  },
+  "optionsDisconnectedLocally": {
+    "message": "यहाँ डिस्कनेक्ट हो गया, लेकिन DownloadPulse तक नहीं पहुँचा जा सका। DownloadPulse में मेरा खाता › कनेक्ट किए गए ब्राउज़र में जाकर इस ब्राउज़र के लिए \"डिस्कनेक्ट करें\" चुनें।"
+  },
+  "optionsOnPages": {
+    "message": "वेब पेजों पर"
+  },
+  "optionsHover": {
+    "message": "डाउनलोड लिंक के पास डाउनलोड बटन दिखाएँ"
+  },
+  "optionsVideo": {
+    "message": "वीडियो प्लेयर पर डाउनलोड बटन दिखाएँ"
+  },
+  "optionsOffSites": {
+    "message": "बिना डाउनलोड बटन वाली साइटें"
+  },
+  "optionsOffSitesHint": {
+    "message": "इन साइटों (और उनके सबडोमेन) पर कोई डाउनलोड बटन नहीं दिखता। राइट-क्लिक फिर भी काम करता है।"
+  },
+  "optionsSiteLabel": {
+    "message": "जोड़ने के लिए साइट"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "साइट जोड़ें"
+  },
+  "optionsRemoveSite": {
+    "message": "हटाएँ"
+  },
+  "optionsNotifications": {
+    "message": "सूचनाएँ"
+  },
+  "optionsNotifyCompleted": {
+    "message": "जब कोई डाउनलोड पूरा हो"
+  },
+  "optionsNotifyFailed": {
+    "message": "जब कोई डाउनलोड विफल हो"
+  },
+  "optionsNotifyAttention": {
+    "message": "जब किसी डाउनलोड को DownloadPulse में ध्यान देने की आवश्यकता हो"
+  },
+  "popupSettings": {
+    "message": "सेटिंग्स"
+  },
+  "popupSiteOn": {
+    "message": "$SITE$ पर डाउनलोड बटन",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

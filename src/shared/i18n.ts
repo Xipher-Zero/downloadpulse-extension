@@ -6,10 +6,17 @@ export function message(key: string, substitutions?: string[]): string {
   return text || key;
 }
 
+// Languages written right to left (of DownloadPulse's 19: Arabic).
+const RTL = new Set(["ar", "fa", "he", "ur", "ps", "sd", "ug", "yi", "dv"]);
+
 /** Fills every [data-i18n] element in `root` and sets the document's language and direction. */
 export function localize(root: Document): void {
-  root.documentElement.lang = chrome.i18n.getMessage("@@ui_locale").replace("_", "-");
-  root.documentElement.dir = chrome.i18n.getMessage("@@bidi_dir") === "rtl" ? "rtl" : "ltr";
+  // The language whose catalog the browser shows (getUILanguage), and its
+  // direction. Chromium's @@ui_locale/@@bidi_dir can follow the application
+  // locale instead, which need not be the language the messages are in.
+  const language = chrome.i18n.getUILanguage();
+  root.documentElement.lang = language;
+  root.documentElement.dir = RTL.has(language.split(/[-_]/)[0]!.toLowerCase()) ? "rtl" : "ltr";
   for (const el of root.querySelectorAll<HTMLElement>("[data-i18n]")) {
     const key = el.dataset["i18n"];
     if (key) el.textContent = message(key);

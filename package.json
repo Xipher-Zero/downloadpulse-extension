@@ -12,11 +12,12 @@
     "build": "node scripts/build.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "lint:firefox": "web-ext lint --source-dir dist/firefox --self-hosted",
-    "check": "npm run build && npm run typecheck && npm run lint:firefox",
+    "check": "npm run build && npm run typecheck && npm run lint:firefox && npm run check:locales",
     "test": "npm run build && npm run test:unit && playwright test && node test/smoke/firefox.mjs",
     "package": "npm run build && node scripts/package.mjs",
     "test:unit": "node scripts/test-unit.mjs",
-    "test:e2e": "npm run build && playwright test test/e2e"
+    "test:e2e": "npm run build && playwright test test/e2e",
+    "check:locales": "node scripts/check-locales.mjs --report"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1",

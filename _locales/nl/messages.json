@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "Stuur downloads vanuit uw browser naar uw DownloadPulse-server."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "Niet verbonden"
+  },
+  "optionsTitle": {
+    "message": "Instellingen van de DownloadPulse-extensie"
+  },
+  "popupConnect": {
+    "message": "Verbinden met een DownloadPulse-instantie"
+  },
+  "popupProbing": {
+    "message": "Zoeken naar DownloadPulse…"
+  },
+  "popupNotFound": {
+    "message": "Er draait geen DownloadPulse op deze computer. Start het en controleer opnieuw, of maak verbinding met een server."
+  },
+  "popupCheckAgain": {
+    "message": "Opnieuw controleren"
+  },
+  "popupServerLabel": {
+    "message": "Serveradres"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "Verbinden met deze server"
+  },
+  "popupWaiting": {
+    "message": "Kies in het DownloadPulse-tabblad dat zojuist is geopend Verbinden om deze browser toe te voegen."
+  },
+  "popupCode": {
+    "message": "Koppelcode:"
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse toont dezelfde code. Kies alleen Verbinden als de codes overeenkomen."
+  },
+  "popupCancel": {
+    "message": "Annuleren"
+  },
+  "popupStartAgain": {
+    "message": "Opnieuw beginnen"
+  },
+  "popupConnected": {
+    "message": "Verbonden"
+  },
+  "popupServer": {
+    "message": "Verbonden server"
+  },
+  "popupAccount": {
+    "message": "Gebruikersaccount"
+  },
+  "popupBrowser": {
+    "message": "Browsernaam"
+  },
+  "failureUnreachable": {
+    "message": "Die server is niet bereikbaar. Controleer het adres en of DownloadPulse draait."
+  },
+  "failureCertificate": {
+    "message": "Die server is niet veilig bereikbaar. Als hij een eigen certificaat gebruikt, opent u hem in een tabblad, accepteert u het certificaat en maakt u daarna opnieuw verbinding."
+  },
+  "failureNotDownloadPulse": {
+    "message": "Er antwoordde iets op dat adres, maar het is geen DownloadPulse."
+  },
+  "failureTooOld": {
+    "message": "Deze DownloadPulse is te oud om browsers te verbinden. Werk hem bij en maak daarna opnieuw verbinding."
+  },
+  "failureDenied": {
+    "message": "De verbinding is in DownloadPulse geweigerd."
+  },
+  "failureExpired": {
+    "message": "Het verbindingsverzoek is verlopen. Begin opnieuw."
+  },
+  "failurePermission": {
+    "message": "De browser heeft geen toegang tot die server toegestaan."
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse accepteert deze browser niet meer. Verbind hem opnieuw."
+  },
+  "failureFailed": {
+    "message": "Er ging iets mis bij het verbinden. Begin opnieuw."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$ op $SYSTEM$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "Downloaden met DownloadPulse"
+  },
+  "hoverSend": {
+    "message": "Downloaden met DownloadPulse"
+  },
+  "videoSend": {
+    "message": "Deze video downloaden met DownloadPulse"
+  },
+  "pageActionSend": {
+    "message": "Deze video downloaden met DownloadPulse"
+  },
+  "sendDone": {
+    "message": "Naar DownloadPulse gestuurd."
+  },
+  "sendFailed": {
+    "message": "Dit kon niet naar DownloadPulse worden gestuurd."
+  },
+  "sendNotConnected": {
+    "message": "Deze browser is niet verbonden met DownloadPulse. Verbind hem via de werkbalkknop."
+  },
+  "sendNothingFound": {
+    "message": "Er is geen link gevonden in de geselecteerde tekst."
+  },
+  "sendLocalNetwork": {
+    "message": "Die link staat op uw lokale netwerk. De instellingen voor Lokale netwerkverbindingen van DownloadPulse staan dit vanuit een browser niet toe; voeg hem in plaats daarvan toe met Snel toevoegen."
+  },
+  "sendCollectionItem": {
+    "message": "Die link verwijst naar één item in een verzameling. Voeg hem toe met Snel toevoegen in DownloadPulse om het item of de hele verzameling te kiezen."
+  },
+  "sendTooMany": {
+    "message": "Deze browser heeft te veel onvoltooide downloads in DownloadPulse. Probeer het opnieuw wanneer er een paar klaar zijn."
+  },
+  "sendTooLarge": {
+    "message": "Dat bestand is groter dan DownloadPulse accepteert."
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse kan die link niet downloaden."
+  },
+  "sendRefused": {
+    "message": "DownloadPulse heeft die download geweigerd."
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse kon die bron nu niet bereiken. Probeer het later opnieuw."
+  },
+  "sendNoSiteAccess": {
+    "message": "De browser staat DownloadPulse niet meer toe die site te lezen. Sta sitetoegang voor DownloadPulse toe in de extensie-instellingen van de browser."
+  },
+  "sendCaptureFailed": {
+    "message": "Dat bestand kon niet van de site worden opgehaald."
+  },
+  "sendCaptureWebPage": {
+    "message": "Die site gaf een webpagina terug in plaats van het bestand. Mogelijk moet u zich er eerst aanmelden."
+  },
+  "listTitle": {
+    "message": "Downloads vanuit deze browser"
+  },
+  "listEmpty": {
+    "message": "Nog niets verstuurd vanuit deze browser."
+  },
+  "jobQueued": {
+    "message": "Wachtend"
+  },
+  "jobWorking": {
+    "message": "Voorbereiden"
+  },
+  "jobDownloading": {
+    "message": "Downloaden"
+  },
+  "jobPausedHere": {
+    "message": "Gepauzeerd vanuit deze browser"
+  },
+  "jobPausedServer": {
+    "message": "Gepauzeerd in DownloadPulse"
+  },
+  "jobNeedsAttention": {
+    "message": "Vereist aandacht in DownloadPulse"
+  },
+  "jobDone": {
+    "message": "Klaar"
+  },
+  "jobFailed": {
+    "message": "Mislukt"
+  },
+  "jobRemoved": {
+    "message": "Weggehaald"
+  },
+  "jobPause": {
+    "message": "Pauzeren"
+  },
+  "jobResume": {
+    "message": "Hervatten"
+  },
+  "jobRemove": {
+    "message": "Weghalen"
+  },
+  "controlSharedInterest": {
+    "message": "Andere verzoeken hebben deze download nodig, dus hij kan hier niet worden gepauzeerd."
+  },
+  "controlGloballyPaused": {
+    "message": "Alles is op dit moment gepauzeerd in DownloadPulse."
+  },
+  "controlPausedElsewhere": {
+    "message": "Deze download is gepauzeerd in DownloadPulse; hervat hem daar."
+  },
+  "controlSettled": {
+    "message": "Deze download is al voltooid."
+  },
+  "controlFailed": {
+    "message": "Dat is niet gelukt. Probeer het opnieuw."
+  },
+  "etaAbout": {
+    "message": "nog ongeveer $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "resterende tijd wordt geschat"
+  },
+  "notifyCompleted": {
+    "message": "Gedownload: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "Mislukt: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "Vereist aandacht in DownloadPulse: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "DownloadPulse openen"
+  },
+  "optionsConnection": {
+    "message": "Verbinding"
+  },
+  "optionsNotConnected": {
+    "message": "Deze browser is niet verbonden met DownloadPulse. Verbind hem via de werkbalkknop."
+  },
+  "optionsDisconnect": {
+    "message": "Loskoppelen"
+  },
+  "optionsDisconnectHint": {
+    "message": "Loskoppelen haalt deze browser weg uit uw DownloadPulse-account. Downloads die al zijn verstuurd, blijven behouden."
+  },
+  "optionsDisconnected": {
+    "message": "Losgekoppeld. DownloadPulse accepteert deze browser niet meer."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "Hier losgekoppeld, maar DownloadPulse was niet bereikbaar. Kies in DownloadPulse onder Mijn account › Verbonden browsers bij deze browser Loskoppelen."
+  },
+  "optionsOnPages": {
+    "message": "Op webpagina's"
+  },
+  "optionsHover": {
+    "message": "Een downloadknop naast downloadlinks tonen"
+  },
+  "optionsVideo": {
+    "message": "Een downloadknop op videospelers tonen"
+  },
+  "optionsOffSites": {
+    "message": "Sites zonder downloadknoppen"
+  },
+  "optionsOffSitesHint": {
+    "message": "Op deze sites (en hun subdomeinen) verschijnen geen downloadknoppen. Rechtsklikken werkt nog steeds."
+  },
+  "optionsSiteLabel": {
+    "message": "Toe te voegen site"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "Site toevoegen"
+  },
+  "optionsRemoveSite": {
+    "message": "Weghalen"
+  },
+  "optionsNotifications": {
+    "message": "Meldingen"
+  },
+  "optionsNotifyCompleted": {
+    "message": "Als een download voltooid is"
+  },
+  "optionsNotifyFailed": {
+    "message": "Als een download mislukt"
+  },
+  "optionsNotifyAttention": {
+    "message": "Als een download aandacht vereist in DownloadPulse"
+  },
+  "popupSettings": {
+    "message": "Instellingen"
+  },
+  "popupSiteOn": {
+    "message": "Downloadknoppen op $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

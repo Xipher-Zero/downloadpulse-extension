@@ -1,0 +1,11 @@
+{
+  "about": "The extension's languages: DownloadPulse's own 19 (L21). Each browser locale folder (_locales/<folder>) and the matching DebridPulse catalog tag, whose wording names DownloadPulse's own interface.",
+  "source": "en",
+  "locales": {
+    "ar": "ar", "de": "de", "es": "es", "fr": "fr", "hi": "hi", "id": "id", "it": "it", "ja": "ja", "ko": "ko",
+    "nl": "nl", "pl": "pl", "pt_BR": "pt-BR", "pt_PT": "pt-PT", "ru": "ru", "tr": "tr", "uk": "uk",
+    "zh_CN": "zh-Hans", "zh_TW": "zh-Hant"
+  },
+  "critical": ["popupCodeHint", "failureCertificate", "optionsDisconnectHint", "optionsDisconnectedLocally"],
+  "sameAsEnglish": ["extName", "actionTitle", "popupServerPlaceholder", "optionsSitePlaceholder"]
+}

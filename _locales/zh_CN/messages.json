@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "将浏览器中的下载发送到您的DownloadPulse服务器。"
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "未连接"
+  },
+  "optionsTitle": {
+    "message": "DownloadPulse扩展设置"
+  },
+  "popupConnect": {
+    "message": "连接到DownloadPulse实例"
+  },
+  "popupProbing": {
+    "message": "正在查找DownloadPulse…"
+  },
+  "popupNotFound": {
+    "message": "此计算机上没有正在运行的DownloadPulse。请启动它后再次检查，或连接到服务器。"
+  },
+  "popupCheckAgain": {
+    "message": "再次检查"
+  },
+  "popupServerLabel": {
+    "message": "服务器地址"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "连接到此服务器"
+  },
+  "popupWaiting": {
+    "message": "请在刚刚打开的DownloadPulse标签页中选择“连接”，以添加此浏览器。"
+  },
+  "popupCode": {
+    "message": "代码："
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse会显示相同的代码。仅在两者一致时才选择“连接”。"
+  },
+  "popupCancel": {
+    "message": "取消"
+  },
+  "popupStartAgain": {
+    "message": "重新开始"
+  },
+  "popupConnected": {
+    "message": "已连接"
+  },
+  "popupServer": {
+    "message": "服务器"
+  },
+  "popupAccount": {
+    "message": "账户"
+  },
+  "popupBrowser": {
+    "message": "浏览器"
+  },
+  "failureUnreachable": {
+    "message": "无法访问该服务器。请检查地址，并确认DownloadPulse正在运行。"
+  },
+  "failureCertificate": {
+    "message": "无法安全地访问该服务器。如果该服务器使用自己的证书，请在标签页中打开它，接受该证书，然后重新连接。"
+  },
+  "failureNotDownloadPulse": {
+    "message": "该地址有响应，但不是DownloadPulse。"
+  },
+  "failureTooOld": {
+    "message": "此DownloadPulse版本过旧，无法连接浏览器。请更新后重新连接。"
+  },
+  "failureDenied": {
+    "message": "连接已在DownloadPulse中被拒绝。"
+  },
+  "failureExpired": {
+    "message": "连接请求已过期。请重新开始。"
+  },
+  "failurePermission": {
+    "message": "浏览器未允许访问该服务器。"
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse已不再接受此浏览器。请重新连接。"
+  },
+  "failureFailed": {
+    "message": "连接时出错。请重新开始。"
+  },
+  "pairingClientName": {
+    "message": "$SYSTEM$上的$BROWSER$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "使用DownloadPulse下载"
+  },
+  "hoverSend": {
+    "message": "使用DownloadPulse下载"
+  },
+  "videoSend": {
+    "message": "使用DownloadPulse下载此视频"
+  },
+  "pageActionSend": {
+    "message": "使用DownloadPulse下载此视频"
+  },
+  "sendDone": {
+    "message": "已发送到DownloadPulse。"
+  },
+  "sendFailed": {
+    "message": "无法将其发送到DownloadPulse。"
+  },
+  "sendNotConnected": {
+    "message": "此浏览器未连接到DownloadPulse。请通过工具栏按钮连接。"
+  },
+  "sendNothingFound": {
+    "message": "所选文本中未找到链接。"
+  },
+  "sendLocalNetwork": {
+    "message": "该链接位于您的本地网络中。DownloadPulse的“本地网络连接”设置不允许从浏览器添加它；请改用“快速添加”添加。"
+  },
+  "sendCollectionItem": {
+    "message": "该链接指向合集中的一个项目。请在DownloadPulse中使用“快速添加”添加它，以选择该项目或整个合集。"
+  },
+  "sendTooMany": {
+    "message": "此浏览器在DownloadPulse中有太多未完成的下载。请在部分下载完成后重试。"
+  },
+  "sendTooLarge": {
+    "message": "该文件超出了DownloadPulse接受的大小。"
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse无法下载该链接。"
+  },
+  "sendRefused": {
+    "message": "DownloadPulse拒绝了该下载。"
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse目前无法访问该来源。请稍后重试。"
+  },
+  "sendNoSiteAccess": {
+    "message": "浏览器已不再允许DownloadPulse读取该网站。请在浏览器的扩展设置中允许DownloadPulse访问网站。"
+  },
+  "sendCaptureFailed": {
+    "message": "无法从该网站获取此文件。"
+  },
+  "sendCaptureWebPage": {
+    "message": "该网站返回了网页而不是文件。您可能需要先登录该网站。"
+  },
+  "listTitle": {
+    "message": "来自此浏览器的下载"
+  },
+  "listEmpty": {
+    "message": "尚未从此浏览器发送任何内容。"
+  },
+  "jobQueued": {
+    "message": "等待中"
+  },
+  "jobWorking": {
+    "message": "准备中"
+  },
+  "jobDownloading": {
+    "message": "下载中"
+  },
+  "jobPausedHere": {
+    "message": "已从此浏览器暂停"
+  },
+  "jobPausedServer": {
+    "message": "已在DownloadPulse中暂停"
+  },
+  "jobNeedsAttention": {
+    "message": "需要在DownloadPulse中处理"
+  },
+  "jobDone": {
+    "message": "已完成"
+  },
+  "jobFailed": {
+    "message": "失败"
+  },
+  "jobRemoved": {
+    "message": "已移除"
+  },
+  "jobPause": {
+    "message": "暂停"
+  },
+  "jobResume": {
+    "message": "继续"
+  },
+  "jobRemove": {
+    "message": "移除"
+  },
+  "controlSharedInterest": {
+    "message": "其他请求也需要此下载，因此无法从这里暂停。"
+  },
+  "controlGloballyPaused": {
+    "message": "DownloadPulse中的所有内容当前均已暂停。"
+  },
+  "controlPausedElsewhere": {
+    "message": "此下载已在DownloadPulse中暂停；请在那里继续。"
+  },
+  "controlSettled": {
+    "message": "此下载已经完成。"
+  },
+  "controlFailed": {
+    "message": "操作未成功。请重试。"
+  },
+  "etaAbout": {
+    "message": "大约还剩$TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "正在估算剩余时间"
+  },
+  "notifyCompleted": {
+    "message": "已下载：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "失败：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "需要在DownloadPulse中处理：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "打开DownloadPulse"
+  },
+  "optionsConnection": {
+    "message": "连接"
+  },
+  "optionsNotConnected": {
+    "message": "此浏览器未连接到DownloadPulse。请通过工具栏按钮连接。"
+  },
+  "optionsDisconnect": {
+    "message": "断开连接"
+  },
+  "optionsDisconnectHint": {
+    "message": "断开连接会将此浏览器从您的DownloadPulse账户中移除。已发送的下载会保留。"
+  },
+  "optionsDisconnected": {
+    "message": "已断开连接。DownloadPulse不再接受此浏览器。"
+  },
+  "optionsDisconnectedLocally": {
+    "message": "已在此处断开连接，但无法访问DownloadPulse。请在DownloadPulse的“我的账户 › 已连接的浏览器”中，为此浏览器选择“断开连接”。"
+  },
+  "optionsOnPages": {
+    "message": "在网页上"
+  },
+  "optionsHover": {
+    "message": "在下载链接旁显示下载按钮"
+  },
+  "optionsVideo": {
+    "message": "在视频播放器上显示下载按钮"
+  },
+  "optionsOffSites": {
+    "message": "不显示下载按钮的网站"
+  },
+  "optionsOffSitesHint": {
+    "message": "在这些网站（及其子域名）上不显示下载按钮。右键菜单仍可使用。"
+  },
+  "optionsSiteLabel": {
+    "message": "要添加的网站"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "添加网站"
+  },
+  "optionsRemoveSite": {
+    "message": "移除"
+  },
+  "optionsNotifications": {
+    "message": "通知"
+  },
+  "optionsNotifyCompleted": {
+    "message": "下载完成时"
+  },
+  "optionsNotifyFailed": {
+    "message": "下载失败时"
+  },
+  "optionsNotifyAttention": {
+    "message": "下载需要在DownloadPulse中处理时"
+  },
+  "popupSettings": {
+    "message": "设置"
+  },
+  "popupSiteOn": {
+    "message": "在$SITE$上显示下载按钮",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "Envie downloads do seu navegador para o seu servidor DownloadPulse."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "Não ligado"
+  },
+  "optionsTitle": {
+    "message": "Definições da extensão DownloadPulse"
+  },
+  "popupConnect": {
+    "message": "Ligar a uma instância DownloadPulse"
+  },
+  "popupProbing": {
+    "message": "A procurar o DownloadPulse…"
+  },
+  "popupNotFound": {
+    "message": "Não há nenhum DownloadPulse em execução neste computador. Inicie-o e verifique novamente, ou ligue-se a um servidor."
+  },
+  "popupCheckAgain": {
+    "message": "Verificar novamente"
+  },
+  "popupServerLabel": {
+    "message": "Endereço do servidor"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "Ligar a este servidor"
+  },
+  "popupWaiting": {
+    "message": "No separador do DownloadPulse que acabou de abrir, escolha Ligar para adicionar este navegador."
+  },
+  "popupCode": {
+    "message": "Código:"
+  },
+  "popupCodeHint": {
+    "message": "O DownloadPulse mostra o mesmo código. Escolha Ligar apenas se os códigos coincidirem."
+  },
+  "popupCancel": {
+    "message": "Cancelar"
+  },
+  "popupStartAgain": {
+    "message": "Recomeçar"
+  },
+  "popupConnected": {
+    "message": "Ligado"
+  },
+  "popupServer": {
+    "message": "Servidor"
+  },
+  "popupAccount": {
+    "message": "Conta"
+  },
+  "popupBrowser": {
+    "message": "Navegador"
+  },
+  "failureUnreachable": {
+    "message": "Não é possível aceder a esse servidor. Verifique o endereço e se o DownloadPulse está em execução."
+  },
+  "failureCertificate": {
+    "message": "Não é possível aceder a esse servidor de forma segura. Se o servidor utilizar um certificado próprio, abra-o num separador, aceite o certificado e ligue novamente."
+  },
+  "failureNotDownloadPulse": {
+    "message": "Algo respondeu nesse endereço, mas não é o DownloadPulse."
+  },
+  "failureTooOld": {
+    "message": "Este DownloadPulse é demasiado antigo para ligar navegadores. Atualize-o e ligue novamente."
+  },
+  "failureDenied": {
+    "message": "A ligação foi recusada no DownloadPulse."
+  },
+  "failureExpired": {
+    "message": "O pedido de ligação expirou. Recomece."
+  },
+  "failurePermission": {
+    "message": "O navegador não permitiu o acesso a esse servidor."
+  },
+  "failureUnauthorized": {
+    "message": "O DownloadPulse já não aceita este navegador. Ligue-o novamente."
+  },
+  "failureFailed": {
+    "message": "Ocorreu um erro durante a ligação. Recomece."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$ em $SYSTEM$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "Descarregar com o DownloadPulse"
+  },
+  "hoverSend": {
+    "message": "Descarregar com o DownloadPulse"
+  },
+  "videoSend": {
+    "message": "Descarregar este vídeo com o DownloadPulse"
+  },
+  "pageActionSend": {
+    "message": "Descarregar este vídeo com o DownloadPulse"
+  },
+  "sendDone": {
+    "message": "Enviado para o DownloadPulse."
+  },
+  "sendFailed": {
+    "message": "Não foi possível enviar isso para o DownloadPulse."
+  },
+  "sendNotConnected": {
+    "message": "Este navegador não está ligado ao DownloadPulse. Ligue-o a partir do botão da barra de ferramentas."
+  },
+  "sendNothingFound": {
+    "message": "Não foi encontrada nenhuma ligação no texto selecionado."
+  },
+  "sendLocalNetwork": {
+    "message": "Essa ligação está na sua rede local. As definições de Ligações à rede local do DownloadPulse não a permitem a partir de um navegador; adicione-a com a Adição rápida."
+  },
+  "sendCollectionItem": {
+    "message": "Essa ligação aponta para um item de uma coleção. Adicione-a com a Adição rápida no DownloadPulse para escolher o item ou a coleção inteira."
+  },
+  "sendTooMany": {
+    "message": "Este navegador tem demasiados downloads por concluir no DownloadPulse. Tente novamente quando alguns tiverem terminado."
+  },
+  "sendTooLarge": {
+    "message": "Esse ficheiro é maior do que o DownloadPulse aceita."
+  },
+  "sendInvalid": {
+    "message": "O DownloadPulse não consegue descarregar essa ligação."
+  },
+  "sendRefused": {
+    "message": "O DownloadPulse recusou esse download."
+  },
+  "sendUnavailable": {
+    "message": "O DownloadPulse não conseguiu aceder a essa origem neste momento. Tente novamente mais tarde."
+  },
+  "sendNoSiteAccess": {
+    "message": "O navegador já não permite que o DownloadPulse leia esse site. Permita o acesso ao site para o DownloadPulse nas definições de extensões do navegador."
+  },
+  "sendCaptureFailed": {
+    "message": "Não foi possível obter esse ficheiro a partir do site."
+  },
+  "sendCaptureWebPage": {
+    "message": "Esse site devolveu uma página web em vez do ficheiro. Poderá ter de iniciar sessão nele primeiro."
+  },
+  "listTitle": {
+    "message": "Downloads deste navegador"
+  },
+  "listEmpty": {
+    "message": "Ainda não foi enviado nada a partir deste navegador."
+  },
+  "jobQueued": {
+    "message": "Em espera"
+  },
+  "jobWorking": {
+    "message": "A preparar"
+  },
+  "jobDownloading": {
+    "message": "A descarregar"
+  },
+  "jobPausedHere": {
+    "message": "Em pausa a partir deste navegador"
+  },
+  "jobPausedServer": {
+    "message": "Em pausa no DownloadPulse"
+  },
+  "jobNeedsAttention": {
+    "message": "Requer atenção no DownloadPulse"
+  },
+  "jobDone": {
+    "message": "Concluído"
+  },
+  "jobFailed": {
+    "message": "Falhado"
+  },
+  "jobRemoved": {
+    "message": "Removido"
+  },
+  "jobPause": {
+    "message": "Pausar"
+  },
+  "jobResume": {
+    "message": "Retomar"
+  },
+  "jobRemove": {
+    "message": "Remover"
+  },
+  "controlSharedInterest": {
+    "message": "Outros pedidos precisam deste download, por isso não pode ser colocado em pausa a partir daqui."
+  },
+  "controlGloballyPaused": {
+    "message": "Neste momento, está tudo em pausa no DownloadPulse."
+  },
+  "controlPausedElsewhere": {
+    "message": "Este download foi colocado em pausa no DownloadPulse; retome-o lá."
+  },
+  "controlSettled": {
+    "message": "Este download já terminou."
+  },
+  "controlFailed": {
+    "message": "Não funcionou. Tente novamente."
+  },
+  "etaAbout": {
+    "message": "faltam cerca de $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "a estimar o tempo restante"
+  },
+  "notifyCompleted": {
+    "message": "Descarregado: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "Falhado: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "Requer atenção no DownloadPulse: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "Abrir o DownloadPulse"
+  },
+  "optionsConnection": {
+    "message": "Ligação"
+  },
+  "optionsNotConnected": {
+    "message": "Este navegador não está ligado ao DownloadPulse. Ligue-o a partir do botão da barra de ferramentas."
+  },
+  "optionsDisconnect": {
+    "message": "Desligar"
+  },
+  "optionsDisconnectHint": {
+    "message": "Desligar remove este navegador da sua conta DownloadPulse. Os downloads já enviados são mantidos."
+  },
+  "optionsDisconnected": {
+    "message": "Desligado. O DownloadPulse já não aceita este navegador."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "Desligado aqui, mas não foi possível aceder ao DownloadPulse. No DownloadPulse, em A minha conta › Navegadores ligados, escolha Desligar para este navegador."
+  },
+  "optionsOnPages": {
+    "message": "Em páginas web"
+  },
+  "optionsHover": {
+    "message": "Mostrar um botão de download junto às ligações de download"
+  },
+  "optionsVideo": {
+    "message": "Mostrar um botão de download nos leitores de vídeo"
+  },
+  "optionsOffSites": {
+    "message": "Sites sem botões de download"
+  },
+  "optionsOffSitesHint": {
+    "message": "Nestes sites (e nos respetivos subdomínios) não aparecem botões de download. O clique com o botão direito continua a funcionar."
+  },
+  "optionsSiteLabel": {
+    "message": "Site a adicionar"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "Adicionar site"
+  },
+  "optionsRemoveSite": {
+    "message": "Remover"
+  },
+  "optionsNotifications": {
+    "message": "Notificações"
+  },
+  "optionsNotifyCompleted": {
+    "message": "Quando um download terminar"
+  },
+  "optionsNotifyFailed": {
+    "message": "Quando um download falhar"
+  },
+  "optionsNotifyAttention": {
+    "message": "Quando um download requerer atenção no DownloadPulse"
+  },
+  "popupSettings": {
+    "message": "Definições"
+  },
+  "popupSiteOn": {
+    "message": "Botões de download em $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

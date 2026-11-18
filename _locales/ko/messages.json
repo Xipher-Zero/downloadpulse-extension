@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "브라우저에서 DownloadPulse 서버로 다운로드를 보냅니다."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "연결되지 않음"
+  },
+  "optionsTitle": {
+    "message": "DownloadPulse 확장 프로그램 설정"
+  },
+  "popupConnect": {
+    "message": "DownloadPulse 인스턴스에 연결"
+  },
+  "popupProbing": {
+    "message": "DownloadPulse를 찾는 중…"
+  },
+  "popupNotFound": {
+    "message": "이 컴퓨터에서 실행 중인 DownloadPulse가 없습니다. DownloadPulse를 시작한 후 다시 확인하거나 서버에 연결하세요."
+  },
+  "popupCheckAgain": {
+    "message": "다시 확인"
+  },
+  "popupServerLabel": {
+    "message": "서버 주소"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "이 서버에 연결"
+  },
+  "popupWaiting": {
+    "message": "방금 열린 DownloadPulse 탭에서 ‘연결’을 선택해 이 브라우저를 추가하세요."
+  },
+  "popupCode": {
+    "message": "코드:"
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse에도 같은 코드가 표시됩니다. 두 코드가 일치할 때만 ‘연결’을 선택하세요."
+  },
+  "popupCancel": {
+    "message": "취소"
+  },
+  "popupStartAgain": {
+    "message": "처음부터 다시"
+  },
+  "popupConnected": {
+    "message": "연결됨"
+  },
+  "popupServer": {
+    "message": "서버"
+  },
+  "popupAccount": {
+    "message": "계정"
+  },
+  "popupBrowser": {
+    "message": "브라우저"
+  },
+  "failureUnreachable": {
+    "message": "해당 서버에 연결할 수 없습니다. 주소와 DownloadPulse가 실행 중인지 확인하세요."
+  },
+  "failureCertificate": {
+    "message": "해당 서버에 안전하게 연결할 수 없습니다. 서버가 자체 인증서를 사용하는 경우 탭에서 서버를 열고 인증서를 수락한 후 다시 연결하세요."
+  },
+  "failureNotDownloadPulse": {
+    "message": "해당 주소에서 응답이 있었지만 DownloadPulse가 아닙니다."
+  },
+  "failureTooOld": {
+    "message": "이 DownloadPulse는 버전이 너무 오래되어 브라우저를 연결할 수 없습니다. 업데이트한 후 다시 연결하세요."
+  },
+  "failureDenied": {
+    "message": "DownloadPulse에서 연결이 거부되었습니다."
+  },
+  "failureExpired": {
+    "message": "연결 요청이 만료되었습니다. 처음부터 다시 시작하세요."
+  },
+  "failurePermission": {
+    "message": "브라우저가 해당 서버에 대한 액세스를 허용하지 않았습니다."
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse가 더 이상 이 브라우저를 허용하지 않습니다. 다시 연결하세요."
+  },
+  "failureFailed": {
+    "message": "연결하는 중에 문제가 발생했습니다. 처음부터 다시 시작하세요."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$($SYSTEM$)",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "DownloadPulse로 다운로드"
+  },
+  "hoverSend": {
+    "message": "DownloadPulse로 다운로드"
+  },
+  "videoSend": {
+    "message": "이 동영상을 DownloadPulse로 다운로드"
+  },
+  "pageActionSend": {
+    "message": "이 동영상을 DownloadPulse로 다운로드"
+  },
+  "sendDone": {
+    "message": "DownloadPulse로 보냈습니다."
+  },
+  "sendFailed": {
+    "message": "DownloadPulse로 보낼 수 없습니다."
+  },
+  "sendNotConnected": {
+    "message": "이 브라우저는 DownloadPulse에 연결되어 있지 않습니다. 도구 모음 버튼에서 연결하세요."
+  },
+  "sendNothingFound": {
+    "message": "선택한 텍스트에서 링크를 찾을 수 없습니다."
+  },
+  "sendLocalNetwork": {
+    "message": "해당 링크는 로컬 네트워크에 있습니다. DownloadPulse의 ‘로컬 네트워크 연결’ 설정에서 브라우저로부터의 추가를 허용하지 않습니다. 대신 ‘빠른 추가’로 추가하세요."
+  },
+  "sendCollectionItem": {
+    "message": "해당 링크는 컬렉션의 한 항목을 가리킵니다. DownloadPulse의 ‘빠른 추가’로 추가하여 해당 항목 또는 전체 컬렉션을 선택하세요."
+  },
+  "sendTooMany": {
+    "message": "이 브라우저가 DownloadPulse에 보낸 미완료 다운로드가 너무 많습니다. 일부가 완료된 후 다시 시도하세요."
+  },
+  "sendTooLarge": {
+    "message": "해당 파일은 DownloadPulse가 허용하는 크기보다 큽니다."
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse에서 해당 링크를 다운로드할 수 없습니다."
+  },
+  "sendRefused": {
+    "message": "DownloadPulse가 해당 다운로드를 거부했습니다."
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse가 지금은 해당 소스에 연결할 수 없습니다. 나중에 다시 시도하세요."
+  },
+  "sendNoSiteAccess": {
+    "message": "브라우저가 더 이상 DownloadPulse의 해당 사이트 읽기를 허용하지 않습니다. 브라우저의 확장 프로그램 설정에서 DownloadPulse의 사이트 액세스를 허용하세요."
+  },
+  "sendCaptureFailed": {
+    "message": "사이트에서 해당 파일을 가져올 수 없습니다."
+  },
+  "sendCaptureWebPage": {
+    "message": "사이트가 파일 대신 웹 페이지를 반환했습니다. 먼저 해당 사이트에 로그인해야 할 수 있습니다."
+  },
+  "listTitle": {
+    "message": "이 브라우저의 다운로드"
+  },
+  "listEmpty": {
+    "message": "이 브라우저에서 아직 보낸 항목이 없습니다."
+  },
+  "jobQueued": {
+    "message": "대기 중"
+  },
+  "jobWorking": {
+    "message": "준비 중"
+  },
+  "jobDownloading": {
+    "message": "다운로드 중"
+  },
+  "jobPausedHere": {
+    "message": "이 브라우저에서 일시 중지됨"
+  },
+  "jobPausedServer": {
+    "message": "DownloadPulse에서 일시 중지됨"
+  },
+  "jobNeedsAttention": {
+    "message": "DownloadPulse에서 확인 필요"
+  },
+  "jobDone": {
+    "message": "완료"
+  },
+  "jobFailed": {
+    "message": "실패"
+  },
+  "jobRemoved": {
+    "message": "제거됨"
+  },
+  "jobPause": {
+    "message": "일시 중지"
+  },
+  "jobResume": {
+    "message": "재개"
+  },
+  "jobRemove": {
+    "message": "제거"
+  },
+  "controlSharedInterest": {
+    "message": "다른 요청에도 이 다운로드가 필요하므로 여기에서 일시 중지할 수 없습니다."
+  },
+  "controlGloballyPaused": {
+    "message": "현재 DownloadPulse에서 모든 항목이 일시 중지되어 있습니다."
+  },
+  "controlPausedElsewhere": {
+    "message": "이 다운로드는 DownloadPulse에서 일시 중지되었습니다. DownloadPulse에서 재개하세요."
+  },
+  "controlSettled": {
+    "message": "이 다운로드는 이미 완료되었습니다."
+  },
+  "controlFailed": {
+    "message": "작업에 실패했습니다. 다시 시도하세요."
+  },
+  "etaAbout": {
+    "message": "약 $TIME$ 남음",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "남은 시간 계산 중"
+  },
+  "notifyCompleted": {
+    "message": "다운로드 완료: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "실패: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "DownloadPulse에서 확인 필요: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "DownloadPulse 열기"
+  },
+  "optionsConnection": {
+    "message": "연결"
+  },
+  "optionsNotConnected": {
+    "message": "이 브라우저는 DownloadPulse에 연결되어 있지 않습니다. 도구 모음 버튼에서 연결하세요."
+  },
+  "optionsDisconnect": {
+    "message": "연결 해제"
+  },
+  "optionsDisconnectHint": {
+    "message": "연결을 해제하면 DownloadPulse 계정에서 이 브라우저가 제거됩니다. 이미 보낸 다운로드는 유지됩니다."
+  },
+  "optionsDisconnected": {
+    "message": "연결이 해제되었습니다. DownloadPulse가 더 이상 이 브라우저를 허용하지 않습니다."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "여기에서는 연결이 해제되었지만 DownloadPulse에 연결할 수 없었습니다. DownloadPulse의 ‘내 계정 › 연결된 브라우저’에서 이 브라우저의 ‘연결 해제’를 선택하세요."
+  },
+  "optionsOnPages": {
+    "message": "웹 페이지에서"
+  },
+  "optionsHover": {
+    "message": "다운로드 링크 옆에 다운로드 버튼 표시"
+  },
+  "optionsVideo": {
+    "message": "동영상 플레이어에 다운로드 버튼 표시"
+  },
+  "optionsOffSites": {
+    "message": "다운로드 버튼을 표시하지 않는 사이트"
+  },
+  "optionsOffSitesHint": {
+    "message": "이 사이트(및 하위 도메인)에서는 다운로드 버튼이 표시되지 않습니다. 마우스 오른쪽 클릭은 계속 사용할 수 있습니다."
+  },
+  "optionsSiteLabel": {
+    "message": "추가할 사이트"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "사이트 추가"
+  },
+  "optionsRemoveSite": {
+    "message": "제거"
+  },
+  "optionsNotifications": {
+    "message": "알림"
+  },
+  "optionsNotifyCompleted": {
+    "message": "다운로드가 완료되었을 때"
+  },
+  "optionsNotifyFailed": {
+    "message": "다운로드가 실패했을 때"
+  },
+  "optionsNotifyAttention": {
+    "message": "다운로드에 DownloadPulse에서 확인이 필요할 때"
+  },
+  "popupSettings": {
+    "message": "설정"
+  },
+  "popupSiteOn": {
+    "message": "다운로드 버튼 표시: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

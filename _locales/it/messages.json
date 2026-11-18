@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "Invia i download dal browser al proprio server DownloadPulse."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "Non connesso"
+  },
+  "optionsTitle": {
+    "message": "Opzioni dell'estensione DownloadPulse"
+  },
+  "popupConnect": {
+    "message": "Connetti a un'istanza DownloadPulse"
+  },
+  "popupProbing": {
+    "message": "Ricerca di DownloadPulse…"
+  },
+  "popupNotFound": {
+    "message": "Nessun DownloadPulse è in esecuzione su questo computer. Avviarlo e verificare di nuovo, oppure connettersi a un server."
+  },
+  "popupCheckAgain": {
+    "message": "Verifica di nuovo"
+  },
+  "popupServerLabel": {
+    "message": "Indirizzo del server"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "Connetti a questo server"
+  },
+  "popupWaiting": {
+    "message": "Nella scheda DownloadPulse appena aperta, scegliere «Connetti» per aggiungere questo browser."
+  },
+  "popupCode": {
+    "message": "Codice:"
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse mostra lo stesso codice. Scegliere «Connetti» solo se i codici corrispondono."
+  },
+  "popupCancel": {
+    "message": "Annulla"
+  },
+  "popupStartAgain": {
+    "message": "Ricomincia"
+  },
+  "popupConnected": {
+    "message": "Connesso"
+  },
+  "popupServer": {
+    "message": "Server connesso"
+  },
+  "popupAccount": {
+    "message": "Account utente"
+  },
+  "popupBrowser": {
+    "message": "Nome del browser"
+  },
+  "failureUnreachable": {
+    "message": "Impossibile raggiungere quel server. Verificare l'indirizzo e che DownloadPulse sia in esecuzione."
+  },
+  "failureCertificate": {
+    "message": "Impossibile raggiungere quel server in modo sicuro. Se usa un proprio certificato, aprirlo in una scheda, accettare il certificato e poi connettersi di nuovo."
+  },
+  "failureNotDownloadPulse": {
+    "message": "A quell'indirizzo ha risposto qualcosa, ma non è DownloadPulse."
+  },
+  "failureTooOld": {
+    "message": "Questo DownloadPulse è troppo vecchio per connettere i browser. Aggiornarlo, poi connettersi di nuovo."
+  },
+  "failureDenied": {
+    "message": "La connessione è stata rifiutata in DownloadPulse."
+  },
+  "failureExpired": {
+    "message": "La richiesta di connessione è scaduta. Ricominciare."
+  },
+  "failurePermission": {
+    "message": "Il browser non ha consentito l'accesso a quel server."
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse non accetta più questo browser. Connetterlo di nuovo."
+  },
+  "failureFailed": {
+    "message": "Si è verificato un errore durante la connessione. Ricominciare."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$ su $SYSTEM$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "Scarica con DownloadPulse"
+  },
+  "hoverSend": {
+    "message": "Scarica con DownloadPulse"
+  },
+  "videoSend": {
+    "message": "Scarica questo video con DownloadPulse"
+  },
+  "pageActionSend": {
+    "message": "Scarica questo video con DownloadPulse"
+  },
+  "sendDone": {
+    "message": "Inviato a DownloadPulse."
+  },
+  "sendFailed": {
+    "message": "Impossibile inviarlo a DownloadPulse."
+  },
+  "sendNotConnected": {
+    "message": "Questo browser non è connesso a DownloadPulse. Connetterlo dal pulsante nella barra degli strumenti."
+  },
+  "sendNothingFound": {
+    "message": "Nessun link trovato nel testo selezionato."
+  },
+  "sendLocalNetwork": {
+    "message": "Quel link si trova nella rete locale. Le opzioni «Connessioni di rete locale» di DownloadPulse non lo consentono da un browser; aggiungerlo invece con «Aggiunta rapida»."
+  },
+  "sendCollectionItem": {
+    "message": "Quel link punta a un elemento di una raccolta. Aggiungerlo con «Aggiunta rapida» in DownloadPulse per scegliere l'elemento o l'intera raccolta."
+  },
+  "sendTooMany": {
+    "message": "Questo browser ha troppi download non completati in DownloadPulse. Riprovare quando alcuni saranno terminati."
+  },
+  "sendTooLarge": {
+    "message": "Quel file è più grande di quanto DownloadPulse accetti."
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse non può scaricare quel link."
+  },
+  "sendRefused": {
+    "message": "DownloadPulse ha rifiutato quel download."
+  },
+  "sendUnavailable": {
+    "message": "Al momento DownloadPulse non è riuscito a raggiungere quella sorgente. Riprovare più tardi."
+  },
+  "sendNoSiteAccess": {
+    "message": "Il browser non consente più a DownloadPulse di leggere quel sito. Consentire l'accesso al sito per DownloadPulse nelle impostazioni delle estensioni del browser."
+  },
+  "sendCaptureFailed": {
+    "message": "Impossibile recuperare quel file dal sito."
+  },
+  "sendCaptureWebPage": {
+    "message": "Il sito ha restituito una pagina web invece del file. Potrebbe essere necessario prima accedere al sito."
+  },
+  "listTitle": {
+    "message": "Download da questo browser"
+  },
+  "listEmpty": {
+    "message": "Ancora nulla inviato da questo browser."
+  },
+  "jobQueued": {
+    "message": "In attesa"
+  },
+  "jobWorking": {
+    "message": "In preparazione"
+  },
+  "jobDownloading": {
+    "message": "Download in corso"
+  },
+  "jobPausedHere": {
+    "message": "Messo in pausa da questo browser"
+  },
+  "jobPausedServer": {
+    "message": "In pausa in DownloadPulse"
+  },
+  "jobNeedsAttention": {
+    "message": "Richiede attenzione in DownloadPulse"
+  },
+  "jobDone": {
+    "message": "Completato"
+  },
+  "jobFailed": {
+    "message": "Non riuscito"
+  },
+  "jobRemoved": {
+    "message": "Rimosso"
+  },
+  "jobPause": {
+    "message": "Pausa"
+  },
+  "jobResume": {
+    "message": "Riprendi"
+  },
+  "jobRemove": {
+    "message": "Rimuovi"
+  },
+  "controlSharedInterest": {
+    "message": "Altre richieste usano questo download, quindi non può essere messo in pausa da qui."
+  },
+  "controlGloballyPaused": {
+    "message": "Al momento in DownloadPulse è tutto in pausa."
+  },
+  "controlPausedElsewhere": {
+    "message": "Questo download è stato messo in pausa in DownloadPulse; riprenderlo da lì."
+  },
+  "controlSettled": {
+    "message": "Questo download è già terminato."
+  },
+  "controlFailed": {
+    "message": "Non ha funzionato. Riprovare."
+  },
+  "etaAbout": {
+    "message": "circa $TIME$ rimanenti",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "stima del tempo rimanente"
+  },
+  "notifyCompleted": {
+    "message": "Scaricato: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "Non riuscito: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "Richiede attenzione in DownloadPulse: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "Apri DownloadPulse"
+  },
+  "optionsConnection": {
+    "message": "Connessione"
+  },
+  "optionsNotConnected": {
+    "message": "Questo browser non è connesso a DownloadPulse. Connetterlo dal pulsante nella barra degli strumenti."
+  },
+  "optionsDisconnect": {
+    "message": "Disconnetti"
+  },
+  "optionsDisconnectHint": {
+    "message": "La disconnessione rimuove questo browser dal proprio account DownloadPulse. I download già inviati vengono mantenuti."
+  },
+  "optionsDisconnected": {
+    "message": "Disconnesso. DownloadPulse non accetta più questo browser."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "Disconnesso qui, ma non è stato possibile raggiungere DownloadPulse. In DownloadPulse, da Il mio account › Browser connessi, scegliere «Disconnetti» per questo browser."
+  },
+  "optionsOnPages": {
+    "message": "Nelle pagine web"
+  },
+  "optionsHover": {
+    "message": "Mostra un pulsante di download accanto ai link di download"
+  },
+  "optionsVideo": {
+    "message": "Mostra un pulsante di download sui lettori video"
+  },
+  "optionsOffSites": {
+    "message": "Siti senza pulsanti di download"
+  },
+  "optionsOffSitesHint": {
+    "message": "Su questi siti (e sui relativi sottodomini) non compaiono pulsanti di download. Il clic destro funziona comunque."
+  },
+  "optionsSiteLabel": {
+    "message": "Sito da aggiungere"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "Aggiungi sito"
+  },
+  "optionsRemoveSite": {
+    "message": "Rimuovi"
+  },
+  "optionsNotifications": {
+    "message": "Notifiche"
+  },
+  "optionsNotifyCompleted": {
+    "message": "Quando un download termina"
+  },
+  "optionsNotifyFailed": {
+    "message": "Quando un download non riesce"
+  },
+  "optionsNotifyAttention": {
+    "message": "Quando un download richiede attenzione in DownloadPulse"
+  },
+  "popupSettings": {
+    "message": "Opzioni"
+  },
+  "popupSiteOn": {
+    "message": "Pulsanti di download su $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

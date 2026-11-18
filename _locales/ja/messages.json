@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "ブラウザーから DownloadPulse サーバーにダウンロードを送信します。"
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "未接続"
+  },
+  "optionsTitle": {
+    "message": "DownloadPulse 拡張機能の設定"
+  },
+  "popupConnect": {
+    "message": "DownloadPulse インスタンスに接続"
+  },
+  "popupProbing": {
+    "message": "DownloadPulse を探しています…"
+  },
+  "popupNotFound": {
+    "message": "このコンピューターで DownloadPulse が実行されていません。起動してからもう一度確認するか、サーバーに接続してください。"
+  },
+  "popupCheckAgain": {
+    "message": "もう一度確認"
+  },
+  "popupServerLabel": {
+    "message": "サーバーアドレス"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "このサーバーに接続"
+  },
+  "popupWaiting": {
+    "message": "今開いた DownloadPulse のタブで「接続」を選び、このブラウザーを追加してください。"
+  },
+  "popupCode": {
+    "message": "コード："
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse にも同じコードが表示されます。一致する場合のみ「接続」を選んでください。"
+  },
+  "popupCancel": {
+    "message": "キャンセル"
+  },
+  "popupStartAgain": {
+    "message": "最初からやり直す"
+  },
+  "popupConnected": {
+    "message": "接続済み"
+  },
+  "popupServer": {
+    "message": "サーバー"
+  },
+  "popupAccount": {
+    "message": "アカウント"
+  },
+  "popupBrowser": {
+    "message": "ブラウザー"
+  },
+  "failureUnreachable": {
+    "message": "そのサーバーに接続できません。アドレスと、DownloadPulse が実行中であることを確認してください。"
+  },
+  "failureCertificate": {
+    "message": "そのサーバーに安全に接続できません。サーバーが独自の証明書を使用している場合は、タブで開いて証明書を受け入れてから、もう一度接続してください。"
+  },
+  "failureNotDownloadPulse": {
+    "message": "そのアドレスで応答がありましたが、DownloadPulse ではありません。"
+  },
+  "failureTooOld": {
+    "message": "この DownloadPulse は古いため、ブラウザーを接続できません。更新してから、もう一度接続してください。"
+  },
+  "failureDenied": {
+    "message": "DownloadPulse で接続が拒否されました。"
+  },
+  "failureExpired": {
+    "message": "接続要求の有効期限が切れました。最初からやり直してください。"
+  },
+  "failurePermission": {
+    "message": "ブラウザーがそのサーバーへのアクセスを許可しませんでした。"
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse はこのブラウザーを受け付けなくなりました。もう一度接続してください。"
+  },
+  "failureFailed": {
+    "message": "接続中に問題が発生しました。最初からやり直してください。"
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$（$SYSTEM$）",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "DownloadPulse でダウンロード"
+  },
+  "hoverSend": {
+    "message": "DownloadPulse でダウンロード"
+  },
+  "videoSend": {
+    "message": "この動画を DownloadPulse でダウンロード"
+  },
+  "pageActionSend": {
+    "message": "この動画を DownloadPulse でダウンロード"
+  },
+  "sendDone": {
+    "message": "DownloadPulse に送信しました。"
+  },
+  "sendFailed": {
+    "message": "DownloadPulse に送信できませんでした。"
+  },
+  "sendNotConnected": {
+    "message": "このブラウザーは DownloadPulse に接続されていません。ツールバーのボタンから接続してください。"
+  },
+  "sendNothingFound": {
+    "message": "選択したテキストにリンクが見つかりませんでした。"
+  },
+  "sendLocalNetwork": {
+    "message": "そのリンクはローカルネットワーク上にあります。DownloadPulse の「ローカルネットワーク接続」の設定では、ブラウザーからの追加は許可されていません。代わりに「クイック追加」で追加してください。"
+  },
+  "sendCollectionItem": {
+    "message": "そのリンクはコレクション内の 1 つの項目を指しています。DownloadPulse の「クイック追加」で追加して、その項目かコレクション全体かを選択してください。"
+  },
+  "sendTooMany": {
+    "message": "このブラウザーから DownloadPulse に送信した未完了のダウンロードが多すぎます。いくつか完了してから、もう一度お試しください。"
+  },
+  "sendTooLarge": {
+    "message": "そのファイルは DownloadPulse が受け付けるサイズを超えています。"
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse はそのリンクをダウンロードできません。"
+  },
+  "sendRefused": {
+    "message": "DownloadPulse がそのダウンロードを拒否しました。"
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse は現在そのソースに接続できませんでした。後でもう一度お試しください。"
+  },
+  "sendNoSiteAccess": {
+    "message": "ブラウザーが DownloadPulse にそのサイトの読み取りを許可しなくなりました。ブラウザーの拡張機能の設定で、DownloadPulse にサイトへのアクセスを許可してください。"
+  },
+  "sendCaptureFailed": {
+    "message": "サイトからそのファイルを取得できませんでした。"
+  },
+  "sendCaptureWebPage": {
+    "message": "サイトがファイルではなくウェブページを返しました。先にそのサイトにサインインする必要があるかもしれません。"
+  },
+  "listTitle": {
+    "message": "このブラウザーからのダウンロード"
+  },
+  "listEmpty": {
+    "message": "このブラウザーからはまだ何も送信していません。"
+  },
+  "jobQueued": {
+    "message": "待機中"
+  },
+  "jobWorking": {
+    "message": "準備中"
+  },
+  "jobDownloading": {
+    "message": "ダウンロード中"
+  },
+  "jobPausedHere": {
+    "message": "このブラウザーで一時停止中"
+  },
+  "jobPausedServer": {
+    "message": "DownloadPulse で一時停止中"
+  },
+  "jobNeedsAttention": {
+    "message": "DownloadPulse で対応が必要"
+  },
+  "jobDone": {
+    "message": "完了"
+  },
+  "jobFailed": {
+    "message": "失敗"
+  },
+  "jobRemoved": {
+    "message": "除去済み"
+  },
+  "jobPause": {
+    "message": "一時停止"
+  },
+  "jobResume": {
+    "message": "再開"
+  },
+  "jobRemove": {
+    "message": "除去"
+  },
+  "controlSharedInterest": {
+    "message": "ほかの要求もこのダウンロードを必要としているため、ここから一時停止できません。"
+  },
+  "controlGloballyPaused": {
+    "message": "現在、DownloadPulse ではすべてが一時停止されています。"
+  },
+  "controlPausedElsewhere": {
+    "message": "このダウンロードは DownloadPulse で一時停止されました。再開は DownloadPulse で行ってください。"
+  },
+  "controlSettled": {
+    "message": "このダウンロードはすでに完了しています。"
+  },
+  "controlFailed": {
+    "message": "うまくいきませんでした。もう一度お試しください。"
+  },
+  "etaAbout": {
+    "message": "残り約 $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "残り時間を推定中"
+  },
+  "notifyCompleted": {
+    "message": "ダウンロード完了：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "失敗：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "DownloadPulse で対応が必要：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "DownloadPulse を開く"
+  },
+  "optionsConnection": {
+    "message": "接続"
+  },
+  "optionsNotConnected": {
+    "message": "このブラウザーは DownloadPulse に接続されていません。ツールバーのボタンから接続してください。"
+  },
+  "optionsDisconnect": {
+    "message": "接続解除"
+  },
+  "optionsDisconnectHint": {
+    "message": "接続を解除すると、このブラウザーはあなたの DownloadPulse アカウントから除去されます。送信済みのダウンロードは残ります。"
+  },
+  "optionsDisconnected": {
+    "message": "接続を解除しました。DownloadPulse はこのブラウザーを受け付けなくなりました。"
+  },
+  "optionsDisconnectedLocally": {
+    "message": "ここでは接続を解除しましたが、DownloadPulse に接続できませんでした。DownloadPulse の「マイアカウント › 接続済みブラウザー」で、このブラウザーの「接続解除」を選んでください。"
+  },
+  "optionsOnPages": {
+    "message": "ウェブページ上"
+  },
+  "optionsHover": {
+    "message": "ダウンロードリンクの横にダウンロードボタンを表示"
+  },
+  "optionsVideo": {
+    "message": "動画プレーヤーにダウンロードボタンを表示"
+  },
+  "optionsOffSites": {
+    "message": "ダウンロードボタンを表示しないサイト"
+  },
+  "optionsOffSitesHint": {
+    "message": "これらのサイト（およびそのサブドメイン）ではダウンロードボタンが表示されません。右クリックは引き続き使えます。"
+  },
+  "optionsSiteLabel": {
+    "message": "追加するサイト"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "サイトを追加"
+  },
+  "optionsRemoveSite": {
+    "message": "除去"
+  },
+  "optionsNotifications": {
+    "message": "通知"
+  },
+  "optionsNotifyCompleted": {
+    "message": "ダウンロードが完了したとき"
+  },
+  "optionsNotifyFailed": {
+    "message": "ダウンロードが失敗したとき"
+  },
+  "optionsNotifyAttention": {
+    "message": "ダウンロードに DownloadPulse での対応が必要なとき"
+  },
+  "popupSettings": {
+    "message": "設定"
+  },
+  "popupSiteOn": {
+    "message": "$SITE$ のダウンロードボタン",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

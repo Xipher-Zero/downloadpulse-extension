@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "İndirmeleri tarayıcınızdan DownloadPulse sunucunuza gönderin."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "Bağlı değil"
+  },
+  "optionsTitle": {
+    "message": "DownloadPulse uzantısı ayarları"
+  },
+  "popupConnect": {
+    "message": "Bir DownloadPulse örneğine bağlan"
+  },
+  "popupProbing": {
+    "message": "DownloadPulse aranıyor…"
+  },
+  "popupNotFound": {
+    "message": "Bu bilgisayarda çalışan bir DownloadPulse yok. Başlatıp yeniden kontrol edin ya da bir sunucuya bağlanın."
+  },
+  "popupCheckAgain": {
+    "message": "Yeniden kontrol et"
+  },
+  "popupServerLabel": {
+    "message": "Sunucu adresi"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "Bu sunucuya bağlan"
+  },
+  "popupWaiting": {
+    "message": "Az önce açılan DownloadPulse sekmesinde bu tarayıcıyı eklemek için Bağla'yı seçin."
+  },
+  "popupCode": {
+    "message": "Kod:"
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse aynı kodu gösterir. Bağla'yı yalnızca kodlar eşleşiyorsa seçin."
+  },
+  "popupCancel": {
+    "message": "İptal"
+  },
+  "popupStartAgain": {
+    "message": "Baştan başla"
+  },
+  "popupConnected": {
+    "message": "Bağlı"
+  },
+  "popupServer": {
+    "message": "Sunucu"
+  },
+  "popupAccount": {
+    "message": "Hesap"
+  },
+  "popupBrowser": {
+    "message": "Tarayıcı"
+  },
+  "failureUnreachable": {
+    "message": "Bu sunucuya ulaşılamıyor. Adresi ve DownloadPulse'un çalıştığını kontrol edin."
+  },
+  "failureCertificate": {
+    "message": "Bu sunucuya güvenli şekilde ulaşılamıyor. Sunucu kendi sertifikasını kullanıyorsa onu bir sekmede açın, sertifikayı kabul edin ve ardından yeniden bağlanın."
+  },
+  "failureNotDownloadPulse": {
+    "message": "Bu adreste bir şey yanıt verdi, ancak bu DownloadPulse değil."
+  },
+  "failureTooOld": {
+    "message": "Bu DownloadPulse tarayıcı bağlamak için çok eski. Güncelleyin ve ardından yeniden bağlanın."
+  },
+  "failureDenied": {
+    "message": "Bağlantı DownloadPulse'ta reddedildi."
+  },
+  "failureExpired": {
+    "message": "Bağlantı isteğinin süresi doldu. Baştan başlayın."
+  },
+  "failurePermission": {
+    "message": "Tarayıcı bu sunucuya erişime izin vermedi."
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse artık bu tarayıcıyı kabul etmiyor. Yeniden bağlayın."
+  },
+  "failureFailed": {
+    "message": "Bağlanırken bir sorun oluştu. Baştan başlayın."
+  },
+  "pairingClientName": {
+    "message": "$SYSTEM$ üzerinde $BROWSER$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "DownloadPulse ile indir"
+  },
+  "hoverSend": {
+    "message": "DownloadPulse ile indir"
+  },
+  "videoSend": {
+    "message": "Bu videoyu DownloadPulse ile indir"
+  },
+  "pageActionSend": {
+    "message": "Bu videoyu DownloadPulse ile indir"
+  },
+  "sendDone": {
+    "message": "DownloadPulse'a gönderildi."
+  },
+  "sendFailed": {
+    "message": "Bu, DownloadPulse'a gönderilemedi."
+  },
+  "sendNotConnected": {
+    "message": "Bu tarayıcı DownloadPulse'a bağlı değil. Araç çubuğu düğmesinden bağlayın."
+  },
+  "sendNothingFound": {
+    "message": "Seçili metinde bağlantı bulunamadı."
+  },
+  "sendLocalNetwork": {
+    "message": "Bu bağlantı yerel ağınızda. DownloadPulse'un Yerel ağ bağlantıları ayarları buna bir tarayıcıdan izin vermiyor; bunun yerine Hızlı ekle ile ekleyin."
+  },
+  "sendCollectionItem": {
+    "message": "Bu bağlantı bir koleksiyondaki tek bir öğeyi gösteriyor. Öğeyi ya da koleksiyonun tamamını seçmek için DownloadPulse'ta Hızlı ekle ile ekleyin."
+  },
+  "sendTooMany": {
+    "message": "Bu tarayıcının DownloadPulse'ta tamamlanmamış çok fazla indirmesi var. Bazıları bittiğinde yeniden deneyin."
+  },
+  "sendTooLarge": {
+    "message": "Bu dosya DownloadPulse'un kabul ettiğinden büyük."
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse bu bağlantıyı indiremiyor."
+  },
+  "sendRefused": {
+    "message": "DownloadPulse bu indirmeyi reddetti."
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse şu anda bu kaynağa ulaşamadı. Daha sonra yeniden deneyin."
+  },
+  "sendNoSiteAccess": {
+    "message": "Tarayıcı artık DownloadPulse'un bu siteyi okumasına izin vermiyor. Tarayıcının uzantı ayarlarında DownloadPulse için site erişimine izin verin."
+  },
+  "sendCaptureFailed": {
+    "message": "Bu dosya siteden alınamadı."
+  },
+  "sendCaptureWebPage": {
+    "message": "Site, dosya yerine bir web sayfası döndürdü. Önce siteye oturum açmanız gerekebilir."
+  },
+  "listTitle": {
+    "message": "Bu tarayıcıdan gelen indirmeler"
+  },
+  "listEmpty": {
+    "message": "Bu tarayıcıdan henüz bir şey gönderilmedi."
+  },
+  "jobQueued": {
+    "message": "Bekliyor"
+  },
+  "jobWorking": {
+    "message": "Hazırlanıyor"
+  },
+  "jobDownloading": {
+    "message": "İndiriliyor"
+  },
+  "jobPausedHere": {
+    "message": "Bu tarayıcıdan duraklatıldı"
+  },
+  "jobPausedServer": {
+    "message": "DownloadPulse'ta duraklatıldı"
+  },
+  "jobNeedsAttention": {
+    "message": "DownloadPulse'ta müdahale gerekli"
+  },
+  "jobDone": {
+    "message": "Tamamlandı"
+  },
+  "jobFailed": {
+    "message": "Başarısız"
+  },
+  "jobRemoved": {
+    "message": "Kaldırıldı"
+  },
+  "jobPause": {
+    "message": "Duraklat"
+  },
+  "jobResume": {
+    "message": "Sürdür"
+  },
+  "jobRemove": {
+    "message": "Kaldır"
+  },
+  "controlSharedInterest": {
+    "message": "Bu indirmeye başka istekler de ihtiyaç duyuyor, bu yüzden buradan duraklatılamaz."
+  },
+  "controlGloballyPaused": {
+    "message": "Şu anda DownloadPulse'ta her şey duraklatıldı."
+  },
+  "controlPausedElsewhere": {
+    "message": "Bu indirme DownloadPulse'ta duraklatıldı; orada sürdürün."
+  },
+  "controlSettled": {
+    "message": "Bu indirme zaten tamamlandı."
+  },
+  "controlFailed": {
+    "message": "Bu işe yaramadı. Yeniden deneyin."
+  },
+  "etaAbout": {
+    "message": "yaklaşık $TIME$ kaldı",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "kalan süre hesaplanıyor"
+  },
+  "notifyCompleted": {
+    "message": "İndirildi: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "Başarısız: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "DownloadPulse'ta müdahale gerekli: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "DownloadPulse'u aç"
+  },
+  "optionsConnection": {
+    "message": "Bağlantı"
+  },
+  "optionsNotConnected": {
+    "message": "Bu tarayıcı DownloadPulse'a bağlı değil. Araç çubuğu düğmesinden bağlayın."
+  },
+  "optionsDisconnect": {
+    "message": "Bağlantıyı kes"
+  },
+  "optionsDisconnectHint": {
+    "message": "Bağlantıyı kesmek bu tarayıcıyı DownloadPulse hesabınızdan kaldırır. Önceden gönderilen indirmeler korunur."
+  },
+  "optionsDisconnected": {
+    "message": "Bağlantı kesildi. DownloadPulse artık bu tarayıcıyı kabul etmiyor."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "Bağlantı burada kesildi, ancak DownloadPulse'a ulaşılamadı. DownloadPulse'ta Hesabım › Bağlı tarayıcılar bölümünde bu tarayıcı için Bağlantıyı kes'i seçin."
+  },
+  "optionsOnPages": {
+    "message": "Web sayfalarında"
+  },
+  "optionsHover": {
+    "message": "İndirme bağlantılarının yanında bir indirme düğmesi göster"
+  },
+  "optionsVideo": {
+    "message": "Video oynatıcılarda bir indirme düğmesi göster"
+  },
+  "optionsOffSites": {
+    "message": "İndirme düğmesi olmayan siteler"
+  },
+  "optionsOffSitesHint": {
+    "message": "Bu sitelerde (ve alt alan adlarında) indirme düğmeleri görünmez. Sağ tıklama yine çalışır."
+  },
+  "optionsSiteLabel": {
+    "message": "Eklenecek site"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "Site ekle"
+  },
+  "optionsRemoveSite": {
+    "message": "Kaldır"
+  },
+  "optionsNotifications": {
+    "message": "Bildirimler"
+  },
+  "optionsNotifyCompleted": {
+    "message": "Bir indirme tamamlandığında"
+  },
+  "optionsNotifyFailed": {
+    "message": "Bir indirme başarısız olduğunda"
+  },
+  "optionsNotifyAttention": {
+    "message": "Bir indirme DownloadPulse'ta müdahale gerektirdiğinde"
+  },
+  "popupSettings": {
+    "message": "Ayarlar"
+  },
+  "popupSiteOn": {
+    "message": "İndirme düğmeleri: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

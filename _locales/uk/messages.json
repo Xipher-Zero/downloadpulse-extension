@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "Надсилайте завантаження з браузера на свій сервер DownloadPulse."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "Не підключено"
+  },
+  "optionsTitle": {
+    "message": "Параметри розширення DownloadPulse"
+  },
+  "popupConnect": {
+    "message": "Підключитися до екземпляра DownloadPulse"
+  },
+  "popupProbing": {
+    "message": "Пошук DownloadPulse…"
+  },
+  "popupNotFound": {
+    "message": "На цьому комп’ютері DownloadPulse не запущено. Запустіть його й перевірте ще раз або підключіться до сервера."
+  },
+  "popupCheckAgain": {
+    "message": "Перевірити ще раз"
+  },
+  "popupServerLabel": {
+    "message": "Адреса сервера"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "Підключитися до цього сервера"
+  },
+  "popupWaiting": {
+    "message": "На щойно відкритій вкладці DownloadPulse натисніть «Підключити», щоб додати цей браузер."
+  },
+  "popupCode": {
+    "message": "Код:"
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse показує той самий код. Натискайте «Підключити», лише якщо коди збігаються."
+  },
+  "popupCancel": {
+    "message": "Скасувати"
+  },
+  "popupStartAgain": {
+    "message": "Почати знову"
+  },
+  "popupConnected": {
+    "message": "Підключено"
+  },
+  "popupServer": {
+    "message": "Сервер"
+  },
+  "popupAccount": {
+    "message": "Обліковий запис"
+  },
+  "popupBrowser": {
+    "message": "Браузер"
+  },
+  "failureUnreachable": {
+    "message": "Не вдається зв’язатися з цим сервером. Перевірте адресу й переконайтеся, що DownloadPulse запущено."
+  },
+  "failureCertificate": {
+    "message": "Не вдається безпечно зв’язатися з цим сервером. Якщо сервер використовує власний сертифікат, відкрийте його на вкладці, прийміть сертифікат і підключіться знову."
+  },
+  "failureNotDownloadPulse": {
+    "message": "За цією адресою щось відповідає, але це не DownloadPulse."
+  },
+  "failureTooOld": {
+    "message": "Ця версія DownloadPulse застаріла для підключення браузерів. Оновіть її й підключіться знову."
+  },
+  "failureDenied": {
+    "message": "Підключення відхилено в DownloadPulse."
+  },
+  "failureExpired": {
+    "message": "Термін дії запиту на підключення минув. Почніть знову."
+  },
+  "failurePermission": {
+    "message": "Браузер не дозволив доступ до цього сервера."
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse більше не приймає цей браузер. Підключіть його знову."
+  },
+  "failureFailed": {
+    "message": "Під час підключення щось пішло не так. Почніть знову."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$ на $SYSTEM$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "Завантажити через DownloadPulse"
+  },
+  "hoverSend": {
+    "message": "Завантажити через DownloadPulse"
+  },
+  "videoSend": {
+    "message": "Завантажити це відео через DownloadPulse"
+  },
+  "pageActionSend": {
+    "message": "Завантажити це відео через DownloadPulse"
+  },
+  "sendDone": {
+    "message": "Надіслано в DownloadPulse."
+  },
+  "sendFailed": {
+    "message": "Не вдалося надіслати це в DownloadPulse."
+  },
+  "sendNotConnected": {
+    "message": "Цей браузер не підключено до DownloadPulse. Підключіть його за допомогою кнопки на панелі інструментів."
+  },
+  "sendNothingFound": {
+    "message": "У виділеному тексті не знайдено жодного посилання."
+  },
+  "sendLocalNetwork": {
+    "message": "Це посилання веде у вашу локальну мережу. Параметри «Підключення до локальної мережі» в DownloadPulse не дозволяють його з браузера; додайте його через «Швидке додавання»."
+  },
+  "sendCollectionItem": {
+    "message": "Це посилання вказує на один елемент колекції. Додайте його через «Швидке додавання» в DownloadPulse, щоб вибрати елемент або всю колекцію."
+  },
+  "sendTooMany": {
+    "message": "У цього браузера забагато незавершених завантажень у DownloadPulse. Спробуйте ще раз, коли частина з них завершиться."
+  },
+  "sendTooLarge": {
+    "message": "Цей файл більший, ніж приймає DownloadPulse."
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse не може завантажити це посилання."
+  },
+  "sendRefused": {
+    "message": "DownloadPulse відхилив це завантаження."
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse зараз не вдається зв’язатися з цим джерелом. Спробуйте пізніше."
+  },
+  "sendNoSiteAccess": {
+    "message": "Браузер більше не дозволяє DownloadPulse читати цей сайт. Дозвольте DownloadPulse доступ до сайту в параметрах розширень браузера."
+  },
+  "sendCaptureFailed": {
+    "message": "Не вдалося отримати цей файл із сайту."
+  },
+  "sendCaptureWebPage": {
+    "message": "Сайт повернув вебсторінку замість файлу. Можливо, спершу потрібно увійти на сайт."
+  },
+  "listTitle": {
+    "message": "Завантаження з цього браузера"
+  },
+  "listEmpty": {
+    "message": "З цього браузера ще нічого не надіслано."
+  },
+  "jobQueued": {
+    "message": "Очікування"
+  },
+  "jobWorking": {
+    "message": "Підготовка"
+  },
+  "jobDownloading": {
+    "message": "Завантаження"
+  },
+  "jobPausedHere": {
+    "message": "Призупинено з цього браузера"
+  },
+  "jobPausedServer": {
+    "message": "Призупинено в DownloadPulse"
+  },
+  "jobNeedsAttention": {
+    "message": "Потребує уваги в DownloadPulse"
+  },
+  "jobDone": {
+    "message": "Завершено"
+  },
+  "jobFailed": {
+    "message": "Не вдалося"
+  },
+  "jobRemoved": {
+    "message": "Прибрано"
+  },
+  "jobPause": {
+    "message": "Призупинити"
+  },
+  "jobResume": {
+    "message": "Продовжити"
+  },
+  "jobRemove": {
+    "message": "Прибрати"
+  },
+  "controlSharedInterest": {
+    "message": "Це завантаження потрібне іншим запитам, тому його не можна призупинити звідси."
+  },
+  "controlGloballyPaused": {
+    "message": "Зараз у DownloadPulse усе призупинено."
+  },
+  "controlPausedElsewhere": {
+    "message": "Це завантаження призупинено в DownloadPulse; продовжте його там."
+  },
+  "controlSettled": {
+    "message": "Це завантаження вже завершено."
+  },
+  "controlFailed": {
+    "message": "Не вдалося. Спробуйте ще раз."
+  },
+  "etaAbout": {
+    "message": "залишилося близько $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "оцінювання часу, що залишився"
+  },
+  "notifyCompleted": {
+    "message": "Завантажено: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "Не вдалося: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "Потребує уваги в DownloadPulse: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "Відкрити DownloadPulse"
+  },
+  "optionsConnection": {
+    "message": "Підключення"
+  },
+  "optionsNotConnected": {
+    "message": "Цей браузер не підключено до DownloadPulse. Підключіть його за допомогою кнопки на панелі інструментів."
+  },
+  "optionsDisconnect": {
+    "message": "Відключити"
+  },
+  "optionsDisconnectHint": {
+    "message": "Відключення видаляє цей браузер із вашого облікового запису DownloadPulse. Уже надіслані завантаження зберігаються."
+  },
+  "optionsDisconnected": {
+    "message": "Відключено. DownloadPulse більше не приймає цей браузер."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "Відключено тут, але не вдалося зв’язатися з DownloadPulse. У DownloadPulse в розділі «Мій обліковий запис › Підключені браузери» натисніть «Відключити» для цього браузера."
+  },
+  "optionsOnPages": {
+    "message": "На вебсторінках"
+  },
+  "optionsHover": {
+    "message": "Показувати кнопку завантаження поруч із посиланнями на завантаження"
+  },
+  "optionsVideo": {
+    "message": "Показувати кнопку завантаження на відеоплеєрах"
+  },
+  "optionsOffSites": {
+    "message": "Сайти без кнопок завантаження"
+  },
+  "optionsOffSitesHint": {
+    "message": "На цих сайтах (і їхніх піддоменах) кнопки завантаження не з’являються. Клацання правою кнопкою миші й надалі працює."
+  },
+  "optionsSiteLabel": {
+    "message": "Сайт для додавання"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "Додати сайт"
+  },
+  "optionsRemoveSite": {
+    "message": "Прибрати"
+  },
+  "optionsNotifications": {
+    "message": "Сповіщення"
+  },
+  "optionsNotifyCompleted": {
+    "message": "Коли завантаження завершено"
+  },
+  "optionsNotifyFailed": {
+    "message": "Коли завантаження не вдалося"
+  },
+  "optionsNotifyAttention": {
+    "message": "Коли завантаження потребує уваги в DownloadPulse"
+  },
+  "popupSettings": {
+    "message": "Параметри"
+  },
+  "popupSiteOn": {
+    "message": "Кнопки завантаження на сайті $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

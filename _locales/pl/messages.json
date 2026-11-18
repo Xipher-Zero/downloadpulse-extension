@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "Wysyłanie pobrań z przeglądarki do własnego serwera DownloadPulse."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "Nie połączono"
+  },
+  "optionsTitle": {
+    "message": "Ustawienia rozszerzenia DownloadPulse"
+  },
+  "popupConnect": {
+    "message": "Połącz z instancją DownloadPulse"
+  },
+  "popupProbing": {
+    "message": "Wyszukiwanie DownloadPulse…"
+  },
+  "popupNotFound": {
+    "message": "Na tym komputerze nie działa DownloadPulse. Należy go uruchomić i sprawdzić ponownie albo połączyć się z serwerem."
+  },
+  "popupCheckAgain": {
+    "message": "Sprawdź ponownie"
+  },
+  "popupServerLabel": {
+    "message": "Adres serwera"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "Połącz z tym serwerem"
+  },
+  "popupWaiting": {
+    "message": "Na właśnie otwartej karcie DownloadPulse należy wybrać „Połącz”, aby dodać tę przeglądarkę."
+  },
+  "popupCode": {
+    "message": "Kod:"
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse wyświetla ten sam kod. „Połącz” należy wybrać tylko wtedy, gdy oba kody są zgodne."
+  },
+  "popupCancel": {
+    "message": "Anuluj"
+  },
+  "popupStartAgain": {
+    "message": "Zacznij od nowa"
+  },
+  "popupConnected": {
+    "message": "Połączono"
+  },
+  "popupServer": {
+    "message": "Serwer"
+  },
+  "popupAccount": {
+    "message": "Konto"
+  },
+  "popupBrowser": {
+    "message": "Przeglądarka"
+  },
+  "failureUnreachable": {
+    "message": "Nie można połączyć się z tym serwerem. Należy sprawdzić adres oraz to, czy DownloadPulse działa."
+  },
+  "failureCertificate": {
+    "message": "Nie można bezpiecznie połączyć się z tym serwerem. Jeśli używa on własnego certyfikatu, należy otworzyć go na karcie, zaakceptować certyfikat, a następnie połączyć się ponownie."
+  },
+  "failureNotDownloadPulse": {
+    "message": "Pod tym adresem coś odpowiedziało, ale to nie jest DownloadPulse."
+  },
+  "failureTooOld": {
+    "message": "Ta wersja DownloadPulse jest zbyt stara, aby łączyć przeglądarki. Należy ją zaktualizować, a następnie połączyć się ponownie."
+  },
+  "failureDenied": {
+    "message": "Połączenie zostało odrzucone w DownloadPulse."
+  },
+  "failureExpired": {
+    "message": "Żądanie połączenia wygasło. Należy zacząć od nowa."
+  },
+  "failurePermission": {
+    "message": "Przeglądarka nie zezwoliła na dostęp do tego serwera."
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse nie akceptuje już tej przeglądarki. Należy połączyć ją ponownie."
+  },
+  "failureFailed": {
+    "message": "Podczas łączenia coś poszło nie tak. Należy zacząć od nowa."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$ w systemie $SYSTEM$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "Pobierz za pomocą DownloadPulse"
+  },
+  "hoverSend": {
+    "message": "Pobierz za pomocą DownloadPulse"
+  },
+  "videoSend": {
+    "message": "Pobierz ten film za pomocą DownloadPulse"
+  },
+  "pageActionSend": {
+    "message": "Pobierz ten film za pomocą DownloadPulse"
+  },
+  "sendDone": {
+    "message": "Wysłano do DownloadPulse."
+  },
+  "sendFailed": {
+    "message": "Nie udało się wysłać tego do DownloadPulse."
+  },
+  "sendNotConnected": {
+    "message": "Ta przeglądarka nie jest połączona z DownloadPulse. Można ją połączyć za pomocą przycisku na pasku narzędzi."
+  },
+  "sendNothingFound": {
+    "message": "W zaznaczonym tekście nie znaleziono linku."
+  },
+  "sendLocalNetwork": {
+    "message": "Ten link znajduje się w sieci lokalnej. Ustawienia „Połączenia w sieci lokalnej” w DownloadPulse nie zezwalają na dodanie go z przeglądarki; należy zamiast tego dodać go przez „Szybkie dodawanie”."
+  },
+  "sendCollectionItem": {
+    "message": "Ten link wskazuje jeden element kolekcji. Należy dodać go przez „Szybkie dodawanie” w DownloadPulse, aby wybrać ten element lub całą kolekcję."
+  },
+  "sendTooMany": {
+    "message": "Ta przeglądarka ma zbyt wiele niezakończonych pobrań w DownloadPulse. Należy spróbować ponownie, gdy część z nich się zakończy."
+  },
+  "sendTooLarge": {
+    "message": "Ten plik jest większy, niż akceptuje DownloadPulse."
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse nie może pobrać z tego linku."
+  },
+  "sendRefused": {
+    "message": "DownloadPulse odrzucił to pobieranie."
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse nie może teraz połączyć się z tym źródłem. Należy spróbować ponownie później."
+  },
+  "sendNoSiteAccess": {
+    "message": "Przeglądarka nie zezwala już DownloadPulse na odczyt tej witryny. Należy zezwolić DownloadPulse na dostęp do witryny w ustawieniach rozszerzeń przeglądarki."
+  },
+  "sendCaptureFailed": {
+    "message": "Nie udało się pobrać tego pliku z witryny."
+  },
+  "sendCaptureWebPage": {
+    "message": "Witryna zwróciła stronę internetową zamiast pliku. Może być konieczne wcześniejsze zalogowanie się w niej."
+  },
+  "listTitle": {
+    "message": "Pobrania z tej przeglądarki"
+  },
+  "listEmpty": {
+    "message": "Z tej przeglądarki nie wysłano jeszcze niczego."
+  },
+  "jobQueued": {
+    "message": "Oczekuje"
+  },
+  "jobWorking": {
+    "message": "Przygotowywanie"
+  },
+  "jobDownloading": {
+    "message": "Pobieranie"
+  },
+  "jobPausedHere": {
+    "message": "Wstrzymano z tej przeglądarki"
+  },
+  "jobPausedServer": {
+    "message": "Wstrzymano w DownloadPulse"
+  },
+  "jobNeedsAttention": {
+    "message": "Wymaga uwagi w DownloadPulse"
+  },
+  "jobDone": {
+    "message": "Ukończono"
+  },
+  "jobFailed": {
+    "message": "Niepowodzenie"
+  },
+  "jobRemoved": {
+    "message": "Usunięto"
+  },
+  "jobPause": {
+    "message": "Wstrzymaj"
+  },
+  "jobResume": {
+    "message": "Wznów"
+  },
+  "jobRemove": {
+    "message": "Usuń"
+  },
+  "controlSharedInterest": {
+    "message": "Inne żądania potrzebują tego pobierania, więc nie można go wstrzymać z tego miejsca."
+  },
+  "controlGloballyPaused": {
+    "message": "W DownloadPulse wszystko jest teraz wstrzymane."
+  },
+  "controlPausedElsewhere": {
+    "message": "To pobieranie zostało wstrzymane w DownloadPulse; należy je tam wznowić."
+  },
+  "controlSettled": {
+    "message": "To pobieranie zostało już zakończone."
+  },
+  "controlFailed": {
+    "message": "Nie udało się. Należy spróbować ponownie."
+  },
+  "etaAbout": {
+    "message": "pozostało około $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "szacowanie pozostałego czasu"
+  },
+  "notifyCompleted": {
+    "message": "Pobrano: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "Niepowodzenie: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "Wymaga uwagi w DownloadPulse: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "Otwórz DownloadPulse"
+  },
+  "optionsConnection": {
+    "message": "Połączenie"
+  },
+  "optionsNotConnected": {
+    "message": "Ta przeglądarka nie jest połączona z DownloadPulse. Można ją połączyć za pomocą przycisku na pasku narzędzi."
+  },
+  "optionsDisconnect": {
+    "message": "Rozłącz"
+  },
+  "optionsDisconnectHint": {
+    "message": "Rozłączenie usuwa tę przeglądarkę z konta DownloadPulse. Już wysłane pobrania zostają zachowane."
+  },
+  "optionsDisconnected": {
+    "message": "Rozłączono. DownloadPulse nie akceptuje już tej przeglądarki."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "Rozłączono tutaj, ale nie udało się połączyć z DownloadPulse. Należy wybrać „Rozłącz” przy tej przeglądarce w DownloadPulse w sekcji Moje konto › Połączone przeglądarki."
+  },
+  "optionsOnPages": {
+    "message": "Na stronach internetowych"
+  },
+  "optionsHover": {
+    "message": "Pokazuj przycisk pobierania obok linków do pobrania"
+  },
+  "optionsVideo": {
+    "message": "Pokazuj przycisk pobierania na odtwarzaczach wideo"
+  },
+  "optionsOffSites": {
+    "message": "Witryny bez przycisków pobierania"
+  },
+  "optionsOffSitesHint": {
+    "message": "Na tych witrynach (i ich subdomenach) przyciski pobierania się nie pojawiają. Prawy przycisk myszy nadal działa."
+  },
+  "optionsSiteLabel": {
+    "message": "Witryna do dodania"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "Dodaj witrynę"
+  },
+  "optionsRemoveSite": {
+    "message": "Usuń"
+  },
+  "optionsNotifications": {
+    "message": "Powiadomienia"
+  },
+  "optionsNotifyCompleted": {
+    "message": "Gdy pobieranie się zakończy"
+  },
+  "optionsNotifyFailed": {
+    "message": "Gdy pobieranie się nie powiedzie"
+  },
+  "optionsNotifyAttention": {
+    "message": "Gdy pobieranie wymaga uwagi w DownloadPulse"
+  },
+  "popupSettings": {
+    "message": "Ustawienia"
+  },
+  "popupSiteOn": {
+    "message": "Przyciski pobierania w witrynie $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}

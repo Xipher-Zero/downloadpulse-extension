@@ -1,0 +1,327 @@
+{
+  "extName": {
+    "message": "DownloadPulse"
+  },
+  "extDescription": {
+    "message": "Kirim unduhan dari peramban Anda ke server DownloadPulse Anda."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse"
+  },
+  "popupNotConnected": {
+    "message": "Tidak terhubung"
+  },
+  "optionsTitle": {
+    "message": "Pengaturan ekstensi DownloadPulse"
+  },
+  "popupConnect": {
+    "message": "Hubungkan ke instans DownloadPulse"
+  },
+  "popupProbing": {
+    "message": "Mencari DownloadPulse…"
+  },
+  "popupNotFound": {
+    "message": "Tidak ada DownloadPulse yang berjalan di komputer ini. Jalankan, lalu periksa lagi, atau hubungkan ke server."
+  },
+  "popupCheckAgain": {
+    "message": "Periksa lagi"
+  },
+  "popupServerLabel": {
+    "message": "Alamat server"
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com"
+  },
+  "popupConnectServer": {
+    "message": "Hubungkan ke server ini"
+  },
+  "popupWaiting": {
+    "message": "Di tab DownloadPulse yang baru saja terbuka, pilih “Hubungkan” untuk menambahkan peramban ini."
+  },
+  "popupCode": {
+    "message": "Kode:"
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse menampilkan kode yang sama. Pilih “Hubungkan” hanya jika keduanya cocok."
+  },
+  "popupCancel": {
+    "message": "Batal"
+  },
+  "popupStartAgain": {
+    "message": "Mulai lagi"
+  },
+  "popupConnected": {
+    "message": "Terhubung"
+  },
+  "popupServer": {
+    "message": "Alamat server"
+  },
+  "popupAccount": {
+    "message": "Akun"
+  },
+  "popupBrowser": {
+    "message": "Peramban"
+  },
+  "failureUnreachable": {
+    "message": "Server itu tidak dapat dijangkau. Periksa alamatnya dan pastikan DownloadPulse berjalan."
+  },
+  "failureCertificate": {
+    "message": "Server itu tidak dapat dijangkau dengan aman. Jika server itu memakai sertifikatnya sendiri, buka di tab, terima sertifikatnya, lalu hubungkan lagi."
+  },
+  "failureNotDownloadPulse": {
+    "message": "Ada yang menjawab di alamat itu, tetapi itu bukan DownloadPulse."
+  },
+  "failureTooOld": {
+    "message": "Versi DownloadPulse ini terlalu lama untuk menghubungkan peramban. Perbarui, lalu hubungkan lagi."
+  },
+  "failureDenied": {
+    "message": "Sambungan ditolak di DownloadPulse."
+  },
+  "failureExpired": {
+    "message": "Permintaan sambungan kedaluwarsa. Mulai lagi."
+  },
+  "failurePermission": {
+    "message": "Peramban tidak mengizinkan akses ke server itu."
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse tidak lagi menerima peramban ini. Hubungkan lagi."
+  },
+  "failureFailed": {
+    "message": "Terjadi kesalahan saat menghubungkan. Mulai lagi."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$ di $SYSTEM$",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  },
+  "menuSend": {
+    "message": "Unduh dengan DownloadPulse"
+  },
+  "hoverSend": {
+    "message": "Unduh dengan DownloadPulse"
+  },
+  "videoSend": {
+    "message": "Unduh video ini dengan DownloadPulse"
+  },
+  "pageActionSend": {
+    "message": "Unduh video ini dengan DownloadPulse"
+  },
+  "sendDone": {
+    "message": "Terkirim ke DownloadPulse."
+  },
+  "sendFailed": {
+    "message": "Tidak dapat mengirimnya ke DownloadPulse."
+  },
+  "sendNotConnected": {
+    "message": "Peramban ini tidak terhubung ke DownloadPulse. Hubungkan melalui tombol di bilah alat."
+  },
+  "sendNothingFound": {
+    "message": "Tidak ada tautan yang ditemukan dalam teks yang dipilih."
+  },
+  "sendLocalNetwork": {
+    "message": "Tautan itu ada di jaringan lokal Anda. Pengaturan “Koneksi jaringan lokal” DownloadPulse tidak mengizinkannya dari peramban; sebagai gantinya, tambahkan dengan “Tambah cepat”."
+  },
+  "sendCollectionItem": {
+    "message": "Tautan itu mengarah ke satu item dalam koleksi. Tambahkan dengan “Tambah cepat” di DownloadPulse untuk memilih item tersebut atau seluruh koleksi."
+  },
+  "sendTooMany": {
+    "message": "Peramban ini memiliki terlalu banyak unduhan yang belum selesai di DownloadPulse. Coba lagi setelah sebagian selesai."
+  },
+  "sendTooLarge": {
+    "message": "Berkas itu lebih besar daripada yang diterima DownloadPulse."
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse tidak dapat mengunduh tautan itu."
+  },
+  "sendRefused": {
+    "message": "DownloadPulse menolak unduhan itu."
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse tidak dapat menjangkau sumber itu saat ini. Coba lagi nanti."
+  },
+  "sendNoSiteAccess": {
+    "message": "Peramban tidak lagi mengizinkan DownloadPulse membaca situs itu. Izinkan akses situs untuk DownloadPulse di pengaturan ekstensi peramban."
+  },
+  "sendCaptureFailed": {
+    "message": "Berkas itu tidak dapat diambil dari situs."
+  },
+  "sendCaptureWebPage": {
+    "message": "Situs itu mengembalikan halaman web, bukan berkasnya. Anda mungkin perlu masuk ke situs itu terlebih dahulu."
+  },
+  "listTitle": {
+    "message": "Unduhan dari peramban ini"
+  },
+  "listEmpty": {
+    "message": "Belum ada yang dikirim dari peramban ini."
+  },
+  "jobQueued": {
+    "message": "Menunggu"
+  },
+  "jobWorking": {
+    "message": "Menyiapkan"
+  },
+  "jobDownloading": {
+    "message": "Mengunduh"
+  },
+  "jobPausedHere": {
+    "message": "Dijeda dari peramban ini"
+  },
+  "jobPausedServer": {
+    "message": "Dijeda di DownloadPulse"
+  },
+  "jobNeedsAttention": {
+    "message": "Perlu perhatian di DownloadPulse"
+  },
+  "jobDone": {
+    "message": "Selesai"
+  },
+  "jobFailed": {
+    "message": "Gagal"
+  },
+  "jobRemoved": {
+    "message": "Dikeluarkan"
+  },
+  "jobPause": {
+    "message": "Jeda"
+  },
+  "jobResume": {
+    "message": "Lanjutkan"
+  },
+  "jobRemove": {
+    "message": "Keluarkan"
+  },
+  "controlSharedInterest": {
+    "message": "Permintaan lain membutuhkan unduhan ini, jadi unduhan ini tidak dapat dijeda dari sini."
+  },
+  "controlGloballyPaused": {
+    "message": "Semuanya sedang dijeda di DownloadPulse saat ini."
+  },
+  "controlPausedElsewhere": {
+    "message": "Unduhan ini dijeda di DownloadPulse; lanjutkan dari sana."
+  },
+  "controlSettled": {
+    "message": "Unduhan ini sudah selesai."
+  },
+  "controlFailed": {
+    "message": "Itu tidak berhasil. Coba lagi."
+  },
+  "etaAbout": {
+    "message": "sekitar $TIME$ lagi",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "memperkirakan sisa waktu"
+  },
+  "notifyCompleted": {
+    "message": "Terunduh: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "Gagal: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "Perlu perhatian di DownloadPulse: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "popupOpenServer": {
+    "message": "Buka DownloadPulse"
+  },
+  "optionsConnection": {
+    "message": "Sambungan"
+  },
+  "optionsNotConnected": {
+    "message": "Peramban ini tidak terhubung ke DownloadPulse. Hubungkan melalui tombol di bilah alat."
+  },
+  "optionsDisconnect": {
+    "message": "Putuskan sambungan"
+  },
+  "optionsDisconnectHint": {
+    "message": "Memutuskan sambungan akan mengeluarkan peramban ini dari akun DownloadPulse Anda. Unduhan yang sudah dikirim tetap disimpan."
+  },
+  "optionsDisconnected": {
+    "message": "Sambungan diputus. DownloadPulse tidak lagi menerima peramban ini."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "Sambungan diputus di sini, tetapi DownloadPulse tidak dapat dijangkau. Di DownloadPulse, melalui Akun saya › Peramban terhubung, pilih “Putuskan sambungan” untuk peramban ini."
+  },
+  "optionsOnPages": {
+    "message": "Di halaman web"
+  },
+  "optionsHover": {
+    "message": "Tampilkan tombol unduh di samping tautan unduhan"
+  },
+  "optionsVideo": {
+    "message": "Tampilkan tombol unduh di pemutar video"
+  },
+  "optionsOffSites": {
+    "message": "Situs tanpa tombol unduh"
+  },
+  "optionsOffSitesHint": {
+    "message": "Di situs-situs ini (dan subdomainnya) tombol unduh tidak muncul. Klik kanan tetap berfungsi."
+  },
+  "optionsSiteLabel": {
+    "message": "Situs yang akan ditambahkan"
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com"
+  },
+  "optionsAddSite": {
+    "message": "Tambah situs"
+  },
+  "optionsRemoveSite": {
+    "message": "Keluarkan"
+  },
+  "optionsNotifications": {
+    "message": "Notifikasi"
+  },
+  "optionsNotifyCompleted": {
+    "message": "Saat unduhan selesai"
+  },
+  "optionsNotifyFailed": {
+    "message": "Saat unduhan gagal"
+  },
+  "optionsNotifyAttention": {
+    "message": "Saat unduhan perlu perhatian di DownloadPulse"
+  },
+  "popupSettings": {
+    "message": "Pengaturan"
+  },
+  "popupSiteOn": {
+    "message": "Tombol unduh di $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  }
+}
