@@ -1,0 +1,7 @@
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+:root { color-scheme: light dark; --dp-fg: #1f2937; --dp-bg: #ffffff; --dp-muted: #6b7280; }
+@media (prefers-color-scheme: dark) { :root { --dp-fg: #e5e7eb; --dp-bg: #111827; --dp-muted: #9ca3af; } }
+body { margin: 0; min-width: 320px; background: var(--dp-bg); color: var(--dp-fg); font: 14px/1.4 system-ui, sans-serif; }
+.dp-popup { padding: 16px; }
+.dp-popup__title { margin: 0 0 8px; font-size: 16px; font-weight: 600; }
+.dp-popup__status { margin: 0; color: var(--dp-muted); }

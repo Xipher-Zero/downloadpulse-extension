@@ -360,3 +360,4 @@ All three were approved by the operator on 2026-11-17. **All three were answered
 - 2026-11-17: S1 answered: capture by background fetch; all-sites host permission (§3.4, §3.7).
 - 2026-11-17: S2 answered: icon updates keep the background alive in both browsers; polling alone does not (§3.5).
 - 2026-11-17: S3 answered: the Firefox page action follows a runtime host list; the video detector and top-layer button work through overlays, closed shadow DOM and cross-origin frames (L14).
+- 2026-11-17: WS-E0 (scaffold) implemented, awaiting Gate 9 review: [`tasks/WS-E0-scaffold.md`](tasks/WS-E0-scaffold.md). The Firefox minimum is 140 (ESR).

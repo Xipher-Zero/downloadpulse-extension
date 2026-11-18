@@ -53,6 +53,6 @@ Host permission was granted in every run (`permissions.contains` true).
 
 | Item | Why it matters | Where |
 |---|---|---|
-| A **store-installed** Firefox add-on's host permissions | Firefox may treat Manifest V3 host permissions as granted by the user, not at install. These runs used temporary add-ons, which had them granted. If they are user-granted, onboarding must request them. | WS-E0 |
+| A **store-installed** Firefox add-on's host permissions | **Answered in WS-E0 Gate 1:** Firefox 127+ grants them at install, the user may revoke them, and updates adding them are not prompted. Later tasks check `permissions.contains` and offer a re-grant. | WS-E0 (done) |
 | **Firefox containers** and **private windows**; Chromium **incognito** | The background fetch uses the default cookie store, not the tab's container or private store. A user logged in to the tracker only inside a container or a private window would not be recognised. Options: fetch from the content script when the file is on the page's own origin (it uses the tab's store); otherwise say why the capture failed. | WS-E2 |
 | Real HTTPS sites, redirects to another host, anti-bot challenges (for example Cloudflare) | The harness used plain HTTP on loopback with no redirect and no challenge. A clearance cookie is a cookie and should travel the same way, but this is unverified. | WS-E2 |

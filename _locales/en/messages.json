@@ -1,0 +1,8 @@
+{
+  "extName": { "message": "DownloadPulse", "description": "Product name. Not translated." },
+  "extDescription": { "message": "Send downloads from your browser to your DownloadPulse server.", "description": "Store and manifest description of the extension." },
+  "actionTitle": { "message": "DownloadPulse", "description": "Tooltip of the toolbar button." },
+  "popupNotConnected": { "message": "Not connected", "description": "Toolbar popup: the extension is not connected to a DownloadPulse server." },
+  "optionsTitle": { "message": "DownloadPulse settings", "description": "Title of the extension's settings page." },
+  "optionsPlaceholder": { "message": "There are no settings yet.", "description": "Settings page body while the extension has no settings." }
+}
