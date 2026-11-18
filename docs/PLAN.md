@@ -64,6 +64,8 @@ DownloadPulse then decides everything else, as it does for Quick Add. In the ope
 | L25 | **Stack:** TypeScript, a small build, one codebase producing both packages, Playwright (Chromium) and `web-ext` (Firefox). |
 | L26 | **Token ownership:** every user (except ReadOnly) may create and revoke **only their own** tokens. **Only an Admin** may revoke another user's tokens. (Resolves D2.) |
 | L27 | **ETA is provided to external clients**, typed and labelled as an estimate. The current contract that withholds it, and the test that enforces that, are retired. |
+| L28 | **Pending pairings live in memory** (resolves D1). A restart mid-pairing cancels it, and the user connects again. Issued tokens are stored durably like every token. |
+| L29 | **WS-S1 is built on DebridPulse branch `1.0.14`.** |
 
 **Non-goals for the first version:**
 - interactive file selection, provider choice or routing control from the browser;
@@ -281,7 +283,7 @@ The extension reads the server's capabilities and protocol version, and refuses 
 
 | ID | Decision | Options |
 |---|---|---|
-| D1 | Where pairing state lives (WS-S1) | in memory: lost on restart, simplest; **or** a durable table: a schema change, with backup/restore coverage |
+| D1 | **Resolved 2026-11-17 → L28:** in memory | — |
 | D2 | **Resolved 2026-11-17 → L26:** own tokens only; Admin may revoke others' | — |
 | D3 | The browser-submission model (§5.3) | adapter over the external job contract with a "browser client" mode; **or** the adapter submitting through the same owner as Quick Add, attributed to the token |
 | D4 | Private-LAN consent from the browser | refuse as v1 does (the user uses Quick Add); **or** allow the signed-in human to consent per submission in the extension |
@@ -308,12 +310,12 @@ The extension reads the server's capabilities and protocol version, and refuses 
 Each workstream becomes a **standalone implementation task**, written to the Prompt Authoring handbook: locked decisions, invariants, verify-at-Gate-0 anchors, proportional Gates 0–9, a focused test plan within the 15-minute budget, and a **Gate 9 hard stop**.
 
 **Server (DebridPulse; in the 1.0.x line, after 1.0.14 or as decided):**
-- **WS-S1:** pairing (§5.1) and browser tokens (§5.2), including self-service token management (L26). Needs D1.
+- **WS-S1:** pairing (§5.1) and browser tokens (§5.2), including self-service token management (L26). D1 resolved (L28); on DP `1.0.14` (L29).
 - **WS-S2:** browser adapter: submission model (§5.3, D3), kinds (§5.4, D4), ETA (§5.5), host list (§5.6), version and capabilities (§5.7). Depends on WS-S1.
 
 **Extension (this repository):**
 - **WS-E0:** scaffold: TypeScript build, both manifests, lint, `web-ext lint`, Playwright harness, CI packaging. No features. Can start now.
-- **WS-E1:** onboarding and pairing client (§3.1). Depends on WS-S1.
+- **WS-E1:** onboarding and pairing client (§3.1). Depends on WS-S1. Every request to DownloadPulse uses `credentials: "omit"`, so a session cookie never accompanies the browser token (WS-S1 B13; a cookie-carrying request is refused).
 - **WS-E2:** submission surfaces (§3.2–3.4). Depends on WS-S2. Spikes S1 and S3 are answered; their untested items are carried here.
 - **WS-E3:** downloads list, controls, indicator and notifications (§3.5). Depends on WS-S2. Spike S2 is answered; its untested items are carried here.
 - **WS-E4:** settings, permissions and privacy (§3.6–3.7).
@@ -361,3 +363,4 @@ All three were approved by the operator on 2026-11-17. **All three were answered
 - 2026-11-17: S2 answered: icon updates keep the background alive in both browsers; polling alone does not (§3.5).
 - 2026-11-17: S3 answered: the Firefox page action follows a runtime host list; the video detector and top-layer button work through overlays, closed shadow DOM and cross-origin frames (L14).
 - 2026-11-17: WS-E0 (scaffold) implemented, awaiting Gate 9 review: [`tasks/WS-E0-scaffold.md`](tasks/WS-E0-scaffold.md). The Firefox minimum is 140 (ESR).
+- 2026-11-17: WS-E0 approved and pushed (`85781b8`). D1 resolved: pending pairings in memory (L28). WS-S1 on DP `1.0.14` (L29).
