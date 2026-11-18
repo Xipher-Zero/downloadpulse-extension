@@ -21,7 +21,7 @@ export function manifest(browser, version) {
       default_icon: { 16: "icons/icon-16.png", 32: "icons/icon-32.png" },
     },
     options_ui: { page: "options/options.html", open_in_tab: true },
-    permissions: ["storage", "contextMenus"],
+    permissions: ["storage", "contextMenus", "notifications", "alarms"],
     // Every site (WS-E2 B9): a .torrent/.nzb/.meta4 is captured from whatever
     // site serves it, with the person's own login there (spike S1); the
     // in-page surfaces run everywhere. This includes a DownloadPulse on this

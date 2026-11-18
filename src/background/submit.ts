@@ -9,6 +9,7 @@ import {connection, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
 import {submitJob, type Source} from "../shared/server";
+import {wake} from "./monitor";
 
 const LIMITS: Record<CaptureKind, number> = {torrent: 16 * 1024 * 1024, nzb: 8 * 1024 * 1024, metalink: 16 * 1024 * 1024};
 const SUFFIX: Record<CaptureKind, string> = {torrent: ".torrent", nzb: ".nzb", metalink: ".meta4"};
@@ -75,18 +76,40 @@ async function capture(href: string, kind: CaptureKind): Promise<Source> {
     : kind === "nzb" ? {kind, filename, nzb_base64: encoded} : {kind, filename, metalink_base64: encoded};
 }
 
+/** B6 (WS-E3): what the download is called in the list. */
+function displayName(source: Source): string {
+  if (source.kind === "magnet") {
+    try {
+      return new URL(source.magnet).searchParams.get("dn") ?? "";
+    } catch {
+      return "";
+    }
+  }
+  if (source.kind === "links") {
+    if (source.links.length !== 1) return "";
+    try {
+      return decodeURIComponent(new URL(source.links[0]!).pathname.split("/").pop() ?? "");
+    } catch {
+      return "";
+    }
+  }
+  return source.filename;
+}
+
 async function send(source: Source): Promise<void> {
   const connected = await connection();
   const browserToken = await token();
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
   const key = crypto.randomUUID();
-  let answer = await submitJob(connected.server, browserToken, key, source);
+  const name = displayName(source);
+  let answer = await submitJob(connected.server, browserToken, key, source, name);
   if (!answer.ok && answer.retryable) {
     // The same gesture, the same key: never a second download (B7).
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    answer = await submitJob(connected.server, browserToken, key, source);
+    answer = await submitJob(connected.server, browserToken, key, source, name);
   }
   if (!answer.ok) throw new Refused(REFUSALS[answer.code] ?? "sendFailed");
+  wake();
 }
 
 async function sourceFor(href: string): Promise<Source> {

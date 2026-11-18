@@ -66,6 +66,11 @@ test("connect to a real DownloadPulse: sign in, approve, verified", async () => 
     const session = await page.evaluate(async () => (await (await window.debridPulseAuth.fetch("/api/account/browsers")).json()));
     expect(recorded.credential_id).toBe(session.browsers.find((b) => b.label === "E2E-Chromium").id);
     server.close();
+
+    // WS-E3 against the real list: the popup shows that download, by name, in a real state.
+    const listed = popup.locator(".dp-job", {hasText: "file.iso"});
+    await expect(listed).toHaveCount(1, {timeout: 20_000});
+    await expect(listed.locator(".dp-job__state")).toHaveText(/^(Waiting|Preparing|Downloading|Failed|Needs attention in DownloadPulse)/);
   } finally {
     await context.close();
     await rm(profile, {recursive: true, force: true});

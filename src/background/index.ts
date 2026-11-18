@@ -4,14 +4,17 @@
 // requests, owns the right-click menu (shown only while connected, WS-E2
 // B8) and, in Firefox, the URL-bar icon (page action, WS-E2 B4).
 
-import {connection} from "../shared/connection";
+import {connection, token} from "../shared/connection";
+import {controlJob, withdrawJob} from "../shared/server";
+import {popupOpen, wake} from "./monitor";
 import {message} from "../shared/i18n";
 import {cancel, connectLocal, connectRemote} from "./pairing";
 import {sendSelection, sendUrl} from "./submit";
 
 type Request =
   | {type: "connect-local"} | {type: "connect-remote"; address: string} | {type: "cancel"}
-  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-has-video"};
+  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-has-video"}
+  | {type: "dp-popup-open"} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string};
 
 const MENU_LINK = "dp-send-link";
 const MENU_SELECTION = "dp-send-selection";
@@ -25,7 +28,30 @@ async function refreshMenus(): Promise<void> {
 }
 
 chrome.runtime.onInstalled.addListener(() => void refreshMenus());
-chrome.runtime.onStartup.addListener(() => void refreshMenus());
+chrome.runtime.onStartup.addListener(() => {
+  void refreshMenus();
+  wake();   // downloads unsettled when the browser closed (WS-E3 B1)
+});
+
+/** A control or Remove from the popup, answered with DebridPulse's decision. */
+async function act(request: {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}):
+    Promise<{ok: boolean; reason?: string}> {
+  const connected = await connection();
+  const browserToken = await token();
+  if (!connected || !browserToken) return {ok: false, reason: "not_connected"};
+  try {
+    if (request.type === "dp-withdraw") {
+      await withdrawJob(connected.server, browserToken, request.id);
+      return {ok: true};
+    }
+    const decision = await controlJob(connected.server, browserToken, request.id, request.kind);
+    return {ok: decision.disposition === "honored", reason: decision.reason};
+  } catch {
+    return {ok: false, reason: "failed"};
+  } finally {
+    wake();
+  }
+}
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && "connection" in changes) void refreshMenus();
 });
@@ -52,6 +78,12 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
     case "connect-local": if (!fromPage) void connectLocal(); return undefined;
     case "connect-remote": if (!fromPage) void connectRemote(String(request.address || "")); return undefined;
     case "cancel": if (!fromPage) void cancel(); return undefined;
+    case "dp-popup-open": if (!fromPage) popupOpen(); return undefined;
+    case "dp-control":
+    case "dp-withdraw":
+      if (fromPage) return undefined;
+      void act(request).then(respond);
+      return true;
     case "dp-state":
       // A content script learns only whether it may offer anything: never a secret.
       void connection().then((connected) => respond({connected: Boolean(connected)}));

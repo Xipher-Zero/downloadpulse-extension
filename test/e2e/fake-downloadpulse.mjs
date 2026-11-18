@@ -5,7 +5,10 @@
 import http from "node:http";
 
 export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
-  const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null};
+  const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
+    views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null};
+  // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
+  const touch = (view) => { view.cursor = ++state.seq; state.views.set(view.id, view); return view; };
   const server = http.createServer(async (req, res) => {
     const body = await new Promise((resolve) => {
       let data = "";
@@ -49,7 +52,32 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
       if (state.refuse) return send(422, {detail: {code: state.refuse, message: "refused", retryable: false}});
       state.jobs.push({body, cookie: req.headers.cookie ?? null});
-      return send(201, {id: `job_${state.jobs.length}`, phase: "accepted"});
+      const id = `job_${state.jobs.length}`;
+      touch({id, submitted_at: new Date().toISOString(), display_name: body.display_name ?? "",
+        source: {kind: body.source?.kind}, phase: "accepted", reason: "awaiting_resolution", actionability: "wait",
+        paused_by: null, progress: null, estimate: null});
+      return send(201, state.views.get(id));
+    }
+    if (url.pathname === "/api/browser/v1/jobs" && req.method === "GET") {
+      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
+      const after = Number(url.searchParams.get("after") ?? 0);
+      state.listPolls.push(Date.now());
+      const jobs = [...state.views.values()].filter((view) => view.cursor > after).sort((a, b) => a.cursor - b.cursor);
+      return send(200, {jobs, next_cursor: jobs.length ? jobs.at(-1).cursor : after, more: false});
+    }
+    const control = /^\/api\/browser\/v1\/jobs\/([^/]+)\/(controls|withdraw)$/.exec(url.pathname);
+    if (control && req.method === "POST") {
+      const view = state.views.get(decodeURIComponent(control[1]));
+      if (!view) return send(404, {detail: {code: "job_not_found"}});
+      if (control[2] === "withdraw") {
+        touch({...view, phase: "withdrawn", reason: "withdrawn_by_client", actionability: "none"});
+        return send(200, {ok: true});
+      }
+      state.controls.push(body);
+      if (state.declineControl) return send(200, {disposition: "declined", reason: state.declineControl});
+      touch(body.kind === "pause" ? {...view, reason: "paused", paused_by: "client"}
+        : {...view, reason: "downloading", paused_by: null});
+      return send(200, {disposition: "honored", reason: body.kind === "pause" ? "paused" : "resumed"});
     }
     return send(404, {detail: "Not Found"});
   });
@@ -59,6 +87,9 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
   });
   return {
     state, port: server.address().port,
+    setJob(id, fields) {
+      return touch({...state.views.get(id), ...fields});
+    },
     answer(status) {
       for (const pairing of state.pairings.values()) if (pairing.status === "pending") pairing.status = status;
     },

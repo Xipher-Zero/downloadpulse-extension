@@ -153,11 +153,12 @@ export type Source =
 export type Submitted = {ok: true} | {ok: false; code: string; retryable: boolean};
 
 /** One submission under one idempotency key (DebridPulse BROWSER_CLIENT.md §2a). */
-export async function submitJob(origin: string, browserToken: string, key: string, source: Source): Promise<Submitted> {
+export async function submitJob(origin: string, browserToken: string, key: string, source: Source,
+                                displayName = ""): Promise<Submitted> {
   const response = await request(origin, "/api/browser/v1/jobs", {
     method: "POST",
     headers: {"Content-Type": "application/json", Authorization: `Bearer ${browserToken}`},
-    body: JSON.stringify({idempotency_key: key, source}),
+    body: JSON.stringify({idempotency_key: key, source, ...(displayName ? {display_name: displayName.slice(0, 256)} : {})}),
   });
   if (response.ok) return {ok: true};
   if (response.status === 401) return {ok: false, code: "unauthorized", retryable: false};
@@ -169,4 +170,58 @@ export async function submitJob(origin: string, browserToken: string, key: strin
   }
   return {ok: false, code: typeof detail["code"] === "string" ? detail["code"] : "failed",
     retryable: detail["retryable"] === true};
+}
+
+/** One of this browser's downloads, as DebridPulse reports it (BROWSER_CLIENT.md §2a). */
+export interface Job {
+  id: string;
+  cursor: number;
+  submitted_at: string | null;
+  display_name: string;
+  source: Record<string, unknown>;
+  phase: "accepted" | "queued" | "processing" | "completed" | "failed" | "withdrawn";
+  reason: string | null;
+  actionability: string;
+  paused_by: string | null;
+  progress: {percent?: number | null; effective?: {percent?: number | null} | null} | null;
+  estimate: {seconds: number | null; indeterminate: boolean} | null;
+}
+
+export interface Listing { jobs: Job[]; next_cursor: number; more: boolean }
+
+function authorized(browserToken: string): Record<string, string> {
+  return {Authorization: `Bearer ${browserToken}`};
+}
+
+/** This browser's jobs changed after ``after`` (the change cursor). */
+export async function listJobs(origin: string, browserToken: string, after: number): Promise<Listing> {
+  const response = await request(origin, `/api/browser/v1/jobs?after=${Math.max(0, Math.floor(after))}&limit=100`,
+    {headers: authorized(browserToken)});
+  if (response.status === 401) throw new ServerError("unauthorized");
+  if (!response.ok) throw new ServerError("failed");
+  const body = await json(response);
+  return {jobs: Array.isArray(body["jobs"]) ? body["jobs"] as Job[] : [],
+    next_cursor: Number(body["next_cursor"]) || after, more: body["more"] === true};
+}
+
+/** An advisory pause/resume, and DebridPulse's decision on it. */
+export async function controlJob(origin: string, browserToken: string, id: string,
+                                 kind: "pause" | "resume"): Promise<{disposition: string; reason: string}> {
+  const response = await request(origin, `/api/browser/v1/jobs/${encodeURIComponent(id)}/controls`, {
+    method: "POST", headers: {...authorized(browserToken), "Content-Type": "application/json"},
+    body: JSON.stringify({kind, request_key: crypto.randomUUID()}),
+  });
+  if (response.status === 401) throw new ServerError("unauthorized");
+  if (!response.ok) throw new ServerError("failed");
+  const body = await json(response);
+  return {disposition: String(body["disposition"] ?? ""), reason: String(body["reason"] ?? "")};
+}
+
+/** Remove: withdraw this browser's request. */
+export async function withdrawJob(origin: string, browserToken: string, id: string): Promise<void> {
+  const response = await request(origin, `/api/browser/v1/jobs/${encodeURIComponent(id)}/withdraw`, {
+    method: "POST", headers: authorized(browserToken),
+  });
+  if (response.status === 401) throw new ServerError("unauthorized");
+  if (!response.ok) throw new ServerError("failed");
 }

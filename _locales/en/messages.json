@@ -208,5 +208,125 @@
   "sendCaptureWebPage": {
     "message": "That site returned a web page instead of the file. You may need to sign in to it first.",
     "description": "Toast: capture got HTML (often a sign-in page)."
+  },
+  "listTitle": {
+    "message": "Downloads from this browser",
+    "description": "Popup: heading of the list of downloads this browser sent."
+  },
+  "listEmpty": {
+    "message": "Nothing sent from this browser yet.",
+    "description": "Popup: the list is empty."
+  },
+  "jobQueued": {
+    "message": "Waiting",
+    "description": "A download's state: accepted or queued."
+  },
+  "jobWorking": {
+    "message": "Preparing",
+    "description": "A download's state: being resolved or finalized."
+  },
+  "jobDownloading": {
+    "message": "Downloading",
+    "description": "A download's state."
+  },
+  "jobPausedHere": {
+    "message": "Paused from this browser",
+    "description": "A download's state: this browser paused it."
+  },
+  "jobPausedServer": {
+    "message": "Paused in DownloadPulse",
+    "description": "A download's state: paused by someone in DownloadPulse, or everything is paused."
+  },
+  "jobNeedsAttention": {
+    "message": "Needs attention in DownloadPulse",
+    "description": "A download's state: DownloadPulse needs the person's input."
+  },
+  "jobDone": {
+    "message": "Done",
+    "description": "A download's state: completed."
+  },
+  "jobFailed": {
+    "message": "Failed",
+    "description": "A download's state."
+  },
+  "jobRemoved": {
+    "message": "Removed",
+    "description": "A download's state: this browser withdrew it."
+  },
+  "jobPause": {
+    "message": "Pause",
+    "description": "Button on a download."
+  },
+  "jobResume": {
+    "message": "Resume",
+    "description": "Button on a download this browser paused."
+  },
+  "jobRemove": {
+    "message": "Remove",
+    "description": "Button on a download: withdraw this browser's request."
+  },
+  "controlSharedInterest": {
+    "message": "Other requests need this download, so it can't be paused from here.",
+    "description": "Beneath a download after a declined pause."
+  },
+  "controlGloballyPaused": {
+    "message": "Everything is paused in DownloadPulse right now.",
+    "description": "Beneath a download after a declined control."
+  },
+  "controlPausedElsewhere": {
+    "message": "This download was paused in DownloadPulse; resume it there.",
+    "description": "Beneath a download after a declined control."
+  },
+  "controlSettled": {
+    "message": "This download has already finished.",
+    "description": "Beneath a download after a declined control."
+  },
+  "controlFailed": {
+    "message": "That didn't work. Try again.",
+    "description": "Beneath a download after a failed control."
+  },
+  "etaAbout": {
+    "message": "about $TIME$ left",
+    "description": "A download's estimated time remaining; it is an estimate (L27).",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "5 min"
+      }
+    }
+  },
+  "etaEstimating": {
+    "message": "estimating time left",
+    "description": "A download's time remaining is not known yet."
+  },
+  "notifyCompleted": {
+    "message": "Downloaded: $NAME$",
+    "description": "Browser notification about a download.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyFailed": {
+    "message": "Failed: $NAME$",
+    "description": "Browser notification about a download.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
+  },
+  "notifyAttention": {
+    "message": "Needs attention in DownloadPulse: $NAME$",
+    "description": "Browser notification about a download.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "ubuntu.iso"
+      }
+    }
   }
 }

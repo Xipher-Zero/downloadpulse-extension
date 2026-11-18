@@ -18,3 +18,11 @@ body { margin: 0; min-width: 320px; background: var(--dp-bg); color: var(--dp-fg
 .dp-popup__facts > div { display: flex; gap: 8px; }
 .dp-popup__facts dt { min-width: 5.5em; color: var(--dp-muted); }
 .dp-popup__facts dd { margin: 0; overflow-wrap: anywhere; }
+.dp-popup__heading { margin: 8px 0 0; font-size: 13px; font-weight: 600; }
+.dp-jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 320px; overflow-y: auto; }
+.dp-job { display: grid; gap: 4px; padding: 8px; border: 1px solid var(--dp-border); border-radius: 8px; }
+.dp-job__name { font-weight: 600; overflow-wrap: anywhere; }
+.dp-job__state, .dp-job__note { color: var(--dp-muted); font-size: 12px; margin: 0; }
+.dp-job progress { width: 100%; height: 6px; }
+.dp-job__controls { display: flex; gap: 6px; }
+.dp-button--small { padding: 2px 8px; font-size: 12px; }
