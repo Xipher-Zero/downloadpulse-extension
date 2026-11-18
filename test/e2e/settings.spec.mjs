@@ -146,11 +146,10 @@ test("the dropdown and the settings page are drawn in the person's DownloadPulse
   await expect(popup.locator("html")).toHaveAttribute("data-palette-kind", "alternative");
   const settings = await options();
   await expect(settings.locator("html")).toHaveAttribute("data-palette", "nord-light");
+  // Changed while the dropdown stays open: it follows within seconds, without reopening.
   // A palette this extension doesn't know is drawn as its mode's native one.
   dp.state.appearance = {mode: "dark", dark_palette: "a-future-palette", light_palette: "nord-light"};
-  await popup.waitForTimeout(31_000);   // past the refresh interval
-  await popup.reload();
-  await expect(root).toHaveAttribute("data-palette", "debridpulse-dark", {timeout: 10_000});
+  await expect(root).toHaveAttribute("data-palette", "debridpulse-dark", {timeout: 6_000});
   expect(await background(popup)).toBe("rgb(5, 8, 20)");
 });
 
