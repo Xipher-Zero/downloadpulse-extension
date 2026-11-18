@@ -141,3 +141,32 @@ export async function readSession(origin: string, token: string): Promise<Sessio
   return {token: {id: String(token_["id"] ?? ""), label: String(token_["label"] ?? "")},
     account: {display_name: String(account["display_name"] ?? "")}};
 }
+
+export type Source =
+  | {kind: "links"; links: string[]}
+  | {kind: "magnet"; magnet: string}
+  | {kind: "torrent"; filename: string; torrent_base64: string}
+  | {kind: "nzb"; filename: string; nzb_base64: string}
+  | {kind: "metalink"; filename: string; metalink_base64: string};
+
+/** The server's answer to a submission: accepted, or refused with its code. */
+export type Submitted = {ok: true} | {ok: false; code: string; retryable: boolean};
+
+/** One submission under one idempotency key (DebridPulse BROWSER_CLIENT.md §2a). */
+export async function submitJob(origin: string, browserToken: string, key: string, source: Source): Promise<Submitted> {
+  const response = await request(origin, "/api/browser/v1/jobs", {
+    method: "POST",
+    headers: {"Content-Type": "application/json", Authorization: `Bearer ${browserToken}`},
+    body: JSON.stringify({idempotency_key: key, source}),
+  });
+  if (response.ok) return {ok: true};
+  if (response.status === 401) return {ok: false, code: "unauthorized", retryable: false};
+  let detail: Record<string, unknown> = {};
+  try {
+    detail = ((await response.json()) as {detail?: Record<string, unknown>}).detail ?? {};
+  } catch {
+    // no structured refusal
+  }
+  return {ok: false, code: typeof detail["code"] === "string" ? detail["code"] : "failed",
+    retryable: detail["retryable"] === true};
+}

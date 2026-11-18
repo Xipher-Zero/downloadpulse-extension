@@ -5,7 +5,7 @@
 import http from "node:http";
 
 export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
-  const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: []};
+  const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null};
   const server = http.createServer(async (req, res) => {
     const body = await new Promise((resolve) => {
       let data = "";
@@ -44,6 +44,12 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
       return send(200, {protocol: state.mode === "wrong-protocol" ? "debridpulse.browser/0" : "debridpulse.browser/1",
         token: {id: "tok-1", label: "Laptop-Chrome"}, account: {display_name: "Una"}});
+    }
+    if (url.pathname === "/api/browser/v1/jobs" && req.method === "POST") {
+      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
+      if (state.refuse) return send(422, {detail: {code: state.refuse, message: "refused", retryable: false}});
+      state.jobs.push({body, cookie: req.headers.cookie ?? null});
+      return send(201, {id: `job_${state.jobs.length}`, phase: "accepted"});
     }
     return send(404, {detail: "Not Found"});
   });

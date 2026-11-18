@@ -10,6 +10,7 @@ const { version } = JSON.parse(await readFile(path("package.json"), "utf8"));
 
 const ENTRIES = {
   "background": "src/background/index.ts",
+  "content": "src/content/index.ts",
   "popup/popup": "src/popup/popup.ts",
   "options/options": "src/options/options.ts",
 };

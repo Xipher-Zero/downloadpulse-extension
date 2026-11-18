@@ -114,8 +114,8 @@ async function waitForApproval(origin: string, interval: number, expiresAt: numb
     }
     const session = await readSession(origin, answer.token);
     if (generation !== active) return;
-    await saveConnection({server: origin, token: answer.token, tokenId: session.token.id,
-      label: session.token.label, account: session.account.display_name});
+    await saveConnection({server: origin, tokenId: session.token.id, label: session.token.label,
+      account: session.account.display_name}, answer.token);
     await setPairing(null);
     await badge("");
     return;

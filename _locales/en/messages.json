@@ -136,5 +136,77 @@
         "example": "Linux"
       }
     }
+  },
+  "menuSend": {
+    "message": "Download with DownloadPulse",
+    "description": "Right-click menu item on links and selected text."
+  },
+  "hoverSend": {
+    "message": "Download with DownloadPulse",
+    "description": "Accessible name and tooltip of the small button beside a download link."
+  },
+  "videoSend": {
+    "message": "Download this video with DownloadPulse",
+    "description": "Accessible name and tooltip of the button on a video player."
+  },
+  "pageActionSend": {
+    "message": "Download this video with DownloadPulse",
+    "description": "Tooltip of the icon in Firefox's address bar on pages with a video."
+  },
+  "sendDone": {
+    "message": "Sent to DownloadPulse.",
+    "description": "Toast after a download was sent."
+  },
+  "sendFailed": {
+    "message": "Couldn't send that to DownloadPulse.",
+    "description": "Toast: an unclassified failure."
+  },
+  "sendNotConnected": {
+    "message": "This browser isn't connected to DownloadPulse. Connect it from the toolbar button.",
+    "description": "Toast."
+  },
+  "sendNothingFound": {
+    "message": "No link was found in the selected text.",
+    "description": "Toast after sending a selection without URLs."
+  },
+  "sendLocalNetwork": {
+    "message": "That link is on your local network. DownloadPulse's Local Network settings don't allow it from a browser; add it with Quick Add instead.",
+    "description": "Toast: refusal code local_network_confirmation_required."
+  },
+  "sendCollectionItem": {
+    "message": "That link points to one item in a collection. Add it with Quick Add in DownloadPulse to choose the item or the whole collection.",
+    "description": "Toast: refusal code acquisition_scope_required."
+  },
+  "sendTooMany": {
+    "message": "This browser has too many unfinished downloads in DownloadPulse. Try again when some have finished.",
+    "description": "Toast: refusal code client_job_limit."
+  },
+  "sendTooLarge": {
+    "message": "That file is larger than DownloadPulse accepts.",
+    "description": "Toast."
+  },
+  "sendInvalid": {
+    "message": "DownloadPulse can't download that link.",
+    "description": "Toast: the source was refused as invalid or unsupported."
+  },
+  "sendRefused": {
+    "message": "DownloadPulse refused that download.",
+    "description": "Toast: refusal code source_refused."
+  },
+  "sendUnavailable": {
+    "message": "DownloadPulse couldn't reach that source right now. Try again later.",
+    "description": "Toast: refusal code source_unavailable."
+  },
+  "sendNoSiteAccess": {
+    "message": "The browser no longer allows DownloadPulse to read that site. Allow site access for DownloadPulse in the browser's extension settings.",
+    "description": "Toast: host access was revoked."
+  },
+  "sendCaptureFailed": {
+    "message": "That file couldn't be fetched from the site.",
+    "description": "Toast: capturing a .torrent/.nzb/.meta4 failed."
+  },
+  "sendCaptureWebPage": {
+    "message": "That site returned a web page instead of the file. You may need to sign in to it first.",
+    "description": "Toast: capture got HTML (often a sign-in page)."
   }
 }

@@ -6,6 +6,7 @@
 // DP_REAL_USER / DP_REAL_PASSWORD for its Admin:
 //   npx playwright test --config playwright.real.config.mjs
 import {test, expect, chromium} from "@playwright/test";
+import http from "node:http";
 import {mkdtemp, rm} from "node:fs/promises";
 import {tmpdir} from "node:os";
 import {join, resolve} from "node:path";
@@ -38,6 +39,33 @@ test("connect to a real DownloadPulse: sign in, approve, verified", async () => 
     await expect(popup.getByTestId("label")).toHaveText("E2E-Chromium", {timeout: 20_000});
     await expect(popup.getByTestId("server")).toHaveText("http://127.0.0.1:8095");
     await expect(popup.getByTestId("account")).toHaveText("Administrator");
+
+    // WS-E2 against the real browser jobs API: the hover icon sends a link, and
+    // DebridPulse records it as this person's request, carried by this browser.
+    // A page on a real http origin (content scripts don't run on about:blank).
+    const server = http.createServer((_, res) => {
+      res.writeHead(200, {"Content-Type": "text/html"});
+      res.end('<p style="margin:40px"><a id="dl" href="https://203.0.113.30/real/file.iso">file.iso</a></p>');
+    });
+    await new Promise((done) => server.listen(0, "127.0.0.1", done));
+    const site = await context.newPage();
+    await site.goto(`http://127.0.0.1:${server.address().port}/`);
+    const box = await site.locator("#dl").boundingBox();
+    await site.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+    await expect.poll(() => site.evaluate(() => document.querySelectorAll("downloadpulse-layer:popover-open").length)).toBe(1);
+    const layer = await site.evaluate(() => {
+      const r = document.querySelector("downloadpulse-layer:popover-open").getBoundingClientRect();
+      return {x: r.left + r.width / 2, y: r.top + r.height / 2};
+    });
+    await site.mouse.move(layer.x, layer.y, {steps: 3});
+    await site.mouse.click(layer.x, layer.y);
+    const requests = async () => page.evaluate(async () =>
+      (await (await window.debridPulseAuth.fetch("/api/requests")).json()).requests);
+    await expect.poll(async () => (await requests()).length, {timeout: 20_000}).toBe(1);
+    const [recorded] = await requests();
+    const session = await page.evaluate(async () => (await (await window.debridPulseAuth.fetch("/api/account/browsers")).json()));
+    expect(recorded.credential_id).toBe(session.browsers.find((b) => b.label === "E2E-Chromium").id);
+    server.close();
   } finally {
     await context.close();
     await rm(profile, {recursive: true, force: true});

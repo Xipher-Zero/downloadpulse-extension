@@ -21,12 +21,13 @@ export function manifest(browser, version) {
       default_icon: { 16: "icons/icon-16.png", 32: "icons/icon-32.png" },
     },
     options_ui: { page: "options/options.html", open_in_tab: true },
-    permissions: ["storage"],
-    // A DownloadPulse on this computer (Docker's and the desktop
-    // application's default port): probed when the person connects (WS-E1 B2).
-    host_permissions: ["http://127.0.0.1/*", "http://localhost/*"],
-    // A server elsewhere: asked for, per origin, when the person names it (L20).
-    optional_host_permissions: ["http://*/*", "https://*/*"],
+    permissions: ["storage", "contextMenus"],
+    // Every site (WS-E2 B9): a .torrent/.nzb/.meta4 is captured from whatever
+    // site serves it, with the person's own login there (spike S1); the
+    // in-page surfaces run everywhere. This includes a DownloadPulse on this
+    // computer (WS-E1 B2) and any server the person names (L20).
+    host_permissions: ["<all_urls>"],
+    content_scripts: [{matches: ["<all_urls>"], js: ["content.js"], all_frames: true, run_at: "document_idle"}],
   };
   if (browser === "chromium") {
     return { ...shared, background: { service_worker: "background.js" }, minimum_chrome_version: "120" };
@@ -34,6 +35,8 @@ export function manifest(browser, version) {
   return {
     ...shared,
     background: { scripts: ["background.js"] },
+    // The URL-bar icon, shown on a page whose content script saw a video (WS-E2 B4).
+    page_action: { default_title: "__MSG_pageActionSend__", default_icon: { 16: "icons/icon-16.png", 32: "icons/icon-32.png" } },
     browser_specific_settings: {
       gecko: { id: FIREFOX_ADDON_ID, strict_min_version: "140.0", data_collection_permissions: { required: ["none"] } },
     },
