@@ -25,6 +25,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
     if (url.pathname === "/") return send(200, "<html><body>approval page</body></html>", "text/html");
     if (url.pathname === "/api/browser/v1/pairings" && req.method === "POST") {
       if (state.mode === "too-old") return send(404, {detail: "Not Found"});
+      // An older DownloadPulse refuses an extension origin before routing.
+      if (state.mode === "forbidden-origin") return send(403, "Forbidden origin", "text/plain");
       state.lastClientName = body.client_name;
       const userCode = `ABCD-${String(state.pairings.size + 1).padStart(4, "0")}`;
       const deviceCode = `device-${userCode}`;
@@ -63,6 +65,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       state.jobs.push({body, cookie: req.headers.cookie ?? null});
       const id = `job_${state.jobs.length}`;
       touch({id, submitted_at: new Date().toISOString(), display_name: body.display_name ?? "",
+        name: body.display_name || "placeholder",
         source: {kind: body.source?.kind}, phase: "accepted", reason: "awaiting_resolution", actionability: "wait",
         paused_by: null, progress: null, estimate: null});
       return send(201, state.views.get(id));

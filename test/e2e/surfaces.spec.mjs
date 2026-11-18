@@ -141,6 +141,8 @@ test("the video button sends the page's own address", async () => {
   await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   await expect.poll(() => dp.state.jobs.length).toBe(1);
   expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: [`${site.base}/page`]});
+  // A page's path ("page", YouTube's "watch") is no file name: none is sent.
+  expect(dp.state.jobs[0].body.display_name).toBeUndefined();
 });
 
 test("not connected: nothing is offered on any page", async () => {

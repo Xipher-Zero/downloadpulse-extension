@@ -50,6 +50,9 @@
   "popupStartAgain": {
     "message": "फिर से शुरू करें"
   },
+  "popupOrServer": {
+    "message": "या किसी DownloadPulse सर्वर से कनेक्ट करें:"
+  },
   "popupConnected": {
     "message": "कनेक्ट है"
   },

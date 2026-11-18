@@ -50,6 +50,9 @@
   "popupStartAgain": {
     "message": "Baştan başla"
   },
+  "popupOrServer": {
+    "message": "Ya da bir DownloadPulse sunucusuna bağlanın:"
+  },
   "popupConnected": {
     "message": "Bağlı"
   },

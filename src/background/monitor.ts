@@ -71,7 +71,9 @@ async function restoreIcon(): Promise<void> {
 
 function jobName(job: Job): string {
   const source = job.source ?? {};
-  return job.display_name || String(source["name"] ?? "") || String((source["hosts"] as string[] | undefined)?.[0] ?? "")
+  // DownloadPulse's own title first: it follows the transfer (a media
+  // download's resolved title replaces its link's placeholder).
+  return job.name || job.display_name || String(source["name"] ?? "") || String((source["hosts"] as string[] | undefined)?.[0] ?? "")
     || String(source["kind"] ?? "");
 }
 

@@ -41,6 +41,12 @@
     <section data-state="failed" hidden>
       <p class="dp-popup__error" role="alert" data-testid="failure"></p>
       <button type="button" class="dp-button" data-action="cancel" data-i18n="popupStartAgain"></button>
+      <form class="dp-popup__remote" data-action="connect-remote">
+        <label class="dp-popup__label" for="server-again" data-i18n="popupOrServer"></label>
+        <input id="server-again" name="server" type="text" autocomplete="url" spellcheck="false" required
+               data-i18n-placeholder="popupServerPlaceholder">
+        <button type="submit" class="dp-button dp-button--primary" data-i18n="popupConnectServer"></button>
+      </form>
     </section>
 
     <section data-state="connected" hidden>

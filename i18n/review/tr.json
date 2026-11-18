@@ -770,6 +770,14 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "popupOrServer": {
+      "source": "0707e1e71fbde276",
+      "translation": "370e33de64c05d0f",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

@@ -50,6 +50,9 @@
   "popupStartAgain": {
     "message": "重新开始"
   },
+  "popupOrServer": {
+    "message": "或连接到DownloadPulse服务器："
+  },
   "popupConnected": {
     "message": "已连接"
   },

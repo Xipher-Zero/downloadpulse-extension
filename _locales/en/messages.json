@@ -418,5 +418,9 @@
         "example": "example.com"
       }
     }
+  },
+  "popupOrServer": {
+    "message": "Or connect to a DownloadPulse server:",
+    "description": "Popup, after a failure: label of the server address field, offered so a failing DownloadPulse on this computer never traps the person."
   }
 }

@@ -50,6 +50,9 @@
   "popupStartAgain": {
     "message": "처음부터 다시"
   },
+  "popupOrServer": {
+    "message": "또는 DownloadPulse 서버에 연결:"
+  },
   "popupConnected": {
     "message": "연결됨"
   },

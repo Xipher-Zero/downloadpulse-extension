@@ -50,6 +50,9 @@
   "popupStartAgain": {
     "message": "Mulai lagi"
   },
+  "popupOrServer": {
+    "message": "Atau hubungkan ke server DownloadPulse:"
+  },
   "popupConnected": {
     "message": "Terhubung"
   },

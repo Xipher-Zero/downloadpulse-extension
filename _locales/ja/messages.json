@@ -50,6 +50,9 @@
   "popupStartAgain": {
     "message": "最初からやり直す"
   },
+  "popupOrServer": {
+    "message": "または DownloadPulse サーバーに接続："
+  },
   "popupConnected": {
     "message": "接続済み"
   },

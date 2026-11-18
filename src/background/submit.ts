@@ -88,7 +88,10 @@ function displayName(source: Source): string {
   if (source.kind === "links") {
     if (source.links.length !== 1) return "";
     try {
-      return decodeURIComponent(new URL(source.links[0]!).pathname.split("/").pop() ?? "");
+      // Only a real file name (it has an extension): a page's path (YouTube's
+      // "watch") is no name, and DownloadPulse's own title is shown instead.
+      const last = decodeURIComponent(new URL(source.links[0]!).pathname.split("/").pop() ?? "");
+      return /\.[A-Za-z0-9]{1,8}$/.test(last) ? last : "";
     } catch {
       return "";
     }

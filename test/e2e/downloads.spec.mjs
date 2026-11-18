@@ -76,6 +76,9 @@ test("a sent download is listed by name with its state, progress and labelled es
   await expect(row(id).locator("progress")).toHaveAttribute("value", "42");
   dp.setJob(id, {estimate: {seconds: null, held: false, estimated: true, indeterminate: true}});
   await expect(row(id).locator(".dp-job__state")).toHaveText("Downloading · 42% · estimating time left");
+  // DownloadPulse resolves the title: the list follows it.
+  dp.setJob(id, {name: "The Real Title [abc123].webm"});
+  await expect(row(id).locator(".dp-job__name")).toHaveText("The Real Title [abc123].webm");
 });
 
 test("pause and resume are this browser's own; a declined pause says why", async () => {

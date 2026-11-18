@@ -50,6 +50,9 @@
   "popupStartAgain": {
     "message": "Почати знову"
   },
+  "popupOrServer": {
+    "message": "Або підключіться до сервера DownloadPulse:"
+  },
   "popupConnected": {
     "message": "Підключено"
   },

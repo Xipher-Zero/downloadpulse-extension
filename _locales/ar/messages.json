@@ -50,6 +50,9 @@
   "popupStartAgain": {
     "message": "البدء من جديد"
   },
+  "popupOrServer": {
+    "message": "أو اربط المتصفح بخادم DownloadPulse:"
+  },
   "popupConnected": {
     "message": "مرتبط"
   },

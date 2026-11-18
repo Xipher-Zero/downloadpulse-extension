@@ -68,7 +68,9 @@ function estimate(job: Job): string {
 
 function jobName(job: Job): string {
   const source = job.source ?? {};
-  return job.display_name || String(source["name"] ?? "") || String((source["hosts"] as string[] | undefined)?.[0] ?? "")
+  // DownloadPulse's own title first: it follows the transfer (a media
+  // download's resolved title replaces its link's placeholder).
+  return job.name || job.display_name || String(source["name"] ?? "") || String((source["hosts"] as string[] | undefined)?.[0] ?? "")
     || String(source["kind"] ?? "");
 }
 
@@ -230,10 +232,13 @@ document.addEventListener("click", (event) => {
   const action = (event.target as HTMLElement).closest<HTMLElement>("button[data-action]")?.dataset["action"];
   if (action === "connect-local" || action === "cancel") void chrome.runtime.sendMessage({type: action});
 });
-document.querySelector<HTMLFormElement>('form[data-action="connect-remote"]')?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  void connectRemote(event.currentTarget as HTMLFormElement);
-});
+// Both server forms: after nothing was found here, and after any failure.
+for (const form of document.querySelectorAll<HTMLFormElement>('form[data-action="connect-remote"]')) {
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    void connectRemote(event.currentTarget as HTMLFormElement);
+  });
+}
 chrome.storage.onChanged.addListener(() => void render());
 void render();
 // While the popup is open, the list is kept fresh (WS-E3 B1).

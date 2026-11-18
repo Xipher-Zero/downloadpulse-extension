@@ -86,6 +86,7 @@ for (const [mode, answer, text] of [
   ["current", "denied", "The connection was denied in DownloadPulse."],
   ["current", "expired", "The connection request expired. Start again."],
   ["too-old", null, "This DownloadPulse is too old to connect browsers. Update it, then connect again."],
+  ["forbidden-origin", null, "This DownloadPulse is too old to connect browsers. Update it, then connect again."],
   ["wrong-protocol", "approved", "This DownloadPulse is too old to connect browsers. Update it, then connect again."],
   ["not-downloadpulse", null, "Something answered at that address, but it isn't DownloadPulse."],
 ]) {
@@ -109,3 +110,22 @@ for (const [mode, answer, text] of [
     }
   });
 }
+
+test("an older DownloadPulse on this computer says so, and a server can still be chosen from there", async () => {
+  const old = await fakeDownloadPulse({port: 8095, mode: "forbidden-origin"});
+  const current = await fakeDownloadPulse();
+  const {popup, close} = await launch();
+  try {
+    await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+    await expect(popup.getByTestId("failure")).toHaveText("This DownloadPulse is too old to connect browsers. Update it, then connect again.");
+    await popup.getByLabel("Or connect to a DownloadPulse server:").fill(`http://localhost:${current.port}`);
+    await popup.locator('section[data-state="failed"]').getByRole("button", {name: "Connect to this server"}).click();
+    await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
+    current.answer("approved");
+    await expect(popup.getByTestId("server")).toHaveText(`http://localhost:${current.port}`, {timeout: 15_000});
+  } finally {
+    await close();
+    await old.close();
+    await current.close();
+  }
+});

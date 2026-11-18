@@ -92,7 +92,10 @@ export async function startPairing(origin: string, clientName: string): Promise<
   const response = await request(origin, "/api/browser/v1/pairings", {
     method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({client_name: clientName}),
   });
-  if (response.status === 404 || response.status === 405) throw new ServerError("too_old");
+  // A current DownloadPulse admits this request from an extension, with no
+  // credential. An older one refuses it before any route: Forbidden origin
+  // (403), sign-in required (401), or no such route (404/405).
+  if ([401, 403, 404, 405].includes(response.status)) throw new ServerError("too_old");
   if (!response.ok) throw new ServerError("failed");
   const body = await json(response);
   if (body["protocol"] !== PROTOCOL || typeof body["device_code"] !== "string" || typeof body["user_code"] !== "string"
@@ -178,6 +181,8 @@ export interface Job {
   cursor: number;
   submitted_at: string | null;
   display_name: string;
+  /** The transfer's title as DownloadPulse shows it (its Downloads list's own), once known. */
+  name?: string | null;
   source: Record<string, unknown>;
   phase: "accepted" | "queued" | "processing" | "completed" | "failed" | "withdrawn";
   reason: string | null;
