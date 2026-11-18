@@ -7,6 +7,7 @@
 // shows the state, and an extension API call keeps the background alive
 // where a fetch alone does not (spike S2).
 
+import {saveAppearance} from "../shared/appearance";
 import {deviceCode, saveConnection, setPairing} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {
@@ -42,17 +43,29 @@ function browserName(): string {
   return named?.replace(/^Google /, "") || "Chromium";
 }
 
-/** B2: look for a DownloadPulse on this computer, then pair with it. */
+/**
+ * B2: look for a DownloadPulse on this computer. One found is offered, not
+ * paired: the person chooses it or a different DownloadPulse (operator,
+ * 2026-11-18).
+ */
 export async function connectLocal(): Promise<void> {
   const generation = ++active;
   await setPairing({state: "probing"});
   for (const origin of LOCAL_ORIGINS) {
     if (await probe(origin) === "downloadpulse") {
-      await pair(origin, generation);
+      if (generation === active) await setPairing({state: "found", server: origin});
       return;
     }
   }
   if (generation === active) await setPairing({state: "not_found"});
+}
+
+/** The person chose the DownloadPulse found on this computer. */
+export async function pairLocal(origin: string): Promise<void> {
+  if (!(LOCAL_ORIGINS as readonly string[]).includes(origin)) return;
+  const generation = ++active;
+  await setPairing({state: "probing"});
+  await pair(origin, generation);
 }
 
 /** B3: a server the person named (its origin access already granted by the popup). */
@@ -116,6 +129,7 @@ async function waitForApproval(origin: string, interval: number, expiresAt: numb
     if (generation !== active) return;
     await saveConnection({server: origin, tokenId: session.token.id, label: session.token.label,
       account: session.account.display_name}, answer.token);
+    await saveAppearance(session.appearance);
     await setPairing(null);
     await badge("");
     return;

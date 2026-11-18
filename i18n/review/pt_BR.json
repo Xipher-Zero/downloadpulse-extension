@@ -400,8 +400,8 @@
       ]
     },
     "listTitle": {
-      "source": "d58dc2c14941acca",
-      "translation": "8b4a29f49e92c977",
+      "source": "9b7f099826eda094",
+      "translation": "fc7e7a90466c7489",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -546,22 +546,6 @@
     "controlFailed": {
       "source": "d010a8621f3358d1",
       "translation": "a156ccab0f7c9275",
-      "provenance": [
-        "ai-generated",
-        "ai-review"
-      ]
-    },
-    "etaAbout": {
-      "source": "fe479452389bde3c",
-      "translation": "152cd30342a0bbb2",
-      "provenance": [
-        "ai-generated",
-        "ai-review"
-      ]
-    },
-    "etaEstimating": {
-      "source": "73573e60f5d8c0d1",
-      "translation": "ea12bf699c72009e",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -774,6 +758,78 @@
     "popupOrServer": {
       "source": "0707e1e71fbde276",
       "translation": "3173632e20e8a0ae",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupFoundLocal": {
+      "source": "e13d323a86be8b26",
+      "translation": "f63a8331feb6eb39",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupConnectThisComputer": {
+      "source": "9b67822d99a83fd4",
+      "translation": "8a3a24e7e7a51536",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupConnectDifferent": {
+      "source": "e6bb72977c93cbd9",
+      "translation": "a5d7bb3058cfc4dc",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupChecking": {
+      "source": "de9fc337d5990009",
+      "translation": "65fe5d99b01eebd6",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupUnreachable": {
+      "source": "562f1bedc453ff77",
+      "translation": "479e13c8b9d5c4a1",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupConnectionDetails": {
+      "source": "51bfffbcdbcfbc00",
+      "translation": "c8f61933216f2289",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupLocalInstance": {
+      "source": "754b4e097f5535a6",
+      "translation": "3814441edcfea79f",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupBack": {
+      "source": "76900f1bfd16c8d4",
+      "translation": "59dc926760d04aea",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "etaShort": {
+      "source": "71aacc03aa2cbdbe",
+      "translation": "772fb9a6f67fc150",
       "provenance": [
         "ai-generated",
         "ai-review"

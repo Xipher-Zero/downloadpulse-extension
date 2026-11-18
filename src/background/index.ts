@@ -5,15 +5,17 @@
 // B8) and, in Firefox, the URL-bar icon (page action, WS-E2 B4).
 
 import {connection, forgetConnection, token} from "../shared/connection";
-import {controlJob, disconnectBrowser, withdrawJob} from "../shared/server";
+import {controlJob, disconnectBrowser, isLocal, showApplication, withdrawJob} from "../shared/server";
 import {isOffSite, settings} from "../shared/settings";
+import {refreshAppearance} from "./appearance";
 import {popupOpen, wake} from "./monitor";
 import {message} from "../shared/i18n";
-import {cancel, connectLocal, connectRemote} from "./pairing";
+import {cancel, connectLocal, connectRemote, pairLocal} from "./pairing";
 import {sendSelection, sendUrl} from "./submit";
 
 type Request =
-  | {type: "connect-local"} | {type: "connect-remote"; address: string} | {type: "cancel"}
+  | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string}
+  | {type: "cancel"} | {type: "dp-open"}
   | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-has-video"}
   | {type: "dp-popup-open"} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
   | {type: "dp-disconnect"};
@@ -33,6 +35,20 @@ async function disconnect(): Promise<{revoked: boolean}> {
   }
   await forgetConnection();
   return {revoked};
+}
+
+/**
+ * Open DownloadPulse: the installed desktop application on this computer
+ * brings its own window forward; anything else (a server, an older
+ * DownloadPulse, no answer) opens in a tab. Answers whether a tab opened.
+ */
+async function openDownloadPulse(): Promise<{tab: boolean}> {
+  const connected = await connection();
+  if (!connected) return {tab: false};
+  const browserToken = await token();
+  if (isLocal(connected.server) && browserToken && await showApplication(connected.server, browserToken)) return {tab: false};
+  await chrome.tabs.create({url: `${connected.server}/`});
+  return {tab: true};
 }
 
 /** What a frame may offer: nothing unless connected, then as the settings say for its tab's site. */
@@ -103,9 +119,19 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
   const fromPage = !String(sender.url ?? "").startsWith(chrome.runtime.getURL(""));
   switch (request.type) {
     case "connect-local": if (!fromPage) void connectLocal(); return undefined;
+    case "pair-local": if (!fromPage) void pairLocal(String(request.origin || "")); return undefined;
     case "connect-remote": if (!fromPage) void connectRemote(String(request.address || "")); return undefined;
+    case "dp-open":
+      if (fromPage) return undefined;
+      void openDownloadPulse().then(respond);
+      return true;
     case "cancel": if (!fromPage) void cancel(); return undefined;
-    case "dp-popup-open": if (!fromPage) popupOpen(); return undefined;
+    case "dp-popup-open":
+      if (!fromPage) {
+        popupOpen();
+        void refreshAppearance();
+      }
+      return undefined;
     case "dp-disconnect":
       if (fromPage) return undefined;
       void disconnect().then(respond);

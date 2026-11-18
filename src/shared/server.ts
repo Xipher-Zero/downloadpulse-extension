@@ -5,6 +5,15 @@
 
 export const PROTOCOL = "debridpulse.browser/1";
 export const LOCAL_ORIGINS = ["http://127.0.0.1:8095", "http://localhost:8095"] as const;
+
+/** DownloadPulse on this computer: a loopback origin (the desktop application, or a local install). */
+export function isLocal(origin: string): boolean {
+  try {
+    return ["127.0.0.1", "localhost", "[::1]"].includes(new URL(origin).hostname);
+  } catch {
+    return false;
+  }
+}
 const TIMEOUT_MS = 8000;
 
 export type Failure =
@@ -129,6 +138,8 @@ export async function pollPairing(origin: string, deviceCode: string): Promise<P
 export interface Session {
   token: {id: string; label: string};
   account: {display_name: string};
+  /** The person's appearance, by palette ID (a current DownloadPulse; absent from an older one). */
+  appearance?: unknown;
 }
 
 /** The server's own account of this token: how a pairing is verified (L19). */
@@ -142,7 +153,7 @@ export async function readSession(origin: string, token: string): Promise<Sessio
   const account = body["account"] as Record<string, unknown> | undefined;
   if (body["protocol"] !== PROTOCOL || !token_ || !account) throw new ServerError("too_old");
   return {token: {id: String(token_["id"] ?? ""), label: String(token_["label"] ?? "")},
-    account: {display_name: String(account["display_name"] ?? "")}};
+    account: {display_name: String(account["display_name"] ?? "")}, appearance: body["appearance"]};
 }
 
 export type Source =
@@ -229,6 +240,20 @@ export async function withdrawJob(origin: string, browserToken: string, id: stri
   });
   if (response.status === 401) throw new ServerError("unauthorized");
   if (!response.ok) throw new ServerError("failed");
+}
+
+/**
+ * Open DownloadPulse, for the installed desktop application: it brings its
+ * own window forward. True when it will; false for a server (it has no
+ * window), an older DownloadPulse, or any failure -- the page is opened instead.
+ */
+export async function showApplication(origin: string, browserToken: string): Promise<boolean> {
+  try {
+    const response = await request(origin, "/api/browser/v1/application/show", {method: "POST", headers: authorized(browserToken)});
+    return response.ok && (await json(response))["desktop"] === true;
+  } catch {
+    return false;
+  }
 }
 
 /** The extension's Disconnect: this browser's token revokes itself on the server. */

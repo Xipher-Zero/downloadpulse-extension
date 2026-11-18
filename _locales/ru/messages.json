@@ -160,7 +160,7 @@
     "message": "Сайт вернул веб-страницу вместо файла. Возможно, сначала нужно войти на сайт."
   },
   "listTitle": {
-    "message": "Загрузки из этого браузера"
+    "message": "Отправленные загрузки:"
   },
   "listEmpty": {
     "message": "Из этого браузера пока ничего не отправлено."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "Не получилось. Повторите попытку."
-  },
-  "etaAbout": {
-    "message": "осталось около $TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "оценка оставшегося времени"
   },
   "notifyCompleted": {
     "message": "Загружено: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse запущен на этом компьютере."
+  },
+  "popupConnectThisComputer": {
+    "message": "Подключиться к DownloadPulse на этом компьютере"
+  },
+  "popupConnectDifferent": {
+    "message": "Подключиться к другому DownloadPulse"
+  },
+  "popupChecking": {
+    "message": "Проверка подключения…"
+  },
+  "popupUnreachable": {
+    "message": "DownloadPulse недоступен"
+  },
+  "popupConnectionDetails": {
+    "message": "Сведения о подключении"
+  },
+  "popupLocalInstance": {
+    "message": "Локально установленный экземпляр"
+  },
+  "popupBack": {
+    "message": "Назад"
+  },
+  "etaShort": {
+    "message": "Осталось: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

@@ -34,6 +34,7 @@ test.beforeEach(async () => {
   popup = await context.newPage();
   await popup.goto(`chrome-extension://${new URL(worker.url()).host}/popup/popup.html`);
   await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+  await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
   await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
@@ -65,30 +66,72 @@ async function sendArchive() {
 }
 
 const row = (id) => popup.locator(`li[data-job-id="${id}"]`);
+// The status line as read: the estimate's time is a left-to-right isolate (U+2066..U+2069).
+const stateOf = (id) => row(id).locator(".dp-job__state").evaluate((el) => el.textContent.replace(/[\u2066\u2069]/g, ""));
+const colour = (locator) => locator.evaluate((el) => getComputedStyle(el).color);
 
-test("a sent download is listed by name with its state, progress and labelled estimate", async () => {
+test("a sent download: its name on one line, its status in DownloadPulse's colour, a compact estimate", async () => {
   const id = await sendArchive();
   await expect(row(id).locator(".dp-job__name")).toHaveText("archive.zip");
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Waiting");
+  await expect.poll(() => stateOf(id)).toBe("Waiting");
+  await expect(row(id)).toHaveAttribute("data-tone", "queued");
   dp.setJob(id, {phase: "processing", reason: "downloading", progress: {percent: 10, effective: {percent: 42}},
     estimate: {seconds: 300, held: false, estimated: false, indeterminate: false}});
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Downloading · 42% · about 5 min left");
-  await expect(row(id).locator("progress")).toHaveAttribute("value", "42");
+  await expect.poll(() => stateOf(id)).toBe("Downloading · ETA: 5:00");
+  await expect(row(id)).toHaveAttribute("data-tone", "downloading");
+  expect(await colour(row(id).locator(".dp-job__status"))).toBe("rgb(0, 230, 118)");   // DownloadPulse's success green (Dark, as the person chose)
+  await expect(row(id).getByTestId("percent")).toHaveText("42%");
+  await expect(row(id).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "42");
+  for (const [seconds, shown] of [[45, "0:45"], [1992, "33:12"], [3725, "1:02:05"]]) {
+    dp.setJob(id, {estimate: {seconds, held: false, estimated: false, indeterminate: false}});
+    await expect.poll(() => stateOf(id)).toBe(`Downloading · ETA: ${shown}`);
+  }
   dp.setJob(id, {estimate: {seconds: null, held: false, estimated: true, indeterminate: true}});
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Downloading · 42% · estimating time left");
-  // DownloadPulse resolves the title: the list follows it.
-  dp.setJob(id, {name: "The Real Title [abc123].webm"});
-  await expect(row(id).locator(".dp-job__name")).toHaveText("The Real Title [abc123].webm");
+  await expect.poll(() => stateOf(id)).toBe("Downloading · ETA: ∞");
+  // The percent has a slot of its own, reserved: the bar keeps its length from no figure to 100%.
+  const barWidth = () => row(id).getByRole("progressbar").evaluate((el) => el.getBoundingClientRect().width);
+  const widths = [];
+  for (const percent of [null, 1, 100]) {
+    dp.setJob(id, {progress: {percent, effective: {percent}}});
+    await expect(row(id).getByTestId("percent")).toHaveText(percent === null ? "" : `${percent}%`);
+    widths.push(await barWidth());
+  }
+  expect(new Set(widths).size).toBe(1);
+  // DownloadPulse resolves the title: the list follows it, on one line, cut, its whole name its tooltip.
+  const title = "The Real Title Of A Rather Long Video Somebody Uploaded With 100% True Words [abc123].webm";
+  dp.setJob(id, {name: title});
+  await expect(row(id).locator(".dp-job__name")).toHaveText(title);
+  await expect(row(id).locator(".dp-job__name")).toHaveAttribute("title", title);
+  const name = await row(id).locator(".dp-job__name").evaluate((el) => ({
+    lines: Math.round(el.getBoundingClientRect().height / parseFloat(getComputedStyle(el).lineHeight)),
+    cut: el.scrollWidth > el.clientWidth}));
+  expect(name).toEqual({lines: 1, cut: true});
+  // Paused: yellow; failed: red; done: no colour.
+  dp.setJob(id, {reason: "paused", paused_by: "client"});
+  await expect(row(id)).toHaveAttribute("data-tone", "paused");
+  expect(await colour(row(id).locator(".dp-job__status"))).toBe("rgb(255, 193, 61)");
+  dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});
+  await expect(row(id)).toHaveAttribute("data-tone", "failed");
+  expect(await colour(row(id).locator(".dp-job__status"))).toBe("rgb(255, 82, 100)");
+  await expect(row(id).getByRole("button")).toHaveCount(0);
+  await expect(row(id).getByRole("progressbar")).toHaveCount(0);
+  dp.setJob(id, {phase: "completed", reason: "completed", actionability: "none"});
+  await expect(row(id)).toHaveAttribute("data-tone", "none");
 });
 
-test("pause and resume are this browser's own; a declined pause says why", async () => {
+test("pause and resume are this browser's own glyph buttons, on the status line; a declined pause says why", async () => {
   const id = await sendArchive();
   dp.setJob(id, {phase: "processing", reason: "downloading"});
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Downloading");
-  await row(id).getByRole("button", {name: "Pause"}).click();
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Paused from this browser");
-  await row(id).getByRole("button", {name: "Resume"}).click();
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Downloading");
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
+  const line = row(id).locator(".dp-job__line");
+  await expect(line.getByRole("button", {name: "Pause"}).locator("svg[data-glyph='pause']")).toHaveCount(1);
+  await expect(line.getByRole("button", {name: "Remove"}).locator("svg[data-glyph='trash2']")).toHaveCount(1);
+  await expect(line.getByRole("button", {name: "Remove"})).toHaveClass(/dp-glyph-btn--danger/);
+  await line.getByRole("button", {name: "Pause"}).click();
+  await expect.poll(() => stateOf(id)).toBe("Paused from this browser");
+  await expect(line.getByRole("button", {name: "Resume"}).locator("svg[data-glyph='play']")).toHaveCount(1);
+  await line.getByRole("button", {name: "Resume"}).click();
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
   expect(dp.state.controls.map((c) => c.kind)).toEqual(["pause", "resume"]);
   expect(new Set(dp.state.controls.map((c) => c.request_key)).size).toBe(2);
   dp.state.declineControl = "shared_interest";
@@ -96,8 +139,42 @@ test("pause and resume are this browser's own; a declined pause says why", async
   await expect(row(id).locator(".dp-job__note")).toHaveText("Other requests need this download, so it can't be paused from here.");
 });
 
-test("the popup links to DownloadPulse, and opened for a download it shows that one", async () => {
-  await expect(popup.getByRole("link", {name: "Open DownloadPulse"})).toHaveAttribute("href", "http://127.0.0.1:8095/");
+test("the connection's status: green while DownloadPulse answers, yellow while it can't be reached", async () => {
+  const reach = popup.getByTestId("reach");
+  await expect(reach).toHaveAttribute("data-reach", "ok", {timeout: 15_000});
+  await expect(reach).toHaveText("Connected");
+  expect(await colour(reach)).toBe("rgb(0, 230, 118)");
+  dp.state.down = true;
+  await expect(reach).toHaveAttribute("data-reach", "unreachable", {timeout: 15_000});
+  await expect(reach).toHaveText("Can't reach DownloadPulse");
+  expect(await colour(reach)).toBe("rgb(255, 193, 61)");
+  await expect(popup.getByTestId("account")).toHaveText("Una");   // still connected: nothing forgotten
+  dp.state.down = false;
+  await expect(reach).toHaveAttribute("data-reach", "ok", {timeout: 15_000});
+});
+
+test("Open DownloadPulse: a server opens in a tab; the desktop application comes forward instead", async () => {
+  const open = popup.getByRole("button", {name: "Open DownloadPulse"});
+  await expect(open).toHaveClass(/dp-btn--ghost/);
+  const url = popup.url();
+  const tab = context.waitForEvent("page");
+  await open.click();
+  expect((await tab).url()).toBe("http://127.0.0.1:8095/");
+  expect(dp.state.shows).toBe(0);
+  // Having opened something, the dropdown closes itself, as a toolbar dropdown does.
+  await expect.poll(() => popup.isClosed()).toBe(true);
+  dp.state.desktop = true;
+  const again = await context.newPage();
+  await again.goto(url);
+  const pages = context.pages().length;
+  await again.getByRole("button", {name: "Open DownloadPulse"}).click();
+  await expect.poll(() => dp.state.shows).toBe(1);
+  await new Promise((done) => setTimeout(done, 1000));
+  expect(context.pages().filter((page) => page.url() === "http://127.0.0.1:8095/").length).toBe(1);   // no second tab
+  expect(context.pages().length).toBeLessThanOrEqual(pages);
+});
+
+test("opened for a download, the dropdown shows that one", async () => {
   const id = await sendArchive();
   await expect(row(id)).toBeVisible();
   // As a notification click opens it where the browser opens no toolbar popup from code.
@@ -108,16 +185,16 @@ test("the popup links to DownloadPulse, and opened for a download it shows that 
 test("Remove withdraws this browser's request", async () => {
   const id = await sendArchive();
   await row(id).getByRole("button", {name: "Remove"}).click();
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Removed");
+  await expect.poll(() => stateOf(id)).toBe("Removed");
   await expect(row(id).getByRole("button")).toHaveCount(0);
 });
 
 test("completion and failure each raise one notification", async () => {
   const id = await sendArchive();
   dp.setJob(id, {phase: "processing", reason: "downloading"});
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Downloading");
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
   dp.setJob(id, {phase: "completed", reason: "completed", actionability: "none"});
-  await expect(row(id).locator(".dp-job__state")).toHaveText("Done");
+  await expect.poll(() => stateOf(id)).toBe("Done");
   const notifications = () => popup.evaluate(() => new Promise((done) => chrome.notifications.getAll(done)));
   await expect.poll(async () => Object.keys(await notifications())).toEqual([`dp:${id}:completed`]);
   dp.setJob(id, {reason: "completed"});   // another change of the same completed job: no second notice

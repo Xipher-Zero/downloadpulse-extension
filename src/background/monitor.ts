@@ -12,6 +12,7 @@ import {message} from "../shared/i18n";
 import {listJobs, ServerError, type Job} from "../shared/server";
 
 const JOBS = "jobs";
+const REACH = "reach";   // whether the last look reached DownloadPulse: {ok, at}
 const CURSOR = "jobsCursor";
 const NOTIFIED = "jobsNotified";
 const ALARM = "dp-monitor";
@@ -121,10 +122,12 @@ async function poll(): Promise<boolean> {
       await forgetConnection(true);
       return false;
     }
+    await chrome.storage.session.set({[REACH]: {ok: false, at: Date.now()}});
     return true;   // unreachable for now: try again next time
   }
   const kept = Object.values(jobs).sort((a, b) => b.cursor - a.cursor).slice(0, KEEP);
-  await chrome.storage.session.set({[JOBS]: Object.fromEntries(kept.map((job) => [job.id, job])), [CURSOR]: cursor});
+  await chrome.storage.session.set({[JOBS]: Object.fromEntries(kept.map((job) => [job.id, job])), [CURSOR]: cursor,
+    [REACH]: {ok: true, at: Date.now()}});
   return true;
 }
 

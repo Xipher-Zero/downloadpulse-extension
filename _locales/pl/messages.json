@@ -160,7 +160,7 @@
     "message": "Witryna zwróciła stronę internetową zamiast pliku. Może być konieczne wcześniejsze zalogowanie się w niej."
   },
   "listTitle": {
-    "message": "Pobrania z tej przeglądarki"
+    "message": "Wysłane pobrania:"
   },
   "listEmpty": {
     "message": "Z tej przeglądarki nie wysłano jeszcze niczego."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "Nie udało się. Należy spróbować ponownie."
-  },
-  "etaAbout": {
-    "message": "pozostało około $TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "szacowanie pozostałego czasu"
   },
   "notifyCompleted": {
     "message": "Pobrano: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse działa na tym komputerze."
+  },
+  "popupConnectThisComputer": {
+    "message": "Połącz z DownloadPulse na tym komputerze"
+  },
+  "popupConnectDifferent": {
+    "message": "Połącz z innym DownloadPulse"
+  },
+  "popupChecking": {
+    "message": "Sprawdzanie połączenia…"
+  },
+  "popupUnreachable": {
+    "message": "Nie można połączyć się z DownloadPulse"
+  },
+  "popupConnectionDetails": {
+    "message": "Szczegóły połączenia"
+  },
+  "popupLocalInstance": {
+    "message": "Instancja zainstalowana lokalnie"
+  },
+  "popupBack": {
+    "message": "Wstecz"
+  },
+  "etaShort": {
+    "message": "Zostało: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

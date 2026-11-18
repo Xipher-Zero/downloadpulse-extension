@@ -160,7 +160,7 @@
     "message": "该网站返回了网页而不是文件。您可能需要先登录该网站。"
   },
   "listTitle": {
-    "message": "来自此浏览器的下载"
+    "message": "已发送的下载："
   },
   "listEmpty": {
     "message": "尚未从此浏览器发送任何内容。"
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "操作未成功。请重试。"
-  },
-  "etaAbout": {
-    "message": "大约还剩$TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "正在估算剩余时间"
   },
   "notifyCompleted": {
     "message": "已下载：$NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse正在此计算机上运行。"
+  },
+  "popupConnectThisComputer": {
+    "message": "连接到此计算机上的DownloadPulse"
+  },
+  "popupConnectDifferent": {
+    "message": "连接到其他DownloadPulse"
+  },
+  "popupChecking": {
+    "message": "正在检查连接…"
+  },
+  "popupUnreachable": {
+    "message": "无法访问DownloadPulse"
+  },
+  "popupConnectionDetails": {
+    "message": "连接详情"
+  },
+  "popupLocalInstance": {
+    "message": "本地安装的实例"
+  },
+  "popupBack": {
+    "message": "返回"
+  },
+  "etaShort": {
+    "message": "剩余：$TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

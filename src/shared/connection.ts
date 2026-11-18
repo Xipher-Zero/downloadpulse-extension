@@ -18,6 +18,7 @@ export interface Connection {
 export type Pairing =
   | {state: "probing"}
   | {state: "not_found"}
+  | {state: "found"; server: string}
   | {state: "waiting"; server: string; userCode: string; expiresAt: number}
   | {state: "failed"; failure: Failure};
 
@@ -72,7 +73,7 @@ export async function deviceCode(): Promise<string | null> {
  */
 export async function forgetConnection(revoked = false): Promise<void> {
   await setSecret("token", null);
-  await chrome.storage.local.remove(CONNECTION);
-  await chrome.storage.session.remove(["jobs", "jobsCursor", "jobsNotified", "focusJob"]);
+  await chrome.storage.local.remove([CONNECTION, "appearance"]);
+  await chrome.storage.session.remove(["jobs", "jobsCursor", "jobsNotified", "focusJob", "reach"]);
   if (revoked) await chrome.storage.session.set({[PAIRING]: {state: "failed", failure: "unauthorized"} satisfies Pairing});
 }

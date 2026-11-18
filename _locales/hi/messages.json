@@ -160,7 +160,7 @@
     "message": "उस साइट ने फ़ाइल के बजाय एक वेब पेज लौटाया। आपको पहले उसमें साइन इन करना पड़ सकता है।"
   },
   "listTitle": {
-    "message": "इस ब्राउज़र से डाउनलोड"
+    "message": "भेजे गए डाउनलोड:"
   },
   "listEmpty": {
     "message": "इस ब्राउज़र से अभी तक कुछ नहीं भेजा गया।"
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "ऐसा नहीं हो सका। फिर से प्रयास करें।"
-  },
-  "etaAbout": {
-    "message": "लगभग $TIME$ शेष",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "शेष समय का अनुमान लगाया जा रहा है"
   },
   "notifyCompleted": {
     "message": "डाउनलोड हो गया: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "इस कंप्यूटर पर DownloadPulse चल रहा है।"
+  },
+  "popupConnectThisComputer": {
+    "message": "इस कंप्यूटर पर DownloadPulse से कनेक्ट करें"
+  },
+  "popupConnectDifferent": {
+    "message": "किसी दूसरे DownloadPulse से कनेक्ट करें"
+  },
+  "popupChecking": {
+    "message": "कनेक्शन जाँचा जा रहा है…"
+  },
+  "popupUnreachable": {
+    "message": "DownloadPulse तक नहीं पहुँचा जा सकता"
+  },
+  "popupConnectionDetails": {
+    "message": "कनेक्शन विवरण"
+  },
+  "popupLocalInstance": {
+    "message": "स्थानीय रूप से इंस्टॉल किया गया इंस्टेंस"
+  },
+  "popupBack": {
+    "message": "वापस"
+  },
+  "etaShort": {
+    "message": "शेष: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

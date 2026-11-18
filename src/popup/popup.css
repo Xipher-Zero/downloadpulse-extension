@@ -1,33 +1,214 @@
 /* SPDX-License-Identifier: GPL-2.0-or-later */
-:root { color-scheme: light dark; --dp-fg: #1f2937; --dp-bg: #ffffff; --dp-muted: #6b7280; --dp-border: #d1d5db; --dp-accent: #2563eb; --dp-danger: #b91c1c; }
-@media (prefers-color-scheme: dark) { :root { --dp-fg: #e5e7eb; --dp-bg: #111827; --dp-muted: #9ca3af; --dp-border: #374151; --dp-accent: #3b82f6; --dp-danger: #f87171; } }
-body { margin: 0; min-width: 320px; background: var(--dp-bg); color: var(--dp-fg); font: 14px/1.4 system-ui, sans-serif; }
-.dp-popup { padding: 16px; }
-.dp-popup__title { margin: 0 0 8px; font-size: 16px; font-weight: 600; }
-.dp-popup__status { margin: 0; color: var(--dp-muted); }
+/* DownloadPulse's look, sized for a toolbar dropdown: the values below are
+   DebridPulse's own tokens (frontend/static/design-tokens.css,
+   ui-language-tokens.css) and its button family (ui-universal-language.css,
+   ui-components.css: secondary, primary, ghost, danger, the blue tone of
+   pause/resume), and its transfer-status colours (ui-transfer-contract.css).
+   The extension is a portal to DownloadPulse, not DownloadPulse: its sizes
+   and layout are its own (operator, 2026-11-18). Theming comes later. */
+:root {
+  color-scheme: light;
+  --dp-bg-app: #f4f7fc;
+  --dp-surface-1: #ffffff;
+  --dp-text-primary: #111a34;
+  --dp-text-secondary: #526184;
+  --dp-text-muted: #7b88a8;
+  --dp-border-default: #dce4f1;
+  --dp-accent-purple: #8428ed;
+  --dp-accent-purple-bright: #9637f5;
+  --dp-state-success: #01783B;
+  --dp-state-active: #2779ee;
+  --dp-state-caution: #d98a00;
+  --dp-state-error: #e64255;
+  --dp-state-processing-badge: #9637f5;
+  --dp-progress-track: #e7edf7;
+  --dp-focus-ring: 0 0 0 3px rgba(132, 40, 237, .19);
+  --dp-primary-surface:
+    radial-gradient(ellipse 125% 92% at 18% -10%, rgba(255,255,255,.34) 0%, rgba(255,255,255,.10) 35%, transparent 61%),
+    linear-gradient(145deg, #8950d4 0%, #7646c9 52%, #6551c3 100%);
+  --dp-primary-border: #9c68d8;
+  --dp-secondary-surface:
+    linear-gradient(180deg, rgba(255,255,255,.98) 0%, rgba(255,255,255,.46) 34%, transparent 44%),
+    linear-gradient(145deg, #ffffff 0%, #fafafe 54%, #f1f0f7 100%);
+  --dp-secondary-border: #d9d8e6;
+  --dp-secondary-text: #565e76;
+  --dp-secondary-shadow: inset 0 1px rgba(255,255,255,1), inset 0 -1px rgba(84,72,116,.055), 0 3px 8px -6px rgba(65,62,90,.22);
+}
+/* Dark: DownloadPulse says so (data-mode, from the person's appearance), or,
+   before it has said, the browser prefers it. A palette then sets its own
+   colours over these (src/shared/appearance.ts). */
+:root[data-mode="dark"] {
+  color-scheme: dark;
+  --dp-bg-app: #050814;
+  --dp-surface-1: #0b1224;
+  --dp-text-primary: #f7f8ff;
+  --dp-text-secondary: #b3bcda;
+  --dp-text-muted: #7c87aa;
+  --dp-border-default: #26324d;
+  --dp-accent-purple: #9b45ff;
+  --dp-accent-purple-bright: #b45cff;
+  --dp-state-success: #00E676;
+  --dp-state-active: #3b89ff;
+  --dp-state-caution: #ffc13d;
+  --dp-state-error: #ff5264;
+  --dp-state-processing-badge: #b45cff;
+  --dp-progress-track: #17213a;
+  --dp-focus-ring: 0 0 0 3px rgba(155, 69, 255, .28);
+  --dp-primary-surface:
+    radial-gradient(ellipse 125% 92% at 18% -10%, rgba(255,255,255,.23) 0%, rgba(255,255,255,.075) 35%, transparent 61%),
+    linear-gradient(145deg, #8d48db 0%, #763fc9 52%, #6249bd 100%);
+  --dp-primary-border: rgba(160,94,221,.78);
+  --dp-secondary-surface:
+    linear-gradient(180deg, rgba(255,255,255,.045), transparent 38%),
+    linear-gradient(145deg, rgba(18,23,52,.96), rgba(11,16,40,.97));
+  --dp-secondary-border: rgba(123,132,184,.25);
+  --dp-secondary-text: #cbd0e5;
+  --dp-secondary-shadow: inset 0 1px rgba(255,255,255,.055), inset 0 -1px rgba(2,5,17,.32), 0 3px 8px -6px rgba(0,0,15,.30);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-mode]) {
+    color-scheme: dark;
+    --dp-bg-app: #050814;
+    --dp-surface-1: #0b1224;
+    --dp-text-primary: #f7f8ff;
+    --dp-text-secondary: #b3bcda;
+    --dp-text-muted: #7c87aa;
+    --dp-border-default: #26324d;
+    --dp-accent-purple: #9b45ff;
+    --dp-accent-purple-bright: #b45cff;
+    --dp-state-success: #00E676;
+    --dp-state-active: #3b89ff;
+    --dp-state-caution: #ffc13d;
+    --dp-state-error: #ff5264;
+    --dp-state-processing-badge: #b45cff;
+    --dp-progress-track: #17213a;
+    --dp-focus-ring: 0 0 0 3px rgba(155, 69, 255, .28);
+    --dp-primary-surface:
+      radial-gradient(ellipse 125% 92% at 18% -10%, rgba(255,255,255,.23) 0%, rgba(255,255,255,.075) 35%, transparent 61%),
+      linear-gradient(145deg, #8d48db 0%, #763fc9 52%, #6249bd 100%);
+    --dp-primary-border: rgba(160,94,221,.78);
+    --dp-secondary-surface:
+      linear-gradient(180deg, rgba(255,255,255,.045), transparent 38%),
+      linear-gradient(145deg, rgba(18,23,52,.96), rgba(11,16,40,.97));
+    --dp-secondary-border: rgba(123,132,184,.25);
+    --dp-secondary-text: #cbd0e5;
+    --dp-secondary-shadow: inset 0 1px rgba(255,255,255,.055), inset 0 -1px rgba(2,5,17,.32), 0 3px 8px -6px rgba(0,0,15,.30);
+  }
+}
+
+body { margin: 0; width: 360px; background: var(--dp-bg-app); color: var(--dp-text-primary); font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+body[data-standalone] { width: auto; }
+body[data-standalone] .dp-popup { max-width: 560px; margin: 0 auto; padding: 24px 16px 48px; }
+.dp-popup { padding: 12px 14px 14px; display: grid; gap: 10px; }
 .dp-popup section { display: grid; gap: 10px; }
-.dp-popup section[hidden] { display: none; }
-.dp-button { font: inherit; padding: 6px 12px; border-radius: 6px; border: 1px solid var(--dp-border); background: transparent; color: var(--dp-fg); cursor: pointer; }
-.dp-button--primary { background: var(--dp-accent); border-color: var(--dp-accent); color: #fff; }
-.dp-popup__remote { display: grid; gap: 6px; margin-top: 6px; }
-.dp-popup__remote input { font: inherit; padding: 6px 8px; border-radius: 6px; border: 1px solid var(--dp-border); background: var(--dp-bg); color: var(--dp-fg); }
-.dp-popup__label, .dp-popup__hint { color: var(--dp-muted); font-size: 12px; }
+.dp-popup [hidden] { display: none !important; }
+p { margin: 0; }
+
+/* ── the title row: the name, the settings gear at its end ── */
+.dp-head { display: flex; align-items: center; gap: 6px; }
+.dp-head__title { flex: 1 1 auto; margin: 0; font-size: 15px; font-weight: 650; }
+
+/* ── buttons (DownloadPulse's family) ── */
+.dp-btn {
+  min-height: 32px; display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 0 12px;
+  border: 1px solid var(--dp-secondary-border); border-radius: 8px; background: var(--dp-secondary-surface);
+  color: var(--dp-secondary-text); box-shadow: var(--dp-secondary-shadow);
+  font: inherit; font-size: 13px; font-weight: 600; line-height: 1; cursor: pointer;
+  transition: filter .14s ease, border-color .14s ease, color .14s ease, background-color .14s ease, transform .06s ease;
+}
+.dp-btn:hover:not(:disabled) { border-color: color-mix(in srgb, var(--dp-accent-purple-bright) 28%, var(--dp-secondary-border)); color: var(--dp-text-primary); }
+.dp-btn--primary { border-color: var(--dp-primary-border); background: var(--dp-primary-surface); color: #ffffff; text-shadow: 0 1px 2px rgba(41,20,71,.34); }
+.dp-btn--primary:hover:not(:disabled) { color: #ffffff; filter: brightness(1.04); }
+.dp-btn--ghost { border-color: transparent; background: transparent; box-shadow: none; color: var(--dp-text-secondary); }
+.dp-btn--ghost:hover:not(:disabled) { border-color: transparent; color: var(--dp-text-primary); background: color-mix(in srgb, var(--dp-accent-purple) 8%, transparent); }
+.dp-btn--danger { border-color: color-mix(in srgb, var(--dp-state-error) 34%, transparent); background: color-mix(in srgb, var(--dp-state-error) 11%, transparent); color: var(--dp-state-error); box-shadow: none; }
+.dp-btn--danger:hover:not(:disabled) { border-color: color-mix(in srgb, var(--dp-state-error) 40%, transparent); color: var(--dp-state-error); background: color-mix(in srgb, var(--dp-state-error) 17%, transparent); }
+.dp-btn--sm { min-height: 28px; padding: 0 10px; font-size: 12px; }
+:is(.dp-btn, .dp-glyph-btn):focus-visible { outline: none; box-shadow: var(--dp-focus-ring); }
+:is(.dp-btn, .dp-glyph-btn):not(:disabled):active { transform: translateY(1px) scale(.985); }
+:is(.dp-btn, .dp-glyph-btn):disabled { opacity: .45; cursor: not-allowed; }
+
+/* A glyph button: DownloadPulse's icon control (.dp-icon-btn material). */
+.dp-glyph-btn {
+  inline-size: 28px; block-size: 28px; flex: 0 0 auto; display: inline-grid; place-items: center; padding: 0;
+  border: 1px solid var(--dp-secondary-border); border-radius: 8px; background: var(--dp-secondary-surface);
+  color: var(--dp-secondary-text); box-shadow: var(--dp-secondary-shadow); cursor: pointer;
+  transition: border-color .14s ease, color .14s ease, background-color .14s ease, transform .06s ease;
+}
+.dp-glyph-btn:hover:not(:disabled) { border-color: color-mix(in srgb, var(--dp-accent-purple-bright) 28%, var(--dp-secondary-border)); color: var(--dp-text-primary); }
+.dp-glyph-btn svg { inline-size: 16px; block-size: 16px; }
+.dp-glyph-btn > span { display: contents; }
+.dp-glyph-btn--bare { border-color: transparent; background: transparent; box-shadow: none; }
+.dp-glyph-btn--bare:hover:not(:disabled) { border-color: transparent; background: color-mix(in srgb, var(--dp-accent-purple) 8%, transparent); }
+/* pause/resume: DownloadPulse's blue tone; Remove: its danger tone. */
+.dp-glyph-btn--blue { border-color: color-mix(in srgb, var(--dp-state-active) 38%, var(--dp-secondary-border)); color: color-mix(in srgb, var(--dp-state-active) 78%, var(--dp-text-primary)); }
+.dp-glyph-btn--blue:hover:not(:disabled) { border-color: color-mix(in srgb, var(--dp-state-active) 55%, var(--dp-secondary-border)); color: var(--dp-state-active); }
+.dp-glyph-btn--danger { border-color: color-mix(in srgb, var(--dp-state-error) 34%, transparent); background: color-mix(in srgb, var(--dp-state-error) 11%, transparent); color: var(--dp-state-error); box-shadow: none; }
+.dp-glyph-btn--danger:hover:not(:disabled) { border-color: color-mix(in srgb, var(--dp-state-error) 40%, transparent); color: var(--dp-state-error); background: color-mix(in srgb, var(--dp-state-error) 17%, transparent); }
+.dp-job .dp-glyph-btn { inline-size: 26px; block-size: 26px; }
+.dp-job .dp-glyph-btn svg { inline-size: 14px; block-size: 14px; }
+
+/* ── onboarding ── */
+.dp-popup__status { color: var(--dp-text-secondary); }
+.dp-popup__remote { display: grid; gap: 6px; margin-top: 4px; }
+input[type="text"] { font: inherit; padding: 6px 8px; border-radius: 8px; border: 1px solid var(--dp-secondary-border); background: var(--dp-surface-1); color: var(--dp-text-primary); min-width: 0; }
+input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-ring); }
+.dp-popup__label, .dp-popup__hint { color: var(--dp-text-muted); font-size: 12px; }
 .dp-popup__code { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; }
-.dp-popup__error { margin: 0; color: var(--dp-danger); }
-.dp-popup__facts { display: grid; gap: 4px; margin: 0; }
-.dp-popup__facts > div { display: flex; gap: 8px; }
-.dp-popup__facts dt { min-width: 5.5em; color: var(--dp-muted); }
-.dp-popup__facts dd { margin: 0; overflow-wrap: anywhere; }
-.dp-popup__heading { margin: 8px 0 0; font-size: 13px; font-weight: 600; }
-.dp-jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 320px; overflow-y: auto; }
-.dp-job { display: grid; gap: 4px; padding: 8px; border: 1px solid var(--dp-border); border-radius: 8px; }
-.dp-job__name { font-weight: 600; overflow-wrap: anywhere; }
-.dp-job__state, .dp-job__note { color: var(--dp-muted); font-size: 12px; margin: 0; }
-.dp-job progress { width: 100%; height: 6px; }
-.dp-job__controls { display: flex; gap: 6px; }
-.dp-button--small { padding: 2px 8px; font-size: 12px; }
-.dp-popup__open { color: var(--dp-accent); font-size: 13px; justify-self: start; }
-.dp-job--focus { border-color: var(--dp-accent); box-shadow: 0 0 0 1px var(--dp-accent); }
-.dp-popup__links { display: flex; gap: 14px; margin: 0; }
-.dp-popup__site { display: flex; gap: 6px; align-items: center; font-size: 13px; }
-.dp-popup__site[hidden] { display: none; }
+.dp-popup__error { color: var(--dp-state-error); }
+
+/* ── the connection: its status by colour, its details behind the chevron ── */
+.dp-conn { display: flex; align-items: center; gap: 4px; }
+.dp-conn__status { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; color: var(--dp-text-secondary); }
+.dp-conn__dot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--dp-text-muted); }
+.dp-conn__status[data-reach="ok"] { color: var(--dp-state-success); }
+.dp-conn__status[data-reach="ok"] .dp-conn__dot { background: var(--dp-state-success); }
+.dp-conn__status[data-reach="unreachable"] { color: var(--dp-state-caution); }
+.dp-conn__status[data-reach="unreachable"] .dp-conn__dot { background: var(--dp-state-caution); }
+.dp-conn__toggle svg { transition: transform .14s ease; }
+.dp-conn__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.dp-facts { display: grid; gap: 4px; margin: 0; padding: 8px 10px; border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1); }
+.dp-facts > div { display: flex; gap: 10px; }
+.dp-facts dt { min-width: 5.5em; color: var(--dp-text-muted); }
+.dp-facts dd { margin: 0; overflow-wrap: anywhere; }
+.dp-open-row { display: flex; justify-content: center; }
+
+/* ── Sent Downloads ── */
+.dp-popup__heading { margin: 2px 0 0; font-size: 13px; font-weight: 650; }
+.dp-jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 340px; overflow-y: auto; }
+.dp-job { display: grid; gap: 6px; padding: 8px 10px; border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1); min-width: 0; }
+.dp-job--focus { border-color: var(--dp-accent-purple-bright); box-shadow: 0 0 0 1px var(--dp-accent-purple-bright); }
+.dp-job__name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.dp-job__line { display: flex; align-items: center; gap: 8px; min-height: 26px; min-width: 0; }
+.dp-job__state { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 12px; color: var(--dp-text-muted); }
+.dp-job__status { font-weight: 600; color: var(--dp-text-secondary); }
+.dp-job[data-tone="downloading"] .dp-job__status { color: var(--dp-state-success); }
+.dp-job[data-tone="queued"] .dp-job__status { color: var(--dp-state-active); }
+.dp-job[data-tone="processing"] .dp-job__status { color: var(--dp-state-processing-badge); }
+.dp-job[data-tone="paused"] .dp-job__status { color: var(--dp-state-caution); }
+.dp-job[data-tone="failed"] .dp-job__status { color: var(--dp-state-error); }
+.dp-job__eta { font-variant-numeric: tabular-nums; }
+.dp-job__controls { display: flex; gap: 6px; flex: 0 0 auto; }
+/* The bar, and its percent in a slot reserved at full width ("100%"), so the bar never changes length. */
+.dp-job__progress { display: flex; align-items: center; gap: 8px; }
+.dp-job__bar { flex: 1 1 auto; block-size: 4px; border-radius: 999px; background: var(--dp-progress-track); overflow: hidden; }
+.dp-job__fill { display: block; block-size: 100%; inline-size: 0; border-radius: inherit; background: var(--dp-state-active); }
+.dp-job[data-tone="downloading"] .dp-job__fill { background: var(--dp-state-success); }
+.dp-job[data-tone="paused"] .dp-job__fill { background: var(--dp-state-caution); }
+.dp-job[data-tone="processing"] .dp-job__fill { background: var(--dp-state-processing-badge); }
+.dp-job__pct { flex: 0 0 5.5ch; text-align: end; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--dp-text-secondary); }
+.dp-job__note { color: var(--dp-text-muted); font-size: 12px; }
+
+/* ── settings ── */
+.dp-settings { gap: 14px; }
+.dp-settings__title { margin: 0; font-size: 14px; font-weight: 650; }
+.dp-settings__group { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--dp-border-default); }
+.dp-settings h3 { margin: 0; font-size: 13px; font-weight: 650; }
+.dp-settings h4 { margin: 4px 0 0; font-size: 12px; font-weight: 650; color: var(--dp-text-secondary); }
+.dp-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.dp-row input[type="text"] { flex: 1 1 160px; }
+.dp-check { display: flex; gap: 8px; align-items: center; }
+.dp-check input { accent-color: var(--dp-accent-purple); margin: 0; }
+.dp-sites { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.dp-sites li { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
+.dp-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

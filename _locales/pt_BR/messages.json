@@ -160,7 +160,7 @@
     "message": "Esse site retornou uma página da web em vez do arquivo. Talvez seja necessário entrar nele primeiro."
   },
   "listTitle": {
-    "message": "Downloads deste navegador"
+    "message": "Downloads enviados:"
   },
   "listEmpty": {
     "message": "Nada foi enviado deste navegador ainda."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "Não funcionou. Tente novamente."
-  },
-  "etaAbout": {
-    "message": "cerca de $TIME$ restantes",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "estimando o tempo restante"
   },
   "notifyCompleted": {
     "message": "Baixado: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "O DownloadPulse está em execução neste computador."
+  },
+  "popupConnectThisComputer": {
+    "message": "Conectar ao DownloadPulse deste computador"
+  },
+  "popupConnectDifferent": {
+    "message": "Conectar a outro DownloadPulse"
+  },
+  "popupChecking": {
+    "message": "Verificando a conexão…"
+  },
+  "popupUnreachable": {
+    "message": "Não foi possível acessar o DownloadPulse"
+  },
+  "popupConnectionDetails": {
+    "message": "Detalhes da conexão"
+  },
+  "popupLocalInstance": {
+    "message": "Instância instalada localmente"
+  },
+  "popupBack": {
+    "message": "Voltar"
+  },
+  "etaShort": {
+    "message": "Restante: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

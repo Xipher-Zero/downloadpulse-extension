@@ -49,7 +49,7 @@
   "sendNoSiteAccess": "183ae264ce2b3cda",
   "sendCaptureFailed": "381998a024f0ee74",
   "sendCaptureWebPage": "2df757ee4291e566",
-  "listTitle": "d58dc2c14941acca",
+  "listTitle": "9b7f099826eda094",
   "listEmpty": "583a978106b31335",
   "jobQueued": "6e293a8c009e0011",
   "jobWorking": "cf1aa6cc5951b3f4",
@@ -68,8 +68,6 @@
   "controlPausedElsewhere": "dc1fadc5228b2d62",
   "controlSettled": "94efa35945b0fe1d",
   "controlFailed": "d010a8621f3358d1",
-  "etaAbout": "fe479452389bde3c",
-  "etaEstimating": "73573e60f5d8c0d1",
   "notifyCompleted": "ab8d112a5584265d",
   "notifyFailed": "8c264bfbfb4b9a58",
   "notifyAttention": "4bcd0ec442dafd3c",
@@ -94,5 +92,14 @@
   "optionsNotifyFailed": "79a6e5cc63ba4b2c",
   "optionsNotifyAttention": "dd08f0a6cd136b01",
   "popupSettings": "74a883a037bc227f",
-  "popupSiteOn": "d1a7498d0b23eeeb"
+  "popupSiteOn": "d1a7498d0b23eeeb",
+  "popupFoundLocal": "e13d323a86be8b26",
+  "popupConnectThisComputer": "9b67822d99a83fd4",
+  "popupConnectDifferent": "e6bb72977c93cbd9",
+  "popupChecking": "de9fc337d5990009",
+  "popupUnreachable": "562f1bedc453ff77",
+  "popupConnectionDetails": "51bfffbcdbcfbc00",
+  "popupLocalInstance": "754b4e097f5535a6",
+  "popupBack": "76900f1bfd16c8d4",
+  "etaShort": "71aacc03aa2cbdbe"
 }

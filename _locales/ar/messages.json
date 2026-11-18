@@ -160,7 +160,7 @@
     "message": "أعاد ذلك الموقع صفحة ويب بدلًا من الملف. قد تحتاج إلى تسجيل الدخول إليه أولًا."
   },
   "listTitle": {
-    "message": "التنزيلات من هذا المتصفح"
+    "message": "التنزيلات المرسلة:"
   },
   "listEmpty": {
     "message": "لم يُرسل شيء من هذا المتصفح بعد."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "لم ينجح ذلك. حاول مرة أخرى."
-  },
-  "etaAbout": {
-    "message": "يتبقى نحو $TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "جارٍ تقدير الوقت المتبقي"
   },
   "notifyCompleted": {
     "message": "تم التنزيل: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "يعمل DownloadPulse على هذا الكمبيوتر."
+  },
+  "popupConnectThisComputer": {
+    "message": "الربط بـ DownloadPulse على هذا الكمبيوتر"
+  },
+  "popupConnectDifferent": {
+    "message": "الربط بـ DownloadPulse آخر"
+  },
+  "popupChecking": {
+    "message": "جارٍ التحقق من الاتصال…"
+  },
+  "popupUnreachable": {
+    "message": "يتعذر الوصول إلى DownloadPulse"
+  },
+  "popupConnectionDetails": {
+    "message": "تفاصيل الاتصال"
+  },
+  "popupLocalInstance": {
+    "message": "نسخة مثبتة محليًا"
+  },
+  "popupBack": {
+    "message": "رجوع"
+  },
+  "etaShort": {
+    "message": "المتبقي: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

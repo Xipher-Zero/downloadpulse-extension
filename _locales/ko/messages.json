@@ -160,7 +160,7 @@
     "message": "사이트가 파일 대신 웹 페이지를 반환했습니다. 먼저 해당 사이트에 로그인해야 할 수 있습니다."
   },
   "listTitle": {
-    "message": "이 브라우저의 다운로드"
+    "message": "보낸 다운로드:"
   },
   "listEmpty": {
     "message": "이 브라우저에서 아직 보낸 항목이 없습니다."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "작업에 실패했습니다. 다시 시도하세요."
-  },
-  "etaAbout": {
-    "message": "약 $TIME$ 남음",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "남은 시간 계산 중"
   },
   "notifyCompleted": {
     "message": "다운로드 완료: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "이 컴퓨터에서 DownloadPulse가 실행 중입니다."
+  },
+  "popupConnectThisComputer": {
+    "message": "이 컴퓨터의 DownloadPulse에 연결"
+  },
+  "popupConnectDifferent": {
+    "message": "다른 DownloadPulse에 연결"
+  },
+  "popupChecking": {
+    "message": "연결 확인 중…"
+  },
+  "popupUnreachable": {
+    "message": "DownloadPulse에 연결할 수 없음"
+  },
+  "popupConnectionDetails": {
+    "message": "연결 세부 정보"
+  },
+  "popupLocalInstance": {
+    "message": "로컬에 설치된 인스턴스"
+  },
+  "popupBack": {
+    "message": "뒤로"
+  },
+  "etaShort": {
+    "message": "남은 시간: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

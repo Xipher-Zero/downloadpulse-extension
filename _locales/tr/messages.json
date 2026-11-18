@@ -160,7 +160,7 @@
     "message": "Site, dosya yerine bir web sayfası döndürdü. Önce siteye oturum açmanız gerekebilir."
   },
   "listTitle": {
-    "message": "Bu tarayıcıdan gelen indirmeler"
+    "message": "Gönderilen indirmeler:"
   },
   "listEmpty": {
     "message": "Bu tarayıcıdan henüz bir şey gönderilmedi."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "Bu işe yaramadı. Yeniden deneyin."
-  },
-  "etaAbout": {
-    "message": "yaklaşık $TIME$ kaldı",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "kalan süre hesaplanıyor"
   },
   "notifyCompleted": {
     "message": "İndirildi: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse bu bilgisayarda çalışıyor."
+  },
+  "popupConnectThisComputer": {
+    "message": "Bu bilgisayardaki DownloadPulse'a bağlan"
+  },
+  "popupConnectDifferent": {
+    "message": "Başka bir DownloadPulse'a bağlan"
+  },
+  "popupChecking": {
+    "message": "Bağlantı kontrol ediliyor…"
+  },
+  "popupUnreachable": {
+    "message": "DownloadPulse'a ulaşılamıyor"
+  },
+  "popupConnectionDetails": {
+    "message": "Bağlantı ayrıntıları"
+  },
+  "popupLocalInstance": {
+    "message": "Yerel olarak yüklenmiş örnek"
+  },
+  "popupBack": {
+    "message": "Geri"
+  },
+  "etaShort": {
+    "message": "Kalan: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

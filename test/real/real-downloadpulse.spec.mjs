@@ -25,6 +25,7 @@ test("connect to a real DownloadPulse: sign in, approve, verified", async () => 
     await popup.goto(`chrome-extension://${new URL(worker.url()).host}/popup/popup.html`);
     const approval = context.waitForEvent("page");
     await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+    await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
     await expect(popup.getByTestId("code")).toHaveText(/^[A-Z0-9]{4}-[A-Z0-9]{4}$/, {timeout: 15_000});
     const code = await popup.getByTestId("code").textContent();
     const page = await approval;
@@ -37,7 +38,8 @@ test("connect to a real DownloadPulse: sign in, approve, verified", async () => 
     await dialog.locator("[data-pairing-name]").fill("E2E-Chromium");
     await dialog.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("label")).toHaveText("E2E-Chromium", {timeout: 20_000});
-    await expect(popup.getByTestId("server")).toHaveText("http://127.0.0.1:8095");
+    await expect(popup.getByTestId("server")).toHaveText("Locally installed instance");
+    await expect(popup.getByTestId("reach")).toHaveAttribute("data-reach", "ok", {timeout: 15_000});
     await expect(popup.getByTestId("account")).toHaveText("Administrator");
 
     // WS-E2 against the real browser jobs API: the hover icon sends a link, and

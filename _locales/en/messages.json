@@ -206,8 +206,8 @@
     "description": "Toast: capture got HTML (often a sign-in page)."
   },
   "listTitle": {
-    "message": "Downloads from this browser",
-    "description": "Popup: heading of the list of downloads this browser sent."
+    "message": "Sent Downloads:",
+    "description": "Popup: the title of the list of downloads this browser sent (a section title, with its colon; follow your language's own conventions for a title and a colon)."
   },
   "listEmpty": {
     "message": "Nothing sent from this browser yet.",
@@ -280,20 +280,6 @@
   "controlFailed": {
     "message": "That didn't work. Try again.",
     "description": "Beneath a download after a failed control."
-  },
-  "etaAbout": {
-    "message": "about $TIME$ left",
-    "description": "A download's estimated time remaining; it is an estimate (L27).",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "estimating time left",
-    "description": "A download's time remaining is not known yet."
   },
   "notifyCompleted": {
     "message": "Downloaded: $NAME$",
@@ -407,7 +393,7 @@
   },
   "popupSettings": {
     "message": "Settings",
-    "description": "Popup link: open the extension's settings."
+    "description": "Popup: the gear button's name and tooltip (opens the extension's settings inside the popup), and the settings view's heading."
   },
   "popupSiteOn": {
     "message": "Download buttons on $SITE$",
@@ -422,5 +408,47 @@
   "popupOrServer": {
     "message": "Or connect to a DownloadPulse server:",
     "description": "Popup, after a failure: label of the server address field, offered so a failing DownloadPulse on this computer never traps the person."
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse is running on this computer.",
+    "description": "Popup: a DownloadPulse was found on this computer; the person now chooses it or a different one."
+  },
+  "popupConnectThisComputer": {
+    "message": "Connect to DownloadPulse on this computer",
+    "description": "Popup button: connect this browser to the DownloadPulse found on this computer."
+  },
+  "popupConnectDifferent": {
+    "message": "Connect to a different DownloadPulse",
+    "description": "Popup button: connect to another DownloadPulse (a server) instead; shows the server address field."
+  },
+  "popupChecking": {
+    "message": "Checking connection…",
+    "description": "Popup: the connection's status while the extension checks whether DownloadPulse answers."
+  },
+  "popupUnreachable": {
+    "message": "Can't reach DownloadPulse",
+    "description": "Popup: the connection's status, in yellow: this browser is connected, but DownloadPulse doesn't answer right now (it may be stopped, or the computer is off its network)."
+  },
+  "popupConnectionDetails": {
+    "message": "Connection details",
+    "description": "Popup: name and tooltip of the chevron button that shows or hides the server, account and browser."
+  },
+  "popupLocalInstance": {
+    "message": "Locally installed instance",
+    "description": "Popup: shown as the server when DownloadPulse is installed on this computer (instead of its local address)."
+  },
+  "popupBack": {
+    "message": "Back",
+    "description": "Popup: name and tooltip of the button that leaves the settings view."
+  },
+  "etaShort": {
+    "message": "ETA: $TIME$",
+    "description": "A download's estimated time remaining, short: TIME is like 1:02:05, 33:12 or 0:45 (hours:minutes:seconds), or ∞ while there is no figure yet. It is an estimate (L27). Keep it short.",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
+      }
+    }
   }
 }

@@ -160,7 +160,7 @@
     "message": "サイトがファイルではなくウェブページを返しました。先にそのサイトにサインインする必要があるかもしれません。"
   },
   "listTitle": {
-    "message": "このブラウザーからのダウンロード"
+    "message": "送信したダウンロード："
   },
   "listEmpty": {
     "message": "このブラウザーからはまだ何も送信していません。"
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "うまくいきませんでした。もう一度お試しください。"
-  },
-  "etaAbout": {
-    "message": "残り約 $TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "残り時間を推定中"
   },
   "notifyCompleted": {
     "message": "ダウンロード完了：$NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "このコンピューターで DownloadPulse が実行されています。"
+  },
+  "popupConnectThisComputer": {
+    "message": "このコンピューターの DownloadPulse に接続"
+  },
+  "popupConnectDifferent": {
+    "message": "別の DownloadPulse に接続"
+  },
+  "popupChecking": {
+    "message": "接続を確認しています…"
+  },
+  "popupUnreachable": {
+    "message": "DownloadPulse に接続できません"
+  },
+  "popupConnectionDetails": {
+    "message": "接続の詳細"
+  },
+  "popupLocalInstance": {
+    "message": "ローカルにインストールされたインスタンス"
+  },
+  "popupBack": {
+    "message": "戻る"
+  },
+  "etaShort": {
+    "message": "残り：$TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

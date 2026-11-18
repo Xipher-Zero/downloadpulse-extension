@@ -160,7 +160,7 @@
     "message": "Die site gaf een webpagina terug in plaats van het bestand. Mogelijk moet u zich er eerst aanmelden."
   },
   "listTitle": {
-    "message": "Downloads vanuit deze browser"
+    "message": "Verzonden downloads:"
   },
   "listEmpty": {
     "message": "Nog niets verstuurd vanuit deze browser."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "Dat is niet gelukt. Probeer het opnieuw."
-  },
-  "etaAbout": {
-    "message": "nog ongeveer $TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "resterende tijd wordt geschat"
   },
   "notifyCompleted": {
     "message": "Gedownload: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse draait op deze computer."
+  },
+  "popupConnectThisComputer": {
+    "message": "Verbinden met DownloadPulse op deze computer"
+  },
+  "popupConnectDifferent": {
+    "message": "Verbinden met een andere DownloadPulse"
+  },
+  "popupChecking": {
+    "message": "Verbinding controleren…"
+  },
+  "popupUnreachable": {
+    "message": "DownloadPulse niet bereikbaar"
+  },
+  "popupConnectionDetails": {
+    "message": "Verbindingsdetails"
+  },
+  "popupLocalInstance": {
+    "message": "Lokaal geïnstalleerde instantie"
+  },
+  "popupBack": {
+    "message": "Terug"
+  },
+  "etaShort": {
+    "message": "Resterend: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

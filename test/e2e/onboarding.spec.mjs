@@ -40,26 +40,61 @@ async function launch() {
   return {context, popup, close: async () => { await context.close(); await rm(profile, {recursive: true, force: true}); }};
 }
 
-test("found on this computer: paired on approval, verified, and shown connected", async () => {
+test("found on this computer: offered first, then paired on approval, verified, and shown connected", async () => {
   const fake = await fakeDownloadPulse({port: 8095});
   const {context, popup, close} = await launch();
   try {
     // A signed-in DownloadPulse session in this browser: it must never ride along (credentials omitted).
     await context.addCookies([{name: "dp_session", value: "a-real-session", domain: "127.0.0.1", path: "/"}]);
     await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+    // Found, and asked: nothing is paired until the person chooses it.
+    const pages = context.pages().length;
+    await expect(popup.getByText("DownloadPulse is running on this computer.", {exact: true})).toBeVisible();
+    await popup.waitForTimeout(500);
+    expect(fake.state.pairings.size).toBe(0);
+    expect(context.pages()).toHaveLength(pages);   // no approval tab yet
+    await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     // The approval page opened on that server, at its own path.
     await expect.poll(() => context.pages().map((page) => page.url())).toContain("http://127.0.0.1:8095/?connect-browser=ABCD-0001");
     expect(fake.state.lastClientName).toMatch(/^Chrom\w* on \w+/);
     fake.answer("approved");
     await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
-    await expect(popup.getByTestId("server")).toHaveText("http://127.0.0.1:8095");
+    // The details are behind the chevron; DownloadPulse on this computer is named, never its loopback address.
+    await expect(popup.getByTestId("server")).toBeHidden();
+    await popup.getByRole("button", {name: "Connection details"}).click();
+    await expect(popup.getByRole("button", {name: "Connection details"})).toHaveAttribute("aria-expanded", "true");
+    await expect(popup.getByTestId("server")).toHaveText("Locally installed instance");
     await expect(popup.getByTestId("label")).toHaveText("Laptop-Chrome");
+    await expect(popup.locator("body")).not.toContainText("127.0.0.1");
     // The token was verified with the session route, with no cookie alongside it.
     expect(fake.state.sessionAuth.at(-1)).toEqual({authorization: "Bearer dp_fake-token", cookie: null});
   } finally {
     await close();
     await fake.close();
+  }
+});
+
+test("found on this computer, a different DownloadPulse can be chosen instead", async () => {
+  const local = await fakeDownloadPulse({port: 8095});
+  const remote = await fakeDownloadPulse();
+  const {popup, close} = await launch();
+  try {
+    await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+    await expect(popup.getByLabel("Server address").filter({visible: true})).toHaveCount(0);
+    await popup.getByRole("button", {name: "Connect to a different DownloadPulse"}).click();
+    await popup.getByLabel("Server address").filter({visible: true}).fill(`http://localhost:${remote.port}`);
+    await popup.getByRole("button", {name: "Connect to this server"}).click();
+    await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
+    remote.answer("approved");
+    // localhost, on any port, is this computer: named so; the connection is that server's own.
+    await expect(popup.getByTestId("server")).toHaveText("Locally installed instance", {timeout: 15_000});
+    expect(remote.state.sessionAuth.length).toBeGreaterThan(0);
+    expect(local.state.pairings.size).toBe(0);   // the one on this computer was never asked
+  } finally {
+    await close();
+    await local.close();
+    await remote.close();
   }
 });
 
@@ -71,11 +106,13 @@ test("nothing on this computer: Check again, then a named server", async () => {
     await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();
     await popup.getByRole("button", {name: "Check again"}).click();
     await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();
-    await popup.getByLabel("Server address").fill(`http://localhost:${fake.port}`);
+    await popup.getByLabel("Server address").filter({visible: true}).fill(`http://localhost:${fake.port}`);
     await popup.getByRole("button", {name: "Connect to this server"}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     fake.answer("approved");
-    await expect(popup.getByTestId("server")).toHaveText(`http://localhost:${fake.port}`, {timeout: 15_000});
+    // localhost, on any port, is this computer: named so; the connection is that server's own.
+    await expect(popup.getByTestId("server")).toHaveText("Locally installed instance", {timeout: 15_000});
+    expect(fake.state.sessionAuth.length).toBeGreaterThan(0);
   } finally {
     await close();
     await fake.close();
@@ -95,7 +132,7 @@ for (const [mode, answer, text] of [
     const {popup, close} = await launch();
     try {
       await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
-      await popup.getByLabel("Server address").fill(`http://localhost:${fake.port}`);
+      await popup.getByLabel("Server address").filter({visible: true}).fill(`http://localhost:${fake.port}`);
       await popup.getByRole("button", {name: "Connect to this server"}).click();
       if (answer) {
         await expect(popup.getByTestId("code")).toBeVisible();
@@ -117,12 +154,15 @@ test("an older DownloadPulse on this computer says so, and a server can still be
   const {popup, close} = await launch();
   try {
     await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+    await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
     await expect(popup.getByTestId("failure")).toHaveText("This DownloadPulse is too old to connect browsers. Update it, then connect again.");
     await popup.getByLabel("Or connect to a DownloadPulse server:").fill(`http://localhost:${current.port}`);
     await popup.locator('section[data-state="failed"]').getByRole("button", {name: "Connect to this server"}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     current.answer("approved");
-    await expect(popup.getByTestId("server")).toHaveText(`http://localhost:${current.port}`, {timeout: 15_000});
+    // localhost, on any port, is this computer: named so; the connection is that server's own.
+    await expect(popup.getByTestId("server")).toHaveText("Locally installed instance", {timeout: 15_000});
+    expect(current.state.sessionAuth.length).toBeGreaterThan(0);
   } finally {
     await close();
     await old.close();

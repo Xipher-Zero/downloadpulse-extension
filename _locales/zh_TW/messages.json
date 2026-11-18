@@ -160,7 +160,7 @@
     "message": "該網站傳回了網頁而不是檔案。您可能需要先登入該網站。"
   },
   "listTitle": {
-    "message": "來自此瀏覽器的下載"
+    "message": "已傳送的下載："
   },
   "listEmpty": {
     "message": "尚未從此瀏覽器傳送任何內容。"
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "操作未成功。請重試。"
-  },
-  "etaAbout": {
-    "message": "大約還剩$TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "正在估算剩餘時間"
   },
   "notifyCompleted": {
     "message": "已下載：$NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse正在這部電腦上執行。"
+  },
+  "popupConnectThisComputer": {
+    "message": "連線到這部電腦上的DownloadPulse"
+  },
+  "popupConnectDifferent": {
+    "message": "連線到其他DownloadPulse"
+  },
+  "popupChecking": {
+    "message": "正在檢查連線…"
+  },
+  "popupUnreachable": {
+    "message": "無法連上DownloadPulse"
+  },
+  "popupConnectionDetails": {
+    "message": "連線詳細資料"
+  },
+  "popupLocalInstance": {
+    "message": "本機安裝的執行個體"
+  },
+  "popupBack": {
+    "message": "返回"
+  },
+  "etaShort": {
+    "message": "剩餘：$TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

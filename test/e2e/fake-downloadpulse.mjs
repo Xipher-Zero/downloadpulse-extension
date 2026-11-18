@@ -6,7 +6,9 @@ import http from "node:http";
 
 export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
   const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
-    views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null};
+    views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null,
+    desktop: false, shows: 0, down: false,
+    appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"}};
   // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
   const touch = (view) => { view.cursor = ++state.seq; state.views.set(view.id, view); return view; };
   const server = http.createServer(async (req, res) => {
@@ -21,6 +23,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
     };
     const url = new URL(req.url, "http://fake");
     if (state.mode === "not-downloadpulse") return send(200, "<html>a router</html>", "text/html");
+    // ``down``: answering, but not DownloadPulse's API (as a stopped or restarting server's proxy would).
+    if (state.down && url.pathname.startsWith("/api/browser/v1/")) return send(503, {detail: "Service Unavailable"});
     if (url.pathname === "/api/health") return send(200, {status: "ok", version: "1.0.14"});
     if (url.pathname === "/") return send(200, "<html><body>approval page</body></html>", "text/html");
     if (url.pathname === "/api/browser/v1/pairings" && req.method === "POST") {
@@ -53,11 +57,18 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
     if (state.revoked && url.pathname.startsWith("/api/browser/v1/") && !url.pathname.startsWith("/api/browser/v1/pairings")) {
       return send(401, {detail: "Unauthorized"});
     }
+    if (url.pathname === "/api/browser/v1/application/show" && req.method === "POST") {
+      // The installed desktop application brings its window forward; a server has none.
+      if (state.mode === "too-old") return send(404, {detail: "Not Found"});
+      if (state.desktop) state.shows += 1;
+      return send(200, {desktop: state.desktop});
+    }
     if (url.pathname === "/api/browser/v1/session") {
       state.sessionAuth.push({authorization: req.headers.authorization, cookie: req.headers.cookie ?? null});
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
       return send(200, {protocol: state.mode === "wrong-protocol" ? "debridpulse.browser/0" : "debridpulse.browser/1",
-        token: {id: "tok-1", label: "Laptop-Chrome"}, account: {display_name: "Una"}});
+        token: {id: "tok-1", label: "Laptop-Chrome"}, account: {display_name: "Una"},
+        ...(state.appearance ? {appearance: state.appearance} : {})});
     }
     if (url.pathname === "/api/browser/v1/jobs" && req.method === "POST") {
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});

@@ -35,6 +35,7 @@ test.beforeEach(async () => {
   popup = await context.newPage();
   await popup.goto(`${base}/popup/popup.html`);
   await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+  await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
   await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
@@ -84,6 +85,61 @@ test("Disconnect revokes this browser on the server and forgets it here", async 
   expect(secret).toBeNull();
 });
 
+test("the gear opens the settings inside the dropdown, and Back returns", async () => {
+  const pages = context.pages().length;
+  const gear = popup.locator("header").getByRole("button", {name: "Settings"});
+  await expect(gear.locator("svg[data-glyph='settings']")).toHaveCount(1);
+  // The gear is on the title's row, at its end.
+  const [title, cog] = await Promise.all([popup.locator("h1").boundingBox(), gear.boundingBox()]);
+  expect(Math.abs((title.y + title.height / 2) - (cog.y + cog.height / 2))).toBeLessThan(4);
+  expect(cog.x).toBeGreaterThan(title.x);
+  await gear.click();
+  expect(context.pages().length).toBe(pages);            // nothing opened outside the dropdown
+  await expect(popup.locator(".dp-settings__title")).toHaveText("Settings");
+  await expect(popup.getByRole("button", {name: "Disconnect"})).toBeVisible();
+  await expect(popup.getByTestId("settings-server")).toHaveText("Locally installed instance");
+  await expect(popup.getByRole("button", {name: "Open DownloadPulse"})).toBeHidden();
+  await popup.getByRole("button", {name: "Back"}).click();
+  await expect(popup.getByRole("button", {name: "Open DownloadPulse"})).toBeVisible();
+  await expect(popup.locator("[data-view='settings']")).toBeHidden();
+});
+
+test("the per-site switch is in the settings, for the site of the current tab", async () => {
+  await expect(popup.getByTestId("site-switch")).toBeHidden();   // not on the main view
+  const page = await context.newPage();
+  await page.goto(`${site.base}/page`);
+  await page.bringToFront();
+  await popup.locator("header").getByRole("button", {name: "Settings"}).click();
+  const host = `127.0.0.1`;
+  await expect(popup.getByTestId("site-text")).toHaveText(`Download buttons on ${host}`);
+  await expect(popup.getByTestId("site-on")).toBeChecked();
+  await popup.getByTestId("site-on").uncheck();
+  await expect(popup.getByTestId("off-sites")).toHaveText(new RegExp(host.replace(/\./g, "\\.")));
+});
+
+test("the dropdown and the settings page are drawn in the person's DownloadPulse theme", async () => {
+  const root = popup.locator("html");
+  const background = (page) => page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+  // Paired: DownloadPulse said Dark, its native palette.
+  await expect(root).toHaveAttribute("data-mode", "dark");
+  await expect(root).toHaveAttribute("data-palette", "debridpulse-dark");
+  expect(await background(popup)).toBe("rgb(5, 8, 20)");
+  // Changed in DownloadPulse: the next opening follows it.
+  dp.state.appearance = {mode: "light", dark_palette: "dracula", light_palette: "nord-light"};
+  await popup.reload();
+  await expect(root).toHaveAttribute("data-palette", "nord-light");
+  await expect(root).toHaveAttribute("data-mode", "light");
+  expect(await background(popup)).toBe("rgb(229, 233, 240)");   // Nord Light's own background
+  const settings = await options();
+  await expect(settings.locator("html")).toHaveAttribute("data-palette", "nord-light");
+  // A palette this extension doesn't know is drawn as its mode's native one.
+  dp.state.appearance = {mode: "dark", dark_palette: "a-future-palette", light_palette: "nord-light"};
+  await popup.waitForTimeout(31_000);   // past the refresh interval
+  await popup.reload();
+  await expect(root).toHaveAttribute("data-palette", "debridpulse-dark", {timeout: 10_000});
+  expect(await background(popup)).toBe("rgb(5, 8, 20)");
+});
+
 test("a browser disconnected in DownloadPulse is told so and forgets its token", async () => {
   dp.state.revoked = true;            // as if removed under My Account › Connected browsers
   await popup.reload();               // the open popup polls the list: 401
@@ -101,7 +157,7 @@ test("the in-page buttons follow the settings, globally and per site", async () 
   expect(await hoverOffered(page, "#zip")).toBe(0);
   expect(await hoverOffered(page, "#video")).toBe(1);   // the video button is its own setting
   await settings.getByLabel("Show a download button beside download links").check();
-  await settings.getByPlaceholder("example.com").fill(`http://127.0.0.1:${new URL(site.base).port}/page`);
+  await settings.getByPlaceholder("example.com", {exact: true}).fill(`http://127.0.0.1:${new URL(site.base).port}/page`);
   await settings.getByRole("button", {name: "Add site"}).click();
   await expect(settings.getByTestId("off-sites")).toHaveText(/127\.0\.0\.1/);
   await page.waitForTimeout(5500);
@@ -129,9 +185,9 @@ test("a notification kind switched off is not raised", async () => {
   await expect.poll(() => dp.state.views.size).toBe(1);
   const [id] = dp.state.views.keys();
   dp.setJob(id, {phase: "processing", reason: "downloading"});
-  await expect(popup.locator(`li[data-job-id="${id}"] .dp-job__state`)).toHaveText("Downloading");
+  await expect(popup.locator(`li[data-job-id="${id}"] .dp-job__status`)).toHaveText("Downloading");
   dp.setJob(id, {phase: "completed", reason: "completed", actionability: "none"});
-  await expect(popup.locator(`li[data-job-id="${id}"] .dp-job__state`)).toHaveText("Done");
+  await expect(popup.locator(`li[data-job-id="${id}"] .dp-job__status`)).toHaveText("Done");
   await popup.waitForTimeout(1500);
   expect(Object.keys(await popup.evaluate(() => new Promise((done) => chrome.notifications.getAll(done))))).toEqual([]);
   dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});

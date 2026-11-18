@@ -160,7 +160,7 @@
     "message": "Situs itu mengembalikan halaman web, bukan berkasnya. Anda mungkin perlu masuk ke situs itu terlebih dahulu."
   },
   "listTitle": {
-    "message": "Unduhan dari peramban ini"
+    "message": "Unduhan terkirim:"
   },
   "listEmpty": {
     "message": "Belum ada yang dikirim dari peramban ini."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "Itu tidak berhasil. Coba lagi."
-  },
-  "etaAbout": {
-    "message": "sekitar $TIME$ lagi",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "memperkirakan sisa waktu"
   },
   "notifyCompleted": {
     "message": "Terunduh: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse berjalan di komputer ini."
+  },
+  "popupConnectThisComputer": {
+    "message": "Hubungkan ke DownloadPulse di komputer ini"
+  },
+  "popupConnectDifferent": {
+    "message": "Hubungkan ke DownloadPulse lain"
+  },
+  "popupChecking": {
+    "message": "Memeriksa sambungan…"
+  },
+  "popupUnreachable": {
+    "message": "DownloadPulse tidak dapat dijangkau"
+  },
+  "popupConnectionDetails": {
+    "message": "Detail sambungan"
+  },
+  "popupLocalInstance": {
+    "message": "Instans yang terpasang secara lokal"
+  },
+  "popupBack": {
+    "message": "Kembali"
+  },
+  "etaShort": {
+    "message": "Sisa: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

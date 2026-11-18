@@ -160,7 +160,7 @@
     "message": "Diese Website hat statt der Datei eine Webseite geliefert. Möglicherweise müssen Sie sich dort zuerst anmelden."
   },
   "listTitle": {
-    "message": "Downloads aus diesem Browser"
+    "message": "Gesendete Downloads:"
   },
   "listEmpty": {
     "message": "Aus diesem Browser wurde noch nichts gesendet."
@@ -215,18 +215,6 @@
   },
   "controlFailed": {
     "message": "Das hat nicht funktioniert. Versuchen Sie es erneut."
-  },
-  "etaAbout": {
-    "message": "noch etwa $TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1",
-        "example": "5 min"
-      }
-    }
-  },
-  "etaEstimating": {
-    "message": "Restzeit wird geschätzt"
   },
   "notifyCompleted": {
     "message": "Heruntergeladen: $NAME$",
@@ -324,6 +312,39 @@
       "site": {
         "content": "$1",
         "example": "example.com"
+      }
+    }
+  },
+  "popupFoundLocal": {
+    "message": "DownloadPulse läuft auf diesem Computer."
+  },
+  "popupConnectThisComputer": {
+    "message": "Mit DownloadPulse auf diesem Computer verbinden"
+  },
+  "popupConnectDifferent": {
+    "message": "Mit einem anderen DownloadPulse verbinden"
+  },
+  "popupChecking": {
+    "message": "Verbindung wird geprüft …"
+  },
+  "popupUnreachable": {
+    "message": "DownloadPulse nicht erreichbar"
+  },
+  "popupConnectionDetails": {
+    "message": "Verbindungsdetails"
+  },
+  "popupLocalInstance": {
+    "message": "Lokal installierte Instanz"
+  },
+  "popupBack": {
+    "message": "Zurück"
+  },
+  "etaShort": {
+    "message": "Rest: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1",
+        "example": "33:12"
       }
     }
   }

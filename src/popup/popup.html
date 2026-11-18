@@ -1,5 +1,8 @@
 <!doctype html>
 <!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<!-- The toolbar dropdown, and (built from this same file, with
+     data-standalone="settings") the browser's own settings page for the
+     extension: one markup, one script (scripts/build.mjs). -->
 <html>
 <head>
   <meta charset="utf-8">
@@ -9,25 +12,46 @@
 </head>
 <body>
   <main class="dp-popup">
-    <h1 class="dp-popup__title" data-i18n="extName"></h1>
+    <header class="dp-head">
+      <button type="button" class="dp-glyph-btn dp-glyph-btn--bare" data-action="back" data-i18n-label="popupBack" hidden>
+        <span data-glyph-slot="chevronLeft"></span>
+      </button>
+      <h1 class="dp-head__title" data-i18n="extName"></h1>
+      <button type="button" class="dp-glyph-btn" data-action="settings" data-i18n-label="popupSettings">
+        <span data-glyph-slot="settings"></span>
+      </button>
+    </header>
 
     <section data-state="disconnected" hidden>
       <p class="dp-popup__status" data-i18n="popupNotConnected" data-testid="status"></p>
-      <button type="button" class="dp-button dp-button--primary" data-action="connect-local" data-i18n="popupConnect"></button>
+      <button type="button" class="dp-btn dp-btn--primary" data-action="connect-local" data-i18n="popupConnect"></button>
     </section>
 
     <section data-state="probing" hidden>
       <p class="dp-popup__status" role="status" data-i18n="popupProbing"></p>
     </section>
 
+    <section data-state="found" hidden>
+      <p class="dp-popup__status" role="status" data-i18n="popupFoundLocal"></p>
+      <button type="button" class="dp-btn dp-btn--primary" data-action="pair-local" data-i18n="popupConnectThisComputer"></button>
+      <button type="button" class="dp-btn" data-action="show-remote" aria-expanded="false" aria-controls="remote-found"
+              data-i18n="popupConnectDifferent"></button>
+      <form class="dp-popup__remote" id="remote-found" data-action="connect-remote" hidden>
+        <label class="dp-popup__label" for="server-found" data-i18n="popupServerLabel"></label>
+        <input id="server-found" name="server" type="text" autocomplete="url" spellcheck="false" required
+               data-i18n-placeholder="popupServerPlaceholder">
+        <button type="submit" class="dp-btn dp-btn--primary" data-i18n="popupConnectServer"></button>
+      </form>
+    </section>
+
     <section data-state="not_found" hidden>
       <p class="dp-popup__status" data-i18n="popupNotFound"></p>
-      <button type="button" class="dp-button" data-action="connect-local" data-i18n="popupCheckAgain"></button>
+      <button type="button" class="dp-btn" data-action="connect-local" data-i18n="popupCheckAgain"></button>
       <form class="dp-popup__remote" data-action="connect-remote">
         <label class="dp-popup__label" for="server" data-i18n="popupServerLabel"></label>
         <input id="server" name="server" type="text" autocomplete="url" spellcheck="false" required
                data-i18n-placeholder="popupServerPlaceholder">
-        <button type="submit" class="dp-button dp-button--primary" data-i18n="popupConnectServer"></button>
+        <button type="submit" class="dp-btn dp-btn--primary" data-i18n="popupConnectServer"></button>
       </form>
     </section>
 
@@ -35,37 +59,86 @@
       <p class="dp-popup__status" role="status" data-i18n="popupWaiting"></p>
       <p class="dp-popup__code-row"><span data-i18n="popupCode"></span> <strong class="dp-popup__code" data-testid="code"></strong></p>
       <p class="dp-popup__hint" data-i18n="popupCodeHint"></p>
-      <button type="button" class="dp-button" data-action="cancel" data-i18n="popupCancel"></button>
+      <button type="button" class="dp-btn" data-action="cancel" data-i18n="popupCancel"></button>
     </section>
 
     <section data-state="failed" hidden>
       <p class="dp-popup__error" role="alert" data-testid="failure"></p>
-      <button type="button" class="dp-button" data-action="cancel" data-i18n="popupStartAgain"></button>
+      <button type="button" class="dp-btn" data-action="cancel" data-i18n="popupStartAgain"></button>
       <form class="dp-popup__remote" data-action="connect-remote">
         <label class="dp-popup__label" for="server-again" data-i18n="popupOrServer"></label>
         <input id="server-again" name="server" type="text" autocomplete="url" spellcheck="false" required
                data-i18n-placeholder="popupServerPlaceholder">
-        <button type="submit" class="dp-button dp-button--primary" data-i18n="popupConnectServer"></button>
+        <button type="submit" class="dp-btn dp-btn--primary" data-i18n="popupConnectServer"></button>
       </form>
     </section>
 
     <section data-state="connected" hidden>
-      <p class="dp-popup__status" data-i18n="popupConnected"></p>
-      <dl class="dp-popup__facts">
+      <div class="dp-conn">
+        <span class="dp-conn__status" data-testid="reach" data-reach="checking">
+          <span class="dp-conn__dot" aria-hidden="true"></span><span data-testid="reach-text"></span>
+        </span>
+        <button type="button" class="dp-glyph-btn dp-glyph-btn--bare dp-conn__toggle" data-action="details"
+                aria-expanded="false" aria-controls="facts" data-i18n-label="popupConnectionDetails">
+          <span data-glyph-slot="chevronDown"></span>
+        </button>
+      </div>
+      <dl class="dp-facts" id="facts" hidden>
         <div><dt data-i18n="popupServer"></dt><dd data-testid="server"></dd></div>
         <div><dt data-i18n="popupAccount"></dt><dd data-testid="account"></dd></div>
         <div><dt data-i18n="popupBrowser"></dt><dd data-testid="label"></dd></div>
       </dl>
-      <p class="dp-popup__links">
-        <a class="dp-popup__open" data-testid="open-server" target="_blank" rel="noopener" data-i18n="popupOpenServer"></a>
-        <a class="dp-popup__open" href="#" data-action="settings" data-i18n="popupSettings"></a>
+      <p class="dp-open-row">
+        <button type="button" class="dp-btn dp-btn--ghost" data-action="open" data-testid="open-server" data-i18n="popupOpenServer"></button>
       </p>
-      <label class="dp-popup__site" data-testid="site-switch" hidden>
-        <input type="checkbox" data-testid="site-on"> <span data-testid="site-text"></span>
-      </label>
       <h2 class="dp-popup__heading" data-i18n="listTitle"></h2>
       <p class="dp-popup__hint" data-i18n="listEmpty" data-testid="list-empty"></p>
       <ul class="dp-jobs" data-testid="jobs"></ul>
+    </section>
+
+    <section data-view="settings" class="dp-settings" hidden>
+      <h2 class="dp-settings__title" data-i18n="popupSettings"></h2>
+
+      <section class="dp-settings__group" aria-labelledby="connection-title">
+        <h3 id="connection-title" data-i18n="optionsConnection"></h3>
+        <div data-connection="connected" hidden>
+          <dl class="dp-facts">
+            <div><dt data-i18n="popupServer"></dt><dd data-testid="settings-server"></dd></div>
+            <div><dt data-i18n="popupAccount"></dt><dd data-testid="settings-account"></dd></div>
+            <div><dt data-i18n="popupBrowser"></dt><dd data-testid="settings-label"></dd></div>
+          </dl>
+          <p class="dp-row">
+            <button type="button" class="dp-btn dp-btn--danger dp-btn--sm" data-action="disconnect" data-i18n="optionsDisconnect"></button>
+          </p>
+          <p class="dp-popup__hint" data-i18n="optionsDisconnectHint"></p>
+        </div>
+        <p class="dp-popup__hint" data-connection="disconnected" data-i18n="optionsNotConnected" hidden></p>
+        <p class="dp-popup__hint" role="status" data-testid="connection-note" hidden></p>
+      </section>
+
+      <section class="dp-settings__group" aria-labelledby="page-title">
+        <h3 id="page-title" data-i18n="optionsOnPages"></h3>
+        <label class="dp-check"><input type="checkbox" data-setting="hover"> <span data-i18n="optionsHover"></span></label>
+        <label class="dp-check"><input type="checkbox" data-setting="video"> <span data-i18n="optionsVideo"></span></label>
+        <label class="dp-check" data-testid="site-switch" hidden>
+          <input type="checkbox" data-testid="site-on"> <span data-testid="site-text"></span>
+        </label>
+        <h4 data-i18n="optionsOffSites"></h4>
+        <p class="dp-popup__hint" data-i18n="optionsOffSitesHint"></p>
+        <ul class="dp-sites" data-testid="off-sites"></ul>
+        <form class="dp-row" data-action="add-site">
+          <label class="dp-visually-hidden" for="site" data-i18n="optionsSiteLabel"></label>
+          <input id="site" type="text" spellcheck="false" autocomplete="off" data-i18n-placeholder="optionsSitePlaceholder">
+          <button type="submit" class="dp-btn dp-btn--sm" data-i18n="optionsAddSite"></button>
+        </form>
+      </section>
+
+      <section class="dp-settings__group" aria-labelledby="notify-title">
+        <h3 id="notify-title" data-i18n="optionsNotifications"></h3>
+        <label class="dp-check"><input type="checkbox" data-notify="completed"> <span data-i18n="optionsNotifyCompleted"></span></label>
+        <label class="dp-check"><input type="checkbox" data-notify="failed"> <span data-i18n="optionsNotifyFailed"></span></label>
+        <label class="dp-check"><input type="checkbox" data-notify="attention"> <span data-i18n="optionsNotifyAttention"></span></label>
+      </section>
     </section>
   </main>
 </body>
