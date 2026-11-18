@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // All user-visible text comes from _locales via chrome.i18n (WS-E0 B4).
 
-export function message(key: string): string {
-  const text = chrome.i18n.getMessage(key);
+export function message(key: string, substitutions?: string[]): string {
+  const text = substitutions ? chrome.i18n.getMessage(key, substitutions) : chrome.i18n.getMessage(key);
   return text || key;
 }
 

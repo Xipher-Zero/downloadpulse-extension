@@ -1,8 +1,140 @@
 {
-  "extName": { "message": "DownloadPulse", "description": "Product name. Not translated." },
-  "extDescription": { "message": "Send downloads from your browser to your DownloadPulse server.", "description": "Store and manifest description of the extension." },
-  "actionTitle": { "message": "DownloadPulse", "description": "Tooltip of the toolbar button." },
-  "popupNotConnected": { "message": "Not connected", "description": "Toolbar popup: the extension is not connected to a DownloadPulse server." },
-  "optionsTitle": { "message": "DownloadPulse settings", "description": "Title of the extension's settings page." },
-  "optionsPlaceholder": { "message": "There are no settings yet.", "description": "Settings page body while the extension has no settings." }
+  "extName": {
+    "message": "DownloadPulse",
+    "description": "Product name. Not translated."
+  },
+  "extDescription": {
+    "message": "Send downloads from your browser to your DownloadPulse server.",
+    "description": "Store and manifest description of the extension."
+  },
+  "actionTitle": {
+    "message": "DownloadPulse",
+    "description": "Tooltip of the toolbar button."
+  },
+  "popupNotConnected": {
+    "message": "Not connected",
+    "description": "Toolbar popup: the extension is not connected to a DownloadPulse server."
+  },
+  "optionsTitle": {
+    "message": "DownloadPulse settings",
+    "description": "Title of the extension's settings page."
+  },
+  "optionsPlaceholder": {
+    "message": "There are no settings yet.",
+    "description": "Settings page body while the extension has no settings."
+  },
+  "popupConnect": {
+    "message": "Connect to a DownloadPulse instance",
+    "description": "Popup button: start connecting this browser."
+  },
+  "popupProbing": {
+    "message": "Looking for DownloadPulse…",
+    "description": "Popup status while checking this computer or the server."
+  },
+  "popupNotFound": {
+    "message": "No DownloadPulse is running on this computer. Start it and check again, or connect to a server.",
+    "description": "Popup: nothing answered on this computer."
+  },
+  "popupCheckAgain": {
+    "message": "Check again",
+    "description": "Popup button: look on this computer again."
+  },
+  "popupServerLabel": {
+    "message": "Server address",
+    "description": "Popup: label of the server address field."
+  },
+  "popupServerPlaceholder": {
+    "message": "downloadpulse.example.com",
+    "description": "Popup: example in the server address field."
+  },
+  "popupConnectServer": {
+    "message": "Connect to this server",
+    "description": "Popup button: connect to the address entered."
+  },
+  "popupWaiting": {
+    "message": "Approve this browser in the DownloadPulse tab that just opened.",
+    "description": "Popup status while waiting for the person to approve on the server."
+  },
+  "popupCode": {
+    "message": "Code:",
+    "description": "Popup: precedes the pairing code shown on both sides."
+  },
+  "popupCodeHint": {
+    "message": "DownloadPulse shows the same code. Only approve if they match.",
+    "description": "Popup: under the code."
+  },
+  "popupCancel": {
+    "message": "Cancel",
+    "description": "Popup button: stop connecting."
+  },
+  "popupStartAgain": {
+    "message": "Start again",
+    "description": "Popup button: back to the start after a failure."
+  },
+  "popupConnected": {
+    "message": "Connected",
+    "description": "Popup status: this browser is connected."
+  },
+  "popupServer": {
+    "message": "Server",
+    "description": "Popup: label of the connected server's address."
+  },
+  "popupAccount": {
+    "message": "Account",
+    "description": "Popup: label of the account this browser belongs to."
+  },
+  "popupBrowser": {
+    "message": "Browser",
+    "description": "Popup: label of the name this browser was given."
+  },
+  "failureUnreachable": {
+    "message": "That server can't be reached. Check the address and that DownloadPulse is running.",
+    "description": "Popup error."
+  },
+  "failureCertificate": {
+    "message": "That server can't be reached securely. If it uses its own certificate, open it in a tab, accept the certificate, then connect again.",
+    "description": "Popup error: an HTTPS server failed, possibly a self-signed certificate."
+  },
+  "failureNotDownloadPulse": {
+    "message": "Something answered at that address, but it isn't DownloadPulse.",
+    "description": "Popup error."
+  },
+  "failureTooOld": {
+    "message": "This DownloadPulse is too old to connect browsers. Update it, then connect again.",
+    "description": "Popup error: the server lacks the browser protocol."
+  },
+  "failureDenied": {
+    "message": "The connection was denied in DownloadPulse.",
+    "description": "Popup error."
+  },
+  "failureExpired": {
+    "message": "The connection request expired. Start again.",
+    "description": "Popup error."
+  },
+  "failurePermission": {
+    "message": "The browser didn't allow access to that server.",
+    "description": "Popup error: the person declined the site access prompt."
+  },
+  "failureUnauthorized": {
+    "message": "DownloadPulse no longer accepts this browser. Connect it again.",
+    "description": "Popup error: the token was refused."
+  },
+  "failureFailed": {
+    "message": "Something went wrong while connecting. Start again.",
+    "description": "Popup error: an unclassified failure."
+  },
+  "pairingClientName": {
+    "message": "$BROWSER$ on $SYSTEM$",
+    "description": "The name a browser connection is given by default, for example 'Firefox on Linux'. The person can change it when approving.",
+    "placeholders": {
+      "browser": {
+        "content": "$1",
+        "example": "Firefox"
+      },
+      "system": {
+        "content": "$2",
+        "example": "Linux"
+      }
+    }
+  }
 }

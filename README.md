@@ -31,6 +31,14 @@ npm test          # smoke tests: Chromium (Playwright), Firefox (web-ext)
 npm run package   # web-ext-artifacts/downloadpulse-{chromium,firefox}-<version>.zip
 ```
 
+The onboarding tests (`test/e2e`) need `127.0.0.1:8095` to themselves and refuse to run while a real DownloadPulse holds it. On a computer running DownloadPulse, run them in a private network namespace (Linux):
+
+```sh
+unshare -rn sh -c 'ip link set lo up && npm test'
+```
+
+`test/real` (outside `npm test`) connects to a real, disposable DownloadPulse on port 8095: `DP_REAL_USER=… DP_REAL_PASSWORD=… npx playwright test --config playwright.real.config.mjs`.
+
 `npm run build` writes unpacked extensions to `dist/chromium/` and `dist/firefox/`. To load one by hand:
 - **Chromium:** `chrome://extensions`, then *Load unpacked*;
 - **Firefox:** `about:debugging#/runtime/this-firefox`, then *Load Temporary Add-on*.

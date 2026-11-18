@@ -22,6 +22,11 @@ export function manifest(browser, version) {
     },
     options_ui: { page: "options/options.html", open_in_tab: true },
     permissions: ["storage"],
+    // A DownloadPulse on this computer (Docker's and the desktop
+    // application's default port): probed when the person connects (WS-E1 B2).
+    host_permissions: ["http://127.0.0.1/*", "http://localhost/*"],
+    // A server elsewhere: asked for, per origin, when the person names it (L20).
+    optional_host_permissions: ["http://*/*", "https://*/*"],
   };
   if (browser === "chromium") {
     return { ...shared, background: { service_worker: "background.js" }, minimum_chrome_version: "120" };

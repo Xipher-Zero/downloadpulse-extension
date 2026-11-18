@@ -10,7 +10,47 @@
 <body>
   <main class="dp-popup">
     <h1 class="dp-popup__title" data-i18n="extName"></h1>
-    <p class="dp-popup__status" data-i18n="popupNotConnected" data-testid="status"></p>
+
+    <section data-state="disconnected" hidden>
+      <p class="dp-popup__status" data-i18n="popupNotConnected" data-testid="status"></p>
+      <button type="button" class="dp-button dp-button--primary" data-action="connect-local" data-i18n="popupConnect"></button>
+    </section>
+
+    <section data-state="probing" hidden>
+      <p class="dp-popup__status" role="status" data-i18n="popupProbing"></p>
+    </section>
+
+    <section data-state="not_found" hidden>
+      <p class="dp-popup__status" data-i18n="popupNotFound"></p>
+      <button type="button" class="dp-button" data-action="connect-local" data-i18n="popupCheckAgain"></button>
+      <form class="dp-popup__remote" data-action="connect-remote">
+        <label class="dp-popup__label" for="server" data-i18n="popupServerLabel"></label>
+        <input id="server" name="server" type="text" autocomplete="url" spellcheck="false" required
+               data-i18n-placeholder="popupServerPlaceholder">
+        <button type="submit" class="dp-button dp-button--primary" data-i18n="popupConnectServer"></button>
+      </form>
+    </section>
+
+    <section data-state="waiting" hidden>
+      <p class="dp-popup__status" role="status" data-i18n="popupWaiting"></p>
+      <p class="dp-popup__code-row"><span data-i18n="popupCode"></span> <strong class="dp-popup__code" data-testid="code"></strong></p>
+      <p class="dp-popup__hint" data-i18n="popupCodeHint"></p>
+      <button type="button" class="dp-button" data-action="cancel" data-i18n="popupCancel"></button>
+    </section>
+
+    <section data-state="failed" hidden>
+      <p class="dp-popup__error" role="alert" data-testid="failure"></p>
+      <button type="button" class="dp-button" data-action="cancel" data-i18n="popupStartAgain"></button>
+    </section>
+
+    <section data-state="connected" hidden>
+      <p class="dp-popup__status" data-i18n="popupConnected"></p>
+      <dl class="dp-popup__facts">
+        <div><dt data-i18n="popupServer"></dt><dd data-testid="server"></dd></div>
+        <div><dt data-i18n="popupAccount"></dt><dd data-testid="account"></dd></div>
+        <div><dt data-i18n="popupBrowser"></dt><dd data-testid="label"></dd></div>
+      </dl>
+    </section>
   </main>
 </body>
 </html>
