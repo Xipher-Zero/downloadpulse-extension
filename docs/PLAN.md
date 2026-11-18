@@ -138,7 +138,7 @@ An extension cannot read the bytes of a file the browser has saved to disk. The 
 
   States come from the server; the extension never infers them.
 - **Polling:** only while something is active, or while the dropdown is open. It stops when nothing is active.
-- **Ring:** while at least one job is active, the background script runs an animation loop that advances the ring frame and polls. Every icon update is an extension API call, which keeps a Chromium service worker alive for exactly that period. When nothing is active, the loop ends and the background sleeps (spike S2 confirms Firefox's event-page lifetime under the same loop).
+- **Ring:** while at least one job is active, the background script runs an animation loop that advances the ring frame and polls. Every icon update is an extension API call, which keeps a Chromium service worker alive for exactly that period. When nothing is active, the loop ends and the background sleeps. **Settled by spike S2** ([`spikes/S2-background-lifetime.md`](spikes/S2-background-lifetime.md)): icon updates keep the background alive in Chromium 151 and Firefox 153/160, at 1 and 10 frames per second; polling alone does not. State that must survive a stop lives in extension storage.
 - **Notifications:** on a transition to completed, failed, or needing attention. Each opens the dropdown when clicked.
 
 ### 3.6 Extension settings (L22)
@@ -324,7 +324,7 @@ Each workstream becomes a **standalone implementation task**, written to the Pro
 
 ## 10. Spikes (evidence before design; no product code)
 
-All three were approved by the operator on 2026-11-17. **S1 answered** the same day ([`spikes/S1-cookie-capture.md`](spikes/S1-cookie-capture.md)).
+All three were approved by the operator on 2026-11-17. **S1** and **S2 answered** the same day ([`spikes/S1-cookie-capture.md`](spikes/S1-cookie-capture.md), [`spikes/S2-background-lifetime.md`](spikes/S2-background-lifetime.md)).
 
 | ID | Question | Settles |
 |---|---|---|
@@ -358,3 +358,4 @@ All three were approved by the operator on 2026-11-17. **S1 answered** the same 
   - ETA provided to external clients (L27); the withholding contract and its test are retired.
   - Spikes S1–S3 approved.
 - 2026-11-17: S1 answered: capture by background fetch; all-sites host permission (§3.4, §3.7).
+- 2026-11-17: S2 answered: icon updates keep the background alive in both browsers; polling alone does not (§3.5).
