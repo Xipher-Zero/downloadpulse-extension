@@ -124,7 +124,7 @@ The hover icon is drawn in its own isolated layer (a shadow root) beside the URL
 
 ### 3.4 Capturing `.torrent`, `.nzb` and `.metalink` (L15)
 
-An extension cannot read the bytes of a file the browser has saved to disk. The extension therefore fetches the file itself, carrying the user's login for that site, and sends its contents. Whether the site's cookies go along depends on each browser's third-party cookie rules. **This is the largest technical unknown: spike S1 (§10) settles it before the submission workstream is designed.** The contents go to the server as an upload; the file's URL may contain a passkey and is never sent or kept (Rule D3).
+An extension cannot read the bytes of a file the browser has saved to disk. The extension therefore fetches the file itself, carrying the user's login for that site, and sends its contents. Whether the site's cookies go along depends on each browser's third-party cookie rules. **Settled by spike S1 (2026-11-17, [`spikes/S1-cookie-capture.md`](spikes/S1-cookie-capture.md)):** a fetch from the background script carries the file site's own login cookies (every SameSite variant) in Chromium 151 and Firefox 153/160, even with third-party cookies blocked. A content-script fetch is blocked cross-origin. The capture mechanism is the background fetch; it needs host permission for any site (§3.7). The contents go to the server as an upload; the file's URL may contain a passkey and is never sent or kept (Rule D3).
 
 ### 3.5 Downloads list, controls, indicator, notifications (L16–L18)
 
@@ -151,7 +151,7 @@ An extension cannot read the bytes of a file the browser has saved to disk. The 
 
 ### 3.7 Permissions and privacy
 
-- **The content script** runs on all sites, for L12 and L14. Both stores then show their "read and change data on all websites" warning, and review is stricter. The script reads only link and selection data around the pointer and sends nothing anywhere except the user's own submissions to the user's own server.
+- **The content script** runs on all sites, for L12 and L14; the background also holds all-sites host permission, to capture files from any tracker or indexer (L15, spike S1). Both stores then show their "read and change data on all websites" warning, and review is stricter. The script reads only link and selection data around the pointer and sends nothing anywhere except the user's own submissions to the user's own server.
 - **The server origin:** permission is requested at connect time (L20).
 - **Other permissions:** `contextMenus`, `notifications`, `storage`; `downloads` only if spike S1 needs it.
 - **The token** is kept in extension local storage only, never synced, never in content scripts or page-visible storage, and never logged.
@@ -324,7 +324,7 @@ Each workstream becomes a **standalone implementation task**, written to the Pro
 
 ## 10. Spikes (evidence before design; no product code)
 
-All three were approved by the operator on 2026-11-17.
+All three were approved by the operator on 2026-11-17. **S1 answered** the same day ([`spikes/S1-cookie-capture.md`](spikes/S1-cookie-capture.md)).
 
 | ID | Question | Settles |
 |---|---|---|
@@ -357,3 +357,4 @@ All three were approved by the operator on 2026-11-17.
   - D2 resolved as L26: own tokens only; Admin may revoke others'.
   - ETA provided to external clients (L27); the withholding contract and its test are retired.
   - Spikes S1–S3 approved.
+- 2026-11-17: S1 answered: capture by background fetch; all-sites host permission (§3.4, §3.7).
