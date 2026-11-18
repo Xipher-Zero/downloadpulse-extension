@@ -314,8 +314,8 @@ Each workstream becomes a **standalone implementation task**, written to the Pro
 **Extension (this repository):**
 - **WS-E0:** scaffold: TypeScript build, both manifests, lint, `web-ext lint`, Playwright harness, CI packaging. No features. Can start now.
 - **WS-E1:** onboarding and pairing client (§3.1). Depends on WS-S1.
-- **WS-E2:** submission surfaces (§3.2–3.4). Depends on WS-S2 and on spikes S1 and S3.
-- **WS-E3:** downloads list, controls, indicator and notifications (§3.5). Depends on WS-S2 and spike S2.
+- **WS-E2:** submission surfaces (§3.2–3.4). Depends on WS-S2. Spikes S1 and S3 are answered; their untested items are carried here.
+- **WS-E3:** downloads list, controls, indicator and notifications (§3.5). Depends on WS-S2. Spike S2 is answered; its untested items are carried here.
 - **WS-E4:** settings, permissions and privacy (§3.6–3.7).
 - **WS-E5:** localization (§8, D5).
 - **WS-E6:** store packaging and listings (L24, D6, privacy policy). Depends on the website and accounts.
@@ -324,7 +324,7 @@ Each workstream becomes a **standalone implementation task**, written to the Pro
 
 ## 10. Spikes (evidence before design; no product code)
 
-All three were approved by the operator on 2026-11-17. **S1** and **S2 answered** the same day ([`spikes/S1-cookie-capture.md`](spikes/S1-cookie-capture.md), [`spikes/S2-background-lifetime.md`](spikes/S2-background-lifetime.md)).
+All three were approved by the operator on 2026-11-17. **All three were answered** the same day: [`spikes/S1-cookie-capture.md`](spikes/S1-cookie-capture.md), [`spikes/S2-background-lifetime.md`](spikes/S2-background-lifetime.md), [`spikes/S3-page-action-and-video-button.md`](spikes/S3-page-action-and-video-button.md).
 
 | ID | Question | Settles |
 |---|---|---|
@@ -359,3 +359,4 @@ All three were approved by the operator on 2026-11-17. **S1** and **S2 answered*
   - Spikes S1–S3 approved.
 - 2026-11-17: S1 answered: capture by background fetch; all-sites host permission (§3.4, §3.7).
 - 2026-11-17: S2 answered: icon updates keep the background alive in both browsers; polling alone does not (§3.5).
+- 2026-11-17: S3 answered: the Firefox page action follows a runtime host list; the video detector and top-layer button work through overlays, closed shadow DOM and cross-origin frames (L14).

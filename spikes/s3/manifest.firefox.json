@@ -1,0 +1,5 @@
+{"manifest_version": 3, "name": "S3 spike", "version": "0.0.1", "permissions": ["tabs"],
+ "host_permissions": ["<all_urls>"], "background": {"scripts": ["bg.js"]},
+ "page_action": {"default_title": "Download with DownloadPulse", "show_matches": ["*://127.0.0.1/*"]},
+ "content_scripts": [{"matches": ["<all_urls>"], "js": ["cs.js"], "all_frames": true}],
+ "browser_specific_settings": {"gecko": {"id": "s3-spike@downloadpulse.test"}}}
