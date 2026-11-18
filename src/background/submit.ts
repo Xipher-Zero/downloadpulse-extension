@@ -5,7 +5,7 @@
 // is never sent, stored or logged. Feedback goes to the frame the gesture
 // came from, else to the toolbar badge (B6).
 
-import {connection, token} from "../shared/connection";
+import {connection, forgetConnection, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
 import {submitJob, type Source} from "../shared/server";
@@ -108,6 +108,7 @@ async function send(source: Source): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 2000));
     answer = await submitJob(connected.server, browserToken, key, source, name);
   }
+  if (!answer.ok && answer.code === "unauthorized") await forgetConnection(true);
   if (!answer.ok) throw new Refused(REFUSALS[answer.code] ?? "sendFailed");
   wake();
 }

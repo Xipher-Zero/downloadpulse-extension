@@ -31,7 +31,8 @@ test("the Chromium package loads, starts its worker and renders the popup", asyn
     const options = await context.newPage();
     options.on("pageerror", (e) => errors.push(String(e)));
     await options.goto(`chrome-extension://${id}/options/options.html`);
-    await expect(options.getByTestId("placeholder")).toHaveText(messages.optionsPlaceholder.message);
+    await expect(options.locator("h1")).toHaveText(messages.optionsTitle.message);
+    await expect(options.getByText(messages.optionsNotConnected.message)).toBeVisible();
     expect(errors).toEqual([]);
   } finally {
     await context.close();

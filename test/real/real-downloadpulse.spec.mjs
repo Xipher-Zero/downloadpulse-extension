@@ -71,6 +71,15 @@ test("connect to a real DownloadPulse: sign in, approve, verified", async () => 
     const listed = popup.locator(".dp-job", {hasText: "file.iso"});
     await expect(listed).toHaveCount(1, {timeout: 20_000});
     await expect(listed.locator(".dp-job__state")).toHaveText(/^(Waiting|Preparing|Downloading|Failed|Needs attention in DownloadPulse)/);
+
+    // WS-E4 against the real server: Disconnect revokes this browser there.
+    const settings = await context.newPage();
+    await settings.goto(popup.url().replace("popup/popup.html", "options/options.html"));
+    await settings.getByRole("button", {name: "Disconnect"}).click();
+    await expect(settings.getByTestId("connection-note")).toHaveText("Disconnected. DownloadPulse no longer accepts this browser.");
+    const remaining = await page.evaluate(async () =>
+      (await (await window.debridPulseAuth.fetch("/api/account/browsers")).json()).browsers.map((b) => b.label));
+    expect(remaining).not.toContain("E2E-Chromium");
   } finally {
     await context.close();
     await rm(profile, {recursive: true, force: true});

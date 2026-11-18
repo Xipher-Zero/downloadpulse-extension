@@ -13,18 +13,21 @@ import {message} from "../shared/i18n";
 
 const BUTTON = 22;
 const HIDE_DELAY_MS = 300;
-let connected: boolean | null = null;
+interface Offer { hover: boolean; video: boolean }
+let offer: Offer | null = null;
 let askedAt = 0;
 
-async function mayOffer(): Promise<boolean> {
-  if (connected !== null && Date.now() - askedAt < 10_000) return connected;
+/** What this frame may offer, as the background says (connected, and the person's settings for this site). */
+async function mayOffer(): Promise<Offer> {
+  if (offer !== null && Date.now() - askedAt < 5_000) return offer;
   askedAt = Date.now();
   try {
-    connected = Boolean((await chrome.runtime.sendMessage({type: "dp-state"}) as {connected?: boolean})?.connected);
+    const state = await chrome.runtime.sendMessage({type: "dp-state"}) as {hover?: boolean; video?: boolean} | undefined;
+    offer = {hover: Boolean(state?.hover), video: Boolean(state?.video)};
   } catch {
-    connected = false;
+    offer = {hover: false, video: false};
   }
-  return connected;
+  return offer;
 }
 
 const STYLE = `
@@ -208,9 +211,12 @@ function showVideo(element: HTMLVideoElement): void {
 let pending: Pointer | null = null;
 
 async function track(event: Pointer): Promise<void> {
-  if (!(await mayOffer())) return;
+  const may = await mayOffer();
+  if (!may.hover) hide(hover);
+  if (!may.video) hide(video);
+  if (!may.hover && !may.video) return;
   if (overHover(event) || (video && event.path.includes(video.host))) return;
-  const found = candidateAt(event);
+  const found = may.hover ? candidateAt(event) : null;
   if (found) {
     clearTimeout(hideTimer);
     hideTimer = 0;
@@ -218,7 +224,7 @@ async function track(event: Pointer): Promise<void> {
   } else {
     scheduleHide(event);
   }
-  const element = videoAt(document, event.clientX, event.clientY);
+  const element = may.video ? videoAt(document, event.clientX, event.clientY) : null;
   if (element) {
     announceVideo();
     showVideo(element);
@@ -238,7 +244,7 @@ document.addEventListener("pointermove", (event) => {
 
 // A page with a video shows the URL-bar icon in Firefox even before a hover.
 setTimeout(() => {
-  if (document.querySelector("video")) void mayOffer().then((may) => may && announceVideo());
+  if (document.querySelector("video")) void mayOffer().then((may) => may.video && announceVideo());
 }, 1500);
 
 // ── the toast (B6) ─────────────────────────────────────────────────────────

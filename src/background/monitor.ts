@@ -6,7 +6,8 @@
 // a notification when a job completes, fails or needs attention. It runs
 // only while a job is unsettled or the popup is open.
 
-import {connection, token} from "../shared/connection";
+import {connection, forgetConnection, token} from "../shared/connection";
+import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
 import {listJobs, ServerError, type Job} from "../shared/server";
 
@@ -83,6 +84,8 @@ function notice(job: Job, before: Job | undefined): string | null {
 }
 
 async function notify(job: Job, kind: string): Promise<void> {
+  // Only the notifications the person keeps on (WS-E4).
+  if (!(await settings()).notify[kind as "completed" | "failed" | "attention"]) return;
   const notified = ((await chrome.storage.session.get(NOTIFIED))[NOTIFIED] as string[] | undefined) ?? [];
   const id = `dp:${job.id}:${kind}`;
   if (notified.includes(id)) return;
@@ -111,7 +114,11 @@ async function poll(): Promise<boolean> {
       if (!listing.more) break;
     }
   } catch (error) {
-    if (error instanceof ServerError && error.failure === "unauthorized") return false;
+    if (error instanceof ServerError && error.failure === "unauthorized") {
+      // Disconnected in DownloadPulse (Connected browsers): forget it here, and say so.
+      await forgetConnection(true);
+      return false;
+    }
     return true;   // unreachable for now: try again next time
   }
   const kept = Object.values(jobs).sort((a, b) => b.cursor - a.cursor).slice(0, KEEP);

@@ -28,3 +28,6 @@ body { margin: 0; min-width: 320px; background: var(--dp-bg); color: var(--dp-fg
 .dp-button--small { padding: 2px 8px; font-size: 12px; }
 .dp-popup__open { color: var(--dp-accent); font-size: 13px; justify-self: start; }
 .dp-job--focus { border-color: var(--dp-accent); box-shadow: 0 0 0 1px var(--dp-accent); }
+.dp-popup__links { display: flex; gap: 14px; margin: 0; }
+.dp-popup__site { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+.dp-popup__site[hidden] { display: none; }

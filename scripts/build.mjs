@@ -18,6 +18,7 @@ const STATIC = [
   ["src/popup/popup.html", "popup/popup.html"],
   ["src/popup/popup.css", "popup/popup.css"],
   ["src/options/options.html", "options/options.html"],
+  ["src/options/options.css", "options/options.css"],
   ["_locales", "_locales"],
   ["static/icons", "icons"],
 ];

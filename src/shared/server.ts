@@ -225,3 +225,9 @@ export async function withdrawJob(origin: string, browserToken: string, id: stri
   if (response.status === 401) throw new ServerError("unauthorized");
   if (!response.ok) throw new ServerError("failed");
 }
+
+/** The extension's Disconnect: this browser's token revokes itself on the server. */
+export async function disconnectBrowser(origin: string, browserToken: string): Promise<void> {
+  const response = await request(origin, "/api/browser/v1/session", {method: "DELETE", headers: authorized(browserToken)});
+  if (!response.ok && response.status !== 401) throw new ServerError("failed");
+}

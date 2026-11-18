@@ -4,8 +4,9 @@
 // requests, owns the right-click menu (shown only while connected, WS-E2
 // B8) and, in Firefox, the URL-bar icon (page action, WS-E2 B4).
 
-import {connection, token} from "../shared/connection";
-import {controlJob, withdrawJob} from "../shared/server";
+import {connection, forgetConnection, token} from "../shared/connection";
+import {controlJob, disconnectBrowser, withdrawJob} from "../shared/server";
+import {isOffSite, settings} from "../shared/settings";
 import {popupOpen, wake} from "./monitor";
 import {message} from "../shared/i18n";
 import {cancel, connectLocal, connectRemote} from "./pairing";
@@ -14,7 +15,33 @@ import {sendSelection, sendUrl} from "./submit";
 type Request =
   | {type: "connect-local"} | {type: "connect-remote"; address: string} | {type: "cancel"}
   | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-has-video"}
-  | {type: "dp-popup-open"} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string};
+  | {type: "dp-popup-open"} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
+  | {type: "dp-disconnect"};
+
+/** WS-E4: Disconnect revokes this browser's token on the server, then forgets it here (even if the server is unreachable). */
+async function disconnect(): Promise<{revoked: boolean}> {
+  const connected = await connection();
+  const browserToken = await token();
+  let revoked = false;
+  if (connected && browserToken) {
+    try {
+      await disconnectBrowser(connected.server, browserToken);
+      revoked = true;
+    } catch {
+      revoked = false;
+    }
+  }
+  await forgetConnection();
+  return {revoked};
+}
+
+/** What a frame may offer: nothing unless connected, then as the settings say for its tab's site. */
+async function frameState(sender: chrome.runtime.MessageSender): Promise<{connected: boolean; hover: boolean; video: boolean}> {
+  if (!(await connection())) return {connected: false, hover: false, video: false};
+  const chosen = await settings();
+  const off = isOffSite(sender.tab?.url ?? sender.url ?? "", chosen.offSites);
+  return {connected: true, hover: chosen.hover && !off, video: chosen.video && !off};
+}
 
 const MENU_LINK = "dp-send-link";
 const MENU_SELECTION = "dp-send-selection";
@@ -79,6 +106,10 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
     case "connect-remote": if (!fromPage) void connectRemote(String(request.address || "")); return undefined;
     case "cancel": if (!fromPage) void cancel(); return undefined;
     case "dp-popup-open": if (!fromPage) popupOpen(); return undefined;
+    case "dp-disconnect":
+      if (fromPage) return undefined;
+      void disconnect().then(respond);
+      return true;
     case "dp-control":
     case "dp-withdraw":
       if (fromPage) return undefined;
@@ -86,7 +117,7 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
       return true;
     case "dp-state":
       // A content script learns only whether it may offer anything: never a secret.
-      void connection().then((connected) => respond({connected: Boolean(connected)}));
+      void frameState(sender).then(respond);
       return true;
     case "dp-send":
       if (fromPage && typeof request.url === "string" && sender.tab?.id !== undefined) {
@@ -96,7 +127,7 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
     case "dp-has-video":
       if (fromPage && pageAction && sender.tab?.id !== undefined) {
         const tabId = sender.tab.id;
-        void connection().then((connected) => connected && pageAction.show(tabId));
+        void frameState(sender).then((state) => { if (state.video) void pageAction.show(tabId); });
       }
       return undefined;
   }

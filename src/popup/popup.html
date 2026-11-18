@@ -50,7 +50,13 @@
         <div><dt data-i18n="popupAccount"></dt><dd data-testid="account"></dd></div>
         <div><dt data-i18n="popupBrowser"></dt><dd data-testid="label"></dd></div>
       </dl>
-      <a class="dp-popup__open" data-testid="open-server" target="_blank" rel="noopener" data-i18n="popupOpenServer"></a>
+      <p class="dp-popup__links">
+        <a class="dp-popup__open" data-testid="open-server" target="_blank" rel="noopener" data-i18n="popupOpenServer"></a>
+        <a class="dp-popup__open" href="#" data-action="settings" data-i18n="popupSettings"></a>
+      </p>
+      <label class="dp-popup__site" data-testid="site-switch" hidden>
+        <input type="checkbox" data-testid="site-on"> <span data-testid="site-text"></span>
+      </label>
       <h2 class="dp-popup__heading" data-i18n="listTitle"></h2>
       <p class="dp-popup__hint" data-i18n="listEmpty" data-testid="list-empty"></p>
       <ul class="dp-jobs" data-testid="jobs"></ul>

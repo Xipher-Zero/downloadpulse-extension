@@ -42,6 +42,15 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       if (pairing.status !== "pending") state.pairings.delete(body.device_code);
       return send(200, {status: pairing.status, interval: 2});
     }
+    if (url.pathname === "/api/browser/v1/session" && req.method === "DELETE") {
+      state.disconnects = (state.disconnects ?? 0) + 1;
+      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
+      state.revoked = true;
+      return send(200, {ok: true});
+    }
+    if (state.revoked && url.pathname.startsWith("/api/browser/v1/") && !url.pathname.startsWith("/api/browser/v1/pairings")) {
+      return send(401, {detail: "Unauthorized"});
+    }
     if (url.pathname === "/api/browser/v1/session") {
       state.sessionAuth.push({authorization: req.headers.authorization, cookie: req.headers.cookie ?? null});
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});

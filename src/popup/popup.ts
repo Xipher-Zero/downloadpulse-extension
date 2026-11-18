@@ -6,6 +6,7 @@
 import {connection, pairing} from "../shared/connection";
 import {localize, message} from "../shared/i18n";
 import {candidateOrigins, type Failure, type Job} from "../shared/server";
+import {isOffSite, saveSettings, settings, siteOf} from "../shared/settings";
 
 const FAILURE_KEYS: Record<Failure, string> = {
   unreachable: "failureUnreachable", certificate: "failureCertificate", not_downloadpulse: "failureNotDownloadPulse",
@@ -134,6 +135,18 @@ async function act(id: string, action: string): Promise<void> {
   await render();
 }
 
+/** WS-E4: this tab's site, with the download buttons on or off there. */
+async function renderSiteSwitch(): Promise<void> {
+  const [tab] = await chrome.tabs.query({active: true, currentWindow: true});
+  const site = /^https?:/.test(tab?.url ?? "") ? siteOf(tab!.url!) : "";
+  const label = document.querySelector<HTMLElement>('[data-testid="site-switch"]')!;
+  label.hidden = !site;
+  if (!site) return;
+  label.dataset["site"] = site;
+  document.querySelector<HTMLElement>('[data-testid="site-text"]')!.textContent = message("popupSiteOn", [site]);
+  document.querySelector<HTMLInputElement>('[data-testid="site-on"]')!.checked = !isOffSite(tab!.url!, (await settings()).offSites);
+}
+
 /** Opened from a notification: show that download (once). */
 async function focusNotified(): Promise<void> {
   const fromUrl = new URLSearchParams(location.search).get("job");
@@ -165,6 +178,7 @@ async function render(): Promise<void> {
     text('[data-testid="label"]', connected.label);
     // DownloadPulse itself: the server, or the standalone application on this computer.
     document.querySelector<HTMLAnchorElement>('[data-testid="open-server"]')!.href = `${connected.server}/`;
+    await renderSiteSwitch();
     const jobs = ((await chrome.storage.session.get("jobs"))["jobs"] ?? {}) as Record<string, Job>;
     renderJobs(Object.values(jobs).sort((a, b) => b.cursor - a.cursor));
     await focusNotified();
@@ -195,7 +209,19 @@ localize(document);
 for (const input of document.querySelectorAll<HTMLInputElement>("[data-i18n-placeholder]")) {
   input.placeholder = message(input.dataset["i18nPlaceholder"] ?? "");
 }
+document.addEventListener("change", (event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.dataset["testid"] !== "site-on") return;
+  const site = input.closest<HTMLElement>("[data-site]")?.dataset["site"] ?? "";
+  void settings().then((chosen) => saveSettings({offSites: input.checked
+    ? chosen.offSites.filter((item) => item !== site) : [...chosen.offSites, site]}));
+});
 document.addEventListener("click", (event) => {
+  if ((event.target as HTMLElement).closest("[data-action='settings']")) {
+    event.preventDefault();
+    void chrome.runtime.openOptionsPage();
+    return;
+  }
   const job = (event.target as HTMLElement).closest<HTMLElement>("button[data-job-action]");
   if (job) {
     void act(job.dataset["job"] ?? "", job.dataset["jobAction"] ?? "");

@@ -16,12 +16,8 @@
     "description": "Toolbar popup: the extension is not connected to a DownloadPulse server."
   },
   "optionsTitle": {
-    "message": "DownloadPulse settings",
+    "message": "DownloadPulse extension settings",
     "description": "Title of the extension's settings page."
-  },
-  "optionsPlaceholder": {
-    "message": "There are no settings yet.",
-    "description": "Settings page body while the extension has no settings."
   },
   "popupConnect": {
     "message": "Connect to a DownloadPulse instance",
@@ -332,5 +328,95 @@
   "popupOpenServer": {
     "message": "Open DownloadPulse",
     "description": "Popup link to the connected DownloadPulse: the server, or the application on this computer."
+  },
+  "optionsConnection": {
+    "message": "Connection",
+    "description": "Settings: section heading."
+  },
+  "optionsNotConnected": {
+    "message": "This browser isn't connected to DownloadPulse. Connect it from the toolbar button.",
+    "description": "Settings: shown when not connected."
+  },
+  "optionsDisconnect": {
+    "message": "Disconnect",
+    "description": "Settings button: disconnect this browser from DownloadPulse."
+  },
+  "optionsDisconnectHint": {
+    "message": "Disconnecting removes this browser from your DownloadPulse account. Downloads already sent are kept.",
+    "description": "Settings: beneath Disconnect."
+  },
+  "optionsDisconnected": {
+    "message": "Disconnected. DownloadPulse no longer accepts this browser.",
+    "description": "Settings: after Disconnect, revoked on the server."
+  },
+  "optionsDisconnectedLocally": {
+    "message": "Disconnected here, but DownloadPulse couldn't be reached. Remove this browser in DownloadPulse under My Account › Connected browsers.",
+    "description": "Settings: after Disconnect when the server could not be reached."
+  },
+  "optionsOnPages": {
+    "message": "On web pages",
+    "description": "Settings: section heading for the in-page buttons."
+  },
+  "optionsHover": {
+    "message": "Show a download button beside download links",
+    "description": "Settings checkbox: the hover icon."
+  },
+  "optionsVideo": {
+    "message": "Show a download button on video players",
+    "description": "Settings checkbox: the video button (and Firefox's address-bar icon)."
+  },
+  "optionsOffSites": {
+    "message": "Sites without download buttons",
+    "description": "Settings: heading of the list of sites where no buttons are shown."
+  },
+  "optionsOffSitesHint": {
+    "message": "On these sites (and their subdomains) no download buttons appear. Right-click still works.",
+    "description": "Settings: beneath that heading."
+  },
+  "optionsSiteLabel": {
+    "message": "Site to add",
+    "description": "Settings: accessible label of the site field."
+  },
+  "optionsSitePlaceholder": {
+    "message": "example.com",
+    "description": "Settings: example site name."
+  },
+  "optionsAddSite": {
+    "message": "Add site",
+    "description": "Settings button: add a site to the list."
+  },
+  "optionsRemoveSite": {
+    "message": "Remove",
+    "description": "Settings button: remove a site from the list."
+  },
+  "optionsNotifications": {
+    "message": "Notifications",
+    "description": "Settings: section heading."
+  },
+  "optionsNotifyCompleted": {
+    "message": "When a download finishes",
+    "description": "Settings checkbox."
+  },
+  "optionsNotifyFailed": {
+    "message": "When a download fails",
+    "description": "Settings checkbox."
+  },
+  "optionsNotifyAttention": {
+    "message": "When a download needs attention in DownloadPulse",
+    "description": "Settings checkbox."
+  },
+  "popupSettings": {
+    "message": "Settings",
+    "description": "Popup link: open the extension's settings."
+  },
+  "popupSiteOn": {
+    "message": "Download buttons on $SITE$",
+    "description": "Popup checkbox: show the in-page buttons on the current tab's site.",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
   }
 }

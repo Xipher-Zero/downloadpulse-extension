@@ -64,3 +64,15 @@ export async function setPairing(value: Pairing | null, deviceCode?: string): Pr
 export async function deviceCode(): Promise<string | null> {
   return secret("device");
 }
+
+/**
+ * Forget the connection here: the token, what is shown, and this browser's
+ * cached downloads. ``revoked``: DownloadPulse no longer accepts the token
+ * (disconnected there), which the popup then says.
+ */
+export async function forgetConnection(revoked = false): Promise<void> {
+  await setSecret("token", null);
+  await chrome.storage.local.remove(CONNECTION);
+  await chrome.storage.session.remove(["jobs", "jobsCursor", "jobsNotified", "focusJob"]);
+  if (revoked) await chrome.storage.session.set({[PAIRING]: {state: "failed", failure: "unauthorized"} satisfies Pairing});
+}

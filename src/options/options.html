@@ -4,12 +4,51 @@
 <head>
   <meta charset="utf-8">
   <title data-i18n="optionsTitle"></title>
+  <link rel="stylesheet" href="options.css">
   <script src="options.js" defer></script>
 </head>
 <body>
-  <main>
+  <main class="dp-options">
     <h1 data-i18n="optionsTitle"></h1>
-    <p data-i18n="optionsPlaceholder" data-testid="placeholder"></p>
+
+    <section aria-labelledby="connection-title">
+      <h2 id="connection-title" data-i18n="optionsConnection"></h2>
+      <div data-connection="connected" hidden>
+        <dl class="dp-facts">
+          <div><dt data-i18n="popupServer"></dt><dd data-testid="server"></dd></div>
+          <div><dt data-i18n="popupAccount"></dt><dd data-testid="account"></dd></div>
+          <div><dt data-i18n="popupBrowser"></dt><dd data-testid="label"></dd></div>
+        </dl>
+        <p class="dp-row">
+          <a data-testid="open-server" target="_blank" rel="noopener" data-i18n="popupOpenServer"></a>
+          <button type="button" class="dp-button dp-button--danger" data-action="disconnect" data-i18n="optionsDisconnect"></button>
+        </p>
+        <p class="dp-hint" data-i18n="optionsDisconnectHint"></p>
+      </div>
+      <p data-connection="disconnected" data-i18n="optionsNotConnected" hidden></p>
+      <p class="dp-note" role="status" data-testid="connection-note" hidden></p>
+    </section>
+
+    <section aria-labelledby="page-title">
+      <h2 id="page-title" data-i18n="optionsOnPages"></h2>
+      <label class="dp-check"><input type="checkbox" data-setting="hover"> <span data-i18n="optionsHover"></span></label>
+      <label class="dp-check"><input type="checkbox" data-setting="video"> <span data-i18n="optionsVideo"></span></label>
+      <h3 data-i18n="optionsOffSites"></h3>
+      <p class="dp-hint" data-i18n="optionsOffSitesHint"></p>
+      <ul class="dp-sites" data-testid="off-sites"></ul>
+      <form class="dp-row" data-action="add-site">
+        <label class="dp-visually-hidden" for="site" data-i18n="optionsSiteLabel"></label>
+        <input id="site" type="text" spellcheck="false" autocomplete="off" data-i18n-placeholder="optionsSitePlaceholder">
+        <button type="submit" class="dp-button" data-i18n="optionsAddSite"></button>
+      </form>
+    </section>
+
+    <section aria-labelledby="notify-title">
+      <h2 id="notify-title" data-i18n="optionsNotifications"></h2>
+      <label class="dp-check"><input type="checkbox" data-notify="completed"> <span data-i18n="optionsNotifyCompleted"></span></label>
+      <label class="dp-check"><input type="checkbox" data-notify="failed"> <span data-i18n="optionsNotifyFailed"></span></label>
+      <label class="dp-check"><input type="checkbox" data-notify="attention"> <span data-i18n="optionsNotifyAttention"></span></label>
+    </section>
   </main>
 </body>
 </html>
