@@ -92,6 +92,73 @@ test("the hover icon appears only beside download links and sends them", async (
   expect(dp.state.jobs[1].body.source).toEqual({kind: "magnet", magnet: `magnet:?xt=urn:btih:${"d".repeat(40)}&dn=thing`});
 });
 
+/** The link's rendered text on the line at ``y``: the glyphs' own boxes. */
+const textLine = (page, selector, y) => page.evaluate(([sel, at]) => {
+  const range = document.createRange();
+  range.selectNodeContents(document.querySelector(sel));
+  const rects = [...range.getClientRects()].filter((r) => r.width && at >= r.top && at <= r.bottom);
+  return {right: Math.max(...rects.map((r) => r.right)), middle: (rects[0].top + rects[0].bottom) / 2};
+}, [selector, y]);
+
+test("the hover icon sits a constant gap after the link's text, however wide the link's box", async () => {
+  await connect();
+  const page = await sitePage();
+  for (const [selector, at] of [["#zip", "start"], ["#row", "start"], ["#row", "far"], ["#wrapped", "second line"]]) {
+    const box = await page.locator(selector).boundingBox();
+    let y = box.y + box.height / 2;
+    let x = box.x + 5;
+    if (at === "far") x = box.x + box.width - 20;            // the stretched box's empty end: still that link
+    if (at === "second line") {
+      const lines = await page.locator(selector).evaluate((el) => [...el.getClientRects()].map((r) => ({x: r.left, y: (r.top + r.bottom) / 2})));
+      expect(lines.length).toBeGreaterThan(1);
+      ({x, y} = {x: lines[1].x + 3, y: lines[1].y});
+    }
+    await page.mouse.move(1, 1);
+    await page.waitForTimeout(500);
+    await page.mouse.move(x, y, {steps: 3});
+    await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+    const [layer] = await openLayers(page);
+    const text = await textLine(page, selector, y);
+    expect(Math.abs(layer.left - (text.right + 8)), `${selector} ${at}`).toBeLessThanOrEqual(1);   // 8 px after the text
+    expect(Math.abs(layer.top + layer.height / 2 - text.middle), `${selector} ${at}`).toBeLessThanOrEqual(1.5);
+  }
+  // A stretched link's icon is by its text, nowhere near the far end of its box.
+  const row = await page.locator("#row").boundingBox();
+  const [layer] = await openLayers(page).then(async () => {
+    await page.mouse.move(1, 1); await page.waitForTimeout(500);
+    await page.mouse.move(row.x + 5, row.y + row.height / 2, {steps: 3});
+    await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+    return openLayers(page);
+  });
+  expect(layer.left).toBeLessThan(row.x + row.width / 2);
+});
+
+test("the in-page surfaces are drawn in the person's DownloadPulse theme", async () => {
+  const popup = await connect();
+  const page = await sitePage();
+  const button = async () => {
+    await page.mouse.move(1, 1);
+    await page.waitForTimeout(400);
+    const box = await page.locator("#zip").boundingBox();
+    await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+    await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+    return page.evaluate(() => {
+      const host = [...document.querySelectorAll("downloadpulse-layer")].find((h) => h.matches(":popover-open"));
+      const style = getComputedStyle(host);
+      return {primary: style.getPropertyValue("--dp-primary"), border: style.getPropertyValue("--dp-primary-border"),
+        text: style.getPropertyValue("--dp-primary-text")};
+    });
+  };
+  // DownloadPulse Dark: its primary button material.
+  expect(await button()).toMatchObject({primary: expect.stringContaining("#8d48db"), border: "rgba(160,94,221,.78)", text: "#ffffff"});
+  // Nord Light chosen in DownloadPulse: the dropdown learns it, and the page's next ask follows.
+  dp.state.appearance = {mode: "light", dark_palette: "debridpulse-dark", light_palette: "nord-light"};
+  await popup.reload();
+  await expect(popup.locator("html")).toHaveAttribute("data-palette", "nord-light");
+  await page.waitForTimeout(5500);   // a frame's answer is kept for up to 5 s
+  expect(await button()).toEqual({primary: "linear-gradient(145deg, #5e81ac 0%, #5e81ac 100%)", border: "#5e81ac", text: "#eceff4"});
+});
+
 test("a .torrent behind a sign-in is captured with the site's cookie; its URL is never sent", async () => {
   await connect();
   const page = await sitePage();

@@ -450,5 +450,9 @@
         "example": "33:12"
       }
     }
+  },
+  "listClear": {
+    "message": "Clear finished downloads",
+    "description": "Popup footer: name and tooltip of the trash button that removes finished downloads (done, failed, removed) from this list only. DownloadPulse keeps them; active downloads stay."
   }
 }

@@ -198,9 +198,33 @@ async function act(id: string, action: string): Promise<void> {
   await renderList();
 }
 
+/**
+ * Clear: the finished entries leave this browser's list (as a browser's own
+ * download list clears), and nothing else -- DownloadPulse keeps them, and an
+ * entry DownloadPulse changes afterwards (its change cursor moves) is listed again.
+ */
+const CLEARED = "jobsCleared";
+const finished = (job: Job): boolean => !unsettled(job);
+
+async function listed(): Promise<Job[]> {
+  const stored = await chrome.storage.session.get(["jobs", CLEARED]);
+  const jobs = (stored["jobs"] ?? {}) as Record<string, Job>;
+  const cleared = (stored[CLEARED] ?? {}) as Record<string, number>;
+  return Object.values(jobs).filter((job) => !(job.id in cleared) || job.cursor > cleared[job.id]!)
+    .sort((a, b) => b.cursor - a.cursor);
+}
+
+async function clearFinished(): Promise<void> {
+  const cleared = ((await chrome.storage.session.get(CLEARED))[CLEARED] ?? {}) as Record<string, number>;
+  for (const job of (await listed()).filter(finished)) cleared[job.id] = job.cursor;
+  await chrome.storage.session.set({[CLEARED]: cleared});
+}
+
 async function renderList(): Promise<void> {
-  const jobs = ((await chrome.storage.session.get("jobs"))["jobs"] ?? {}) as Record<string, Job>;
-  renderJobs(Object.values(jobs).sort((a, b) => b.cursor - a.cursor));
+  const jobs = await listed();
+  renderJobs(jobs);
+  // Nothing finished to clear: the control stays in its place, disabled.
+  $<HTMLButtonElement>('[data-testid="clear-list"]').disabled = !jobs.some(finished);
 }
 
 /** Opened from a notification: show that download (once). */
@@ -358,6 +382,8 @@ document.addEventListener("click", (event) => {
     const open = button!.getAttribute("aria-expanded") !== "true";
     button!.setAttribute("aria-expanded", String(open));
     $("#facts").hidden = !open;
+  } else if (action === "clear-list") {
+    void clearFinished();
   } else if (action === "open") {
     void openDownloadPulse();
   } else if (action === "show-remote") {

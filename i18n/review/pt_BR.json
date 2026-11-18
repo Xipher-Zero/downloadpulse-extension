@@ -834,6 +834,14 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "listClear": {
+      "source": "12ac99968f1bdf79",
+      "translation": "01ac91608549a3e6",
+      "provenance": [
+        "ai-generated",
+        "ai-review-corrected"
+      ]
     }
   }
 }

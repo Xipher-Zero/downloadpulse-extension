@@ -74,6 +74,6 @@ export async function deviceCode(): Promise<string | null> {
 export async function forgetConnection(revoked = false): Promise<void> {
   await setSecret("token", null);
   await chrome.storage.local.remove([CONNECTION, "appearance"]);
-  await chrome.storage.session.remove(["jobs", "jobsCursor", "jobsNotified", "focusJob", "reach"]);
+  await chrome.storage.session.remove(["jobs", "jobsCursor", "jobsNotified", "focusJob", "reach", "jobsCleared"]);
   if (revoked) await chrome.storage.session.set({[PAIRING]: {state: "failed", failure: "unauthorized"} satisfies Pairing});
 }

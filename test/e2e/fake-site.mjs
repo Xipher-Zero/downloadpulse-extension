@@ -16,6 +16,9 @@ export async function fakeSite() {
       res.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
       return res.end(`<!doctype html><html><body style="font:16px sans-serif;margin:20px">
         <p><a id="zip" href="/files/archive.zip">archive.zip</a></p>
+        <div style="display:flex;width:800px;font:16px sans-serif"><a id="row" style="flex:1 1 auto"
+          href="/files/release-x86_64.AppImage">release-x86_64.AppImage</a><span>1 download · 235 MiB</span></div>
+        <p style="width:150px;font:16px sans-serif"><a id="wrapped" href="/files/a-name-that-wraps.iso">a long file name that wraps onto lines.iso</a></p>
         <p><a id="about" href="/about">About this site</a></p>
         <p><a id="magnet" href="magnet:?xt=urn:btih:${"d".repeat(40)}&dn=thing">A magnet</a></p>
         <p><a id="torrent" href="/files/private.torrent?passkey=SECRETPASSKEY">private.torrent</a></p>

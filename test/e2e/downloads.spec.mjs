@@ -117,6 +117,17 @@ test("a sent download: its name on one line, its status in DownloadPulse's colou
   await expect(row(id).getByRole("progressbar")).toHaveCount(0);
   dp.setJob(id, {phase: "completed", reason: "completed", actionability: "none"});
   await expect(row(id)).toHaveAttribute("data-tone", "none");
+  // A terminal status stands alone on its line, centred in the row.
+  const centred = () => row(id).evaluate((li) => {
+    const range = document.createRange();
+    range.selectNodeContents(li.querySelector(".dp-job__status"));
+    const text = range.getBoundingClientRect(), box = li.getBoundingClientRect();
+    return Math.abs((text.left + text.right) / 2 - (box.left + box.right) / 2) <= 1.5;
+  });
+  await expect.poll(centred).toBe(true);
+  dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});
+  await expect(row(id)).toHaveAttribute("data-tone", "failed");
+  await expect.poll(centred).toBe(true);
 });
 
 test("pause and resume are this browser's own glyph buttons, on the status line; a declined pause says why", async () => {
@@ -176,6 +187,54 @@ test("Open DownloadPulse: a server opens in a tab; the desktop application comes
   await new Promise((done) => setTimeout(done, 1000));
   expect(context.pages().filter((page) => page.url() === "http://127.0.0.1:8095/").length).toBe(1);   // no second tab
   expect(context.pages().length).toBeLessThanOrEqual(pages);
+});
+
+test("the status is centred on its row; the footer holds Open DownloadPulse at its start and Clear at its end", async () => {
+  const centre = (box) => box.x + box.width / 2;
+  const [row, status, page] = await Promise.all([popup.locator(".dp-conn").boundingBox(),
+    popup.locator(".dp-conn").evaluate((el) => {
+      const kids = [...el.children].map((child) => child.getBoundingClientRect());
+      return {left: Math.min(...kids.map((r) => r.left)), right: Math.max(...kids.map((r) => r.right))};
+    }), popup.locator("main").boundingBox()]);
+  expect(Math.abs((status.left + status.right) / 2 - centre(page))).toBeLessThanOrEqual(1.5);
+  const foot = popup.locator("footer.dp-foot");
+  const [open, clear, footer] = await Promise.all([foot.getByRole("button", {name: "Open DownloadPulse"}).boundingBox(),
+    foot.getByRole("button", {name: "Clear finished downloads"}).boundingBox(), foot.boundingBox()]);
+  expect(open.x).toBeLessThan(footer.x + 20);
+  expect(clear.x + clear.width).toBeGreaterThan(footer.x + footer.width - 20);
+  await expect(foot.getByRole("button", {name: "Clear finished downloads"}).locator("svg[data-glyph='trash2']")).toHaveCount(1);
+  await expect(foot.getByRole("button", {name: "Clear finished downloads"})).toHaveClass(/dp-glyph-btn--danger/);
+  expect(row).toBeTruthy();
+});
+
+test("Clear removes the finished downloads from this list only; active ones stay, and a later change lists one again", async () => {
+  const clear = popup.getByRole("button", {name: "Clear finished downloads"});
+  await expect(clear).toBeDisabled();                              // nothing finished yet
+  const first = await sendArchive();
+  dp.setJob(first, {phase: "processing", reason: "downloading"});
+  const page = await context.newPage();
+  await page.goto(`${site.base}/page`);
+  const box = await page.locator("#row").boundingBox();
+  await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+  await expect.poll(() => page.evaluate(() => document.querySelectorAll("downloadpulse-layer:popover-open").length)).toBe(1);
+  const at = await page.evaluate(() => {
+    const r = document.querySelector("downloadpulse-layer:popover-open").getBoundingClientRect();
+    return {x: r.left + r.width / 2, y: r.top + r.height / 2};
+  });
+  await page.mouse.click(at.x, at.y);
+  await expect.poll(() => dp.state.views.size).toBe(2);
+  await page.close();
+  const second = [...dp.state.views.keys()].find((id) => id !== first);
+  dp.setJob(second, {phase: "completed", reason: "completed", actionability: "none"});
+  await expect(row(second)).toBeVisible();
+  await expect(clear).toBeEnabled();
+  await clear.click();
+  await expect(row(second)).toHaveCount(0);
+  await expect(row(first)).toBeVisible();                           // still downloading: stays
+  await expect(clear).toBeDisabled();
+  expect(dp.state.views.has(second)).toBe(true);                    // DownloadPulse keeps it
+  dp.setJob(second, {name: "renamed in DownloadPulse.zip"});         // changed afterwards: listed again
+  await expect(row(second)).toBeVisible();
 });
 
 test("opened for a download, the dropdown shows that one", async () => {

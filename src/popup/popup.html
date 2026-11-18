@@ -88,12 +88,16 @@
         <div><dt data-i18n="popupAccount"></dt><dd data-testid="account"></dd></div>
         <div><dt data-i18n="popupBrowser"></dt><dd data-testid="label"></dd></div>
       </dl>
-      <p class="dp-open-row">
-        <button type="button" class="dp-btn dp-btn--ghost" data-action="open" data-testid="open-server" data-i18n="popupOpenServer"></button>
-      </p>
       <h2 class="dp-popup__heading" data-i18n="listTitle"></h2>
       <p class="dp-popup__hint" data-i18n="listEmpty" data-testid="list-empty"></p>
       <ul class="dp-jobs" data-testid="jobs"></ul>
+      <footer class="dp-foot">
+        <button type="button" class="dp-btn dp-btn--ghost" data-action="open" data-testid="open-server" data-i18n="popupOpenServer"></button>
+        <button type="button" class="dp-glyph-btn dp-glyph-btn--danger" data-action="clear-list" data-testid="clear-list"
+                data-i18n-label="listClear">
+          <span data-glyph-slot="trash2"></span>
+        </button>
+      </footer>
     </section>
 
     <section data-view="settings" class="dp-settings" hidden>

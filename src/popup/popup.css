@@ -224,7 +224,7 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-popup__error { color: var(--dp-state-error); }
 
 /* ── the connection: its status by colour, its details behind the chevron ── */
-.dp-conn { display: flex; align-items: center; gap: 4px; }
+.dp-conn { display: flex; align-items: center; justify-content: center; gap: 4px; }
 .dp-conn__status { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; color: var(--dp-text-secondary); }
 .dp-conn__dot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--dp-text-muted); }
 .dp-conn__status[data-reach="ok"] { color: var(--dp-state-success); }
@@ -240,7 +240,9 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-facts > div { display: flex; gap: 10px; }
 .dp-facts dt { min-width: 5.5em; color: var(--dp-text-muted); }
 .dp-facts dd { margin: 0; overflow-wrap: anywhere; }
-.dp-open-row { display: flex; justify-content: center; }
+/* The footer, as a browser's own download list has one: DownloadPulse at its start, Clear at its end. */
+.dp-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin: 2px -14px -14px; padding: 10px 14px; border-top: 1px solid var(--dp-border-default); }
 
 /* ── Sent Downloads ── */
 .dp-popup__heading { margin: 2px 0 0; font-size: 13px; font-weight: 650; }
@@ -258,6 +260,8 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-job[data-tone="failed"] .dp-job__status { color: var(--dp-state-error); }
 .dp-job__eta { font-variant-numeric: tabular-nums; }
 .dp-job__controls { display: flex; gap: 6px; flex: 0 0 auto; }
+/* A finished download (done, failed, removed): its terminal status alone on its line, centred. */
+.dp-job:is([data-phase="completed"], [data-phase="failed"], [data-phase="withdrawn"]) .dp-job__state { text-align: center; }
 /* The bar, and its percent in a slot reserved at full width ("100%"), so the bar never changes length. */
 .dp-job__progress { display: flex; align-items: center; gap: 8px; }
 .dp-job__bar { flex: 1 1 auto; block-size: 4px; border-radius: 999px; background: var(--dp-progress-track); overflow: hidden; }

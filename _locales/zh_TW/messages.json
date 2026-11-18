@@ -347,5 +347,8 @@
         "example": "33:12"
       }
     }
+  },
+  "listClear": {
+    "message": "清除已結束的下載"
   }
 }

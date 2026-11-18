@@ -8,12 +8,16 @@
 // secret (WS-E2 §3): it asks the background whether it may offer anything,
 // and hands the background a URL to send.
 
+import {parseAppearance} from "../shared/appearance";
 import {isDownloadCandidate, urlAt} from "../shared/classify";
 import {message} from "../shared/i18n";
+import {pageColours, type PageColours} from "../shared/page-theme";
 
 const BUTTON = 22;
 const HIDE_DELAY_MS = 300;
-interface Offer { hover: boolean; video: boolean }
+const GAP = 8;   // between a link's text and the icon
+interface Offer { hover: boolean; video: boolean; colours: PageColours }
+const prefersDark = () => matchMedia("(prefers-color-scheme: dark)").matches;
 let offer: Offer | null = null;
 let askedAt = 0;
 
@@ -22,24 +26,47 @@ async function mayOffer(): Promise<Offer> {
   if (offer !== null && Date.now() - askedAt < 5_000) return offer;
   askedAt = Date.now();
   try {
-    const state = await chrome.runtime.sendMessage({type: "dp-state"}) as {hover?: boolean; video?: boolean} | undefined;
-    offer = {hover: Boolean(state?.hover), video: Boolean(state?.video)};
+    const state = await chrome.runtime.sendMessage({type: "dp-state"}) as
+      {hover?: boolean; video?: boolean; appearance?: unknown} | undefined;
+    offer = {hover: Boolean(state?.hover), video: Boolean(state?.video),
+      colours: pageColours(parseAppearance(state?.appearance), prefersDark() ? "dark" : "light")};
   } catch {
-    offer = {hover: false, video: false};
+    offer = {hover: false, video: false, colours: pageColours(null, prefersDark() ? "dark" : "light")};
   }
+  paint(offer.colours);
   return offer;
 }
 
+// The page surfaces in the person's DownloadPulse theme (src/shared/page-theme.ts):
+// the send button is DownloadPulse's primary button material, a toast its
+// surface with the state colour along its edge. Set on each layer's host.
 const STYLE = `
   :host { all: initial; }
   button { all: unset; box-sizing: border-box; width: ${BUTTON}px; height: ${BUTTON}px; border-radius: 50%;
-    display: grid; place-items: center; cursor: pointer; background: #2563eb; color: #fff;
-    box-shadow: 0 1px 4px rgba(0,0,0,.35); }
-  button:hover, button:focus-visible { background: #1d4ed8; outline: 2px solid #93c5fd; outline-offset: 1px; }
-  svg { width: 14px; height: 14px; }
+    display: grid; place-items: center; cursor: pointer; background: var(--dp-primary);
+    border: 1px solid var(--dp-primary-border); color: var(--dp-primary-text);
+    box-shadow: 0 1px 4px rgba(0,0,0,.35); transition: filter .14s ease; }
+  button:hover { filter: brightness(1.08); }
+  button:focus-visible { box-shadow: 0 0 0 3px var(--dp-focus); }
+  svg { width: 13px; height: 13px; }
   .toast { font: 13px/1.35 system-ui, sans-serif; padding: 8px 12px; border-radius: 8px; max-width: 320px;
-    color: #fff; background: #15803d; box-shadow: 0 2px 10px rgba(0,0,0,.3); }
-  .toast.error { background: #b91c1c; }`;
+    color: var(--dp-text); background: var(--dp-surface); border: 1px solid var(--dp-border);
+    border-inline-start: 4px solid var(--dp-success); box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+  .toast.error { border-inline-start-color: var(--dp-error); }`;
+const layers: Layer[] = [];
+
+/** Every layer in the theme's colours (custom properties cross into the closed shadow root). */
+function paint(colours: PageColours): void {
+  for (const made of layers) colour(made, colours);
+}
+
+function colour(made: Layer, colours: PageColours): void {
+  for (const [name, value] of Object.entries({primary: colours.primary, "primary-border": colours.primaryBorder,
+    "primary-text": colours.primaryText, focus: colours.focus, surface: colours.surface, text: colours.text,
+    border: colours.border, success: colours.success, error: colours.error})) {
+    made.host.style.setProperty(`--dp-${name}`, value);
+  }
+}
 const SVG = "http://www.w3.org/2000/svg";
 
 /** The download arrow, built from elements (no markup strings in a page). */
@@ -69,7 +96,10 @@ function layer(): Layer {
   style.textContent = STYLE;
   root.append(style);
   document.documentElement.append(host);
-  return {host, root};
+  const made = {host, root};
+  layers.push(made);
+  colour(made, offer?.colours ?? pageColours(null, prefersDark() ? "dark" : "light"));
+  return made;
 }
 
 function place(target: Layer, left: number, top: number): void {
@@ -114,15 +144,42 @@ function overHover(event: Pointer): boolean {
   return Boolean(hover && event.path.includes(hover.host));
 }
 
+/**
+ * Where a link is drawn on the pointer's line: the union of its visible text
+ * on that line (the glyphs, not the link's box, which a page may stretch
+ * across a whole row), else its image, else its box.
+ */
+function renderedLine(anchor: HTMLAnchorElement, y: number): DOMRect {
+  const pieces: DOMRect[] = [];
+  const walker = document.createTreeWalker(anchor, NodeFilter.SHOW_TEXT);
+  const range = document.createRange();
+  for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+    if (!node.textContent?.trim()) continue;
+    range.selectNodeContents(node);
+    for (const rect of range.getClientRects()) if (rect.width > 0 && rect.height > 0) pieces.push(rect);
+  }
+  if (!pieces.length) {
+    for (const image of anchor.querySelectorAll("img, svg, picture, video")) {
+      const rect = image.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) pieces.push(rect);
+    }
+  }
+  if (!pieces.length) return anchor.getBoundingClientRect();
+  // The line under the pointer (a wrapped link has several), else the nearest one.
+  const distance = (rect: DOMRect) => (y < rect.top ? rect.top - y : y > rect.bottom ? y - rect.bottom : 0);
+  const nearest = Math.min(...pieces.map(distance));
+  const line = pieces.filter((rect) => distance(rect) === nearest);
+  const top = Math.min(...line.map((rect) => rect.top)), bottom = Math.max(...line.map((rect) => rect.bottom));
+  const left = Math.min(...line.map((rect) => rect.left)), right = Math.max(...line.map((rect) => rect.right));
+  return new DOMRect(left, top, right - left, bottom - top);
+}
+
 function candidateAt(event: Pointer): {url: string; rect: DOMRect; rtl: boolean} | null {
   const anchor = event.path.find((node): node is HTMLAnchorElement =>
     node instanceof HTMLAnchorElement && Boolean(node.href));
   if (anchor) {
     if (!isDownloadCandidate(anchor.href, {download: anchor.hasAttribute("download"), type: anchor.type})) return null;
-    // The line of a wrapped link the pointer is on.
-    const line = [...anchor.getClientRects()].find((rect) => event.clientY >= rect.top && event.clientY <= rect.bottom)
-      ?? anchor.getBoundingClientRect();
-    return {url: anchor.href, rect: line, rtl: getComputedStyle(anchor).direction === "rtl"};
+    return {url: anchor.href, rect: renderedLine(anchor, event.clientY), rtl: getComputedStyle(anchor).direction === "rtl"};
   }
   // Plain text that is a URL, under the pointer.
   const caret = (document as Document & {caretPositionFromPoint?(x: number, y: number):
@@ -149,13 +206,14 @@ function showHover(found: {url: string; rect: DOMRect; rtl: boolean}): void {
   });
   hoverUrl = found.url;
   hoverRect = found.rect;
-  // Beside the link, never over it: its right in left-to-right text, its left in right-to-left.
-  const left = found.rtl ? found.rect.left - BUTTON - 4 : found.rect.right + 4;
+  // Beside the link's text, never over it, a constant GAP away: after it in
+  // left-to-right text, before it in right-to-left.
+  const left = found.rtl ? found.rect.left - BUTTON - GAP : found.rect.right + GAP;
   place(hover, left, found.rect.top + found.rect.height / 2 - BUTTON / 2);
 }
 
 function scheduleHide(event: Pointer): void {
-  const near = hoverRect && event.clientX >= hoverRect.left - BUTTON - 8 && event.clientX <= hoverRect.right + BUTTON + 8
+  const near = hoverRect && event.clientX >= hoverRect.left - BUTTON - GAP - 4 && event.clientX <= hoverRect.right + BUTTON + GAP + 4
     && event.clientY >= hoverRect.top - 6 && event.clientY <= hoverRect.bottom + 6;
   if (near || overHover(event)) {
     clearTimeout(hideTimer);

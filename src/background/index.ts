@@ -7,6 +7,7 @@
 import {connection, forgetConnection, token} from "../shared/connection";
 import {controlJob, disconnectBrowser, isLocal, showApplication, withdrawJob} from "../shared/server";
 import {isOffSite, settings} from "../shared/settings";
+import {appearance, type Appearance} from "../shared/appearance";
 import {refreshAppearance} from "./appearance";
 import {popupOpen, wake} from "./monitor";
 import {message} from "../shared/i18n";
@@ -52,11 +53,13 @@ async function openDownloadPulse(): Promise<{tab: boolean}> {
 }
 
 /** What a frame may offer: nothing unless connected, then as the settings say for its tab's site. */
-async function frameState(sender: chrome.runtime.MessageSender): Promise<{connected: boolean; hover: boolean; video: boolean}> {
-  if (!(await connection())) return {connected: false, hover: false, video: false};
+async function frameState(sender: chrome.runtime.MessageSender):
+    Promise<{connected: boolean; hover: boolean; video: boolean; appearance: Appearance | null}> {
+  if (!(await connection())) return {connected: false, hover: false, video: false, appearance: null};
   const chosen = await settings();
   const off = isOffSite(sender.tab?.url ?? sender.url ?? "", chosen.offSites);
-  return {connected: true, hover: chosen.hover && !off, video: chosen.video && !off};
+  // The person's theme, by palette ID (not a secret): what the page's surfaces are drawn in.
+  return {connected: true, hover: chosen.hover && !off, video: chosen.video && !off, appearance: await appearance()};
 }
 
 const MENU_LINK = "dp-send-link";
