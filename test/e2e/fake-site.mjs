@@ -25,6 +25,11 @@ export async function fakeSite() {
         <p><a id="login" href="/files/needs-login.torrent">needs-login.torrent</a></p>
         <p id="text">Mirror: https://203.0.113.20/releases/disc.iso today</p>
         <video id="video" width="320" height="180" style="background:#000"></video>
+        <div id="live" style="font:14px monospace">https://1fichier.com/?j93yc0n4g08jsox2nipk<br>https://rapidgator.net/file/119ce5/GF161126-HITC-RN.rar.html<br>https://gofile.io/d/AM5Js2xh</div>
+        <textarea id="box" rows="3" cols="60">https://pixeldrain.com/u/a4J8buzm
+https://send.now/ijn6gxxf9bj8</textarea>
+        <p id="one">See https://example.org/about for details.</p>
+        <div style="height:1600px"></div>
       </body></html>`);
     }
     if (url.pathname === "/files/private.torrent") {

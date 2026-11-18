@@ -9,13 +9,14 @@
 // and hands the background a URL to send.
 
 import {parseAppearance} from "../shared/appearance";
-import {isDownloadCandidate, urlAt} from "../shared/classify";
+import {extractUrls, isDownloadCandidate, urlAt} from "../shared/classify";
 import {message} from "../shared/i18n";
 import {pageColours, type PageColours} from "../shared/page-theme";
 
 const BUTTON = 22;
 const HIDE_DELAY_MS = 300;
 const GAP = 8;   // between a link's text and the icon
+const TOAST_MS = 3500;
 interface Offer { hover: boolean; video: boolean; colours: PageColours }
 const prefersDark = () => matchMedia("(prefers-color-scheme: dark)").matches;
 let offer: Offer | null = null;
@@ -49,9 +50,17 @@ const STYLE = `
   button:hover { filter: brightness(1.08); }
   button:focus-visible { box-shadow: 0 0 0 3px var(--dp-focus); }
   svg { width: 13px; height: 13px; }
+  .count { position: absolute; inset-block-start: -7px; inset-inline-end: -9px; min-width: 15px; height: 15px;
+    padding: 0 4px; box-sizing: border-box; border-radius: 999px; display: grid; place-items: center;
+    font: 700 10px/1 system-ui, sans-serif; color: var(--dp-text); background: var(--dp-surface);
+    border: 1px solid var(--dp-primary-border); }
+  .batch { position: relative; }
   .toast { font: 13px/1.35 system-ui, sans-serif; padding: 8px 12px; border-radius: 8px; max-width: 320px;
     color: var(--dp-text); background: var(--dp-surface); border: 1px solid var(--dp-border);
-    border-inline-start: 4px solid var(--dp-success); box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+    border-inline-start: 4px solid var(--dp-success); box-shadow: 0 4px 16px rgba(0,0,0,.3); cursor: pointer;
+    /* It leaves on its own even if a page keeps its layer from being hidden. */
+    animation: dp-toast-leave .3s ease ${TOAST_MS}ms forwards; }
+  @keyframes dp-toast-leave { to { opacity: 0; visibility: hidden; } }
   .toast.error { border-inline-start-color: var(--dp-error); }`;
 const layers: Layer[] = [];
 
@@ -110,12 +119,18 @@ function place(target: Layer, left: number, top: number): void {
 }
 
 function hide(target: Layer | null): void {
-  if (target?.host.matches(":popover-open")) target.host.hidePopover();
+  try {
+    if (target?.host.matches(":popover-open")) target.host.hidePopover();
+  } catch {
+    // a page that moved or removed the layer: it is not shown anyway
+  }
 }
 
 function sendButton(label: string, onSend: () => void): Layer {
   const made = layer();
   const button = document.createElement("button");
+  // Pressing it must not take the page's selection away (the batch button sends it).
+  button.addEventListener("pointerdown", (event) => event.preventDefault());
   button.type = "button";
   button.append(arrow());
   button.setAttribute("aria-label", label);
@@ -155,8 +170,11 @@ function renderedLine(anchor: HTMLAnchorElement, y: number): DOMRect {
   const range = document.createRange();
   for (let node = walker.nextNode(); node; node = walker.nextNode()) {
     if (!node.textContent?.trim()) continue;
+    // Text the page hides (a screen-reader-only label, a collapsed part) is not where the link is drawn.
+    const holder = node.parentElement as (Element & {checkVisibility?(options?: object): boolean}) | null;
+    if (holder?.checkVisibility && !holder.checkVisibility({visibilityProperty: true, opacityProperty: true})) continue;
     range.selectNodeContents(node);
-    for (const rect of range.getClientRects()) if (rect.width > 0 && rect.height > 0) pieces.push(rect);
+    for (const rect of range.getClientRects()) if (rect.width > 1 && rect.height > 1) pieces.push(rect);
   }
   if (!pieces.length) {
     for (const image of anchor.querySelectorAll("img, svg, picture, video")) {
@@ -300,6 +318,88 @@ document.addEventListener("pointermove", (event) => {
   pending = {clientX: event.clientX, clientY: event.clientY, path: event.composedPath()};
 }, {passive: true, capture: true});
 
+// The icons follow the pointer; where it can no longer be followed -- the page
+// scrolls under them, the pointer leaves the page or enters a frame, the
+// window or tab goes away -- they go (operator, 2026-11-18).
+function hidePointerSurfaces(): void {
+  hide(hover);
+  hoverRect = null;
+  hide(video);
+  clearTimeout(hideTimer);
+  hideTimer = 0;
+}
+addEventListener("scroll", hidePointerSurfaces, {passive: true, capture: true});
+document.addEventListener("pointerout", (event) => { if (!event.relatedTarget) hidePointerSurfaces(); }, {passive: true});
+addEventListener("blur", () => { hidePointerSurfaces(); hide(batch); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) { hidePointerSurfaces(); hide(batch); } });
+
+// ── a selection of links (operator, 2026-11-18) ────────────────────────────
+// Selected text holding links gets a send button at its end, with their count:
+// the right-click "selection" item, for pages that block right-click. Shown
+// for two or more links, or one that is a download or a magnet.
+
+let batch: Layer | null = null;
+let batchText = "";
+let selectionTimer = 0;
+
+function selected(): {text: string; rect: DOMRect; rtl: boolean} | null {
+  const field = document.activeElement;
+  if ((field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) && field.selectionStart !== null
+      && field.selectionEnd !== null && field.selectionEnd > field.selectionStart) {
+    const box = field.getBoundingClientRect();
+    return {text: field.value.slice(field.selectionStart, field.selectionEnd),
+      rect: new DOMRect(box.right - BUTTON - GAP, box.top + GAP, 0, BUTTON), rtl: false};
+  }
+  const chosen = getSelection();
+  if (!chosen || chosen.isCollapsed || !chosen.rangeCount) return null;
+  const range = chosen.getRangeAt(chosen.rangeCount - 1);
+  const rects = [...range.getClientRects()].filter((rect) => rect.width > 1 && rect.height > 1);
+  const last = rects.at(-1);
+  if (!last) return null;
+  const holder = range.endContainer instanceof Element ? range.endContainer : range.endContainer.parentElement;
+  return {text: chosen.toString(), rect: last, rtl: holder ? getComputedStyle(holder).direction === "rtl" : false};
+}
+
+async function offerSelection(): Promise<void> {
+  const may = await mayOffer();
+  const found = may.hover ? selected() : null;
+  const urls = found ? extractUrls(found.text) : [];
+  const worth = urls.length >= 2 || urls.some((url) => /^magnet:\?/i.test(url) || isDownloadCandidate(url));
+  if (!found || !worth) {
+    hide(batch);
+    return;
+  }
+  batch ??= sendButton(message("selectionSend"), () => {
+    void chrome.runtime.sendMessage({type: "dp-send-selection", text: batchText});
+    hide(batch);
+  });
+  batchText = found.text;
+  const button = batch.root.querySelector("button")!;
+  button.classList.add("batch");
+  let count = button.querySelector(".count");
+  if (!count) {
+    count = document.createElement("span");
+    count.className = "count";
+    count.setAttribute("aria-hidden", "true");
+    button.append(count);
+  }
+  count.textContent = String(urls.length);
+  const left = found.rtl ? found.rect.left - BUTTON - GAP : found.rect.right + GAP;
+  place(batch, left, found.rect.top + found.rect.height / 2 - BUTTON / 2);
+}
+
+// A page's selection (selectionchange), and a text box's own (its select event,
+// which a page's selectionchange need not report), settled for a moment.
+function selectionChanged(): void {
+  clearTimeout(selectionTimer);
+  selectionTimer = window.setTimeout(() => void offerSelection(), 250);
+}
+document.addEventListener("selectionchange", selectionChanged);
+document.addEventListener("select", selectionChanged, {capture: true});
+document.addEventListener("mouseup", selectionChanged, {passive: true, capture: true});
+document.addEventListener("keyup", selectionChanged, {passive: true, capture: true});
+addEventListener("scroll", () => { if (batch?.host.matches(":popover-open")) void offerSelection(); }, {passive: true, capture: true});
+
 // A page with a video shows the URL-bar icon in Firefox even before a hover.
 setTimeout(() => {
   if (document.querySelector("video")) void mayOffer().then((may) => may.video && announceVideo());
@@ -318,9 +418,10 @@ chrome.runtime.onMessage.addListener((request: {type?: string; text?: string; ok
   box.className = request.ok ? "toast" : "toast error";
   box.setAttribute("role", request.ok ? "status" : "alert");
   box.textContent = String(request.text ?? "");
+  box.addEventListener("click", () => hide(toast));
   toast.root.append(box);
   Object.assign(toast.host.style, {right: "16px", bottom: "16px", left: "auto", top: "auto"});
   if (!toast.host.matches(":popover-open")) toast.host.showPopover();
   clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => hide(toast), 3500);
+  toastTimer = window.setTimeout(() => hide(toast), TOAST_MS + 300);
 });

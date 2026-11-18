@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "مسح التنزيلات المنتهية"
+  },
+  "selectionSend": {
+    "message": "تنزيل الروابط المحددة باستخدام DownloadPulse"
   }
 }

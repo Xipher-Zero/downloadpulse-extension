@@ -43,11 +43,11 @@ export function wake(): void {
   void loop().finally(() => { running = false; });
 }
 
-// The activity mark (operator, 2026-11-18): DownloadPulse's own icon with a
-// quarter of it faded, the faded quarter sweeping round the logo's centre like
-// a pie slice. One turn is FRAMES frames of FRAME_MS.
+// The activity mark (operator, 2026-11-18): DownloadPulse's own icon,
+// breathing -- the whole logo fades out and back in, one breath every
+// FRAMES frames of FRAME_MS (2 s), down to LOWEST opacity.
 const FRAMES = 16;
-const FADE = 0.7;   // how much of the faded quarter is taken away
+const LOWEST = 0.3;
 const logos = new Map<number, Promise<ImageBitmap>>();
 
 function logo(size: number): Promise<ImageBitmap> {
@@ -59,20 +59,17 @@ function logo(size: number): Promise<ImageBitmap> {
   return bitmap;
 }
 
-/** One frame of the sweep at ``size`` px: the logo, its quarter from ``frame``'s angle faded. */
+/** The logo's opacity at ``frame``: 1 at the start of a breath, LOWEST halfway. */
+export function breath(frame: number): number {
+  return LOWEST + (1 - LOWEST) * (0.5 + 0.5 * Math.cos(2 * Math.PI * (frame % FRAMES) / FRAMES));
+}
+
+/** One frame of the breath at ``size`` px. */
 export async function activityFrame(frame: number, size: number): Promise<ImageData> {
   const canvas = new OffscreenCanvas(size, size);
   const context = canvas.getContext("2d")!;
+  context.globalAlpha = breath(frame);
   context.drawImage(await logo(size), 0, 0, size, size);
-  const centre = size / 2;
-  const start = -Math.PI / 2 + (frame % FRAMES) * (2 * Math.PI / FRAMES);
-  context.globalCompositeOperation = "destination-out";
-  context.fillStyle = `rgba(0, 0, 0, ${FADE})`;
-  context.beginPath();
-  context.moveTo(centre, centre);
-  context.arc(centre, centre, size, start, start + Math.PI / 2);
-  context.closePath();
-  context.fill();
   return context.getImageData(0, 0, size, size);
 }
 

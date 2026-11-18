@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "Очистить завершённые загрузки"
+  },
+  "selectionSend": {
+    "message": "Загрузить выделенные ссылки через DownloadPulse"
   }
 }

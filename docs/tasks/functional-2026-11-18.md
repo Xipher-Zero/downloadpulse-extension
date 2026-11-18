@@ -53,3 +53,46 @@ Worked one by one, as the operator reports them.
 - A finished download's terminal status (Done, Failed, Removed) stands alone on its line, centred in the row.
 
 **Proof:** a terminal status is centred within 1.5 px (Done and Failed); the status group is centred within 1.5 px; the footer's two controls sit at its two ends; Clear starts disabled, removes a finished entry while an active one stays, leaves DownloadPulse's job untouched, lists the entry again after DownloadPulse changes it, and then is disabled. The full suite (42 cases) passes.
+
+## 5. The "Sent to DownloadPulse" toast stayed on screen
+
+**Seen:** the lower-right toast never went away (on a real site, in Brave).
+
+**Not reproduced:** on the test page it is hidden after 3.5 s, so something on the operator's page or browser stopped its layer from being hidden.
+
+**Fix (it no longer depends on the hide call):**
+- the toast's own stylesheet fades it out and makes it non-interactive after 3.5 s;
+- clicking it dismisses it at once;
+- a failed hide is caught.
+
+## 6. The activity mark breathes
+
+The pie-slice wedge didn't read: a faded dark quarter on a dark toolbar is barely visible at 16 px. The whole logo now breathes, fading to 30 % and back every 2 s (`breath()` in `monitor.ts`). It's still drawn from the logo, and it's the plain logo when nothing is active.
+
+## 7. The hover icon stayed where a link had been
+
+**Cause:** the icon is fixed to the window and follows the pointer. When the page scrolled, the pointer left the page or entered a frame, or the window lost focus, nothing hid it.
+
+**Fix:**
+- it's hidden on scroll, when the pointer leaves the page, on window blur, and when the tab is hidden;
+- text the page hides (a screen-reader-only label, for instance) no longer counts as where a link is drawn.
+
+## 8. Selected links: a batch send button
+
+**Seen:** on a link-protector page (KeepLinks), selecting all the links gave no way to send them. The site blocks right-click, so the "selection" context-menu item never appears.
+
+**Fix:**
+- Text the person selects that holds links (in the page, or in a text box) gets a send button 8 px after the selection's end, showing the link count.
+- One click sends them as one batch, the same path as the right-click selection item (`sendSelection`, through a new page message `dp-send-selection`).
+- **When it's offered:** for two or more links, or for one that is a download or a magnet. An ordinary selected web link gets nothing.
+- **It follows the in-page buttons setting** and the sites without download buttons.
+- Pressing it doesn't take the page's selection away.
+- **New string `selectionSend`** ("Download the selected links with DownloadPulse"): count-free, translated into 18 locales, reviewed with no corrections.
+
+**Proof:**
+- scroll and pointer-leave hide the icon;
+- a selection of three page links and one of two text-box links each give a correctly placed button that sends exactly those links as one batch;
+- one ordinary link gives nothing;
+- a toast leaves on its own and at once when clicked.
+
+The full suite (45 cases), the unit tests, the Firefox smoke install, lint and locales pass.

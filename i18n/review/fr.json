@@ -843,6 +843,14 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "selectionSend": {
+      "source": "14f87b803c5aec05",
+      "translation": "d0e06d00a7f83d80",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

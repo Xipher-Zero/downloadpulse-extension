@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "Bersihkan unduhan selesai"
+  },
+  "selectionSend": {
+    "message": "Unduh tautan yang dipilih dengan DownloadPulse"
   }
 }

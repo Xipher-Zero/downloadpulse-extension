@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "Afgeronde downloads wissen"
+  },
+  "selectionSend": {
+    "message": "De geselecteerde links downloaden met DownloadPulse"
   }
 }

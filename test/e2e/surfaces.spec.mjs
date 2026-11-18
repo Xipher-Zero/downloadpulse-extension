@@ -159,6 +159,97 @@ test("the in-page surfaces are drawn in the person's DownloadPulse theme", async
   expect(await button()).toEqual({primary: "linear-gradient(145deg, #5e81ac 0%, #5e81ac 100%)", border: "#5e81ac", text: "#eceff4"});
 });
 
+test("the hover icon goes when the page scrolls or the pointer leaves the page", async () => {
+  await connect();
+  const page = await sitePage();
+  const show = async () => {
+    const box = await page.locator("#zip").boundingBox();
+    await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+    await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+  };
+  await show();
+  await page.evaluate(() => scrollBy(0, 40));                        // the link moves; the icon would not
+  await expect.poll(async () => (await openLayers(page)).length).toBe(0);
+  await page.evaluate(() => scrollTo(0, 0));
+  await show();
+  await page.mouse.move(-5, -5);                                     // out of the page
+  await page.evaluate(() => document.dispatchEvent(new PointerEvent("pointerout", {relatedTarget: null})));
+  await expect.poll(async () => (await openLayers(page)).length).toBe(0);
+});
+
+/** The open layers other than the toast (which sits at the bottom corner). */
+const buttonLayers = (page) => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+  .filter((host) => host.matches(":popover-open") && host.style.bottom !== "16px").map((host) => {
+    const r = host.getBoundingClientRect();
+    return {left: r.left, top: r.top, width: r.width, height: r.height};
+  }));
+
+test("selected links get a send button with their count, which sends them as one batch", async () => {
+  await connect();
+  const page = await sitePage();
+  const select = (selector) => page.evaluate((sel) => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector(sel));
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+  }, selector);
+  await page.locator("#live").scrollIntoViewIfNeeded();
+  // One ordinary web link selected: nothing offered.
+  await select("#one");
+  await page.waitForTimeout(700);
+  expect(await buttonLayers(page)).toEqual([]);
+  // Three links in the page's text.
+  await select("#live");
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  const [layer] = await buttonLayers(page);
+  const end = await page.evaluate(() => {
+    const rects = [...getSelection().getRangeAt(0).getClientRects()].filter((r) => r.width > 1);
+    return {right: rects.at(-1).right, middle: (rects.at(-1).top + rects.at(-1).bottom) / 2};
+  });
+  expect(Math.abs(layer.left - (end.right + 8))).toBeLessThanOrEqual(1);
+  expect(Math.abs(layer.top + layer.height / 2 - end.middle)).toBeLessThanOrEqual(1.5);
+  await page.mouse.click(layer.left + 8, layer.top + 8);
+  await expect.poll(() => dp.state.jobs.length).toBe(1);
+  expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: ["https://1fichier.com/?j93yc0n4g08jsox2nipk",
+    "https://rapidgator.net/file/119ce5/GF161126-HITC-RN.rar.html", "https://gofile.io/d/AM5Js2xh"]});
+  // Two links selected in a text box.
+  await page.locator("#box").evaluate((box) => { box.focus(); box.select(); });
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  const [boxed] = await buttonLayers(page);
+  await page.mouse.click(boxed.left + 8, boxed.top + 8);
+  await expect.poll(() => dp.state.jobs.length).toBe(2);
+  expect(dp.state.jobs[1].body.source).toEqual({kind: "links", links: ["https://pixeldrain.com/u/a4J8buzm", "https://send.now/ijn6gxxf9bj8"]});
+  // Selection cleared: the button goes.
+  await page.evaluate(() => { document.activeElement.blur(); getSelection().removeAllRanges(); });
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(0);
+});
+
+test("a toast leaves on its own, and at once when clicked", async () => {
+  await connect();
+  const page = await sitePage();
+  const send = async () => {
+    const box = await page.locator("#zip").boundingBox();
+    await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+    await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+    const [layer] = await openLayers(page);
+    await page.mouse.click(layer.left + 8, layer.top + 8);
+  };
+  const toastOpen = () => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+    .filter((host) => host.matches(":popover-open") && host.style.bottom === "16px").length);
+  await send();
+  await expect.poll(toastOpen).toBe(1);
+  await expect.poll(toastOpen, {timeout: 6000}).toBe(0);
+  await send();
+  await expect.poll(toastOpen).toBe(1);
+  const box = await page.evaluate(() => {
+    const host = [...document.querySelectorAll("downloadpulse-layer")].find((h) => h.style.bottom === "16px");
+    const r = host.getBoundingClientRect();
+    return {x: r.left + r.width / 2, y: r.top + r.height / 2};
+  });
+  await page.mouse.click(box.x, box.y);
+  await expect.poll(toastOpen, {timeout: 1500}).toBe(0);
+});
+
 test("a .torrent behind a sign-in is captured with the site's cookie; its URL is never sent", async () => {
   await connect();
   const page = await sitePage();

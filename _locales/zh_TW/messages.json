@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "清除已結束的下載"
+  },
+  "selectionSend": {
+    "message": "使用DownloadPulse下載所選連結"
   }
 }

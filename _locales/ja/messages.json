@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "終了したダウンロードをクリア"
+  },
+  "selectionSend": {
+    "message": "選択したリンクを DownloadPulse でダウンロード"
   }
 }

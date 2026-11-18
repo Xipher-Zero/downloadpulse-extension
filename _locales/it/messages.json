@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "Cancella download terminati"
+  },
+  "selectionSend": {
+    "message": "Scarica i link selezionati con DownloadPulse"
   }
 }

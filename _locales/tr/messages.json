@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "Biten indirmeleri temizle"
+  },
+  "selectionSend": {
+    "message": "Seçilen bağlantıları DownloadPulse ile indir"
   }
 }

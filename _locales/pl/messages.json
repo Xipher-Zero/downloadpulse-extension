@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "Wyczyść zakończone pobrania"
+  },
+  "selectionSend": {
+    "message": "Pobierz zaznaczone linki za pomocą DownloadPulse"
   }
 }

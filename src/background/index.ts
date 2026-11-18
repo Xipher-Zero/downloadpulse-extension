@@ -17,7 +17,7 @@ import {sendSelection, sendUrl} from "./submit";
 type Request =
   | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string}
   | {type: "cancel"} | {type: "dp-open"}
-  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-has-video"}
+  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-send-selection"; text: string} | {type: "dp-has-video"}
   | {type: "dp-popup-open"} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
   | {type: "dp-disconnect"};
 
@@ -151,6 +151,12 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
     case "dp-send":
       if (fromPage && typeof request.url === "string" && sender.tab?.id !== undefined) {
         void sendUrl(request.url, {tabId: sender.tab.id, frameId: sender.frameId ?? 0});
+      }
+      return undefined;
+    case "dp-send-selection":
+      // The page's selection, as the right-click "selection" item sends it (a site may block right-click).
+      if (fromPage && typeof request.text === "string" && request.text.length <= 200_000 && sender.tab?.id !== undefined) {
+        void sendSelection(request.text, {tabId: sender.tab.id, frameId: sender.frameId ?? 0});
       }
       return undefined;
     case "dp-has-video":

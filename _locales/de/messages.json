@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "Liste beendeter Downloads leeren"
+  },
+  "selectionSend": {
+    "message": "Die ausgewählten Links mit DownloadPulse herunterladen"
   }
 }

@@ -350,5 +350,8 @@
   },
   "listClear": {
     "message": "समाप्त डाउनलोड साफ़ करें"
+  },
+  "selectionSend": {
+    "message": "चुने गए लिंक DownloadPulse से डाउनलोड करें"
   }
 }
