@@ -118,7 +118,7 @@ A URL is a download candidate when any of these holds, checked locally without n
 - a `magnet:` URI;
 - the path ends in a download file type: `.torrent`, `.nzb`, `.metalink`/`.meta4`, archives, disc images, installers, video and audio files;
 - the link has a `download` attribute, or a non-HTML `type` attribute;
-- the host is in the server's supported-host list (file hosters and media sites its services claim; §5.6).
+- ~~the host is in the server's supported-host list~~ **withdrawn 2026-11-18** (operator: no provider changes for an external surface). File-hoster page links get no hover icon; right-click still sends them.
 
 Plain-text URLs on the page are recognised when the pointer is over them, without rewriting the page. The extension makes **no request** to a link's target to decide; that would be slow, and it would leak the user's browsing to those sites.
 
@@ -363,4 +363,5 @@ All three were approved by the operator on 2026-11-17. **All three were answered
 - 2026-11-17: S2 answered: icon updates keep the background alive in both browsers; polling alone does not (§3.5).
 - 2026-11-17: S3 answered: the Firefox page action follows a runtime host list; the video detector and top-layer button work through overlays, closed shadow DOM and cross-origin frames (L14).
 - 2026-11-17: WS-E0 (scaffold) implemented, awaiting Gate 9 review: [`tasks/WS-E0-scaffold.md`](tasks/WS-E0-scaffold.md). The Firefox minimum is 140 (ESR).
+- 2026-11-18: WS-S2 Gate 2: D3 (A); D4 = existing Local Network settings govern; ETA incl. *arr; host list withdrawn (§3.3); WS-S2 touches the external adapter layer only.
 - 2026-11-17: WS-E0 approved and pushed (`85781b8`). D1 resolved: pending pairings in memory (L28). WS-S1 on DP `1.0.14` (L29).
