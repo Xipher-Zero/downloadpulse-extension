@@ -156,6 +156,10 @@ test("the connection's status: green while DownloadPulse answers, yellow while i
 test("Open DownloadPulse: a server opens in a tab; the desktop application comes forward instead", async () => {
   const open = popup.getByRole("button", {name: "Open DownloadPulse"});
   await expect(open).toHaveClass(/dp-btn--ghost/);
+  // Visible as a button: DownloadPulse's ghost (.btn.btn-ghost) is drawn with the secondary edge and surface.
+  const edge = await open.evaluate((el) => getComputedStyle(el).borderTopColor);
+  expect(edge).not.toBe("rgba(0, 0, 0, 0)");
+  expect(await open.evaluate((el) => getComputedStyle(el).backgroundImage)).toContain("gradient");
   const url = popup.url();
   const tab = context.waitForEvent("page");
   await open.click();

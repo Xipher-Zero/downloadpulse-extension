@@ -124,12 +124,26 @@ test("the dropdown and the settings page are drawn in the person's DownloadPulse
   await expect(root).toHaveAttribute("data-mode", "dark");
   await expect(root).toHaveAttribute("data-palette", "debridpulse-dark");
   expect(await background(popup)).toBe("rgb(5, 8, 20)");
+  // The title is DownloadPulse's mark and two-tone wordmark, in Outfit, in the theme's colours.
+  const brand = (page) => page.evaluate(async () => {
+    await document.fonts.ready;
+    const name = document.querySelector(".dp-brand__name");
+    return {text: name.textContent, pulse: getComputedStyle(name.querySelector("span")).color,
+      logo: getComputedStyle(document.querySelector(".dp-brand__logo .dp-logo-surface")).fill,
+      hidden: document.querySelector(".dp-brand__logo").getAttribute("aria-hidden"),
+      outfit: document.fonts.check('700 19px "Outfit"') && [...document.fonts].some((f) => f.family.replace(/"/g, "") === "Outfit" && f.status === "loaded")};
+  });
+  await expect(popup.locator("h1")).toHaveText("DownloadPulse");
+  expect(await brand(popup)).toEqual({text: "DownloadPulse", pulse: "rgb(164, 92, 255)", logo: "rgb(8, 11, 24)", hidden: "true", outfit: true});
   // Changed in DownloadPulse: the next opening follows it.
   dp.state.appearance = {mode: "light", dark_palette: "dracula", light_palette: "nord-light"};
   await popup.reload();
   await expect(root).toHaveAttribute("data-palette", "nord-light");
   await expect(root).toHaveAttribute("data-mode", "light");
   expect(await background(popup)).toBe("rgb(229, 233, 240)");   // Nord Light's own background
+  // An alternative palette: the wordmark's accent and the mark's square come from it, as in DownloadPulse.
+  expect(await brand(popup)).toMatchObject({pulse: "rgb(94, 129, 172)", logo: "rgb(236, 239, 244)"});
+  await expect(popup.locator("html")).toHaveAttribute("data-palette-kind", "alternative");
   const settings = await options();
   await expect(settings.locator("html")).toHaveAttribute("data-palette", "nord-light");
   // A palette this extension doesn't know is drawn as its mode's native one.

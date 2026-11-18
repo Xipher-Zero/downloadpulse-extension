@@ -14,10 +14,10 @@ const ENTRIES = {
   "popup/popup": "src/popup/popup.ts",
 };
 const STATIC = [
-  ["src/popup/popup.html", "popup/popup.html"],
   ["src/popup/popup.css", "popup/popup.css"],
   ["_locales", "_locales"],
   ["static/icons", "icons"],
+  ["static/fonts", "fonts"],
 ];
 
 for (const browser of ["chromium", "firefox"]) {
@@ -30,9 +30,20 @@ for (const browser of ["chromium", "firefox"]) {
     legalComments: "none", logLevel: "warning",
   });
   for (const [from, to] of STATIC) await cp(path(from), out + to, { recursive: true });
+  // DownloadPulse's mark, drawn inline so its colours follow the theme
+  // (DebridPulse frontend/static/logo.svg, coloured as ui-logo.css colours
+  // it): decorative beside the wordmark, so without its title or description.
+  const logo = (await readFile(path("static/brand/logo.svg"), "utf8")).trim()
+    .replace(/<title[^>]*>[\s\S]*?<\/title>\s*/, "").replace(/<desc[^>]*>[\s\S]*?<\/desc>\s*/, "")
+    .replace(' role="img" aria-labelledby="title desc"', ' class="dp-brand__logo" aria-hidden="true" focusable="false"');
+  if (!logo.startsWith("<svg ") || /<script|on[a-z]+=|<title|<desc/i.test(logo) || !logo.includes('aria-hidden="true"')) {
+    throw new Error("the logo could not be prepared for inlining");
+  }
+  const popupPage = (await readFile(path("src/popup/popup.html"), "utf8")).replace("<span data-logo-slot></span>", logo);
+  if (!popupPage.includes("dp-brand__logo")) throw new Error("popup.html has no logo slot");
+  await writeFile(out + "popup/popup.html", popupPage);
   // The browser's settings page for the extension is the dropdown's own
   // settings view, from the same markup and script (operator, 2026-11-18).
-  const popupPage = await readFile(path("src/popup/popup.html"), "utf8");
   const optionsPage = popupPage
     .replace('href="popup.css"', 'href="../popup/popup.css"')
     .replace('src="popup.js"', 'src="../popup/popup.js"')

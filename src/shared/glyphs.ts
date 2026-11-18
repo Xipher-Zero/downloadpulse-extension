@@ -20,7 +20,7 @@ const GEOMETRY = {
     ["path", {d: "M3 6h18"}], ["path", {d: "M8 6V4h8v2"}], ["path", {d: "m19 6-1 14H6L5 6"}],
     ["path", {d: "M10 11v5"}], ["path", {d: "M14 11v5"}],
   ],
-  chevronDown: [["path", {d: "m6 9 6 6 6-6"}]],
+  chevronRight: [["path", {d: "m9 18 6-6-6-6"}]],
   chevronLeft: [["path", {d: "m15 18-6-6 6-6"}]],
 } satisfies Record<string, Shape[]>;
 

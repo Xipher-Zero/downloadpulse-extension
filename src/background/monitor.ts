@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // The one monitor of this browser's downloads (WS-E3 B1, B2, B5). It reads
 // the job list by change cursor into a non-secret cache (storage.session)
-// that the popup renders, animates the toolbar ring while anything is
+// that the popup renders, animates the toolbar icon while anything is
 // active (the icon updates keep the background alive, spike S2), and raises
 // a notification when a job completes, fails or needs attention. It runs
 // only while a job is unsettled or the popup is open.
@@ -43,27 +43,41 @@ export function wake(): void {
   void loop().finally(() => { running = false; });
 }
 
-function ring(frame: number, size: number): ImageData {
+// The activity mark (operator, 2026-11-18): DownloadPulse's own icon with a
+// quarter of it faded, the faded quarter sweeping round the logo's centre like
+// a pie slice. One turn is FRAMES frames of FRAME_MS.
+const FRAMES = 16;
+const FADE = 0.7;   // how much of the faded quarter is taken away
+const logos = new Map<number, Promise<ImageBitmap>>();
+
+function logo(size: number): Promise<ImageBitmap> {
+  let bitmap = logos.get(size);
+  if (!bitmap) {
+    bitmap = fetch(chrome.runtime.getURL(`icons/icon-${size}.png`)).then((r) => r.blob()).then((b) => createImageBitmap(b));
+    logos.set(size, bitmap);
+  }
+  return bitmap;
+}
+
+/** One frame of the sweep at ``size`` px: the logo, its quarter from ``frame``'s angle faded. */
+export async function activityFrame(frame: number, size: number): Promise<ImageData> {
   const canvas = new OffscreenCanvas(size, size);
   const context = canvas.getContext("2d")!;
+  context.drawImage(await logo(size), 0, 0, size, size);
   const centre = size / 2;
-  const radius = size * 0.36;
-  context.lineWidth = Math.max(2, size * 0.14);
-  context.strokeStyle = "rgba(59,130,246,.25)";
+  const start = -Math.PI / 2 + (frame % FRAMES) * (2 * Math.PI / FRAMES);
+  context.globalCompositeOperation = "destination-out";
+  context.fillStyle = `rgba(0, 0, 0, ${FADE})`;
   context.beginPath();
-  context.arc(centre, centre, radius, 0, Math.PI * 2);
-  context.stroke();
-  context.strokeStyle = "#2563eb";
-  context.lineCap = "round";
-  const start = (frame % 12) * (Math.PI / 6);
-  context.beginPath();
-  context.arc(centre, centre, radius, start, start + Math.PI * 1.2);
-  context.stroke();
+  context.moveTo(centre, centre);
+  context.arc(centre, centre, size, start, start + Math.PI / 2);
+  context.closePath();
+  context.fill();
   return context.getImageData(0, 0, size, size);
 }
 
 async function drawRing(frame: number): Promise<void> {
-  await chrome.action.setIcon({imageData: {16: ring(frame, 16), 32: ring(frame, 32)}});
+  await chrome.action.setIcon({imageData: {16: await activityFrame(frame, 16), 32: await activityFrame(frame, 32)}});
 }
 
 async function restoreIcon(): Promise<void> {

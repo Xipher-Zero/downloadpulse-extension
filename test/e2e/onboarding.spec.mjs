@@ -62,6 +62,20 @@ test("found on this computer: offered first, then paired on approval, verified, 
     await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
     // The details are behind the chevron; DownloadPulse on this computer is named, never its loopback address.
     await expect(popup.getByTestId("server")).toBeHidden();
+    // Collapsed, the chevron points right; open, down.
+    const chevron = popup.getByRole("button", {name: "Connection details"}).locator("svg");
+    // Lucide chevron-right points along +x; where its drawn transform sends +x is where it points.
+    const pointing = () => chevron.evaluate((svg) => {
+      const m = new DOMMatrix(getComputedStyle(svg).transform === "none" ? undefined : getComputedStyle(svg).transform);
+      const [x, y] = [m.a, m.b];
+      return Math.abs(y) > Math.abs(x) ? (y > 0 ? "down" : "up") : (x > 0 ? "right" : "left");
+    });
+    await expect(chevron).toHaveAttribute("data-glyph", "chevronRight");
+    expect(await pointing()).toBe("right");
+    await popup.getByRole("button", {name: "Connection details"}).click();
+    await expect.poll(pointing).toBe("down");
+    await popup.getByRole("button", {name: "Connection details"}).click();
+    await expect.poll(pointing).toBe("right");
     await popup.getByRole("button", {name: "Connection details"}).click();
     await expect(popup.getByRole("button", {name: "Connection details"})).toHaveAttribute("aria-expanded", "true");
     await expect(popup.getByTestId("server")).toHaveText("Locally installed instance");

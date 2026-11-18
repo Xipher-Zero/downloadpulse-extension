@@ -33,8 +33,8 @@ export async function saveAppearance(value: unknown): Promise<void> {
   if (parsed) await chrome.storage.local.set({[KEY]: parsed});
 }
 
-const PROPERTIES = ["bg-app", "surface-1", "text-primary", "text-secondary", "text-muted", "border-default",
-  "accent-purple", "accent-purple-bright", "accent-rgb", "accent-contrast", "focus-ring"];
+const PROPERTIES = ["bg-app", "surface-1", "surface-2", "surface-3", "text-primary", "text-secondary", "text-muted",
+  "border-default", "accent-purple", "accent-purple-bright", "accent-blue", "accent-blue-bright", "accent-rgb", "accent-contrast"];
 
 /** Draw ``root`` in ``value``: its mode, and that mode's palette (an unknown palette is the mode's native one). */
 export function applyAppearance(root: HTMLElement, value: Appearance | null): void {
@@ -42,13 +42,15 @@ export function applyAppearance(root: HTMLElement, value: Appearance | null): vo
   if (!value) {
     delete root.dataset["mode"];
     delete root.dataset["palette"];
+    delete root.dataset["paletteKind"];
     return;
   }
   const chosen = value.mode === "dark" ? value.dark_palette : value.light_palette;
   const palette = PALETTES[value.mode][chosen] ? chosen : NATIVE[value.mode];
   root.dataset["mode"] = value.mode;
   root.dataset["palette"] = palette;
+  // An alternative palette: its buttons, focus ring, track, brand and logo are derived from its accents (popup.css).
+  root.dataset["paletteKind"] = palette === NATIVE[value.mode] ? "native" : "alternative";
   const tokens = PALETTES[value.mode][palette]!;
   for (const [name, colour] of Object.entries(tokens)) root.style.setProperty(`--dp-${name}`, colour);
-  root.style.setProperty("--dp-focus-ring", `0 0 0 3px rgba(${tokens["accent-rgb"]}, ${value.mode === "dark" ? ".28" : ".19"})`);
 }

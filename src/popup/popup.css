@@ -6,6 +6,15 @@
    pause/resume), and its transfer-status colours (ui-transfer-contract.css).
    The extension is a portal to DownloadPulse, not DownloadPulse: its sizes
    and layout are its own (operator, 2026-11-18). Theming comes later. */
+/* Outfit, DownloadPulse's typeface, for the wordmark (bundled, SIL Open Font
+   License 1.1: fonts/OFL-Outfit.txt; Latin, weight 700 -- no network font). */
+@font-face {
+  font-family: "Outfit";
+  font-weight: 700;
+  font-style: normal;
+  font-display: block;
+  src: url("../fonts/outfit-700-latin.woff2") format("woff2");
+}
 :root {
   color-scheme: light;
   --dp-bg-app: #f4f7fc;
@@ -33,12 +42,28 @@
   --dp-secondary-border: #d9d8e6;
   --dp-secondary-text: #565e76;
   --dp-secondary-shadow: inset 0 1px rgba(255,255,255,1), inset 0 -1px rgba(84,72,116,.055), 0 3px 8px -6px rgba(65,62,90,.22);
+  --dp-accent-contrast: #ffffff;
+  /* The wordmark and the mark (DebridPulse ui-language-tokens.css, ui-logo.css): Light. */
+  --dp-brand-name: #181b2f;
+  --dp-brand-text: #7c3aed;
+  --dp-logo-surface: #ffffff;
+  --dp-logo-outline-start: #a62cff;
+  --dp-logo-outline-end: #208cff;
+  --dp-logo-arrow-start: #b532ff;
+  --dp-logo-arrow-mid: #7855ff;
+  --dp-logo-arrow-end: #08a8ff;
+  --dp-logo-ekg-start: #b532ff;
+  --dp-logo-ekg-mid: #00d4ff;
+  --dp-logo-ekg-end: #149fff;
 }
 /* Dark: DownloadPulse says so (data-mode, from the person's appearance), or,
    before it has said, the browser prefers it. A palette then sets its own
    colours over these (src/shared/appearance.ts). */
 :root[data-mode="dark"] {
   color-scheme: dark;
+  --dp-brand-name: #f7f8ff;
+  --dp-brand-text: #a45cff;
+  --dp-logo-surface: #080b18;
   --dp-bg-app: #050814;
   --dp-surface-1: #0b1224;
   --dp-text-primary: #f7f8ff;
@@ -68,6 +93,9 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-mode]) {
     color-scheme: dark;
+    --dp-brand-name: #f7f8ff;
+    --dp-brand-text: #a45cff;
+    --dp-logo-surface: #080b18;
     --dp-bg-app: #050814;
     --dp-surface-1: #0b1224;
     --dp-text-primary: #f7f8ff;
@@ -96,6 +124,29 @@
   }
 }
 
+/* An alternative palette: DebridPulse derives these from its accents
+   (ui-theme-palettes.css body[data-dp-palette]; ui-logo.css). */
+:root[data-palette-kind="alternative"] {
+  --dp-focus-ring: 0 0 0 3px color-mix(in srgb, var(--dp-accent-purple) 30%, transparent);
+  --dp-progress-track: var(--dp-surface-3);
+  --dp-primary-surface: linear-gradient(145deg, var(--dp-accent-purple-bright) 0%, var(--dp-accent-purple) 100%);
+  --dp-primary-border: var(--dp-accent-purple-bright);
+  --dp-secondary-surface: linear-gradient(145deg, var(--dp-surface-2), var(--dp-surface-1));
+  --dp-secondary-border: var(--dp-border-default);
+  --dp-secondary-text: var(--dp-text-secondary);
+  --dp-brand-name: var(--dp-text-primary);
+  --dp-brand-text: var(--dp-accent-purple-bright);
+  --dp-logo-surface: var(--dp-surface-1);
+  --dp-logo-outline-start: var(--dp-accent-purple);
+  --dp-logo-outline-end: var(--dp-accent-blue);
+  --dp-logo-arrow-start: var(--dp-accent-purple-bright);
+  --dp-logo-arrow-mid: color-mix(in srgb, var(--dp-accent-purple-bright), var(--dp-accent-blue-bright));
+  --dp-logo-arrow-end: var(--dp-accent-blue-bright);
+  --dp-logo-ekg-start: var(--dp-accent-purple-bright);
+  --dp-logo-ekg-mid: var(--dp-accent-blue-bright);
+  --dp-logo-ekg-end: var(--dp-accent-blue);
+}
+
 body { margin: 0; width: 360px; background: var(--dp-bg-app); color: var(--dp-text-primary); font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
 body[data-standalone] { width: auto; }
 body[data-standalone] .dp-popup { max-width: 560px; margin: 0 auto; padding: 24px 16px 48px; }
@@ -106,7 +157,21 @@ p { margin: 0; }
 
 /* ── the title row: the name, the settings gear at its end ── */
 .dp-head { display: flex; align-items: center; gap: 6px; }
-.dp-head__title { flex: 1 1 auto; margin: 0; font-size: 15px; font-weight: 650; }
+.dp-head__title { flex: 1 1 auto; margin: 0; }
+/* The brand: DownloadPulse's mark and its two-tone wordmark (as DebridPulse's sidebar draws its own). */
+.dp-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.dp-brand__logo { inline-size: 30px; block-size: 30px; flex: 0 0 auto; }
+.dp-brand__name { font-family: "Outfit", system-ui, sans-serif; font-size: 19px; font-weight: 700; line-height: 1; letter-spacing: -.02em; color: var(--dp-brand-name); white-space: nowrap; }
+.dp-brand__name > span { color: var(--dp-brand-text); }
+.dp-logo-surface { fill: var(--dp-logo-surface); }
+.dp-logo-outline-start { stop-color: var(--dp-logo-outline-start); }
+.dp-logo-outline-end { stop-color: var(--dp-logo-outline-end); }
+.dp-logo-arrow-start { stop-color: var(--dp-logo-arrow-start); }
+.dp-logo-arrow-mid { stop-color: var(--dp-logo-arrow-mid); }
+.dp-logo-arrow-end { stop-color: var(--dp-logo-arrow-end); }
+.dp-logo-ekg-start { stop-color: var(--dp-logo-ekg-start); }
+.dp-logo-ekg-mid { stop-color: var(--dp-logo-ekg-mid); }
+.dp-logo-ekg-end { stop-color: var(--dp-logo-ekg-end); }
 
 /* ── buttons (DownloadPulse's family) ── */
 .dp-btn {
@@ -117,10 +182,11 @@ p { margin: 0; }
   transition: filter .14s ease, border-color .14s ease, color .14s ease, background-color .14s ease, transform .06s ease;
 }
 .dp-btn:hover:not(:disabled) { border-color: color-mix(in srgb, var(--dp-accent-purple-bright) 28%, var(--dp-secondary-border)); color: var(--dp-text-primary); }
-.dp-btn--primary { border-color: var(--dp-primary-border); background: var(--dp-primary-surface); color: #ffffff; text-shadow: 0 1px 2px rgba(41,20,71,.34); }
-.dp-btn--primary:hover:not(:disabled) { color: #ffffff; filter: brightness(1.04); }
-.dp-btn--ghost { border-color: transparent; background: transparent; box-shadow: none; color: var(--dp-text-secondary); }
-.dp-btn--ghost:hover:not(:disabled) { border-color: transparent; color: var(--dp-text-primary); background: color-mix(in srgb, var(--dp-accent-purple) 8%, transparent); }
+.dp-btn--primary { border-color: var(--dp-primary-border); background: var(--dp-primary-surface); color: var(--dp-accent-contrast); text-shadow: 0 1px 2px rgba(41,20,71,.34); }
+.dp-btn--primary:hover:not(:disabled) { color: var(--dp-accent-contrast); filter: brightness(1.04); }
+/* Ghost: as DownloadPulse renders .btn.btn-ghost -- the secondary material
+   (its base button rule is the one that applies there), differing on hover. */
+.dp-btn--ghost:hover:not(:disabled) { border-color: color-mix(in srgb, var(--dp-accent-purple-bright) 28%, var(--dp-secondary-border)); color: var(--dp-text-primary); filter: brightness(1.035); }
 .dp-btn--danger { border-color: color-mix(in srgb, var(--dp-state-error) 34%, transparent); background: color-mix(in srgb, var(--dp-state-error) 11%, transparent); color: var(--dp-state-error); box-shadow: none; }
 .dp-btn--danger:hover:not(:disabled) { border-color: color-mix(in srgb, var(--dp-state-error) 40%, transparent); color: var(--dp-state-error); background: color-mix(in srgb, var(--dp-state-error) 17%, transparent); }
 .dp-btn--sm { min-height: 28px; padding: 0 10px; font-size: 12px; }
@@ -165,8 +231,11 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-conn__status[data-reach="ok"] .dp-conn__dot { background: var(--dp-state-success); }
 .dp-conn__status[data-reach="unreachable"] { color: var(--dp-state-caution); }
 .dp-conn__status[data-reach="unreachable"] .dp-conn__dot { background: var(--dp-state-caution); }
+/* Collapsed, the chevron points along the line (right; left in a right-to-left language); open, down. */
 .dp-conn__toggle svg { transition: transform .14s ease; }
-.dp-conn__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+:root[dir="rtl"] .dp-conn__toggle svg { transform: scaleX(-1); }
+.dp-conn__toggle[aria-expanded="true"] svg,
+:root[dir="rtl"] .dp-conn__toggle[aria-expanded="true"] svg { transform: rotate(90deg); }
 .dp-facts { display: grid; gap: 4px; margin: 0; padding: 8px 10px; border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1); }
 .dp-facts > div { display: flex; gap: 10px; }
 .dp-facts dt { min-width: 5.5em; color: var(--dp-text-muted); }
