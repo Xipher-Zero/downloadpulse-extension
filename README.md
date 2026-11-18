@@ -21,11 +21,11 @@ option) any later version. See [`LICENSE`](LICENSE).
 
 Requirements:
 - Node.js 24 or later;
-- Firefox, for the Firefox smoke test (`FIREFOX=/path/to/firefox` if it is not on `PATH`).
+- Firefox for the Firefox smoke test: Playwright's (`npx playwright install firefox`) is used by default; `FIREFOX=/path/to/firefox` picks another.
 
 ```sh
 npm ci --ignore-scripts
-npx playwright install chromium
+npx playwright install chromium firefox
 npm run check     # build, TypeScript type check, web-ext lint (Firefox)
 npm test          # smoke tests: Chromium (Playwright), Firefox (web-ext)
 npm run package   # web-ext-artifacts/downloadpulse-{chromium,firefox}-<version>.zip

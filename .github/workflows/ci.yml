@@ -21,7 +21,9 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run check
-      - run: npx playwright install --with-deps chromium
+      # Pinned browsers: Playwright's Chromium and Firefox builds for @playwright/test 1.62.1.
+      # The Firefox smoke test finds Playwright's Firefox itself.
+      - run: npx playwright install --with-deps chromium firefox
       - name: Smoke tests (Chromium, then Firefox)
         run: npm test
       - run: npm run package
