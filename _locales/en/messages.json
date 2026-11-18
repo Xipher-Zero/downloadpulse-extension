@@ -328,5 +328,9 @@
         "example": "ubuntu.iso"
       }
     }
+  },
+  "popupOpenServer": {
+    "message": "Open DownloadPulse",
+    "description": "Popup link to the connected DownloadPulse: the server, or the application on this computer."
   }
 }

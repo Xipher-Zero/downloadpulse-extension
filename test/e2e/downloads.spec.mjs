@@ -93,6 +93,15 @@ test("pause and resume are this browser's own; a declined pause says why", async
   await expect(row(id).locator(".dp-job__note")).toHaveText("Other requests need this download, so it can't be paused from here.");
 });
 
+test("the popup links to DownloadPulse, and opened for a download it shows that one", async () => {
+  await expect(popup.getByRole("link", {name: "Open DownloadPulse"})).toHaveAttribute("href", "http://127.0.0.1:8095/");
+  const id = await sendArchive();
+  await expect(row(id)).toBeVisible();
+  // As a notification click opens it where the browser opens no toolbar popup from code.
+  await popup.goto(popup.url().split("?")[0] + `?job=${id}`);
+  await expect(row(id)).toHaveClass(/dp-job--focus/);
+});
+
 test("Remove withdraws this browser's request", async () => {
   const id = await sendArchive();
   await row(id).getByRole("button", {name: "Remove"}).click();

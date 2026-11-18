@@ -134,6 +134,19 @@ async function act(id: string, action: string): Promise<void> {
   await render();
 }
 
+/** Opened from a notification: show that download (once). */
+async function focusNotified(): Promise<void> {
+  const fromUrl = new URLSearchParams(location.search).get("job");
+  const stored = (await chrome.storage.session.get("focusJob"))["focusJob"] as string | undefined;
+  const id = fromUrl || stored;
+  if (!id) return;
+  const row = document.querySelector<HTMLElement>(`li[data-job-id="${CSS.escape(id)}"]`);
+  if (!row) return;
+  if (stored) await chrome.storage.session.remove("focusJob");
+  row.classList.add("dp-job--focus");
+  row.scrollIntoView({block: "nearest"});
+}
+
 async function render(): Promise<void> {
   const connected = await connection();
   const pending = await pairing();
@@ -150,8 +163,11 @@ async function render(): Promise<void> {
     text('[data-testid="server"]', connected.server);
     text('[data-testid="account"]', connected.account);
     text('[data-testid="label"]', connected.label);
+    // DownloadPulse itself: the server, or the standalone application on this computer.
+    document.querySelector<HTMLAnchorElement>('[data-testid="open-server"]')!.href = `${connected.server}/`;
     const jobs = ((await chrome.storage.session.get("jobs"))["jobs"] ?? {}) as Record<string, Job>;
     renderJobs(Object.values(jobs).sort((a, b) => b.cursor - a.cursor));
+    await focusNotified();
   } else {
     show("disconnected");
   }

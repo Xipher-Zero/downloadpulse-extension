@@ -26,3 +26,5 @@ body { margin: 0; min-width: 320px; background: var(--dp-bg); color: var(--dp-fg
 .dp-job progress { width: 100%; height: 6px; }
 .dp-job__controls { display: flex; gap: 6px; }
 .dp-button--small { padding: 2px 8px; font-size: 12px; }
+.dp-popup__open { color: var(--dp-accent); font-size: 13px; justify-self: start; }
+.dp-job--focus { border-color: var(--dp-accent); box-shadow: 0 0 0 1px var(--dp-accent); }

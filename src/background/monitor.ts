@@ -82,7 +82,7 @@ function notice(job: Job, before: Job | undefined): string | null {
   return null;
 }
 
-async function notify(job: Job, kind: string, server: string): Promise<void> {
+async function notify(job: Job, kind: string): Promise<void> {
   const notified = ((await chrome.storage.session.get(NOTIFIED))[NOTIFIED] as string[] | undefined) ?? [];
   const id = `dp:${job.id}:${kind}`;
   if (notified.includes(id)) return;
@@ -90,7 +90,6 @@ async function notify(job: Job, kind: string, server: string): Promise<void> {
   const key = kind === "completed" ? "notifyCompleted" : kind === "failed" ? "notifyFailed" : "notifyAttention";
   await chrome.notifications.create(id, {type: "basic", iconUrl: "icons/icon-128.png", title: message("extName"),
     message: message(key, [jobName(job)])});
-  await chrome.storage.session.set({notifyServer: server});
 }
 
 async function poll(): Promise<boolean> {
@@ -105,7 +104,7 @@ async function poll(): Promise<boolean> {
       for (const job of listing.jobs) {
         const kind = notice(job, jobs[job.id]);
         // A job first seen already settled (an earlier session's) is listed quietly.
-        if (kind && (jobs[job.id] || unsettled(job) || cursor > 0)) await notify(job, kind, connected.server);
+        if (kind && (jobs[job.id] || unsettled(job) || cursor > 0)) await notify(job, kind);
         jobs[job.id] = job;
       }
       cursor = listing.next_cursor;
@@ -150,11 +149,21 @@ async function loop(): Promise<void> {
 }
 
 chrome.alarms.onAlarm.addListener((alarm) => { if (alarm.name === ALARM) wake(); });
+// A notification about one of this browser's downloads opens the extension's
+// own popup, on that download (operator, 2026-11-18). Where the browser does
+// not let an extension open its toolbar popup from code (Firefox may require
+// a user action), the same popup page opens in a window of its own size.
 chrome.notifications.onClicked.addListener((id) => {
   if (!id.startsWith("dp:")) return;
-  void chrome.storage.session.get("notifyServer").then((stored) => {
-    const server = stored["notifyServer"] as string | undefined;
-    if (server) void chrome.tabs.create({url: `${server}/`});
-    void chrome.notifications.clear(id);
-  });
+  const job = id.split(":")[1] ?? "";
+  void (async () => {
+    await chrome.storage.session.set({focusJob: job});
+    await chrome.notifications.clear(id);
+    try {
+      await chrome.action.openPopup();
+    } catch {
+      await chrome.windows.create({url: chrome.runtime.getURL(`popup/popup.html?job=${encodeURIComponent(job)}`),
+        type: "popup", width: 380, height: 600, focused: true});
+    }
+  })();
 });

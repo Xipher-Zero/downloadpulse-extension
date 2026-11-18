@@ -69,3 +69,10 @@ While any of them is active, the toolbar icon shows a rotating ring. Completion,
 - notification clicks;
 - failure and needs-attention notifications in a real browser session (the transition logic is the same as completion's, which is tested);
 - the list in Firefox.
+
+**Operator correction, 2026-11-18** (supersedes the recorded deviation above): *"clicking a notification for an extension-tracked transfer should open the popup with a link to the server or to local standalone application."*
+- **A notification click** stores the download and calls `action.openPopup()`, which Chromium 151 accepts from code (probed). Where a browser refuses (Firefox may require a user action), the same popup page opens in its own 380×600 window.
+- **Either way** the popup scrolls to that download and highlights it.
+- **The popup** now has **Open DownloadPulse**, linking to the connected server: a remote server, or the standalone/desktop application on this computer (`http://127.0.0.1:8095/`).
+- **Tested:** the link's address; a popup opened for a download highlights it (the window path's `?job=`), 6/6 downloads tests.
+- **Not automatable** (manual): the notification click itself, and `openPopup()` in Firefox.
