@@ -184,6 +184,36 @@ const buttonLayers = (page) => page.evaluate(() => [...document.querySelectorAll
     return {left: r.left, top: r.top, width: r.width, height: r.height};
   }));
 
+test("content moved with no scroll event (a page's own scroller): the icons leave it, the selection's comes back", async () => {
+  await connect();
+  const page = await sitePage();
+  const move = (y) => page.evaluate((dy) => { document.querySelector("#mover").style.transform = `translateY(${dy}px)`; }, y);
+  const box = await page.locator("#moverlink").boundingBox();
+  await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  await move(40);                                                   // no scroll event, no pointer move
+  await expect.poll(async () => (await buttonLayers(page)).length, {timeout: 1000}).toBe(0);
+  await page.mouse.move(1, 1);
+  await move(0);
+  await page.evaluate(() => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector("#movertext"));
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+  });
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  await move(60);
+  await expect.poll(async () => (await buttonLayers(page)).length, {timeout: 1000}).toBe(0);
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);   // back, where the selection now ends
+  const [layer] = await buttonLayers(page);
+  const end = await page.evaluate(() => {
+    const rects = [...getSelection().getRangeAt(0).getClientRects()].filter((r) => r.width > 1);
+    return {right: rects.at(-1).right, middle: (rects.at(-1).top + rects.at(-1).bottom) / 2};
+  });
+  expect(Math.abs(layer.left - (end.right + 8))).toBeLessThanOrEqual(1);
+  expect(Math.abs(layer.top + layer.height / 2 - end.middle)).toBeLessThanOrEqual(1.5);
+});
+
 test("selected links get a send button with their count, which sends them as one batch", async () => {
   await connect();
   const page = await sitePage();
@@ -208,10 +238,49 @@ test("selected links get a send button with their count, which sends them as one
   });
   expect(Math.abs(layer.left - (end.right + 8))).toBeLessThanOrEqual(1);
   expect(Math.abs(layer.top + layer.height / 2 - end.middle)).toBeLessThanOrEqual(1.5);
-  await page.mouse.click(layer.left + 8, layer.top + 8);
+  // Scrolling: gone at once; back by the selection's end once it settles; nowhere while that end is out of view.
+  const at = () => page.evaluate(() => {
+    const rects = [...getSelection().getRangeAt(0).getClientRects()].filter((r) => r.width > 1);
+    return {right: rects.at(-1).right, middle: (rects.at(-1).top + rects.at(-1).bottom) / 2, bottom: rects.at(-1).bottom};
+  });
+  // Gone within the frame the scroll is handled in (before it could come back, 200 ms after it settles).
+  expect(await page.evaluate(async () => {
+    scrollBy(0, 60);
+    await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
+    return [...document.querySelectorAll("downloadpulse-layer")]
+      .filter((host) => host.matches(":popover-open") && host.style.bottom !== "16px").length;
+  })).toBe(0);
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  const [moved] = await buttonLayers(page);
+  const now = await at();
+  expect(Math.abs(moved.left - (now.right + 8))).toBeLessThanOrEqual(1);
+  expect(Math.abs(moved.top + moved.height / 2 - now.middle)).toBeLessThanOrEqual(1.5);
+  await page.evaluate((bottom) => scrollBy(0, bottom + 50), now.bottom);   // its end above the window
+  await page.waitForTimeout(700);
+  expect(await buttonLayers(page)).toEqual([]);
+  await page.locator("#live").scrollIntoViewIfNeeded();
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  const [back] = await buttonLayers(page);
+  await page.mouse.click(back.left + 8, back.top + 8);
   await expect.poll(() => dp.state.jobs.length).toBe(1);
   expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: ["https://1fichier.com/?j93yc0n4g08jsox2nipk",
     "https://rapidgator.net/file/119ce5/GF161126-HITC-RN.rar.html", "https://gofile.io/d/AM5Js2xh"]});
+  // Links in rows with a trailing empty block, the whole container selected: the button is after the last link's text,
+  // not after the trailing block (a range's boxes include whole elements).
+  await page.locator("#rows").scrollIntoViewIfNeeded();
+  await select("#rows");
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  const [rowsLayer] = await buttonLayers(page);
+  const lastText = await page.evaluate(() => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector("#rows").children[1].firstChild);
+    const r = range.getClientRects()[0];
+    return {right: r.right, middle: (r.top + r.bottom) / 2};
+  });
+  expect(Math.abs(rowsLayer.left - (lastText.right + 8))).toBeLessThanOrEqual(1);
+  expect(Math.abs(rowsLayer.top + rowsLayer.height / 2 - lastText.middle)).toBeLessThanOrEqual(1.5);
+  await page.evaluate(() => getSelection().removeAllRanges());
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(0);
   // Two links selected in a text box.
   await page.locator("#box").evaluate((box) => { box.focus(); box.select(); });
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);

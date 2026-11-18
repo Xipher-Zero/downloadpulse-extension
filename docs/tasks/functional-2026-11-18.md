@@ -96,3 +96,37 @@ The pie-slice wedge didn't read: a faded dark quarter on a dark toolbar is barel
 - a toast leaves on its own and at once when clicked.
 
 The full suite (45 cases), the unit tests, the Firefox smoke install, lint and locales pass.
+
+## 9. The icons stayed behind on KeepLinks after scrolling
+
+**Seen (after round 2):** on KeepLinks both the single icon and the batch button (11 links) stayed where they'd been placed when the page scrolled.
+
+**Cause:**
+- **Both icons belonged to the last link line**, `…GF161126-HITC-RN.rar`: a download by its name, so the single icon too, at 8 px past its end. They were left where that line had been. In the operator's two screenshots the line moved from y 581 upwards and both icons stayed at 581.
+- **The extension never heard the page scroll.** KeepLinks scrolls its content in a way that sends no scroll event the extension sees (its live page sits behind a captcha, so its scroller couldn't be inspected).
+
+**Fix:** no reliance on any event. While an icon is shown, each frame compares where its link (or the selection's end) is drawn now with where it was when the icon was placed.
+- **Moved by any means** (scroll, a page's own scroller or smooth-scroll script, a transform): the hover icon goes at once. The batch button goes and comes back where the selection's end settles, 200 ms later.
+- **The batch button only stands where the selection's end is drawn and in view.** A page's hidden copy field, or an end scrolled out of view, offers nothing.
+- On a scroll event the batch button also goes at once.
+- **Cost:** the check runs only while an icon is shown.
+
+**Proof:**
+- content moved by a transform, with no scroll event and no pointer move, loses the hover icon within a second;
+- a selection's button leaves and comes back exactly at its new end;
+- a window scroll hides the batch button within the frame that handles it, brings it back at the selection's new end, and offers nothing while that end is out of view;
+- with the per-frame check disabled, the transform test fails.
+
+The full suite (46 cases), the Firefox smoke install, lint and locales pass.
+
+## 10. The batch button parked below the links (from the operator's screencast)
+
+**Seen:** after selecting KeepLinks' list, the batch button moved as the page scrolled to a spot below the list (not at the selection's end), and stayed there after the selection was cleared.
+
+**Cause:** the selection's end was taken as the last of the range's own boxes. Those include the border boxes of whole elements the selection spans, such as a container or a trailing block, so the "end" could be an element below the text.
+
+**Fix:**
+- the end is the last box of the selection's last *visible text* (`selectionEnd`: each text node the range touches, clipped to the range, in a visible holder);
+- with no visible text left in the selection, nothing is offered.
+
+**Proof:** rows of links followed by an empty block, all selected: the button sits 8 px after the last link's text, and goes when the selection is cleared. With the old measurement put back, it fails. Full suite: 46 cases pass.

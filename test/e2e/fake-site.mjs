@@ -16,6 +16,8 @@ export async function fakeSite() {
       res.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
       return res.end(`<!doctype html><html><body style="font:16px sans-serif;margin:20px">
         <p><a id="zip" href="/files/archive.zip">archive.zip</a></p>
+        <div id="mover" style="font:14px monospace"><a id="moverlink" href="/files/moved.zip">moved.zip</a>
+          <span id="movertext">https://a.example/x.rar https://b.example/y.rar</span></div>
         <div style="display:flex;width:800px;font:16px sans-serif"><a id="row" style="flex:1 1 auto"
           href="/files/release-x86_64.AppImage">release-x86_64.AppImage</a><span>1 download · 235 MiB</span></div>
         <p style="width:150px;font:16px sans-serif"><a id="wrapped" href="/files/a-name-that-wraps.iso">a long file name that wraps onto lines.iso</a></p>
@@ -29,6 +31,7 @@ export async function fakeSite() {
         <textarea id="box" rows="3" cols="60">https://pixeldrain.com/u/a4J8buzm
 https://send.now/ijn6gxxf9bj8</textarea>
         <p id="one">See https://example.org/about for details.</p>
+        <div id="rows" style="font:14px monospace;width:700px"><div>https://datanodes.to/wcqpgqc6jdh8/GF161126-HITC-RN.rar</div><div>https://ddownload.com/pu8xjt8cajxq/GF161126-HITC-RN.rar</div><div style="height:60px"></div></div>
         <div style="height:1600px"></div>
       </body></html>`);
     }

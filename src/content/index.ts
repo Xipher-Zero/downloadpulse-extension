@@ -149,6 +149,8 @@ function sendButton(label: string, onSend: () => void): Layer {
 let hover: Layer | null = null;
 let hoverUrl = "";
 let hoverRect: DOMRect | null = null;
+let hoverAnchor: (() => DOMRect) | null = null;   // where the hovered link is drawn now
+let hoverAt: DOMRect | null = null;               // ... and where it was when the icon was placed
 let hideTimer = 0;
 
 /** A pointer position and the path it was dispatched along, captured during dispatch
@@ -192,12 +194,16 @@ function renderedLine(anchor: HTMLAnchorElement, y: number): DOMRect {
   return new DOMRect(left, top, right - left, bottom - top);
 }
 
-function candidateAt(event: Pointer): {url: string; rect: DOMRect; rtl: boolean} | null {
+/** A candidate under the pointer: its URL, where it is drawn, and how to find where it is drawn now. */
+interface Found { url: string; rect: DOMRect; rtl: boolean; anchor: () => DOMRect }
+
+function candidateAt(event: Pointer): Found | null {
   const anchor = event.path.find((node): node is HTMLAnchorElement =>
     node instanceof HTMLAnchorElement && Boolean(node.href));
   if (anchor) {
     if (!isDownloadCandidate(anchor.href, {download: anchor.hasAttribute("download"), type: anchor.type})) return null;
-    return {url: anchor.href, rect: renderedLine(anchor, event.clientY), rtl: getComputedStyle(anchor).direction === "rtl"};
+    return {url: anchor.href, rect: renderedLine(anchor, event.clientY), rtl: getComputedStyle(anchor).direction === "rtl",
+      anchor: () => anchor.getBoundingClientRect()};
   }
   // Plain text that is a URL, under the pointer.
   const caret = (document as Document & {caretPositionFromPoint?(x: number, y: number):
@@ -214,16 +220,20 @@ function candidateAt(event: Pointer): {url: string; rect: DOMRect; rtl: boolean}
   const rects = [...span.getClientRects()];
   const rect = rects.find((item) => event.clientY >= item.top && event.clientY <= item.bottom) ?? span.getBoundingClientRect();
   if (event.clientX < rect.left - 2 || event.clientX > rect.right + 2) return null;
-  return {url: found.url, rect, rtl: getComputedStyle(node.parentElement!).direction === "rtl"};
+  return {url: found.url, rect, rtl: getComputedStyle(node.parentElement!).direction === "rtl",
+    anchor: () => span.getBoundingClientRect()};
 }
 
-function showHover(found: {url: string; rect: DOMRect; rtl: boolean}): void {
+function showHover(found: Found): void {
   hover ??= sendButton(message("hoverSend"), () => {
     void chrome.runtime.sendMessage({type: "dp-send", url: hoverUrl});
     hide(hover);
   });
   hoverUrl = found.url;
   hoverRect = found.rect;
+  hoverAnchor = found.anchor;
+  hoverAt = found.anchor();
+  watch();
   // Beside the link's text, never over it, a constant GAP away: after it in
   // left-to-right text, before it in right-to-left.
   const left = found.rtl ? found.rect.left - BUTTON - GAP : found.rect.right + GAP;
@@ -324,6 +334,7 @@ document.addEventListener("pointermove", (event) => {
 function hidePointerSurfaces(): void {
   hide(hover);
   hoverRect = null;
+  hoverAnchor = null;
   hide(video);
   clearTimeout(hideTimer);
   hideTimer = 0;
@@ -340,24 +351,55 @@ document.addEventListener("visibilitychange", () => { if (document.hidden) { hid
 
 let batch: Layer | null = null;
 let batchText = "";
+let batchAt: DOMRect | null = null;   // where the selection's end was when the button was placed
 let selectionTimer = 0;
+
+/** Whether ``rect`` (of ``element``) is drawn and inside the window: only there can a button stand by it. */
+function onScreen(rect: DOMRect, element: Element | null): boolean {
+  const shown = element as (Element & {checkVisibility?(options?: object): boolean}) | null;
+  if (shown?.checkVisibility && !shown.checkVisibility({visibilityProperty: true, opacityProperty: true})) return false;
+  return rect.width > 1 && rect.height > 1 && rect.bottom > 0 && rect.right > 0 && rect.top < innerHeight && rect.left < innerWidth;
+}
+
+/**
+ * Where a selection ends on screen: the last box of its last visible text.
+ * (A range's own boxes include whole elements it spans -- a container, a
+ * trailing block -- which are not where its text ends.)
+ */
+function selectionEnd(range: Range): {rect: DOMRect; holder: Element} | null {
+  const root = range.commonAncestorContainer;
+  const walker = document.createTreeWalker(root.nodeType === Node.TEXT_NODE ? root.parentNode! : root, NodeFilter.SHOW_TEXT);
+  const piece = document.createRange();
+  let found: {rect: DOMRect; holder: Element} | null = null;
+  for (let node = walker.nextNode() as Text | null; node; node = walker.nextNode() as Text | null) {
+    if (!range.intersectsNode(node) || !node.textContent?.trim() || !node.parentElement) continue;
+    const holder = node.parentElement as Element & {checkVisibility?(options?: object): boolean};
+    if (holder.checkVisibility && !holder.checkVisibility({visibilityProperty: true, opacityProperty: true})) continue;
+    piece.selectNodeContents(node);
+    if (node === range.startContainer) piece.setStart(node, range.startOffset);
+    if (node === range.endContainer) piece.setEnd(node, range.endOffset);
+    const boxes = [...piece.getClientRects()].filter((rect) => rect.width > 1 && rect.height > 1);
+    if (boxes.length) found = {rect: boxes.at(-1)!, holder};
+  }
+  return found;
+}
 
 function selected(): {text: string; rect: DOMRect; rtl: boolean} | null {
   const field = document.activeElement;
   if ((field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) && field.selectionStart !== null
       && field.selectionEnd !== null && field.selectionEnd > field.selectionStart) {
+    // A text box's selection has no boxes of its own: the button stands at the box's top end, while the box is on screen.
     const box = field.getBoundingClientRect();
+    if (!onScreen(box, field)) return null;
     return {text: field.value.slice(field.selectionStart, field.selectionEnd),
       rect: new DOMRect(box.right - BUTTON - GAP, box.top + GAP, 0, BUTTON), rtl: false};
   }
   const chosen = getSelection();
   if (!chosen || chosen.isCollapsed || !chosen.rangeCount) return null;
-  const range = chosen.getRangeAt(chosen.rangeCount - 1);
-  const rects = [...range.getClientRects()].filter((rect) => rect.width > 1 && rect.height > 1);
-  const last = rects.at(-1);
-  if (!last) return null;
-  const holder = range.endContainer instanceof Element ? range.endContainer : range.endContainer.parentElement;
-  return {text: chosen.toString(), rect: last, rtl: holder ? getComputedStyle(holder).direction === "rtl" : false};
+  const end = selectionEnd(chosen.getRangeAt(chosen.rangeCount - 1));
+  // Only where the selection's last visible text is drawn and in view (a page's hidden copy field, or an end scrolled away, offers nothing).
+  if (!end || !onScreen(end.rect, end.holder)) return null;
+  return {text: chosen.toString(), rect: end.rect, rtl: getComputedStyle(end.holder).direction === "rtl"};
 }
 
 async function offerSelection(): Promise<void> {
@@ -386,6 +428,8 @@ async function offerSelection(): Promise<void> {
   count.textContent = String(urls.length);
   const left = found.rtl ? found.rect.left - BUTTON - GAP : found.rect.right + GAP;
   place(batch, left, found.rect.top + found.rect.height / 2 - BUTTON / 2);
+  batchAt = found.rect;
+  watch();
 }
 
 // A page's selection (selectionchange), and a text box's own (its select event,
@@ -398,7 +442,42 @@ document.addEventListener("selectionchange", selectionChanged);
 document.addEventListener("select", selectionChanged, {capture: true});
 document.addEventListener("mouseup", selectionChanged, {passive: true, capture: true});
 document.addEventListener("keyup", selectionChanged, {passive: true, capture: true});
-addEventListener("scroll", () => { if (batch?.host.matches(":popover-open")) void offerSelection(); }, {passive: true, capture: true});
+// Scrolling moves the selection under a button fixed to the window: it goes at
+// once, and comes back where the selection's end now is once scrolling settles.
+let scrollTimer = 0;
+addEventListener("scroll", () => {
+  hide(batch);
+  clearTimeout(scrollTimer);
+  scrollTimer = window.setTimeout(() => void offerSelection(), 200);
+}, {passive: true, capture: true});
+
+// ── keeping the icons on what they belong to ───────────────────────────────
+// A page can move its content without a scroll event reaching the extension
+// (its own scroller, a smooth-scroll script, a transform). So while an icon is
+// shown, each frame looks at where its link or selection is drawn now: moved,
+// the icon goes at once (the selection's comes back where it settles).
+
+let watching = false;
+const moved = (a: DOMRect | null, b: DOMRect | null) =>
+  !a || !b || Math.abs(a.left - b.left) > 1 || Math.abs(a.top - b.top) > 1 || Math.abs(a.width - b.width) > 1;
+
+function watch(): void {
+  if (watching) return;
+  watching = true;
+  const look = () => {
+    const hoverShown = Boolean(hover?.host.matches(":popover-open"));
+    const batchShown = Boolean(batch?.host.matches(":popover-open"));
+    if (hoverShown && hoverAnchor && moved(hoverAnchor(), hoverAt)) hidePointerSurfaces();
+    if (batchShown && moved(selected()?.rect ?? null, batchAt)) {
+      hide(batch);
+      clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => void offerSelection(), 200);
+    }
+    if (hover?.host.matches(":popover-open") || batch?.host.matches(":popover-open")) requestAnimationFrame(look);
+    else watching = false;
+  };
+  requestAnimationFrame(look);
+}
 
 // A page with a video shows the URL-bar icon in Firefox even before a hover.
 setTimeout(() => {
