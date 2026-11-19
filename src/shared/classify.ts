@@ -38,7 +38,10 @@ function parsed(href: string): URL | null {
  * affeb5d, P2).
  */
 export function isNewznabGet(url: URL): boolean {
-  const key = [...url.searchParams.keys()].some((name) => name.toLowerCase() === "apikey");
+  // Read from the query string, never by iterating searchParams: in a Firefox content script
+  // the URL is behind an Xray wrapper whose iterators throw, which broke every link's hover
+  // button there (2026-11-19). Any letter case, as before.
+  const key = /(?:^\?|&)apikey(?:=|&|$)/i.test(url.search);
   return (url.searchParams.get("t") ?? "").toLowerCase() === "get" && Boolean(url.searchParams.get("id")) && key
     && extension(url.pathname) === "";
 }

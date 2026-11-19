@@ -84,3 +84,9 @@ test("a video's address is the frame's current one, on the origin the browser re
   }
   assert.equal(videoAddress("chrome-extension://x/a", "chrome-extension://x/"), null);
 });
+
+test("an indexer link's apikey is read from the query in any letter case, and only that name (Firefox Xray-safe)", () => {
+  assert.equal(captureKind("https://i.example/api?t=get&id=5&APIKEY=K"), "nzb");
+  assert.equal(captureKind("https://i.example/api?apikey=K&t=get&id=5"), "nzb");
+  assert.equal(captureKind("https://i.example/api?t=get&id=5&myapikey=K"), null);
+});
