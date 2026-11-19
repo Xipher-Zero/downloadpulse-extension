@@ -9,6 +9,7 @@ import {controlJob, disconnectBrowser, isLocal, showApplication, withdrawJob} fr
 import {isOffSite, settings} from "../shared/settings";
 import {appearance, type Appearance} from "../shared/appearance";
 import {refreshAppearance} from "./appearance";
+import {restIcon} from "./icon";
 import {popupOpen, wake} from "./monitor";
 import {message} from "../shared/i18n";
 import {cancel, connectLocal, connectRemote, pairLocal} from "./pairing";
@@ -75,9 +76,13 @@ async function refreshMenus(): Promise<void> {
   chrome.contextMenus.create({id: MENU_SELECTION, title, contexts: ["selection"]});
 }
 
-chrome.runtime.onInstalled.addListener(() => void refreshMenus());
+chrome.runtime.onInstalled.addListener(() => {
+  void refreshMenus();
+  void restIcon();
+});
 chrome.runtime.onStartup.addListener(() => {
   void refreshMenus();
+  void restIcon();
   wake();   // downloads unsettled when the browser closed (WS-E3 B1)
 });
 
@@ -102,6 +107,8 @@ async function act(request: {type: "dp-control"; id: string; kind: "pause" | "re
 }
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && "connection" in changes) void refreshMenus();
+  // The toolbar icon in the person's theme, redrawn when it changes (or the connection goes).
+  if (area === "local" && "appearance" in changes) void restIcon();
 });
 
 chrome.contextMenus.onClicked.addListener((info, tab) => {

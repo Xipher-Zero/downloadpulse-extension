@@ -133,14 +133,6 @@
         "ai-review"
       ]
     },
-    "popupStartAgain": {
-      "source": "962e64b761961fe0",
-      "translation": "865edb31b8bb3f22",
-      "provenance": [
-        "ai-generated",
-        "ai-review"
-      ]
-    },
     "popupConnected": {
       "source": "22965568d22a14ee",
       "translation": "90704df74930d55b",
@@ -216,8 +208,8 @@
       ]
     },
     "failureExpired": {
-      "source": "023f7ebb68e885b0",
-      "translation": "153e5c0271266367",
+      "source": "d92133d389c8cbb6",
+      "translation": "41095e2a95052a1c",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -232,16 +224,16 @@
       ]
     },
     "failureUnauthorized": {
-      "source": "10fd33673597ab06",
-      "translation": "ec04e08e5aca67dc",
+      "source": "37e618cd20ba5122",
+      "translation": "03490abddaa80987",
       "provenance": [
         "ai-generated",
         "ai-review"
       ]
     },
     "failureFailed": {
-      "source": "f63d09bde0eebad3",
-      "translation": "0fb881f4d0b8dcef",
+      "source": "75913267a1078a81",
+      "translation": "0d39dadcbdf255bb",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -755,14 +747,6 @@
         "ai-review"
       ]
     },
-    "popupOrServer": {
-      "source": "0707e1e71fbde276",
-      "translation": "54689be6bb4858b1",
-      "provenance": [
-        "ai-generated",
-        "ai-review"
-      ]
-    },
     "popupFoundLocal": {
       "source": "2b20ada774beee4b",
       "translation": "d7aaf58785cdb472",
@@ -974,6 +958,14 @@
     "optionsInPage": {
       "source": "e8601dcc2cd4ed38",
       "translation": "ddd867ae24003e3c",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupConnectAgain": {
+      "source": "7da41f1987b1d0bc",
+      "translation": "26e36f0909fa3eb8",
       "provenance": [
         "ai-generated",
         "ai-review"

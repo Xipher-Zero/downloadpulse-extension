@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "取消"
   },
-  "popupStartAgain": {
-    "message": "重新开始"
-  },
-  "popupOrServer": {
-    "message": "或连接到DownloadPulse服务器："
-  },
   "popupConnected": {
     "message": "已连接"
   },
@@ -81,16 +75,16 @@
     "message": "连接已在DownloadPulse中被拒绝。"
   },
   "failureExpired": {
-    "message": "连接请求已过期。请重新开始。"
+    "message": "连接请求已过期。"
   },
   "failurePermission": {
     "message": "浏览器未允许访问该服务器。"
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse已不再接受此浏览器。请重新连接。"
+    "message": "此浏览器的连接已在DownloadPulse中被断开。"
   },
   "failureFailed": {
-    "message": "连接时出错。请重新开始。"
+    "message": "连接时出错。"
   },
   "pairingClientName": {
     "message": "$SYSTEM$上的$BROWSER$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "在网页上显示下载按钮"
+  },
+  "popupConnectAgain": {
+    "message": "重新连接"
   }
 }

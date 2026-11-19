@@ -348,3 +348,48 @@ The selection uses the same capture code as right-click. Right-click itself can'
 - **Master switch:**
   - off hides its options and the page offers no button;
   - on again restores the earlier choices (the video switch, kept off) and the button.
+- **Settings, closed out:**
+  - no blank row under "Sites without download buttons";
+  - no separator below Add site, with a blank row above Notifications instead;
+  - more room around the separator under "Settings";
+  - a little more above "On web pages".
+
+  With the in-page buttons switched off (On web pages is then one line), the separator above Notifications returns. A test checks both states, the room above Notifications, and the subsection title sitting on its hint.
+
+## 22. The toolbar button in the person's theme
+
+The toolbar icon is drawn by the background, no longer only static PNGs (`src/shared/logo-mark.ts`, `src/background/icon.ts`):
+- **Geometry:** DebridPulse's `logo.svg` (its arrow and EKG paths), its square full-bleed inside the outline, as the static icons are.
+- **Colours,** as `ui-logo.css` colours the logo:
+  - **native palettes:** the logo's own (the square white in Light);
+  - **an alternative palette:** its first surface for the square, and its accents for the arrow (purple-bright to their even mix to blue-bright) and the line (purple-bright, blue-bright, blue).
+- **No glow:** it only blurs at 16 px.
+- **Redrawn** when the theme changes, at startup and at install.
+- **The breath** uses the themed mark.
+- **No theme known yet** (not connected, or an older DownloadPulse): the static icons.
+
+**Proof:**
+- **Unit:** the colours for no theme, native Dark, native Light, Nord Light and an unknown palette; `mix`.
+- **Visual:** a render of the four themes at 128, 32 and 16 px.
+- **Not tested:** the browser's toolbar itself, since a test can't read a toolbar icon back.
+
+## 23. The "connecting failed" screen (seen after a revoke)
+
+**Seen:** a revoked browser landed on a screen with left-aligned red text, "Start again", and a remote-server form that didn't belong there.
+
+**Now:** one screen for every failure reason:
+- **The reason as a status:** a centred box in the error colour (border and tint), with Lucide's `circle-x` and the message, semi-bold.
+- **One primary Connect again** (plug glyph), which goes straight into connecting: the search for DownloadPulse on this computer, then the choice step.
+- **The server form is gone:** every connect path already offers a remote server (the choice step's card, or the not-found screen's field).
+
+**Strings:**
+- **Revoked:** now "This browser was disconnected in DownloadPulse."
+- **Expired and failed:** lose their trailing "Start again."
+- **Removed:** `popupStartAgain` and `popupOrServer`, everywhere.
+- **New:** `popupConnectAgain`.
+- **Translation:** four strings in 18 locales, independently reviewed (also against DownloadPulse's own Connected browsers wording); 4 corrected (ja, tr, zh_CN, zh_TW).
+
+**Proof:**
+- **Every failure reason:** shown in the status with its glyph, no form; Connect again leads into connecting.
+- **An older DownloadPulse on this computer:** Connect again, then Remote server, then a named server pairs.
+- **Revoked:** the new message.

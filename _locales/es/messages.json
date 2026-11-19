@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "Cancelar"
   },
-  "popupStartAgain": {
-    "message": "Empezar de nuevo"
-  },
-  "popupOrServer": {
-    "message": "O conéctese a un servidor de DownloadPulse:"
-  },
   "popupConnected": {
     "message": "Conectado"
   },
@@ -81,16 +75,16 @@
     "message": "La conexión se denegó en DownloadPulse."
   },
   "failureExpired": {
-    "message": "La solicitud de conexión caducó. Empiece de nuevo."
+    "message": "La solicitud de conexión caducó."
   },
   "failurePermission": {
     "message": "El navegador no permitió el acceso a ese servidor."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse ya no acepta este navegador. Vuelva a conectarlo."
+    "message": "Este navegador se desconectó en DownloadPulse."
   },
   "failureFailed": {
-    "message": "Algo salió mal al conectar. Empiece de nuevo."
+    "message": "Algo salió mal al conectar."
   },
   "pairingClientName": {
     "message": "$BROWSER$ en $SYSTEM$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "Mostrar un botón de descarga en las páginas web"
+  },
+  "popupConnectAgain": {
+    "message": "Conectar de nuevo"
   }
 }

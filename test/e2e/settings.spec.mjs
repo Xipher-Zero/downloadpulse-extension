@@ -119,6 +119,17 @@ test("the gear opens the settings inside the dropdown, and Back returns", async 
   expect(layout).toMatchObject({backAtEnd: true, titles: ["center", "center", "center"], connection: "Connection:",
     hintCentred: "center", disconnectCentred: true});
   for (const gap of Object.values(layout.rows)) expect(gap).toBeGreaterThanOrEqual(17);
+  // No separator above Notifications, a blank row instead; the subsection title sits on its hint.
+  const tail = await popup.evaluate(() => {
+    const notify = document.querySelector("section[aria-labelledby='notify-title']");
+    const h4 = document.querySelector(".dp-settings h4").getBoundingClientRect();
+    const hint = document.querySelector(".dp-settings h4 + .dp-settings__centred").getBoundingClientRect();
+    return {separator: getComputedStyle(notify).borderTopStyle, room: parseFloat(getComputedStyle(notify).paddingTop),
+      titleToHint: hint.top - h4.bottom};
+  });
+  expect(tail.separator).toBe("none");
+  expect(tail.room).toBeGreaterThanOrEqual(18);
+  expect(tail.titleToHint).toBeLessThan(12);
   await popup.getByRole("button", {name: "Back"}).click();
   await expect(popup.getByRole("button", {name: "Open DownloadPulse"})).toBeVisible();
   await expect(popup.locator("[data-view='settings']")).toBeHidden();
@@ -139,12 +150,16 @@ test("the master switch governs every in-page button; off, what it governs is no
   expect(add.x).toBeGreaterThan(field.x + field.width / 2);
   expect(Math.abs((add.y + add.height / 2) - (field.y + field.height / 2))).toBeLessThanOrEqual(1);
   await popup.getByLabel("Show a download button on video players").uncheck();
+  const separator = () => popup.locator("section[aria-labelledby='notify-title']").evaluate((el) => getComputedStyle(el).borderTopStyle);
+  expect(await separator()).toBe("none");                 // on: Notifications follows without a separator
   await master.uncheck();
   await expect(popup.getByTestId("in-page-options")).toBeHidden();
+  await expect.poll(separator).toBe("solid");             // off: the separator returns
   await expect(popup.getByLabel("Show a download button beside download links")).toBeHidden();
   await page.waitForTimeout(5500);                         // a frame's answer is kept for up to 5 s
   expect(await hoverOffered(page, "#zip")).toBe(0);        // off: nothing offered
   await master.check();
+  await expect.poll(separator).toBe("none");
   await expect(popup.getByLabel("Show a download button on video players")).not.toBeChecked();   // kept
   await expect(popup.getByLabel("Show a download button beside download links")).toBeChecked();
   await page.waitForTimeout(5500);
@@ -203,7 +218,7 @@ test("the dropdown and the settings page are drawn in the person's DownloadPulse
 test("a browser disconnected in DownloadPulse is told so and forgets its token", async () => {
   dp.state.revoked = true;            // as if removed under My Account › Connected browsers
   await popup.reload();               // the open popup polls the list: 401
-  await expect(popup.getByTestId("failure")).toHaveText("DownloadPulse no longer accepts this browser. Connect it again.",
+  await expect(popup.getByTestId("failure")).toHaveText("This browser was disconnected in DownloadPulse.",
     {timeout: 15_000});
 });
 

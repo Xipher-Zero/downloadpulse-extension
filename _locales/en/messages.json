@@ -63,10 +63,6 @@
     "message": "Cancel",
     "description": "Popup button: stop connecting."
   },
-  "popupStartAgain": {
-    "message": "Start again",
-    "description": "Popup button: back to the start after a failure."
-  },
   "popupConnected": {
     "message": "Connected",
     "description": "Popup status: this browser is connected."
@@ -104,20 +100,20 @@
     "description": "Popup error."
   },
   "failureExpired": {
-    "message": "The connection request expired. Start again.",
-    "description": "Popup error."
+    "message": "The connection request expired.",
+    "description": "Popup failure status: the approval in DownloadPulse did not happen in time. A \"Connect again\" button follows."
   },
   "failurePermission": {
     "message": "The browser didn't allow access to that server.",
     "description": "Popup error: the person declined the site access prompt."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse no longer accepts this browser. Connect it again.",
-    "description": "Popup error: the token was refused."
+    "message": "This browser was disconnected in DownloadPulse.",
+    "description": "Popup failure status: this browser's connection was removed in DownloadPulse (under My Account › Connected browsers, or by an Admin). A \"Connect again\" button follows."
   },
   "failureFailed": {
-    "message": "Something went wrong while connecting. Start again.",
-    "description": "Popup error: an unclassified failure."
+    "message": "Something went wrong while connecting.",
+    "description": "Popup failure status: an unexpected error while connecting. A \"Connect again\" button follows."
   },
   "pairingClientName": {
     "message": "$BROWSER$ on $SYSTEM$",
@@ -405,10 +401,6 @@
       }
     }
   },
-  "popupOrServer": {
-    "message": "Or connect to a DownloadPulse server:",
-    "description": "Popup, after a failure: label of the server address field, offered so a failing DownloadPulse on this computer never traps the person."
-  },
   "popupFoundLocal": {
     "message": "DownloadPulse found on this computer",
     "description": "Popup: a status (in a bordered box with a green dot): DownloadPulse was found running on this computer."
@@ -538,5 +530,9 @@
   "optionsInPage": {
     "message": "Display download button on web pages",
     "description": "Settings, On web pages: the master checkbox. Off, the extension shows no download buttons on web pages at all; on, the options below it apply."
+  },
+  "popupConnectAgain": {
+    "message": "Connect again",
+    "description": "Popup failure screen: the primary button (with a plug glyph) that starts connecting again: it looks for DownloadPulse on this computer, then offers this computer or a remote server."
   }
 }

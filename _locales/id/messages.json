@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "Batal"
   },
-  "popupStartAgain": {
-    "message": "Mulai lagi"
-  },
-  "popupOrServer": {
-    "message": "Atau hubungkan ke server DownloadPulse:"
-  },
   "popupConnected": {
     "message": "Terhubung"
   },
@@ -81,16 +75,16 @@
     "message": "Sambungan ditolak di DownloadPulse."
   },
   "failureExpired": {
-    "message": "Permintaan sambungan kedaluwarsa. Mulai lagi."
+    "message": "Permintaan sambungan kedaluwarsa."
   },
   "failurePermission": {
     "message": "Peramban tidak mengizinkan akses ke server itu."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse tidak lagi menerima peramban ini. Hubungkan lagi."
+    "message": "Sambungan peramban ini diputus di DownloadPulse."
   },
   "failureFailed": {
-    "message": "Terjadi kesalahan saat menghubungkan. Mulai lagi."
+    "message": "Terjadi kesalahan saat menghubungkan."
   },
   "pairingClientName": {
     "message": "$BROWSER$ di $SYSTEM$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "Tampilkan tombol unduh di halaman web"
+  },
+  "popupConnectAgain": {
+    "message": "Hubungkan lagi"
   }
 }

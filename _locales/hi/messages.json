@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "रद्द करें"
   },
-  "popupStartAgain": {
-    "message": "फिर से शुरू करें"
-  },
-  "popupOrServer": {
-    "message": "या किसी DownloadPulse सर्वर से कनेक्ट करें:"
-  },
   "popupConnected": {
     "message": "कनेक्ट है"
   },
@@ -81,16 +75,16 @@
     "message": "DownloadPulse में कनेक्शन अस्वीकार कर दिया गया।"
   },
   "failureExpired": {
-    "message": "कनेक्शन अनुरोध की समय-सीमा समाप्त हो गई। फिर से शुरू करें।"
+    "message": "कनेक्शन अनुरोध की समय-सीमा समाप्त हो गई।"
   },
   "failurePermission": {
     "message": "ब्राउज़र ने उस सर्वर तक पहुँच की अनुमति नहीं दी।"
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse अब इस ब्राउज़र को स्वीकार नहीं करता। इसे फिर से कनेक्ट करें।"
+    "message": "इस ब्राउज़र को DownloadPulse में डिस्कनेक्ट कर दिया गया।"
   },
   "failureFailed": {
-    "message": "कनेक्ट करते समय कुछ गलत हो गया। फिर से शुरू करें।"
+    "message": "कनेक्ट करते समय कुछ गलत हो गया।"
   },
   "pairingClientName": {
     "message": "$SYSTEM$ पर $BROWSER$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "वेब पेजों पर डाउनलोड बटन दिखाएँ"
+  },
+  "popupConnectAgain": {
+    "message": "फिर से कनेक्ट करें"
   }
 }

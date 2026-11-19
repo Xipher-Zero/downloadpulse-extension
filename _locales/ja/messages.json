@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "キャンセル"
   },
-  "popupStartAgain": {
-    "message": "最初からやり直す"
-  },
-  "popupOrServer": {
-    "message": "または DownloadPulse サーバーに接続："
-  },
   "popupConnected": {
     "message": "接続済み"
   },
@@ -81,16 +75,16 @@
     "message": "DownloadPulse で接続が拒否されました。"
   },
   "failureExpired": {
-    "message": "接続要求の有効期限が切れました。最初からやり直してください。"
+    "message": "接続要求の有効期限が切れました。"
   },
   "failurePermission": {
     "message": "ブラウザーがそのサーバーへのアクセスを許可しませんでした。"
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse はこのブラウザーを受け付けなくなりました。もう一度接続してください。"
+    "message": "DownloadPulse でこのブラウザーの接続が解除されました。"
   },
   "failureFailed": {
-    "message": "接続中に問題が発生しました。最初からやり直してください。"
+    "message": "接続中に問題が発生しました。"
   },
   "pairingClientName": {
     "message": "$BROWSER$（$SYSTEM$）",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "ウェブページ上にダウンロードボタンを表示"
+  },
+  "popupConnectAgain": {
+    "message": "もう一度接続"
   }
 }

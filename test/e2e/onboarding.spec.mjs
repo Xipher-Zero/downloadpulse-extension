@@ -237,7 +237,7 @@ test("nothing on this computer: Check again, then a named server", async () => {
 
 for (const [mode, answer, text] of [
   ["current", "denied", "The connection was denied in DownloadPulse."],
-  ["current", "expired", "The connection request expired. Start again."],
+  ["current", "expired", "The connection request expired."],
   ["too-old", null, "This DownloadPulse is too old to connect browsers. Update it, then connect again."],
   ["forbidden-origin", null, "This DownloadPulse is too old to connect browsers. Update it, then connect again."],
   ["wrong-protocol", "approved", "This DownloadPulse is too old to connect browsers. Update it, then connect again."],
@@ -255,8 +255,11 @@ for (const [mode, answer, text] of [
         fake.answer(answer);
       }
       await expect(popup.getByTestId("failure")).toHaveText(text, {timeout: 15_000});
-      await popup.getByRole("button", {name: "Start again"}).click();
-      await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
+      // The reason as a status, and one way on: Connect again, straight into connecting (no server form here).
+      await expect(popup.locator('section[data-state="failed"] input')).toHaveCount(0);
+      await expect(popup.locator(".dp-failed__status svg[data-glyph='circleX']")).toHaveCount(1);
+      await popup.getByRole("button", {name: "Connect again"}).click();
+      await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();   // nothing on this computer here
     } finally {
       await close();
       await fake.close();
@@ -264,7 +267,7 @@ for (const [mode, answer, text] of [
   });
 }
 
-test("an older DownloadPulse on this computer says so, and a server can still be chosen from there", async () => {
+test("an older DownloadPulse on this computer says so; Connect again offers a remote server", async () => {
   const old = await fakeDownloadPulse({port: 8095, mode: "forbidden-origin"});
   const current = await fakeDownloadPulse();
   const {popup, close} = await launch();
@@ -272,8 +275,10 @@ test("an older DownloadPulse on this computer says so, and a server can still be
     await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
     await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("failure")).toHaveText("This DownloadPulse is too old to connect browsers. Update it, then connect again.");
-    await popup.getByLabel("Or connect to a DownloadPulse server:").fill(`http://localhost:${current.port}`);
-    await popup.locator('section[data-state="failed"]').getByRole("button", {name: "Connect to this server"}).click();
+    await popup.getByRole("button", {name: "Connect again"}).click();
+    await popup.getByRole("radio", {name: /^Remote server/}).click();
+    await popup.getByLabel("Server address").filter({visible: true}).fill(`http://localhost:${current.port}`);
+    await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     current.answer("approved");
     // localhost, on any port, is this computer: named so; the connection is that server's own.

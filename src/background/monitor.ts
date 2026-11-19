@@ -10,6 +10,7 @@ import {connection, forgetConnection, token} from "../shared/connection";
 import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
 import {listJobs, ServerError, type Job} from "../shared/server";
+import {restIcon, themedIcon} from "./icon";
 
 const JOBS = "jobs";
 const REACH = "reach";   // whether the last look reached DownloadPulse: {ok, at}
@@ -64,8 +65,10 @@ export function breath(frame: number): number {
   return LOWEST + (1 - LOWEST) * (0.5 + 0.5 * Math.cos(2 * Math.PI * (frame % FRAMES) / FRAMES));
 }
 
-/** One frame of the breath at ``size`` px. */
+/** One frame of the breath at ``size`` px: the themed mark, else the static icon. */
 export async function activityFrame(frame: number, size: number): Promise<ImageData> {
+  const themed = await themedIcon(size, breath(frame));
+  if (themed) return themed;
   const canvas = new OffscreenCanvas(size, size);
   const context = canvas.getContext("2d")!;
   context.globalAlpha = breath(frame);
@@ -78,7 +81,7 @@ async function drawRing(frame: number): Promise<void> {
 }
 
 async function restoreIcon(): Promise<void> {
-  await chrome.action.setIcon({path: {16: "icons/icon-16.png", 32: "icons/icon-32.png"}});
+  await restIcon();
 }
 
 function jobName(job: Job): string {

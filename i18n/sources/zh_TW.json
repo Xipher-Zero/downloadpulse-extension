@@ -15,8 +15,6 @@
   "popupCode": "5f09e1f74a6d298c",
   "popupCodeHint": "da9f6305f6243d8d",
   "popupCancel": "19766ed6ccb2f4a3",
-  "popupStartAgain": "962e64b761961fe0",
-  "popupOrServer": "0707e1e71fbde276",
   "popupConnected": "22965568d22a14ee",
   "popupServer": "aef7de28d52977f1",
   "popupAccount": "7e1b0d5641f2640c",
@@ -26,10 +24,10 @@
   "failureNotDownloadPulse": "aa1f04ffb8e547c8",
   "failureTooOld": "ea461312d64e96fa",
   "failureDenied": "f6f52e533f66ec81",
-  "failureExpired": "023f7ebb68e885b0",
+  "failureExpired": "d92133d389c8cbb6",
   "failurePermission": "685628f701e99310",
-  "failureUnauthorized": "10fd33673597ab06",
-  "failureFailed": "f63d09bde0eebad3",
+  "failureUnauthorized": "37e618cd20ba5122",
+  "failureFailed": "75913267a1078a81",
   "pairingClientName": "e73f61e082abcd28",
   "menuSend": "17bd28b114e1a60b",
   "hoverSend": "17bd28b114e1a60b",
@@ -119,5 +117,6 @@
   "foundIntro": "ca8255ce1e68bb1d",
   "localApproveHint": "e0793e3d88496145",
   "remoteAddressHint": "96659337e86ad292",
-  "optionsInPage": "e8601dcc2cd4ed38"
+  "optionsInPage": "e8601dcc2cd4ed38",
+  "popupConnectAgain": "7da41f1987b1d0bc"
 }

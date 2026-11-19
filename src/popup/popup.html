@@ -95,15 +95,16 @@
       <button type="button" class="dp-btn" data-action="cancel" data-i18n="popupCancel"></button>
     </section>
 
-    <section data-state="failed" hidden>
-      <p class="dp-popup__error" role="alert" data-testid="failure"></p>
-      <button type="button" class="dp-btn" data-action="cancel" data-i18n="popupStartAgain"></button>
-      <form class="dp-popup__remote" data-action="connect-remote">
-        <label class="dp-popup__label" for="server-again" data-i18n="popupOrServer"></label>
-        <input id="server-again" name="server" type="text" autocomplete="url" spellcheck="false" required
-               data-i18n-placeholder="popupServerPlaceholder">
-        <button type="submit" class="dp-btn dp-btn--primary" data-i18n="popupConnectServer"></button>
-      </form>
+    <!-- Connecting failed, for whichever reason: the reason as a status, and one way
+         on -- connecting again, which offers this computer and a remote server. -->
+    <section data-state="failed" class="dp-failed" hidden>
+      <div class="dp-failed__status" role="alert">
+        <span class="dp-failed__glyph" data-glyph-slot="circleX"></span>
+        <p class="dp-failed__text" data-testid="failure"></p>
+      </div>
+      <button type="button" class="dp-btn dp-btn--primary dp-failed__again" data-action="connect-local">
+        <span class="dp-failed__plug" data-glyph-slot="plug"></span><span data-i18n="popupConnectAgain"></span>
+      </button>
     </section>
 
     <section data-state="connected" hidden>

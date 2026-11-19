@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "取消"
   },
-  "popupStartAgain": {
-    "message": "重新開始"
-  },
-  "popupOrServer": {
-    "message": "或連線到DownloadPulse伺服器："
-  },
   "popupConnected": {
     "message": "已連線"
   },
@@ -81,16 +75,16 @@
     "message": "連線已在DownloadPulse中被拒絕。"
   },
   "failureExpired": {
-    "message": "連線要求已過期。請重新開始。"
+    "message": "連線要求已過期。"
   },
   "failurePermission": {
     "message": "瀏覽器未允許存取該伺服器。"
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse已不再接受此瀏覽器。請重新連線。"
+    "message": "此瀏覽器的連線已在DownloadPulse中被中斷。"
   },
   "failureFailed": {
-    "message": "連線時發生錯誤。請重新開始。"
+    "message": "連線時發生錯誤。"
   },
   "pairingClientName": {
     "message": "$SYSTEM$上的$BROWSER$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "在網頁上顯示下載按鈕"
+  },
+  "popupConnectAgain": {
+    "message": "重新連線"
   }
 }

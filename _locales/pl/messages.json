@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "Anuluj"
   },
-  "popupStartAgain": {
-    "message": "Zacznij od nowa"
-  },
-  "popupOrServer": {
-    "message": "Albo połącz się z serwerem DownloadPulse:"
-  },
   "popupConnected": {
     "message": "Połączono"
   },
@@ -81,16 +75,16 @@
     "message": "Połączenie zostało odrzucone w DownloadPulse."
   },
   "failureExpired": {
-    "message": "Żądanie połączenia wygasło. Należy zacząć od nowa."
+    "message": "Żądanie połączenia wygasło."
   },
   "failurePermission": {
     "message": "Przeglądarka nie zezwoliła na dostęp do tego serwera."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse nie akceptuje już tej przeglądarki. Należy połączyć ją ponownie."
+    "message": "Ta przeglądarka została rozłączona w DownloadPulse."
   },
   "failureFailed": {
-    "message": "Podczas łączenia coś poszło nie tak. Należy zacząć od nowa."
+    "message": "Podczas łączenia coś poszło nie tak."
   },
   "pairingClientName": {
     "message": "$BROWSER$ w systemie $SYSTEM$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "Pokazuj przycisk pobierania na stronach internetowych"
+  },
+  "popupConnectAgain": {
+    "message": "Połącz ponownie"
   }
 }

@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "Annuleren"
   },
-  "popupStartAgain": {
-    "message": "Opnieuw beginnen"
-  },
-  "popupOrServer": {
-    "message": "Of maak verbinding met een DownloadPulse-server:"
-  },
   "popupConnected": {
     "message": "Verbonden"
   },
@@ -81,16 +75,16 @@
     "message": "De verbinding is in DownloadPulse geweigerd."
   },
   "failureExpired": {
-    "message": "Het verbindingsverzoek is verlopen. Begin opnieuw."
+    "message": "Het verbindingsverzoek is verlopen."
   },
   "failurePermission": {
     "message": "De browser heeft geen toegang tot die server toegestaan."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse accepteert deze browser niet meer. Verbind hem opnieuw."
+    "message": "Deze browser is losgekoppeld in DownloadPulse."
   },
   "failureFailed": {
-    "message": "Er ging iets mis bij het verbinden. Begin opnieuw."
+    "message": "Er ging iets mis bij het verbinden."
   },
   "pairingClientName": {
     "message": "$BROWSER$ op $SYSTEM$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "Een downloadknop op webpagina's tonen"
+  },
+  "popupConnectAgain": {
+    "message": "Opnieuw verbinden"
   }
 }

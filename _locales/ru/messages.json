@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "Отменить"
   },
-  "popupStartAgain": {
-    "message": "Начать заново"
-  },
-  "popupOrServer": {
-    "message": "Или подключитесь к серверу DownloadPulse:"
-  },
   "popupConnected": {
     "message": "Подключено"
   },
@@ -81,16 +75,16 @@
     "message": "Подключение отклонено в DownloadPulse."
   },
   "failureExpired": {
-    "message": "Срок действия запроса на подключение истёк. Начните заново."
+    "message": "Срок действия запроса на подключение истёк."
   },
   "failurePermission": {
     "message": "Браузер не разрешил доступ к этому серверу."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse больше не принимает этот браузер. Подключите его снова."
+    "message": "Этот браузер был отключён в DownloadPulse."
   },
   "failureFailed": {
-    "message": "При подключении что-то пошло не так. Начните заново."
+    "message": "При подключении что-то пошло не так."
   },
   "pairingClientName": {
     "message": "$BROWSER$ на $SYSTEM$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "Показывать кнопку загрузки на веб-страницах"
+  },
+  "popupConnectAgain": {
+    "message": "Подключиться снова"
   }
 }

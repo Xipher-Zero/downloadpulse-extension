@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "إلغاء"
   },
-  "popupStartAgain": {
-    "message": "البدء من جديد"
-  },
-  "popupOrServer": {
-    "message": "أو اربط المتصفح بخادم DownloadPulse:"
-  },
   "popupConnected": {
     "message": "مرتبط"
   },
@@ -81,16 +75,16 @@
     "message": "رُفض الربط في DownloadPulse."
   },
   "failureExpired": {
-    "message": "انتهت صلاحية طلب الربط. ابدأ من جديد."
+    "message": "انتهت صلاحية طلب الربط."
   },
   "failurePermission": {
     "message": "لم يسمح المتصفح بالوصول إلى ذلك الخادم."
   },
   "failureUnauthorized": {
-    "message": "لم يعد DownloadPulse يقبل هذا المتصفح. اربطه مرة أخرى."
+    "message": "تم إلغاء ربط هذا المتصفح في DownloadPulse."
   },
   "failureFailed": {
-    "message": "حدث خطأ أثناء الربط. ابدأ من جديد."
+    "message": "حدث خطأ أثناء الربط."
   },
   "pairingClientName": {
     "message": "$BROWSER$ على $SYSTEM$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "إظهار زر تنزيل على صفحات الويب"
+  },
+  "popupConnectAgain": {
+    "message": "ربط مرة أخرى"
   }
 }

@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "Abbrechen"
   },
-  "popupStartAgain": {
-    "message": "Neu beginnen"
-  },
-  "popupOrServer": {
-    "message": "Oder verbinden Sie sich mit einem DownloadPulse-Server:"
-  },
   "popupConnected": {
     "message": "Verbunden"
   },
@@ -81,16 +75,16 @@
     "message": "Die Verbindung wurde in DownloadPulse abgelehnt."
   },
   "failureExpired": {
-    "message": "Die Verbindungsanfrage ist abgelaufen. Beginnen Sie neu."
+    "message": "Die Verbindungsanfrage ist abgelaufen."
   },
   "failurePermission": {
     "message": "Der Browser hat den Zugriff auf diesen Server nicht erlaubt."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse akzeptiert diesen Browser nicht mehr. Verbinden Sie ihn erneut."
+    "message": "Dieser Browser wurde in DownloadPulse getrennt."
   },
   "failureFailed": {
-    "message": "Beim Verbinden ist ein Fehler aufgetreten. Beginnen Sie neu."
+    "message": "Beim Verbinden ist ein Fehler aufgetreten."
   },
   "pairingClientName": {
     "message": "$BROWSER$ unter $SYSTEM$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "Download-Schaltfläche auf Webseiten anzeigen"
+  },
+  "popupConnectAgain": {
+    "message": "Erneut verbinden"
   }
 }

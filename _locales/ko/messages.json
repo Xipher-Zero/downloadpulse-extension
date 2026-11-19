@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "취소"
   },
-  "popupStartAgain": {
-    "message": "처음부터 다시"
-  },
-  "popupOrServer": {
-    "message": "또는 DownloadPulse 서버에 연결:"
-  },
   "popupConnected": {
     "message": "연결됨"
   },
@@ -81,16 +75,16 @@
     "message": "DownloadPulse에서 연결이 거부되었습니다."
   },
   "failureExpired": {
-    "message": "연결 요청이 만료되었습니다. 처음부터 다시 시작하세요."
+    "message": "연결 요청이 만료되었습니다."
   },
   "failurePermission": {
     "message": "브라우저가 해당 서버에 대한 액세스를 허용하지 않았습니다."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse가 더 이상 이 브라우저를 허용하지 않습니다. 다시 연결하세요."
+    "message": "이 브라우저는 DownloadPulse에서 연결이 해제되었습니다."
   },
   "failureFailed": {
-    "message": "연결하는 중에 문제가 발생했습니다. 처음부터 다시 시작하세요."
+    "message": "연결하는 중에 문제가 발생했습니다."
   },
   "pairingClientName": {
     "message": "$BROWSER$($SYSTEM$)",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "웹 페이지에 다운로드 버튼 표시"
+  },
+  "popupConnectAgain": {
+    "message": "다시 연결"
   }
 }

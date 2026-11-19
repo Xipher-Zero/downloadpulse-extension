@@ -259,6 +259,17 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
    literal UI values; its state token, which every palette keeps in its mode's value. */
 .dp-literal { color: var(--dp-literal, var(--dp-state-caution)); font-weight: 600; white-space: nowrap; }
 
+/* ── connecting failed: the reason as a status (as "found on this computer" is), in the error colour ── */
+.dp-failed__status { display: grid; justify-items: center; gap: 8px; padding: 14px 12px;
+  border: 1px solid color-mix(in srgb, var(--dp-state-error) 40%, var(--dp-border-default)); border-radius: 8px;
+  background: color-mix(in srgb, var(--dp-state-error) 8%, var(--dp-surface-1)); color: var(--dp-state-error); text-align: center; }
+.dp-failed__glyph { display: contents; }
+.dp-failed__status svg { inline-size: 26px; block-size: 26px; }
+.dp-failed__text { margin: 0; font-weight: 600; }
+.dp-failed__again { margin-block-start: 6px; }
+.dp-failed__plug { display: contents; }
+.dp-failed__again svg { inline-size: 16px; block-size: 16px; }
+
 /* ── choosing what to connect to: DownloadPulse's wizard choice cards ── */
 .dp-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .dp-choice {
@@ -325,11 +336,20 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 
 /* ── settings ── */
 .dp-settings { gap: 14px; }
-.dp-settings__title { margin: 0; font-size: 14px; font-weight: 650; text-align: center; }
+/* "Settings", room, its separator (the Connection group's edge), room. */
+.dp-settings__title { margin: 4px 0 6px; font-size: 14px; font-weight: 650; text-align: center; }
+.dp-settings__group[aria-labelledby="connection-title"] { padding-top: 16px; }
+/* On web pages: a little more room under its separator. */
+.dp-settings__group[aria-labelledby="page-title"] { padding-top: 16px; }
+/* Notifications follows On web pages with room and no separator (operator, 2026-11-18). */
+.dp-settings__group[aria-labelledby="notify-title"] { border-top: 0; padding-top: var(--dp-row); }
+/* ...except with the in-page buttons switched off: On web pages is then one line, and the separator returns. */
+.dp-settings__group[aria-labelledby="page-title"]:has([data-testid="in-page-options"][hidden])
+  + .dp-settings__group[aria-labelledby="notify-title"] { border-top: 1px solid var(--dp-border-default); padding-top: 16px; }
 .dp-settings__group { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--dp-border-default); }
 /* Section titles centred; a subsection's smaller, in the secondary colour, a blank row either side. */
 .dp-settings h3 { margin: 0; font-size: 13px; font-weight: 650; text-align: center; }
-.dp-settings h4 { margin: var(--dp-row) 0; font-size: 12px; font-weight: 600; color: var(--dp-text-secondary); text-align: center; }
+.dp-settings h4 { margin: var(--dp-row) 0 0; font-size: 12px; font-weight: 600; color: var(--dp-text-secondary); text-align: center; }
 .dp-settings__centred { margin: 0; text-align: center; color: var(--dp-text-muted); font-size: 12px; }
 /* Connection: its details, a row, the Disconnect hint, a row, Disconnect, a row, then the separator. */
 .dp-settings__connection { display: grid; gap: var(--dp-row); margin-block-end: var(--dp-row); }

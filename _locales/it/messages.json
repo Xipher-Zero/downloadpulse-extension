@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "Annulla"
   },
-  "popupStartAgain": {
-    "message": "Ricomincia"
-  },
-  "popupOrServer": {
-    "message": "Oppure connettersi a un server DownloadPulse:"
-  },
   "popupConnected": {
     "message": "Connesso"
   },
@@ -81,16 +75,16 @@
     "message": "La connessione è stata rifiutata in DownloadPulse."
   },
   "failureExpired": {
-    "message": "La richiesta di connessione è scaduta. Ricominciare."
+    "message": "La richiesta di connessione è scaduta."
   },
   "failurePermission": {
     "message": "Il browser non ha consentito l'accesso a quel server."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse non accetta più questo browser. Connetterlo di nuovo."
+    "message": "Questo browser è stato disconnesso in DownloadPulse."
   },
   "failureFailed": {
-    "message": "Si è verificato un errore durante la connessione. Ricominciare."
+    "message": "Si è verificato un errore durante la connessione."
   },
   "pairingClientName": {
     "message": "$BROWSER$ su $SYSTEM$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "Mostra un pulsante di download nelle pagine web"
+  },
+  "popupConnectAgain": {
+    "message": "Connetti di nuovo"
   }
 }

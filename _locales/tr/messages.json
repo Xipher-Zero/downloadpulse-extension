@@ -47,12 +47,6 @@
   "popupCancel": {
     "message": "İptal"
   },
-  "popupStartAgain": {
-    "message": "Baştan başla"
-  },
-  "popupOrServer": {
-    "message": "Ya da bir DownloadPulse sunucusuna bağlanın:"
-  },
   "popupConnected": {
     "message": "Bağlı"
   },
@@ -81,16 +75,16 @@
     "message": "Bağlantı DownloadPulse'ta reddedildi."
   },
   "failureExpired": {
-    "message": "Bağlantı isteğinin süresi doldu. Baştan başlayın."
+    "message": "Bağlantı isteğinin süresi doldu."
   },
   "failurePermission": {
     "message": "Tarayıcı bu sunucuya erişime izin vermedi."
   },
   "failureUnauthorized": {
-    "message": "DownloadPulse artık bu tarayıcıyı kabul etmiyor. Yeniden bağlayın."
+    "message": "Bu tarayıcının bağlantısı DownloadPulse'ta kesildi."
   },
   "failureFailed": {
-    "message": "Bağlanırken bir sorun oluştu. Baştan başlayın."
+    "message": "Bağlanırken bir sorun oluştu."
   },
   "pairingClientName": {
     "message": "$SYSTEM$ üzerinde $BROWSER$",
@@ -417,5 +411,8 @@
   },
   "optionsInPage": {
     "message": "Web sayfalarında bir indirme düğmesi göster"
+  },
+  "popupConnectAgain": {
+    "message": "Yeniden bağlan"
   }
 }
