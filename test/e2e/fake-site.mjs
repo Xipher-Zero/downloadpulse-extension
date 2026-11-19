@@ -27,6 +27,10 @@ export async function fakeSite() {
         <p><a id="login" href="/files/needs-login.torrent">needs-login.torrent</a></p>
         <p id="text">Mirror: https://203.0.113.20/releases/disc.iso today</p>
         <video id="video" width="320" height="180" style="background:#000"></video>
+        <button id="full" onclick="document.querySelector('#video').requestFullscreen()">Fullscreen</button>
+        <p><a id="thumb" href="/watch?v=inside"><video width="160" height="90" style="background:#222"></video></a></p>
+        <div id="overlaid" style="position:relative;width:160px;height:90px"><video width="160" height="90" style="background:#333"></video>
+          <a href="/watch?v=over" style="position:absolute;inset:0;z-index:1"></a></div>
         <div id="live" style="font:14px monospace">https://1fichier.com/?j93yc0n4g08jsox2nipk<br>https://rapidgator.net/file/119ce5/GF161126-HITC-RN.rar.html<br>https://gofile.io/d/AM5Js2xh</div>
         <textarea id="box" rows="3" cols="60">https://pixeldrain.com/u/a4J8buzm
 https://send.now/ijn6gxxf9bj8</textarea>

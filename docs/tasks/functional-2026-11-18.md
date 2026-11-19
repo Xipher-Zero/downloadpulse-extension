@@ -152,3 +152,43 @@ The full suite (46 cases), the Firefox smoke install, lint and locales pass.
 - **Moving off a link** leaves no extension element in the page.
 - **On the real Forgejo page at 1936 px:** on the glyph and on the name it's shown; along the row, and after a jump away, no element is left in the page.
 - **Full suite** (48 cases), the Firefox smoke install, lint and locales pass.
+
+## 12. The video button covered the picture
+
+**Seen:** on YouTube the button sat inside the video's top-right corner and covered part of it while not fullscreen.
+
+**Fix:**
+- **Outside the frame:** the button stands a GAP (8 px) to the right of the frame's top corner.
+- **Not drawn fullscreen:** if a video goes fullscreen while it's shown, it's withdrawn at once.
+- **Not drawn without room** to the right of the frame (a frame spanning the window), where it could only cover the video.
+- **Reachable:** the pointer crossing the gap to the button counts as still on the video.
+- **Follows the frame:** like the other in-page buttons it's withdrawn if the frame moves under it.
+
+**Proof:**
+- the button sits 8 px right of the frame's top corner and stays while the pointer crosses to it;
+- fullscreen, no extension element is in the page;
+- with a frame spanning the window, none either.
+
+Full suite passes.
+
+## 13. Two buttons at once: a selection's batch button and a link's
+
+**Seen:** with links selected (the batch button up), hovering one of them added the single-link button beside it.
+
+**Fix:**
+- while the batch button is shown it's the only offer: no single-link button is created or put into the page;
+- when it appears, any single-link or video button is withdrawn;
+- once the selection is gone, hovering offers links again.
+
+**Proof:** rows of `.rar` links selected; hovering one of them leaves exactly the batch button, where it was. Without the suppression, this fails.
+- The content script's `hide` is renamed `withdraw` (and `hidePointerSurfaces` to `withdrawPointerSurfaces`): it takes a layer out of the page, and the old name invited the "hidden but present" misreading (operator). The test asserts the batch button is the only extension element in the page.
+
+## 14. Video previews were offered as downloads
+
+**Seen:** on YouTube's home page the video button appeared on a thumbnail's inline preview. Sending would have sent the home page's address, which is no video.
+
+**Fix:**
+- **A video is a preview, and gets no video button,** when it sits inside a link, or when the pointer over it is on a link to another page. YouTube's previews lie under their thumbnail's link.
+- **Firefox's URL-bar icon** (shown when a page has a video) now counts only a video that is shown, player-sized (at least 320×180) and not inside a link.
+
+**Proof:** a video inside a link, and a video under a link's overlay, put no extension element in the page; the page's own video still gets its button. Without the rule, this fails. Full suite passes.

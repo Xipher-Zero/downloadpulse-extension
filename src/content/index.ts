@@ -59,7 +59,7 @@ const STYLE = `
   .toast { font: 13px/1.35 system-ui, sans-serif; padding: 8px 12px; border-radius: 8px; max-width: 320px;
     color: var(--dp-text); background: var(--dp-surface); border: 1px solid var(--dp-border);
     border-inline-start: 4px solid var(--dp-success); box-shadow: 0 4px 16px rgba(0,0,0,.3); cursor: pointer;
-    /* It leaves on its own even if a page keeps its layer from being hidden. */
+    /* It fades out as it is withdrawn from the page (TOAST_MS + 300 ms: removed). */
     animation: dp-toast-leave .3s ease ${TOAST_MS}ms forwards; }
   @keyframes dp-toast-leave { to { opacity: 0; visibility: hidden; } }
   .toast.error { border-inline-start-color: var(--dp-error); }`;
@@ -135,8 +135,8 @@ function reveal(target: Layer): void {
   }
 }
 
-/** Withdraw a layer: out of the page entirely (operator, 2026-11-18), not left there hidden. */
-function hide(target: Layer | null): void {
+/** Withdraw a layer: out of the page entirely (operator, 2026-11-18), never left there hidden. */
+function withdraw(target: Layer | null): void {
   if (!target) return;
   target.shown = false;
   try {
@@ -258,7 +258,7 @@ function candidateAt(event: Pointer): Found | null {
 function showHover(found: Found): void {
   hover ??= sendButton(message("hoverSend"), () => {
     void chrome.runtime.sendMessage({type: "dp-send", url: hoverUrl});
-    hide(hover);
+    withdraw(hover);
   });
   hoverUrl = found.url;
   hoverRect = found.rect;
@@ -279,7 +279,7 @@ function scheduleHide(event: Pointer): void {
     hideTimer = 0;
     return;
   }
-  if (!hideTimer) hideTimer = window.setTimeout(() => { hide(hover); hoverRect = null; hideTimer = 0; }, HIDE_DELAY_MS);
+  if (!hideTimer) hideTimer = window.setTimeout(() => { withdraw(hover); hoverRect = null; hideTimer = 0; }, HIDE_DELAY_MS);
 }
 
 // ── the video button (B4; spike S3's detector) ─────────────────────────────
@@ -313,14 +313,51 @@ function announceVideo(): void {
   void chrome.runtime.sendMessage({type: "dp-has-video"});
 }
 
+/**
+ * A preview, not this page's video (operator, 2026-11-18: YouTube's home page
+ * plays thumbnails inline): it sits inside a link, or the pointer over it is on
+ * a link to another page. The video belongs to that link; this page's address
+ * -- what the button sends -- is not it.
+ */
+function isPreview(element: HTMLVideoElement, event: Pointer): boolean {
+  const here = location.href.split("#")[0];
+  const elsewhere = (node: EventTarget | Element | null) => node instanceof HTMLAnchorElement && Boolean(node.href)
+    && node.href.split("#")[0] !== here;
+  if (elsewhere(element.closest("a[href]"))) return true;
+  return event.path.some(elsewhere);
+}
+
+let videoBox: DOMRect | null = null;            // the frame the button stands beside
+let videoElement: HTMLVideoElement | null = null;
+
+/**
+ * The video button stands outside the frame, a GAP to the right of its top
+ * corner (operator, 2026-11-18: inside, it covered the picture). Fullscreen, or
+ * with no room to the right of the frame, it is not drawn at all.
+ */
 function showVideo(element: HTMLVideoElement): void {
+  const rect = element.getBoundingClientRect();
+  const left = rect.right + GAP;
+  if (document.fullscreenElement || left + BUTTON > innerWidth - 2) {
+    withdraw(video);
+    return;
+  }
   video ??= sendButton(message("videoSend"), () => {
     // The frame's own address: the embed, or the page itself (S3).
     void chrome.runtime.sendMessage({type: "dp-send", url: location.href});
-    hide(video);
+    withdraw(video);
   });
-  const rect = element.getBoundingClientRect();
-  place(video, rect.right - BUTTON - 10, rect.top + 10);
+  videoBox = rect;
+  videoElement = element;
+  place(video, left, Math.max(rect.top, 2));
+  watch();
+}
+
+/** Still with the video: on its frame, or crossing the gap to its button. */
+function nearVideo(event: Pointer): boolean {
+  if (!videoBox || !video?.shown) return false;
+  return event.clientX >= videoBox.left && event.clientX <= videoBox.right + GAP + BUTTON + SLACK
+    && event.clientY >= videoBox.top - SLACK && event.clientY <= videoBox.bottom + SLACK;
 }
 
 // ── pointer tracking ───────────────────────────────────────────────────────
@@ -329,11 +366,12 @@ let pending: Pointer | null = null;
 
 async function track(event: Pointer): Promise<void> {
   const may = await mayOffer();
-  if (!may.hover) hide(hover);
-  if (!may.video) hide(video);
+  if (!may.hover) withdraw(hover);
+  if (!may.video) withdraw(video);
   if (!may.hover && !may.video) return;
   if (overHover(event) || (video && event.path.includes(video.host))) return;
-  const found = may.hover ? candidateAt(event) : null;
+  // A selection's batch button is up: it is the one offer, no single link's beside it (operator, 2026-11-18).
+  const found = may.hover && !batch?.shown ? candidateAt(event) : null;
   if (found) {
     clearTimeout(hideTimer);
     hideTimer = 0;
@@ -341,14 +379,17 @@ async function track(event: Pointer): Promise<void> {
   } else {
     scheduleHide(event);
   }
-  const element = may.video ? videoAt(document, event.clientX, event.clientY) : null;
+  const under = may.video ? videoAt(document, event.clientX, event.clientY) : null;
+  const element = under && !isPreview(under, event) ? under : null;
   if (element) {
     announceVideo();
     showVideo(element);
-  } else {
-    hide(video);
+  } else if (!nearVideo(event)) {
+    withdraw(video);
   }
 }
+
+document.addEventListener("fullscreenchange", () => { if (document.fullscreenElement) withdraw(video); });
 
 document.addEventListener("pointermove", (event) => {
   if (!pending) requestAnimationFrame(() => {
@@ -362,18 +403,18 @@ document.addEventListener("pointermove", (event) => {
 // The icons follow the pointer; where it can no longer be followed -- the page
 // scrolls under them, the pointer leaves the page or enters a frame, the
 // window or tab goes away -- they go (operator, 2026-11-18).
-function hidePointerSurfaces(): void {
-  hide(hover);
+function withdrawPointerSurfaces(): void {
+  withdraw(hover);
   hoverRect = null;
   hoverAnchor = null;
-  hide(video);
+  withdraw(video);
   clearTimeout(hideTimer);
   hideTimer = 0;
 }
-addEventListener("scroll", hidePointerSurfaces, {passive: true, capture: true});
-document.addEventListener("pointerout", (event) => { if (!event.relatedTarget) hidePointerSurfaces(); }, {passive: true});
-addEventListener("blur", () => { hidePointerSurfaces(); hide(batch); });
-document.addEventListener("visibilitychange", () => { if (document.hidden) { hidePointerSurfaces(); hide(batch); } });
+addEventListener("scroll", withdrawPointerSurfaces, {passive: true, capture: true});
+document.addEventListener("pointerout", (event) => { if (!event.relatedTarget) withdrawPointerSurfaces(); }, {passive: true});
+addEventListener("blur", () => { withdrawPointerSurfaces(); withdraw(batch); });
+document.addEventListener("visibilitychange", () => { if (document.hidden) { withdrawPointerSurfaces(); withdraw(batch); } });
 
 // ── a selection of links (operator, 2026-11-18) ────────────────────────────
 // Selected text holding links gets a send button at its end, with their count:
@@ -439,14 +480,15 @@ async function offerSelection(): Promise<void> {
   const urls = found ? extractUrls(found.text) : [];
   const worth = urls.length >= 2 || urls.some((url) => /^magnet:\?/i.test(url) || isDownloadCandidate(url));
   if (!found || !worth) {
-    hide(batch);
+    withdraw(batch);
     return;
   }
   batch ??= sendButton(message("selectionSend"), () => {
     void chrome.runtime.sendMessage({type: "dp-send-selection", text: batchText});
-    hide(batch);
+    withdraw(batch);
   });
   batchText = found.text;
+  withdrawPointerSurfaces();   // the batch button stands alone
   const button = batch.root.querySelector("button")!;
   button.classList.add("batch");
   let count = button.querySelector(".count");
@@ -477,7 +519,7 @@ document.addEventListener("keyup", selectionChanged, {passive: true, capture: tr
 // once, and comes back where the selection's end now is once scrolling settles.
 let scrollTimer = 0;
 addEventListener("scroll", () => {
-  hide(batch);
+  withdraw(batch);
   clearTimeout(scrollTimer);
   scrollTimer = window.setTimeout(() => void offerSelection(), 200);
 }, {passive: true, capture: true});
@@ -498,13 +540,14 @@ function watch(): void {
   const look = () => {
     const hoverShown = Boolean(hover?.shown);
     const batchShown = Boolean(batch?.shown);
-    if (hoverShown && hoverAnchor && moved(hoverAnchor(), hoverAt)) hidePointerSurfaces();
+    if (hoverShown && hoverAnchor && moved(hoverAnchor(), hoverAt)) withdrawPointerSurfaces();
+    if (video?.shown && (!videoElement || moved(videoElement.getBoundingClientRect(), videoBox))) withdraw(video);
     if (batchShown && moved(selected()?.rect ?? null, batchAt)) {
-      hide(batch);
+      withdraw(batch);
       clearTimeout(scrollTimer);
       scrollTimer = window.setTimeout(() => void offerSelection(), 200);
     }
-    if (hover?.shown || batch?.shown) requestAnimationFrame(look);
+    if (hover?.shown || batch?.shown || video?.shown) requestAnimationFrame(look);
     else watching = false;
   };
   requestAnimationFrame(look);
@@ -512,7 +555,14 @@ function watch(): void {
 
 // A page with a video shows the URL-bar icon in Firefox even before a hover.
 setTimeout(() => {
-  if (document.querySelector("video")) void mayOffer().then((may) => may.video && announceVideo());
+  // Only a video that is this page's own: shown, player-sized, not inside a link (a preview).
+  const own = [...document.querySelectorAll("video")].some((element) => {
+    const shown = element as HTMLVideoElement & {checkVisibility?(options?: object): boolean};
+    const box = element.getBoundingClientRect();
+    return (!shown.checkVisibility || shown.checkVisibility({visibilityProperty: true}))
+      && box.width >= 320 && box.height >= 180 && !element.closest("a[href]");
+  });
+  if (own) void mayOffer().then((may) => may.video && announceVideo());
 }, 1500);
 
 // ── the toast (B6) ─────────────────────────────────────────────────────────
@@ -528,10 +578,10 @@ chrome.runtime.onMessage.addListener((request: {type?: string; text?: string; ok
   box.className = request.ok ? "toast" : "toast error";
   box.setAttribute("role", request.ok ? "status" : "alert");
   box.textContent = String(request.text ?? "");
-  box.addEventListener("click", () => hide(toast));
+  box.addEventListener("click", () => withdraw(toast));
   toast.root.append(box);
   Object.assign(toast.host.style, {right: "16px", bottom: "16px", left: "auto", top: "auto"});
   reveal(toast);
   clearTimeout(toastTimer);
-  toastTimer = window.setTimeout(() => hide(toast), TOAST_MS + 300);
+  toastTimer = window.setTimeout(() => withdraw(toast), TOAST_MS + 300);
 });

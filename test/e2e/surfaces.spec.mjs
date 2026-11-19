@@ -320,6 +320,24 @@ test("selected links get a send button with their count, which sends them as one
   await page.mouse.click(boxed.left + 8, boxed.top + 8);
   await expect.poll(() => dp.state.jobs.length).toBe(2);
   expect(dp.state.jobs[1].body.source).toEqual({kind: "links", links: ["https://pixeldrain.com/u/a4J8buzm", "https://send.now/ijn6gxxf9bj8"]});
+  // While a selection's batch button is up, hovering one of its links adds no second button.
+  await page.locator("#box").evaluate((box) => box.blur());
+  await page.locator("#rows").scrollIntoViewIfNeeded();
+  await select("#rows");
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  const [only] = await buttonLayers(page);
+  const first = await page.evaluate(() => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector("#rows").children[0].firstChild);
+    const r = range.getClientRects()[0];
+    return {x: r.left + 20, y: (r.top + r.bottom) / 2};
+  });
+  await page.mouse.move(first.x, first.y, {steps: 4});              // over a .rar link, inside the selection
+  await page.waitForTimeout(700);
+  expect(await buttonLayers(page)).toEqual([only]);                  // the batch button alone, where it was
+  // Not rendered at all: the batch button is the only extension element in the page (besides a toast).
+  expect(await page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+    .filter((host) => host.style.bottom !== "16px").length)).toBe(1);
   // Selection cleared: the button goes.
   await page.evaluate(() => { document.activeElement.blur(); getSelection().removeAllRanges(); });
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(0);
@@ -396,13 +414,57 @@ test("the video button sends the page's own address", async () => {
   await page.mouse.move(video.x + video.width / 2, video.y + video.height / 2, {steps: 3});
   await expect.poll(async () => (await openLayers(page)).length).toBe(1);
   const [layer] = await openLayers(page);
-  expect(layer.left + layer.width).toBeLessThanOrEqual(video.x + video.width);   // inside the player's corner
-  await page.mouse.move(layer.left + 5, layer.top + 5, {steps: 3});
+  // Beside the frame, never over the picture: 8 px right of its top corner.
+  expect(Math.abs(layer.left - (video.x + video.width + 8))).toBeLessThanOrEqual(1);
+  expect(Math.abs(layer.top - video.y)).toBeLessThanOrEqual(1);
+  await page.mouse.move(layer.left + 5, layer.top + 5, {steps: 6});   // across the gap: it stays
+  expect((await openLayers(page)).length).toBe(1);
   await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   await expect.poll(() => dp.state.jobs.length).toBe(1);
   expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: [`${site.base}/page`]});
   // A page's path ("page", YouTube's "watch") is no file name: none is sent.
   expect(dp.state.jobs[0].body.display_name).toBeUndefined();
+});
+
+test("the video button is not drawn fullscreen, nor where there is no room beside the frame", async () => {
+  await connect();
+  const page = await sitePage();
+  const hoverVideo = async () => {
+    const box = await page.locator("#video").boundingBox();
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 3});
+  };
+  await hoverVideo();
+  await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+  await page.click("#full");
+  await page.waitForFunction(() => Boolean(document.fullscreenElement));
+  await hoverVideo();
+  await page.waitForTimeout(600);
+  expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length)).toBe(0);
+  await page.evaluate(() => document.exitFullscreen());
+  await page.waitForFunction(() => !document.fullscreenElement);
+  // A frame spanning the window: no room to its right.
+  await page.evaluate(() => { const v = document.querySelector("#video"); v.style.width = "100vw"; v.removeAttribute("width"); });
+  await page.mouse.move(1, 1);
+  await hoverVideo();
+  await page.waitForTimeout(600);
+  expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length)).toBe(0);
+});
+
+test("a video preview (inside a link, or under one) gets no video button; the page's own video does", async () => {
+  await connect();
+  const page = await sitePage();
+  for (const selector of ["#thumb video", "#overlaid video"]) {
+    await page.locator(selector).scrollIntoViewIfNeeded();
+    const box = await page.locator(selector).boundingBox();
+    await page.mouse.move(1, 1);
+    await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 3});
+    await page.waitForTimeout(600);
+    expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length), selector).toBe(0);
+  }
+  await page.locator("#video").scrollIntoViewIfNeeded();
+  const main = await page.locator("#video").boundingBox();
+  await page.mouse.move(main.x + main.width / 2, main.y + main.height / 2, {steps: 3});
+  await expect.poll(async () => (await openLayers(page)).length).toBe(1);
 });
 
 test("not connected: nothing is offered on any page", async () => {
