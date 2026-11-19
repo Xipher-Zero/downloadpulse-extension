@@ -149,9 +149,17 @@
     "message": "Sent to DownloadPulse.",
     "description": "Toast after a download was sent."
   },
+  "sendDoneWithoutSignIn": {
+    "message": "Sent to DownloadPulse, without your sign-in on this site.",
+    "description": "Toast after a video was sent WITHOUT the person's sign-in (their cookies) on its site, although sending it is switched on: the DownloadPulse connection is plain HTTP on the local network (a sign-in only ever goes over HTTPS or to this computer), there were too many cookies to send, or it could not be confirmed that this DownloadPulse accepts them. \"sign-in\" is the same word as in optionsVideoCookies and discloseVideo."
+  },
   "sendFailed": {
     "message": "Couldn't send that to DownloadPulse.",
     "description": "Toast: an unclassified failure."
+  },
+  "sendBlocked": {
+    "message": "Something in front of DownloadPulse, such as a sign-in page or a proxy, answered instead of it.",
+    "description": "Toast: sending failed because something between the browser and DownloadPulse (a reverse proxy's sign-in page, a proxy) answered instead of DownloadPulse. Same situation as failureBlocked, without its advice to connect again."
   },
   "sendNotConnected": {
     "message": "This browser isn't connected to DownloadPulse. Connect it from the toolbar button.",

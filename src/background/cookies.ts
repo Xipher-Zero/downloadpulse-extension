@@ -39,8 +39,9 @@ async function all(query: chrome.cookies.GetAllDetails & Store & {partitionKey?:
   }
 }
 
-export async function cookiesFor(url: string, tab: chrome.tabs.Tab | undefined): Promise<Cookie[]> {
-  if (!/^https?:\/\//i.test(url)) return [];
+/** ``dropped``: there were cookies, but past a bound, so none are sent (and the person is told). */
+export async function cookiesFor(url: string, tab: chrome.tabs.Tab | undefined): Promise<{cookies: Cookie[]; dropped: boolean}> {
+  if (!/^https?:\/\//i.test(url)) return {cookies: [], dropped: false};
   const store: Store = {};
   const container = (tab as (chrome.tabs.Tab & {cookieStoreId?: string}) | undefined)?.cookieStoreId;
   if (container) store.storeId = container;
@@ -59,5 +60,5 @@ export async function cookiesFor(url: string, tab: chrome.tabs.Tab | undefined):
       expires: cookie.session || cookie.expirationDate === undefined ? null : Math.floor(cookie.expirationDate)});
   }
   const bytes = cookies.reduce((total, c) => total + c.name.length + c.value.length + c.domain.length + c.path.length, 0);
-  return cookies.length > MAX_COOKIES || bytes > MAX_BYTES ? [] : cookies;
+  return cookies.length > MAX_COOKIES || bytes > MAX_BYTES ? {cookies: [], dropped: true} : {cookies, dropped: false};
 }

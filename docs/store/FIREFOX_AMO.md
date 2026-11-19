@@ -6,7 +6,7 @@
   - **Required:**
     - `authenticationInfo`:
       - the DownloadPulse connection key the extension receives, stores and sends back to the user's DownloadPulse;
-      - a video's sign-in cookies for its own address, sent with that video to the user's DownloadPulse (on by default, switchable in Settings; never stored by the extension).
+      - a video's sign-in cookies for its own address, sent with that video to the user's DownloadPulse, only over HTTPS or to DownloadPulse on the same computer (on by default, switchable in Settings; never stored by the extension).
     - `browsingActivity`: the link and page addresses the user sends.
     - `websiteContent`: a captured `.torrent`, `.nzb` or `.meta4` file.
   - **Optional:** `technicalAndInteraction` (the browser and operating-system names that name the connection, asked only when the user ticks that option on the disclosure page).

@@ -114,8 +114,14 @@
   "sendDone": {
     "message": "DownloadPulse に送信しました。"
   },
+  "sendDoneWithoutSignIn": {
+    "message": "このサイトでのサインインなしで DownloadPulse に送信しました。"
+  },
   "sendFailed": {
     "message": "DownloadPulse に送信できませんでした。"
+  },
+  "sendBlocked": {
+    "message": "サインインページやプロキシなど、DownloadPulse の手前にあるものが代わりに応答しました。"
   },
   "sendNotConnected": {
     "message": "このブラウザーは DownloadPulse に接続されていません。ツールバーのボタンから接続してください。"

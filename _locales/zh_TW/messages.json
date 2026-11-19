@@ -114,8 +114,14 @@
   "sendDone": {
     "message": "已傳送到DownloadPulse。"
   },
+  "sendDoneWithoutSignIn": {
+    "message": "已傳送到DownloadPulse，但未包含您在此網站的登入狀態。"
+  },
   "sendFailed": {
     "message": "無法將其傳送到DownloadPulse。"
+  },
+  "sendBlocked": {
+    "message": "DownloadPulse前方的某個服務（例如登入頁面或代理伺服器）代替它作出了回應。"
   },
   "sendNotConnected": {
     "message": "此瀏覽器未連線到DownloadPulse。請透過工具列按鈕連線。"

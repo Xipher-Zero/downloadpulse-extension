@@ -10,16 +10,14 @@ import {connection, forgetConnection, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {capturedName, isIndexerRefusal} from "../shared/capture";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
-import {isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, submitJob, type Cookie, type Source} from "../shared/server";
+import {isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Source} from "../shared/server";
 import {settings} from "../shared/settings";
 import {cookiesFor} from "./cookies";
 import {wake} from "./monitor";
+import {keyAnswered, keyFor} from "./sent-keys";
 
 const LIMITS: Record<CaptureKind, number> = {torrent: 16 * 1024 * 1024, nzb: 8 * 1024 * 1024, metalink: 16 * 1024 * 1024};
 const CAPTURE_TIMEOUT_MS = 30_000;
-/** How long a repeat of the same send reuses its idempotency key. */
-const KEY_WINDOW_MS = 10 * 60_000;
-const KEYS = "sendKeys";
 /** At most this many plain links go in one selection's batch; the person is told when more were found. */
 const BATCH_LIMIT = 100;
 
@@ -120,38 +118,6 @@ async function bounded(response: Response, limit: number): Promise<Uint8Array> {
   return bytes;
 }
 
-interface SentKey { key: string; at: number; job?: string }
-
-/**
- * The idempotency key for ``source`` to ``server``: the one a repeat of the same send in the
- * last 10 minutes used, else a fresh one. Kept for the browser session only, by a digest of
- * the server and the source (never the link itself).
- */
-async function keyFor(server: string, source: Source): Promise<{digest: string; key: string}> {
-  const data = new TextEncoder().encode(server + "\n" + JSON.stringify(source));
-  const digest = [...new Uint8Array(await crypto.subtle.digest("SHA-256", data))]
-    .map((byte) => byte.toString(16).padStart(2, "0")).join("");
-  const kept = ((await chrome.storage.session.get(KEYS))[KEYS] ?? {}) as Record<string, SentKey>;
-  const now = Date.now();
-  for (const [name, entry] of Object.entries(kept)) if (now - entry.at > KEY_WINDOW_MS) delete kept[name];
-  const entry = kept[digest] ?? {key: crypto.randomUUID(), at: now};
-  kept[digest] = entry;
-  await chrome.storage.session.set({[KEYS]: kept});
-  return {digest, key: entry.key};
-}
-
-async function keyAnswered(digest: string, job: string): Promise<void> {
-  const kept = ((await chrome.storage.session.get(KEYS))[KEYS] ?? {}) as Record<string, SentKey>;
-  if (kept[digest]) await chrome.storage.session.set({[KEYS]: {...kept, [digest]: {...kept[digest], job}}});
-}
-
-/** A download removed from the extension: sending it again is a new request, not the removed one. */
-export async function forgetSentKey(job: string): Promise<void> {
-  const kept = ((await chrome.storage.session.get(KEYS))[KEYS] ?? {}) as Record<string, SentKey>;
-  const left = Object.fromEntries(Object.entries(kept).filter(([, entry]) => entry.job !== job));
-  await chrome.storage.session.set({[KEYS]: left});
-}
-
 /** B6 (WS-E3): what the download is called in the list. */
 function displayName(source: Source): string {
   if (source.kind === "magnet") {
@@ -179,7 +145,7 @@ async function send(source: Source, cookies: Cookie[] = []): Promise<void> {
   const connected = await connection();
   const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
-  const {digest, key} = await keyFor(connected.server, source);
+  const {digest, key} = await keyFor(connected.server, source, cookies);
   const name = displayName(source);
   // A request that timed out or lost its connection may still have arrived: it is retried
   // once with the same key, so DownloadPulse answers the same job (review, 2026-11-19).
@@ -190,6 +156,8 @@ async function send(source: Source, cookies: Cookie[] = []): Promise<void> {
       if (error instanceof ServerError && (error.failure === "unreachable" || error.failure === "certificate")) {
         return {ok: false, code: "unreachable", retryable: true};
       }
+      // Something in front of DownloadPulse answered instead of it (review, 2026-11-19).
+      if (error instanceof ServerError && error.failure === "blocked") throw new Refused("sendBlocked");
       throw error;
     }
   };
@@ -265,18 +233,28 @@ export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | u
     if (!/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
     await mayUseConnection();
     let cookies: Cookie[] = [];
+    // Switched on, yet sent without them: said in the toast, never silently (review, 2026-11-19).
+    let withoutSignIn = false;
     if ((await settings()).videoCookies) {
       const connected = await connection();
       const browserToken = connected ? await token(connected.server) : null;
+      // A sign-in goes only over HTTPS or to this computer: never over plain HTTP, even to a
+      // server on the person's network chosen on the plain-HTTP warning (review, 2026-11-19).
       try {
-        if (connected && browserToken && (await readSession(connected.server, browserToken)).videoCookies) {
-          cookies = await cookiesFor(href, tab);
+        if (!connected || !browserToken || !signInMayTravel(connected.server)
+            || !(await readSession(connected.server, browserToken)).videoCookies) {
+          withoutSignIn = true;
+        } else {
+          const found = await cookiesFor(href, tab);
+          cookies = found.cookies;
+          withoutSignIn = found.dropped;
         }
       } catch {
-        cookies = [];   // its capabilities unknown: the video goes without
+        withoutSignIn = true;   // its capabilities unknown: the video goes without
       }
     }
     await send({kind: "links", links: [href]}, cookies);
+    return withoutSignIn ? "sendDoneWithoutSignIn" : undefined;
   });
 }
 

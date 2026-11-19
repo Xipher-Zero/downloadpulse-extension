@@ -12,6 +12,7 @@ import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
 import {listJobs, ServerError, type Job} from "../shared/server";
 import {restIcon, themedIcon} from "./icon";
+import {forgetSentKey} from "./sent-keys";
 
 const ALARM = "dp-monitor";
 const POLL_MS = 2000;
@@ -138,6 +139,9 @@ async function pollServer(server: string): Promise<boolean> {
         const kind = notice(job, jobs[job.id]);
         // A job first seen already settled (an earlier session's) is listed quietly.
         if (kind && (jobs[job.id] || unsettled(job) || cursor > 0)) await notify(server, job, kind);
+        // Settled (finished, failed, or removed in DownloadPulse itself): sending it again is a
+        // new request, never a replay of this job (review, 2026-11-19).
+        if (!unsettled(job) && (!jobs[job.id] || unsettled(jobs[job.id]!))) await forgetSentKey(job.id);
         jobs[job.id] = job;
       }
       cursor = listing.next_cursor;
@@ -167,7 +171,11 @@ async function loop(): Promise<void> {
     for (;;) {
       if (Date.now() - polledAt >= POLL_MS) {
         polledAt = Date.now();
-        if (!(await poll())) break;
+        if (!(await poll())) {
+          // No connection left to follow: no wake-up stays scheduled (review, 2026-11-19).
+          await chrome.alarms.clear(ALARM);
+          break;
+        }
       }
       const jobs = await everyJob();
       const anyUnsettled = jobs.some(unsettled);

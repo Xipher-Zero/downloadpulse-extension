@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {isLocal, isPrivateHost, readSession, ServerError, serverAddress} from "../../src/shared/server";
+import {isLocal, isPrivateHost, readSession, ServerError, serverAddress, signInMayTravel} from "../../src/shared/server";
 
 const addr = (input: string) => {
   const found = serverAddress(input);
@@ -63,4 +63,13 @@ test("no request ever goes over plain HTTP across the internet, whatever asks (t
   // Refused before fetching: an unreachable host would otherwise fail as "unreachable", not "insecure_refused".
   await assert.rejects(readSession("http://203.0.113.9:8095", "dp_key"),
     (error: unknown) => error instanceof ServerError && error.failure === "insecure_refused");
+});
+
+test("a video's sign-in travels only over HTTPS or to this computer, never plain HTTP on a network (review)", () => {
+  for (const origin of ["https://dp.example.com", "https://192.168.1.20:8443", "http://127.0.0.1:8095", "http://localhost:8095"]) {
+    assert.equal(signInMayTravel(origin), true, origin);
+  }
+  for (const origin of ["http://192.168.1.20:8095", "http://10.0.0.5", "http://nas.home.example.com", "http://203.0.113.9:8095", "not a url"]) {
+    assert.equal(signInMayTravel(origin), false, origin);
+  }
 });

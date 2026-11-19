@@ -41,12 +41,24 @@ export async function connectionState(value: Connection): Promise<ConnectionStat
   return "ok";
 }
 
+// Every write of the connections (choosing plain HTTP, saving, forgetting) runs one after
+// another in this context, each reading what the one before it wrote: with more than one
+// server, two writes never lose one another's change (review, 2026-11-19).
+let writing: Promise<unknown> = Promise.resolve();
+function serialized<T>(write: () => Promise<T>): Promise<T> {
+  const next = writing.then(write);
+  writing = next.catch(() => undefined);
+  return next;
+}
+
 /** The person chose plain HTTP for a saved private-network connection (the warning screen). */
-export async function choosePlainHttp(server?: string): Promise<void> {
-  const value = await connection(server);
-  if (!value) return;
-  const all = await connections();
-  await chrome.storage.local.set({[CONNECTIONS]: {...all, [value.server]: {...value, plainHttp: true}}});
+export function choosePlainHttp(server?: string): Promise<void> {
+  return serialized(async () => {
+    const value = await connection(server);
+    if (!value) return;
+    const all = await connections();
+    await chrome.storage.local.set({[CONNECTIONS]: {...all, [value.server]: {...value, plainHttp: true}}});
+  });
 }
 
 export type Pairing =
@@ -66,7 +78,18 @@ const PAIRING = "pairing";
 const tokenSlot = (server: string): `token@${string}` => `token@${server}`;
 
 /** Every saved connection, by server origin; an earlier build's single one is moved in on first read. */
+let migrating: Promise<void> | null = null;
+
 export async function connections(): Promise<Record<string, Connection>> {
+  // An earlier build's connection is moved in once: concurrent readers share that one move.
+  if ((await chrome.storage.local.get(LEGACY_CONNECTION))[LEGACY_CONNECTION]) {
+    migrating ??= migrateLegacy().finally(() => { migrating = null; });
+    await migrating;
+  }
+  return {...(((await chrome.storage.local.get(CONNECTIONS))[CONNECTIONS] as Record<string, Connection> | undefined) ?? {})};
+}
+
+async function migrateLegacy(): Promise<void> {
   const stored = await chrome.storage.local.get([CONNECTIONS, LEGACY_CONNECTION]);
   const all = {...((stored[CONNECTIONS] as Record<string, Connection> | undefined) ?? {})};
   const legacy = stored[LEGACY_CONNECTION] as (Connection & {token?: string}) | undefined;
@@ -82,7 +105,6 @@ export async function connections(): Promise<Record<string, Connection>> {
     // That build's session state was not kept by server: it is fetched again.
     await chrome.storage.session.remove(["jobs", "jobsCursor", "jobsNotified", "reach", "jobsCleared"]);
   }
-  return all;
 }
 
 /** The server in use, if any. */
@@ -112,10 +134,12 @@ export async function token(server?: string): Promise<string | null> {
 }
 
 /** A new or renewed connection to ``value.server``, which becomes the one in use. */
-export async function saveConnection(value: Connection, browserToken: string): Promise<void> {
-  await setSecret(tokenSlot(value.server), browserToken);
-  const all = await connections();
-  await chrome.storage.local.set({[CONNECTIONS]: {...all, [value.server]: value}, [ACTIVE]: value.server});
+export function saveConnection(value: Connection, browserToken: string): Promise<void> {
+  return serialized(async () => {
+    await setSecret(tokenSlot(value.server), browserToken);
+    const all = await connections();
+    await chrome.storage.local.set({[CONNECTIONS]: {...all, [value.server]: value}, [ACTIVE]: value.server});
+  });
 }
 
 export async function pairing(): Promise<Pairing | null> {
@@ -142,7 +166,11 @@ export async function deviceCode(): Promise<string | null> {
  * if the one in use is forgotten, another (if any) is used. ``revoked``: DownloadPulse no
  * longer accepts the token (disconnected there), which the popup then says.
  */
-export async function forgetConnection(revoked = false, server?: string): Promise<void> {
+export function forgetConnection(revoked = false, server?: string): Promise<void> {
+  return serialized(() => forget(revoked, server));
+}
+
+async function forget(revoked: boolean, server?: string): Promise<void> {
   const target = server ?? (await activeServer());
   if (!target) return;
   const wasActive = target === (await activeServer());

@@ -114,8 +114,14 @@
   "sendDone": {
     "message": "已发送到DownloadPulse。"
   },
+  "sendDoneWithoutSignIn": {
+    "message": "已发送到DownloadPulse，但未包含您在此网站的登录状态。"
+  },
   "sendFailed": {
     "message": "无法将其发送到DownloadPulse。"
+  },
+  "sendBlocked": {
+    "message": "DownloadPulse前面的某个服务（例如登录页面或代理）代替它作出了响应。"
   },
   "sendNotConnected": {
     "message": "此浏览器未连接到DownloadPulse。请通过工具栏按钮连接。"

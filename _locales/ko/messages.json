@@ -114,8 +114,14 @@
   "sendDone": {
     "message": "DownloadPulse로 보냈습니다."
   },
+  "sendDoneWithoutSignIn": {
+    "message": "이 사이트의 로그인 상태 없이 DownloadPulse로 보냈습니다."
+  },
   "sendFailed": {
     "message": "DownloadPulse로 보낼 수 없습니다."
+  },
+  "sendBlocked": {
+    "message": "로그인 페이지나 프록시처럼 DownloadPulse 앞에 있는 무언가가 대신 응답했습니다."
   },
   "sendNotConnected": {
     "message": "이 브라우저는 DownloadPulse에 연결되어 있지 않습니다. 도구 모음 버튼에서 연결하세요."

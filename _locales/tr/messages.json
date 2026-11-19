@@ -114,8 +114,14 @@
   "sendDone": {
     "message": "DownloadPulse'a gönderildi."
   },
+  "sendDoneWithoutSignIn": {
+    "message": "Bu sitedeki oturumunuz olmadan DownloadPulse'a gönderildi."
+  },
   "sendFailed": {
     "message": "Bu, DownloadPulse'a gönderilemedi."
+  },
+  "sendBlocked": {
+    "message": "DownloadPulse'un önündeki bir şey, örneğin bir oturum açma sayfası veya proxy, onun yerine yanıt verdi."
   },
   "sendNotConnected": {
     "message": "Bu tarayıcı DownloadPulse'a bağlı değil. Araç çubuğu düğmesinden bağlayın."

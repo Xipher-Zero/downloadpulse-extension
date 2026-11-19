@@ -595,6 +595,17 @@ for (const form of document.querySelectorAll<HTMLFormElement>('form[data-action=
   });
 }
 let quickTimer = 0;
+// Quick Add is one row: a pasted list's line breaks become spaces, never dropped -- a text
+// field strips newlines from its value, which would join the addresses (review, 2026-11-19).
+$<HTMLInputElement>("#quick").addEventListener("paste", (event) => {
+  const pasted = event.clipboardData?.getData("text/plain") ?? "";
+  if (!/[\r\n]/.test(pasted)) return;
+  event.preventDefault();
+  const input = event.currentTarget as HTMLInputElement;
+  const spaced = pasted.replace(/\s*[\r\n]+\s*/g, " ").trim();
+  input.setRangeText(spaced, input.selectionStart ?? input.value.length, input.selectionEnd ?? input.value.length, "end");
+  input.dispatchEvent(new Event("input", {bubbles: true}));
+});
 $<HTMLFormElement>("form[data-action='quick-add']").addEventListener("submit", (event) => {
   event.preventDefault();
   const input = $<HTMLInputElement>("#quick");

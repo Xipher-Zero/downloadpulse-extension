@@ -114,8 +114,14 @@
   "sendDone": {
     "message": "أُرسل إلى DownloadPulse."
   },
+  "sendDoneWithoutSignIn": {
+    "message": "أُرسل إلى DownloadPulse، دون تسجيل دخولك إلى هذا الموقع."
+  },
   "sendFailed": {
     "message": "تعذر إرسال ذلك إلى DownloadPulse."
+  },
+  "sendBlocked": {
+    "message": "استجاب شيء ما أمام DownloadPulse بدلًا منه، مثل صفحة تسجيل دخول أو وكيل."
   },
   "sendNotConnected": {
     "message": "هذا المتصفح غير مرتبط بـ DownloadPulse. اربطه من زر شريط الأدوات."

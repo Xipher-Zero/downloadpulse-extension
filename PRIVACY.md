@@ -24,14 +24,14 @@ Nothing is sent before you agree to the disclosure shown when you first connect.
     - It never follows a redirect: a redirecting link is refused before anything else is requested.
   - **A video:** the address of its player (for a video embedded in another page, the player's own address) and, **unless you turn it off** in Settings ("Send my sign-in on the site with videos"), **your sign-in on that site**: the cookies your browser would send to that address, from that tab's own cookie store (a Firefox container's), including the player's partitioned cookies under the page you are on.
     - **Why:** so DownloadPulse's video downloader can fetch what you can watch (members-only or age-restricted videos).
-    - **Only:** for a video you send, and only to a DownloadPulse that says it accepts them. Never another site's cookies, and never for a link, file or selection.
+    - **Only:** for a video you send, and only to a DownloadPulse that says it accepts them, reached over HTTPS or on this computer: **never over plain HTTP**, even to a server on your network. Never another site's cookies, and never for a link, file or selection. When the setting is on but a video goes without them (plain HTTP, too many cookies, or a DownloadPulse that doesn't accept them), the confirmation says so.
     - **In DownloadPulse:** they're kept only in memory, for that download, and deleted when it ends, fails or is removed, or when DownloadPulse restarts. They're never written to disk, a log, or the download's record.
 - **While downloads run, or the extension's menu is open,** it asks your DownloadPulse for the status of the downloads sent from this browser, and for your DownloadPulse colour theme, so its pages match it.
 - **When you choose to:** pausing, resuming or removing a download sent from this browser; bringing the DownloadPulse desktop application's window forward; disconnecting.
 
 A connection made before you agreed to this disclosure (for example, by an earlier version), or one that no longer meets the transport rules below, is held: nothing is sent with it until you agree, or choose plain HTTP for a server on your network. A connection to a server over plain HTTP across the internet is forgotten.
 
-Every request to DownloadPulse carries the connection key and **never your browser's cookies**.
+Every request to DownloadPulse carries the connection key. It never carries your browser's cookies, except a video's sign-in on its site as described above, and that only over HTTPS or to DownloadPulse on this computer.
 
 ## What stays in your browser
 
@@ -51,7 +51,7 @@ Your DownloadPulse records each download you send as yours, sent from this brows
 ## Transport
 
 - DownloadPulse on this computer is reached over plain HTTP on the loopback address.
-- Any other server is reached over **HTTPS**. Plain HTTP is used only for a server on your private network, and only after you choose it on a screen explaining that the connection key and downloads would cross that network unencrypted.
+- Any other server is reached over **HTTPS**. Plain HTTP is used only for a server on your private network, and only after you choose it on a screen explaining that the connection key and downloads would cross that network unencrypted. A video's sign-in is never sent over it.
   - Your private network: private addresses (10.x, 172.16–31.x, 192.168.x, link-local), Tailscale addresses (100.64.0.0/10) and names such as `.lan`, `.local`, `.home.arpa`, `.ts.net` or a name with no dot.
   - In Firefox, also a name that resolves only to such addresses (split DNS). The lookup is your system's own name resolution; nothing extra is sent anywhere.
 - Plain HTTP across the internet is refused.

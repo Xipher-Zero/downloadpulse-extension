@@ -16,6 +16,19 @@ export function isLocal(origin: string): boolean {
     return false;
   }
 }
+
+/**
+ * Whether a video's sign-in (its site's cookies) may be sent to the DownloadPulse at ``origin``:
+ * only over HTTPS or to this computer, never over plain HTTP -- not even to a server on the
+ * person's network chosen on the plain-HTTP warning (review, 2026-11-19).
+ */
+export function signInMayTravel(origin: string): boolean {
+  try {
+    return new URL(origin).protocol === "https:" || isLocal(origin);
+  } catch {
+    return false;
+  }
+}
 const TIMEOUT_MS = 8000;
 /** A submission carrying a captured file (up to ~21 MB as base64) gets longer than a plain request. */
 export const UPLOAD_TIMEOUT_MS = 120_000;

@@ -114,8 +114,14 @@
   "sendDone": {
     "message": "Envoyé à DownloadPulse."
   },
+  "sendDoneWithoutSignIn": {
+    "message": "Envoyé à DownloadPulse, sans votre connexion à ce site."
+  },
   "sendFailed": {
     "message": "Impossible d’envoyer cela à DownloadPulse."
+  },
+  "sendBlocked": {
+    "message": "Quelque chose placé devant DownloadPulse, comme une page de connexion ou un proxy, a répondu à sa place."
   },
   "sendNotConnected": {
     "message": "Ce navigateur n’est pas connecté à DownloadPulse. Connectez-le depuis le bouton de la barre d’outils."

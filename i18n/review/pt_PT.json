@@ -287,9 +287,25 @@
         "ai-review"
       ]
     },
+    "sendDoneWithoutSignIn": {
+      "source": "3ea45af55ae5b9ba",
+      "translation": "9b76b4250b09228f",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
     "sendFailed": {
       "source": "9f1530741a3b3c22",
       "translation": "daec86a3cc368ffe",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendBlocked": {
+      "source": "b3a5bc720e0e48be",
+      "translation": "3daeb6142eef2493",
       "provenance": [
         "ai-generated",
         "ai-review"

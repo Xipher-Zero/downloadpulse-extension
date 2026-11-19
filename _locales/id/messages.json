@@ -114,8 +114,14 @@
   "sendDone": {
     "message": "Terkirim ke DownloadPulse."
   },
+  "sendDoneWithoutSignIn": {
+    "message": "Terkirim ke DownloadPulse, tanpa sesi masuk Anda di situs ini."
+  },
   "sendFailed": {
     "message": "Tidak dapat mengirimnya ke DownloadPulse."
+  },
+  "sendBlocked": {
+    "message": "Sesuatu di depan DownloadPulse, seperti halaman masuk atau proksi, menjawab sebagai gantinya."
   },
   "sendNotConnected": {
     "message": "Peramban ini tidak terhubung ke DownloadPulse. Hubungkan melalui tombol di bilah alat."

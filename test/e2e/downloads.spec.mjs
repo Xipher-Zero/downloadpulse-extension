@@ -252,6 +252,19 @@ test("Quick Add: above Sent Downloads, its Add inside the field; the result on t
     (() => { const probe = document.createElement("span"); probe.style.color = "var(--dp-state-success)"; document.body.append(probe);
       const value = getComputedStyle(probe).color; probe.remove(); return value; })()));
   expect((await quick.boundingBox()).height).toBe(before.height);
+  // A pasted list (one address per line): its line breaks become spaces, never joined addresses (review, 2026-11-19).
+  await field.fill("");
+  await field.evaluate((input) => {
+    const data = new DataTransfer();
+    data.setData("text/plain", "https://example.com/a.zip\nhttps://example.com/b.zip\r\nhttps://example.com/c.zip\n");
+    input.focus();
+    input.dispatchEvent(new ClipboardEvent("paste", {clipboardData: data, bubbles: true, cancelable: true}));
+  });
+  await expect(field).toHaveValue("https://example.com/a.zip https://example.com/b.zip https://example.com/c.zip");
+  await add.click();
+  await expect.poll(() => dp.state.jobs.length).toBe(jobs + 2);
+  expect(dp.state.jobs.at(-1).body.source).toEqual({kind: "links", links:
+    ["https://example.com/a.zip", "https://example.com/b.zip", "https://example.com/c.zip"]});
   await popup.screenshot({path: "test-results/quick-add.png"});
   await expect(popup.getByTestId("quick-result")).toHaveText("", {timeout: 6000});
 });

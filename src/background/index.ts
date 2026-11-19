@@ -13,7 +13,8 @@ import {restIcon} from "./icon";
 import {popupOpen, wake} from "./monitor";
 import {message} from "../shared/i18n";
 import {cancel, connectLocal, connectRemote, pairLocal} from "./pairing";
-import {sendSelection, sendUrl, forgetSentKey, quickAdd, sendVideo} from "./submit";
+import {sendSelection, sendUrl, quickAdd, sendVideo} from "./submit";
+import {forgetSentKey} from "./sent-keys";
 
 type Request =
   | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string; insecure?: boolean}
