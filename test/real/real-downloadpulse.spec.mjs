@@ -25,7 +25,7 @@ test("connect to a real DownloadPulse: sign in, approve, verified", async () => 
     await popup.goto(`chrome-extension://${new URL(worker.url()).host}/popup/popup.html`);
     const approval = context.waitForEvent("page");
     await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
-    await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
+    await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("code")).toHaveText(/^[A-Z0-9]{4}-[A-Z0-9]{4}$/, {timeout: 15_000});
     const code = await popup.getByTestId("code").textContent();
     const page = await approval;

@@ -21,8 +21,8 @@ test("download candidates: magnets, download file types, the download attribute,
 test("capture: .torrent, .nzb and .meta4 links only, over http(s)", () => {
   assert.equal(captureKind("https://t.example/dl/123/file.torrent?passkey=secret"), "torrent");
   assert.equal(captureKind("https://i.example/getnzb/5/Some.Release.NZB"), "nzb");
-  // An indexer API link with no .nzb in its path is not recognised (a known limit, WS-E2 record).
-  assert.equal(captureKind("https://i.example/api?t=get&id=5"), null);
+  // An indexer's newznab download link is an NZB, though its path has no .nzb (operator, 2026-11-18).
+  assert.equal(captureKind("https://i.example/api?t=get&id=5"), "nzb");
   assert.equal(captureKind("https://m.example/file.meta4"), "metalink");
   assert.equal(captureKind("https://m.example/file.metalink"), null);
   assert.equal(captureKind("https://m.example/file.zip"), null);
@@ -41,4 +41,16 @@ test("the URL under a text offset", () => {
   const text = "see https://a.example/f.zip now";
   assert.deepEqual(urlAt(text, 10), {url: "https://a.example/f.zip", start: 4, end: 27});
   assert.equal(urlAt(text, 1), null);
+});
+
+test("an indexer's newznab download link (?t=get&id=) is an NZB to capture, whatever its path", () => {
+  for (const href of ["https://api.nzbgeek.info/cdn?t=get&id=c59de97c&apikey=K", "https://indexer.example/api?t=GET&id=1&apikey=K"]) {
+    assert.equal(isDownloadCandidate(href), true, href);
+    assert.equal(captureKind(href), "nzb", href);
+  }
+  // Other newznab calls (a search, a get without an id) are not downloads.
+  for (const href of ["https://indexer.example/api?t=search&q=x&apikey=K", "https://indexer.example/api?t=get&apikey=K"]) {
+    assert.equal(isDownloadCandidate(href), false, href);
+    assert.equal(captureKind(href), null, href);
+  }
 });

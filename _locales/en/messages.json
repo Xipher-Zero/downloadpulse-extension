@@ -413,14 +413,6 @@
     "message": "DownloadPulse is running on this computer.",
     "description": "Popup: a DownloadPulse was found on this computer; the person now chooses it or a different one."
   },
-  "popupConnectThisComputer": {
-    "message": "Connect to DownloadPulse on this computer",
-    "description": "Popup button: connect this browser to the DownloadPulse found on this computer."
-  },
-  "popupConnectDifferent": {
-    "message": "Connect to a different DownloadPulse",
-    "description": "Popup button: connect to another DownloadPulse (a server) instead; shows the server address field."
-  },
   "popupChecking": {
     "message": "Checking connection…",
     "description": "Popup: the connection's status while the extension checks whether DownloadPulse answers."
@@ -458,5 +450,29 @@
   "selectionSend": {
     "message": "Download the selected links with DownloadPulse",
     "description": "Name and tooltip of the button shown at the end of selected text that contains links; it sends them all as one batch. The number of links is shown on the button itself."
+  },
+  "popupChooseInstance": {
+    "message": "Which DownloadPulse to connect to",
+    "description": "Popup: the accessible name of the two choice cards shown when DownloadPulse was found on this computer."
+  },
+  "choiceLocalTitle": {
+    "message": "This computer",
+    "description": "Popup choice card title: connect to the DownloadPulse found running on this computer (a short card title, like a setup wizard's option)."
+  },
+  "choiceLocalHint": {
+    "message": "Connect to the DownloadPulse installed and running here.",
+    "description": "Popup choice card hint under \"This computer\"."
+  },
+  "choiceRemoteTitle": {
+    "message": "Remote server",
+    "description": "Popup choice card title: connect to a DownloadPulse server elsewhere instead (a short card title)."
+  },
+  "choiceRemoteHint": {
+    "message": "A DownloadPulse server elsewhere on your network or the internet. You'll enter its address.",
+    "description": "Popup choice card hint under \"Remote server\"; choosing it shows the server address field."
+  },
+  "popupConnectAction": {
+    "message": "Connect",
+    "description": "Popup: the primary button under the choice cards; connects to the chosen DownloadPulse."
   }
 }

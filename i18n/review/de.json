@@ -771,22 +771,6 @@
         "ai-review"
       ]
     },
-    "popupConnectThisComputer": {
-      "source": "9b67822d99a83fd4",
-      "translation": "ce92663990bccf79",
-      "provenance": [
-        "ai-generated",
-        "ai-review"
-      ]
-    },
-    "popupConnectDifferent": {
-      "source": "e6bb72977c93cbd9",
-      "translation": "6147faae49ac3c96",
-      "provenance": [
-        "ai-generated",
-        "ai-review"
-      ]
-    },
     "popupChecking": {
       "source": "de9fc337d5990009",
       "translation": "151a526fa1bf0021",
@@ -846,6 +830,54 @@
     "selectionSend": {
       "source": "14f87b803c5aec05",
       "translation": "9347dae22ec9c90d",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupChooseInstance": {
+      "source": "d8e003877059daae",
+      "translation": "af9f8743fb0e7ca7",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "choiceLocalTitle": {
+      "source": "26f9f95a152ffb42",
+      "translation": "e18408f7e7278e00",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "choiceLocalHint": {
+      "source": "e3e9923364c76ae2",
+      "translation": "217919a3142f9671",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "choiceRemoteTitle": {
+      "source": "68d0a2e10bc6df49",
+      "translation": "3b7764592fe60a14",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "choiceRemoteHint": {
+      "source": "e4537ad003a96763",
+      "translation": "1227e4390e299047",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "popupConnectAction": {
+      "source": "1a2303ede07493ac",
+      "translation": "0eefbbbcecf606d8",
       "provenance": [
         "ai-generated",
         "ai-review"

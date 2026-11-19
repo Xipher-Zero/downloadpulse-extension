@@ -8,7 +8,7 @@ import {mkdtemp, rm} from "node:fs/promises";
 import {tmpdir} from "node:os";
 import {join, resolve} from "node:path";
 import {fakeDownloadPulse} from "./fake-downloadpulse.mjs";
-import {fakeSite, TORRENT} from "./fake-site.mjs";
+import {fakeSite, TORRENT, NZB} from "./fake-site.mjs";
 
 const EXT = resolve(process.env.DP_EXT_DIR || "dist/chromium");
 
@@ -45,7 +45,7 @@ async function connect() {
   const popup = await context.newPage();
   await popup.goto(`chrome-extension://${extensionId}/popup/popup.html`);
   await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
-  await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
+  await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
   await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
@@ -382,6 +382,32 @@ test("a .torrent behind a sign-in is captured with the site's cookie; its URL is
   expect(site.state.requests.find((r) => r.path.startsWith("/files/private.torrent")).cookie).toContain("site_session=signed-in");
   expect(JSON.stringify(dp.state.jobs)).not.toContain("SECRETPASSKEY");
   expect(dp.state.jobs[0].cookie).toBeNull();                       // DownloadPulse never gets the site's cookie
+});
+
+test("an indexer's download link (newznab ?t=get) is captured as the NZB; its key never reaches DownloadPulse", async () => {
+  await connect();
+  const page = await sitePage();
+  await page.locator("#indexer").scrollIntoViewIfNeeded();
+  await hoverAndClick(page, "#indexer");
+  await expect.poll(() => dp.state.jobs.length).toBe(1);
+  const {source} = dp.state.jobs[0].body;
+  expect(source.kind).toBe("nzb");
+  expect(source.filename).toBe("The.Odyssey.2026.1080p.nzb");                 // the indexer's own name for it
+  expect(Buffer.from(source.nzb_base64, "base64").equals(NZB)).toBe(true);
+  // Unnamed by the indexer: the NZB's own name, never "api.nzb".
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(400);
+  await hoverAndClick(page, "#indexer-unnamed");
+  await expect.poll(() => dp.state.jobs.length).toBe(2);
+  expect(dp.state.jobs[1].body.source.filename).toBe("The.Odyssey.2026.2160p.nzb");
+  // The indexer refusing (an <error> document, with 200): nothing is sent, and the person is told.
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(400);
+  await hoverAndClick(page, "#indexer-refused");
+  await page.waitForTimeout(1500);
+  expect(dp.state.jobs.length).toBe(2);
+  expect(JSON.stringify(dp.state.jobs)).not.toContain("SECRETINDEXERKEY");
+  expect(JSON.stringify(dp.state.jobs)).not.toContain("apikey");
 });
 
 test("a sign-in page answering for a .torrent is refused, not sent", async () => {

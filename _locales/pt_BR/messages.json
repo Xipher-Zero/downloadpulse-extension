@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "O DownloadPulse está em execução neste computador."
   },
-  "popupConnectThisComputer": {
-    "message": "Conectar ao DownloadPulse deste computador"
-  },
-  "popupConnectDifferent": {
-    "message": "Conectar a outro DownloadPulse"
-  },
   "popupChecking": {
     "message": "Verificando a conexão…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "Baixar os links selecionados com o DownloadPulse"
+  },
+  "popupChooseInstance": {
+    "message": "A qual DownloadPulse conectar"
+  },
+  "choiceLocalTitle": {
+    "message": "Este computador"
+  },
+  "choiceLocalHint": {
+    "message": "Conectar ao DownloadPulse instalado e em execução aqui."
+  },
+  "choiceRemoteTitle": {
+    "message": "Servidor remoto"
+  },
+  "choiceRemoteHint": {
+    "message": "Um servidor DownloadPulse em outro lugar da sua rede ou da internet. Você vai informar o endereço dele."
+  },
+  "popupConnectAction": {
+    "message": "Conectar"
   }
 }

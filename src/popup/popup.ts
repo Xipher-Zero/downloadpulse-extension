@@ -332,6 +332,34 @@ async function connectRemote(form: HTMLFormElement): Promise<void> {
   await chrome.runtime.sendMessage({type: "connect-remote", address});
 }
 
+// Found on this computer: the person chooses it (the default) or a remote server.
+let chosen: "local" | "remote" = "local";
+
+function choose(choice: "local" | "remote", focus = false): void {
+  chosen = choice;
+  for (const card of document.querySelectorAll<HTMLElement>("[data-choice]")) {
+    const on = card.dataset["choice"] === choice;
+    card.setAttribute("aria-checked", String(on));
+    card.tabIndex = on ? 0 : -1;
+    if (on && focus) card.focus();
+  }
+  $("#remote-found").hidden = choice !== "remote";
+  if (choice === "remote" && !focus) $<HTMLInputElement>("#server-found").focus();
+}
+
+document.addEventListener("keydown", (event) => {
+  // The radio group's arrows, as the wizard's: either way flips between the two.
+  const card = (event.target as HTMLElement).closest<HTMLElement>("[data-choice]");
+  if (!card || !["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown"].includes(event.key)) return;
+  event.preventDefault();
+  choose(card.dataset["choice"] === "local" ? "remote" : "local", true);
+});
+// Enter in the address field connects, as the Connect button does.
+$<HTMLFormElement>("#remote-found").addEventListener("submit", (event) => {
+  event.preventDefault();
+  void connectRemote(event.currentTarget as HTMLFormElement);
+});
+
 async function openDownloadPulse(): Promise<void> {
   await chrome.runtime.sendMessage({type: "dp-open"});
   if (!standalone) window.close();
@@ -343,6 +371,9 @@ localize(document);
 placeGlyphs(document);
 for (const input of document.querySelectorAll<HTMLInputElement>("[data-i18n-placeholder]")) {
   input.placeholder = message(input.dataset["i18nPlaceholder"] ?? "");
+}
+for (const element of document.querySelectorAll<HTMLElement>("[data-i18n-aria]")) {
+  element.setAttribute("aria-label", message(element.dataset["i18nAria"] ?? ""));
 }
 for (const element of document.querySelectorAll<HTMLElement>("[data-i18n-label]")) {
   element.setAttribute("aria-label", message(element.dataset["i18nLabel"] ?? ""));
@@ -362,6 +393,11 @@ document.addEventListener("change", (event) => {
 });
 document.addEventListener("click", (event) => {
   const target = event.target as HTMLElement;
+  const card = target.closest<HTMLElement>("[data-choice]");
+  if (card) {
+    choose(card.dataset["choice"] as "local" | "remote");
+    return;
+  }
   const job = target.closest<HTMLElement>("button[data-job-action]");
   if (job) {
     void act(job.dataset["job"] ?? "", job.dataset["jobAction"] ?? "");
@@ -386,15 +422,15 @@ document.addEventListener("click", (event) => {
     void clearFinished();
   } else if (action === "open") {
     void openDownloadPulse();
-  } else if (action === "show-remote") {
-    const open = button!.getAttribute("aria-expanded") !== "true";
-    button!.setAttribute("aria-expanded", String(open));
-    $("#remote-found").hidden = !open;
-    if (open) $<HTMLInputElement>("#server-found").focus();
-  } else if (action === "pair-local") {
-    void pairing().then((pending) => {
-      if (pending?.state === "found") void chrome.runtime.sendMessage({type: "pair-local", origin: pending.server});
-    });
+  } else if (action === "connect-chosen") {
+    if (chosen === "remote") {
+      const form = $<HTMLFormElement>("#remote-found");
+      if (form.reportValidity()) void connectRemote(form);
+    } else {
+      void pairing().then((pending) => {
+        if (pending?.state === "found") void chrome.runtime.sendMessage({type: "pair-local", origin: pending.server});
+      });
+    }
   } else if (action === "disconnect") {
     void chrome.runtime.sendMessage({type: "dp-disconnect"}).then((answer: {revoked?: boolean} | undefined) =>
       note(answer?.revoked ? "optionsDisconnected" : "optionsDisconnectedLocally"));

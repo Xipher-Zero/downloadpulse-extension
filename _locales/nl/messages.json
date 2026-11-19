@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "DownloadPulse draait op deze computer."
   },
-  "popupConnectThisComputer": {
-    "message": "Verbinden met DownloadPulse op deze computer"
-  },
-  "popupConnectDifferent": {
-    "message": "Verbinden met een andere DownloadPulse"
-  },
   "popupChecking": {
     "message": "Verbinding controleren…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "De geselecteerde links downloaden met DownloadPulse"
+  },
+  "popupChooseInstance": {
+    "message": "Met welke DownloadPulse verbinden"
+  },
+  "choiceLocalTitle": {
+    "message": "Deze computer"
+  },
+  "choiceLocalHint": {
+    "message": "Verbinden met de DownloadPulse die hier geïnstalleerd is en draait."
+  },
+  "choiceRemoteTitle": {
+    "message": "Externe server"
+  },
+  "choiceRemoteHint": {
+    "message": "Een DownloadPulse-server elders op uw netwerk of op internet. U voert het adres ervan in."
+  },
+  "popupConnectAction": {
+    "message": "Verbinden"
   }
 }

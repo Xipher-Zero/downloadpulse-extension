@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "DownloadPulse bu bilgisayarda çalışıyor."
   },
-  "popupConnectThisComputer": {
-    "message": "Bu bilgisayardaki DownloadPulse'a bağlan"
-  },
-  "popupConnectDifferent": {
-    "message": "Başka bir DownloadPulse'a bağlan"
-  },
   "popupChecking": {
     "message": "Bağlantı kontrol ediliyor…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "Seçilen bağlantıları DownloadPulse ile indir"
+  },
+  "popupChooseInstance": {
+    "message": "Hangi DownloadPulse'a bağlanılacak"
+  },
+  "choiceLocalTitle": {
+    "message": "Bu bilgisayar"
+  },
+  "choiceLocalHint": {
+    "message": "Burada yüklü ve çalışan DownloadPulse'a bağlanın."
+  },
+  "choiceRemoteTitle": {
+    "message": "Uzak sunucu"
+  },
+  "choiceRemoteHint": {
+    "message": "Ağınızda ya da internette başka bir yerdeki DownloadPulse sunucusu. Adresini gireceksiniz."
+  },
+  "popupConnectAction": {
+    "message": "Bağlan"
   }
 }

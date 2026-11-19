@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "يعمل DownloadPulse على هذا الكمبيوتر."
   },
-  "popupConnectThisComputer": {
-    "message": "الربط بـ DownloadPulse على هذا الكمبيوتر"
-  },
-  "popupConnectDifferent": {
-    "message": "الربط بـ DownloadPulse آخر"
-  },
   "popupChecking": {
     "message": "جارٍ التحقق من الاتصال…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "تنزيل الروابط المحددة باستخدام DownloadPulse"
+  },
+  "popupChooseInstance": {
+    "message": "نسخة DownloadPulse التي سيُربط بها المتصفح"
+  },
+  "choiceLocalTitle": {
+    "message": "هذا الكمبيوتر"
+  },
+  "choiceLocalHint": {
+    "message": "الربط بنسخة DownloadPulse المثبتة والعاملة هنا."
+  },
+  "choiceRemoteTitle": {
+    "message": "خادم بعيد"
+  },
+  "choiceRemoteHint": {
+    "message": "خادم DownloadPulse في مكان آخر على شبكتك أو على الإنترنت. ستُدخل عنوانه."
+  },
+  "popupConnectAction": {
+    "message": "ربط"
   }
 }

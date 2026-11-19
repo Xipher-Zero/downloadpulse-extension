@@ -223,6 +223,21 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-popup__code { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; }
 .dp-popup__error { color: var(--dp-state-error); }
 
+/* ── choosing what to connect to: DownloadPulse's wizard choice cards ── */
+.dp-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.dp-choice {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 12px 8px 14px;
+  border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1);
+  color: inherit; font: inherit; text-align: center; cursor: pointer;
+}
+.dp-choice[aria-checked="true"] { border-color: var(--dp-accent-purple-bright); box-shadow: inset 0 0 0 1px var(--dp-accent-purple-bright); }
+.dp-choice:focus-visible { outline: none; box-shadow: var(--dp-focus-ring); }
+.dp-choice[aria-checked="true"]:focus-visible { box-shadow: inset 0 0 0 1px var(--dp-accent-purple-bright), var(--dp-focus-ring); }
+.dp-choice__name { font-weight: 650; }
+.dp-choice__glyph { display: grid; place-items: center; color: var(--dp-accent-purple-bright); }
+.dp-choice__glyph svg { inline-size: 28px; block-size: 28px; stroke-width: 1.6; }
+.dp-choice__text { color: var(--dp-text-muted); font-size: 11.5px; line-height: 1.4; }
+
 /* ── the connection: its status by colour, its details behind the chevron ── */
 .dp-conn { display: flex; align-items: center; justify-content: center; gap: 4px; }
 .dp-conn__status { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; color: var(--dp-text-secondary); }

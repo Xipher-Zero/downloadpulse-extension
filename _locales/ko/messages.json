@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "이 컴퓨터에서 DownloadPulse가 실행 중입니다."
   },
-  "popupConnectThisComputer": {
-    "message": "이 컴퓨터의 DownloadPulse에 연결"
-  },
-  "popupConnectDifferent": {
-    "message": "다른 DownloadPulse에 연결"
-  },
   "popupChecking": {
     "message": "연결 확인 중…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "선택한 링크를 DownloadPulse로 다운로드"
+  },
+  "popupChooseInstance": {
+    "message": "연결할 DownloadPulse"
+  },
+  "choiceLocalTitle": {
+    "message": "이 컴퓨터"
+  },
+  "choiceLocalHint": {
+    "message": "여기에 설치되어 실행 중인 DownloadPulse에 연결합니다."
+  },
+  "choiceRemoteTitle": {
+    "message": "원격 서버"
+  },
+  "choiceRemoteHint": {
+    "message": "네트워크나 인터넷의 다른 곳에 있는 DownloadPulse 서버입니다. 서버 주소를 입력합니다."
+  },
+  "popupConnectAction": {
+    "message": "연결"
   }
 }

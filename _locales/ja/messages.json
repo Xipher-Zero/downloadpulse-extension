@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "このコンピューターで DownloadPulse が実行されています。"
   },
-  "popupConnectThisComputer": {
-    "message": "このコンピューターの DownloadPulse に接続"
-  },
-  "popupConnectDifferent": {
-    "message": "別の DownloadPulse に接続"
-  },
   "popupChecking": {
     "message": "接続を確認しています…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "選択したリンクを DownloadPulse でダウンロード"
+  },
+  "popupChooseInstance": {
+    "message": "接続する DownloadPulse"
+  },
+  "choiceLocalTitle": {
+    "message": "このコンピューター"
+  },
+  "choiceLocalHint": {
+    "message": "ここにインストールされ、実行中の DownloadPulse に接続します。"
+  },
+  "choiceRemoteTitle": {
+    "message": "リモートサーバー"
+  },
+  "choiceRemoteHint": {
+    "message": "ネットワーク上またはインターネット上の別の場所にある DownloadPulse サーバー。アドレスを入力します。"
+  },
+  "popupConnectAction": {
+    "message": "接続"
   }
 }

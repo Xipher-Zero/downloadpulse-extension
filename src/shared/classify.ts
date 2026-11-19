@@ -28,9 +28,20 @@ function parsed(href: string): URL | null {
 }
 
 /** The file DownloadPulse takes as contents, captured before sending (S1), or null. */
+/**
+ * A newznab indexer's download link: the standard API's ``?t=get&id=…``
+ * (``…/api``; NZBGeek's ``…/cdn``). Its answer is the NZB itself, and the link
+ * carries the person's indexer key, so it is captured, never sent (operator,
+ * 2026-11-18).
+ */
+export function isNewznabGet(url: URL): boolean {
+  return (url.searchParams.get("t") ?? "").toLowerCase() === "get" && Boolean(url.searchParams.get("id"));
+}
+
 export function captureKind(href: string): CaptureKind | null {
   const url = parsed(href);
   if (!url || (url.protocol !== "http:" && url.protocol !== "https:")) return null;
+  if (isNewznabGet(url)) return "nzb";
   const kind = extension(decodeURIComponent(url.pathname));
   return kind === "torrent" ? "torrent" : kind === "nzb" ? "nzb" : kind === "meta4" ? "metalink" : null;
 }
@@ -43,6 +54,7 @@ export function isDownloadCandidate(href: string, attributes: {download?: boolea
   if (attributes.download) return true;
   const type = (attributes.type ?? "").toLowerCase();
   if (type && !type.startsWith("text/html") && !type.startsWith("application/xhtml")) return true;
+  if (isNewznabGet(url)) return true;
   const path = decodeURIComponent(url.pathname);
   return DOWNLOAD_EXTENSIONS.has(extension(path)) || MULTIPART.test(path);
 }

@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "DownloadPulse正在這部電腦上執行。"
   },
-  "popupConnectThisComputer": {
-    "message": "連線到這部電腦上的DownloadPulse"
-  },
-  "popupConnectDifferent": {
-    "message": "連線到其他DownloadPulse"
-  },
   "popupChecking": {
     "message": "正在檢查連線…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "使用DownloadPulse下載所選連結"
+  },
+  "popupChooseInstance": {
+    "message": "要連線的DownloadPulse"
+  },
+  "choiceLocalTitle": {
+    "message": "這部電腦"
+  },
+  "choiceLocalHint": {
+    "message": "連線到這裡已安裝且正在執行的DownloadPulse。"
+  },
+  "choiceRemoteTitle": {
+    "message": "遠端伺服器"
+  },
+  "choiceRemoteHint": {
+    "message": "位於您網路中其他位置或網際網路上的DownloadPulse伺服器。您需要輸入它的位址。"
+  },
+  "popupConnectAction": {
+    "message": "連線"
   }
 }

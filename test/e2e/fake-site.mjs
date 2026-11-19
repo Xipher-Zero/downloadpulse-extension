@@ -6,6 +6,11 @@ import http from "node:http";
 
 export const TORRENT = Buffer.from("d4:infod6:lengthi1024e4:name8:file.iso12:piece lengthi16384e6:pieces20:"
   + "\0".repeat(20) + "ee", "latin1");
+// An NZB as a newznab indexer serves it: XML, its name in the head.
+export const NZB = Buffer.from('<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTYPE nzb PUBLIC "-//newzBin//DTD NZB 1.1//EN" '
+  + '"http://www.newzbin.com/DTD/nzb/nzb-1.1.dtd">\n<nzb xmlns="http://www.newzbin.com/DTD/2003/nzb"><head>'
+  + '<meta type="name">The.Odyssey.2026.2160p</meta></head><file poster="p" date="1" subject="s"><groups>'
+  + '<group>alt.binaries.test</group></groups><segments><segment bytes="1" number="1">a@b</segment></segments></file></nzb>');
 
 export async function fakeSite() {
   const state = {requests: []};
@@ -25,6 +30,9 @@ export async function fakeSite() {
         <p><a id="magnet" href="magnet:?xt=urn:btih:${"d".repeat(40)}&dn=thing">A magnet</a></p>
         <p><a id="torrent" href="/files/private.torrent?passkey=SECRETPASSKEY">private.torrent</a></p>
         <p><a id="login" href="/files/needs-login.torrent">needs-login.torrent</a></p>
+        <p><a id="indexer" href="/cdn?t=get&amp;id=c59de97c&amp;apikey=SECRETINDEXERKEY">Get NZB</a></p>
+        <p><a id="indexer-unnamed" href="/api?t=get&amp;id=nameless&amp;apikey=SECRETINDEXERKEY">Get</a></p>
+        <p><a id="indexer-refused" href="/api?t=get&amp;id=over-limit&amp;apikey=SECRETINDEXERKEY">Get (limit)</a></p>
         <p id="text">Mirror: https://203.0.113.20/releases/disc.iso today</p>
         <video id="video" width="320" height="180" style="background:#000"></video>
         <button id="full" onclick="document.querySelector('#video').requestFullscreen()">Fullscreen</button>
@@ -47,6 +55,17 @@ https://send.now/ijn6gxxf9bj8</textarea>
       res.writeHead(200, {"Content-Type": "application/x-bittorrent",
         "Content-Disposition": 'attachment; filename="private.torrent"'});
       return res.end(TORRENT);
+    }
+    if ((url.pathname === "/cdn" || url.pathname === "/api") && url.searchParams.get("t") === "get") {
+      // A newznab indexer: the NZB, or (its limit reached) an <error> document, both with 200.
+      const id = url.searchParams.get("id");
+      if (id === "over-limit") {
+        res.writeHead(200, {"Content-Type": "application/xml"});
+        return res.end('<?xml version="1.0" encoding="UTF-8"?><error code="429" description="Request limit reached"/>');
+      }
+      res.writeHead(200, {"Content-Type": "application/x-nzb",
+        ...(id === "nameless" ? {} : {"Content-Disposition": 'attachment; filename="The.Odyssey.2026.1080p.nzb"'})});
+      return res.end(NZB);
     }
     if (url.pathname === "/files/needs-login.torrent") {
       res.writeHead(200, {"Content-Type": "text/html"});

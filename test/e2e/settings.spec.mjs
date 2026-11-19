@@ -35,7 +35,7 @@ test.beforeEach(async () => {
   popup = await context.newPage();
   await popup.goto(`${base}/popup/popup.html`);
   await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
-  await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
+  await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
   await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});

@@ -21,6 +21,12 @@ const GEOMETRY = {
     ["path", {d: "M10 11v5"}], ["path", {d: "M14 11v5"}],
   ],
   chevronRight: [["path", {d: "m9 18 6-6-6-6"}]],
+  monitor: [["rect", {width: "20", height: "14", x: "2", y: "3", rx: "2"}], ["path", {d: "M8 21h8"}], ["path", {d: "M12 17v4"}]],
+  server: [
+    ["rect", {width: "20", height: "8", x: "2", y: "2", rx: "2", ry: "2"}],
+    ["rect", {width: "20", height: "8", x: "2", y: "14", rx: "2", ry: "2"}],
+    ["path", {d: "M6 6h.01"}], ["path", {d: "M6 18h.01"}],
+  ],
   chevronLeft: [["path", {d: "m15 18-6-6 6-6"}]],
 } satisfies Record<string, Shape[]>;
 

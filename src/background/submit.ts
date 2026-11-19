@@ -42,12 +42,18 @@ function base64(bytes: Uint8Array): string {
   return btoa(text);
 }
 
-function fileName(response: Response, url: URL, kind: CaptureKind): string {
+function fileName(response: Response, url: URL, kind: CaptureKind, bytes: Uint8Array): string {
   const disposition = response.headers.get("Content-Disposition") ?? "";
   const named = /filename\*=UTF-8''([^;]+)|filename="?([^";]+)"?/i.exec(disposition);
-  let name = named ? decodeURIComponent(named[1] ?? named[2] ?? "") : decodeURIComponent(url.pathname.split("/").pop() ?? "");
+  // Unnamed by the site: an NZB names itself (its <meta type="name">); else the path's last part.
+  const own = !named && kind === "nzb" ? /<meta\s+type="name"\s*>([^<]+)</i.exec(new TextDecoder().decode(bytes.subarray(0, 65536))) : null;
+  let name = named ? decodeURIComponent(named[1] ?? named[2] ?? "")
+    : own ? own[1]!.trim() : decodeURIComponent(url.pathname.split("/").pop() ?? "");
   name = name.replace(/[\\/\u0000-\u001f]/g, "_").trim().slice(0, 200) || "download";
-  return name.toLowerCase().endsWith(SUFFIX[kind]) ? name : name.replace(/\.[^.]*$/, "") + SUFFIX[kind];
+  if (name.toLowerCase().endsWith(SUFFIX[kind])) return name;
+  // Another file type's extension (letters only, ".xml", ".bin") is replaced; anything else is part of
+  // the name ("The.Odyssey.2026.2160p" keeps its ".2160p").
+  return (/\.[a-z]{1,5}$/i.test(name) ? name.replace(/\.[a-z]{1,5}$/i, "") : name) + SUFFIX[kind];
 }
 
 /** B5: fetch the file as the browser would, with the person's cookies for that site. */
@@ -70,7 +76,13 @@ async function capture(href: string, kind: CaptureKind): Promise<Source> {
   const bytes = new Uint8Array(await response.arrayBuffer());
   if (!bytes.length) throw new Refused("sendCaptureFailed");
   if (bytes.length > LIMITS[kind]) throw new Refused("sendTooLarge");
-  const filename = fileName(response, url, kind);
+  // An NZB is an XML document with an <nzb> root; a newznab indexer answers a
+  // refusal (a bad key, a limit reached) with an <error> document and 200.
+  if (kind === "nzb" && !/^\s*(?:\ufeff)?(?:<\?xml[^>]*>\s*)?(?:<!--[\s\S]*?-->\s*|<!DOCTYPE[^>]*>\s*)*<nzb[\s>]/i
+    .test(new TextDecoder().decode(bytes.subarray(0, 4096)))) {
+    throw new Refused("sendCaptureFailed");
+  }
+  const filename = fileName(response, url, kind, bytes);
   const encoded = base64(bytes);
   return kind === "torrent" ? {kind, filename, torrent_base64: encoded}
     : kind === "nzb" ? {kind, filename, nzb_base64: encoded} : {kind, filename, metalink_base64: encoded};

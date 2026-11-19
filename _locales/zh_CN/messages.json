@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "DownloadPulse正在此计算机上运行。"
   },
-  "popupConnectThisComputer": {
-    "message": "连接到此计算机上的DownloadPulse"
-  },
-  "popupConnectDifferent": {
-    "message": "连接到其他DownloadPulse"
-  },
   "popupChecking": {
     "message": "正在检查连接…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "使用DownloadPulse下载所选链接"
+  },
+  "popupChooseInstance": {
+    "message": "要连接的DownloadPulse"
+  },
+  "choiceLocalTitle": {
+    "message": "此计算机"
+  },
+  "choiceLocalHint": {
+    "message": "连接到此处已安装并正在运行的DownloadPulse。"
+  },
+  "choiceRemoteTitle": {
+    "message": "远程服务器"
+  },
+  "choiceRemoteHint": {
+    "message": "位于您网络中其他位置或互联网上的DownloadPulse服务器。您需要输入它的地址。"
+  },
+  "popupConnectAction": {
+    "message": "连接"
   }
 }

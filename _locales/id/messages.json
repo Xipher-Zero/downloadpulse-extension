@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "DownloadPulse berjalan di komputer ini."
   },
-  "popupConnectThisComputer": {
-    "message": "Hubungkan ke DownloadPulse di komputer ini"
-  },
-  "popupConnectDifferent": {
-    "message": "Hubungkan ke DownloadPulse lain"
-  },
   "popupChecking": {
     "message": "Memeriksa sambungan…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "Unduh tautan yang dipilih dengan DownloadPulse"
+  },
+  "popupChooseInstance": {
+    "message": "DownloadPulse yang akan dihubungkan"
+  },
+  "choiceLocalTitle": {
+    "message": "Komputer ini"
+  },
+  "choiceLocalHint": {
+    "message": "Hubungkan ke DownloadPulse yang terpasang dan berjalan di sini."
+  },
+  "choiceRemoteTitle": {
+    "message": "Server jarak jauh"
+  },
+  "choiceRemoteHint": {
+    "message": "Server DownloadPulse di tempat lain di jaringan Anda atau di internet. Anda akan memasukkan alamatnya."
+  },
+  "popupConnectAction": {
+    "message": "Hubungkan"
   }
 }

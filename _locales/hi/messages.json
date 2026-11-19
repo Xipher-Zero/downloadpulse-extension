@@ -318,12 +318,6 @@
   "popupFoundLocal": {
     "message": "इस कंप्यूटर पर DownloadPulse चल रहा है।"
   },
-  "popupConnectThisComputer": {
-    "message": "इस कंप्यूटर पर DownloadPulse से कनेक्ट करें"
-  },
-  "popupConnectDifferent": {
-    "message": "किसी दूसरे DownloadPulse से कनेक्ट करें"
-  },
   "popupChecking": {
     "message": "कनेक्शन जाँचा जा रहा है…"
   },
@@ -353,5 +347,23 @@
   },
   "selectionSend": {
     "message": "चुने गए लिंक DownloadPulse से डाउनलोड करें"
+  },
+  "popupChooseInstance": {
+    "message": "किस DownloadPulse से कनेक्ट करना है"
+  },
+  "choiceLocalTitle": {
+    "message": "यह कंप्यूटर"
+  },
+  "choiceLocalHint": {
+    "message": "यहाँ इंस्टॉल और चल रहे DownloadPulse से कनेक्ट करें।"
+  },
+  "choiceRemoteTitle": {
+    "message": "रिमोट सर्वर"
+  },
+  "choiceRemoteHint": {
+    "message": "आपके नेटवर्क या इंटरनेट पर कहीं और मौजूद DownloadPulse सर्वर। आप उसका पता दर्ज करेंगे।"
+  },
+  "popupConnectAction": {
+    "message": "कनेक्ट करें"
   }
 }

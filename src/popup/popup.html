@@ -31,17 +31,28 @@
       <p class="dp-popup__status" role="status" data-i18n="popupProbing"></p>
     </section>
 
+    <!-- Found on this computer: choose it or a remote server, as DownloadPulse's
+         first-run wizard chooses a deployment type (cards, a glyph, a hint). -->
     <section data-state="found" hidden>
       <p class="dp-popup__status" role="status" data-i18n="popupFoundLocal"></p>
-      <button type="button" class="dp-btn dp-btn--primary" data-action="pair-local" data-i18n="popupConnectThisComputer"></button>
-      <button type="button" class="dp-btn" data-action="show-remote" aria-expanded="false" aria-controls="remote-found"
-              data-i18n="popupConnectDifferent"></button>
-      <form class="dp-popup__remote" id="remote-found" data-action="connect-remote" hidden>
+      <div class="dp-choices" role="radiogroup" data-i18n-aria="popupChooseInstance">
+        <button type="button" class="dp-choice" role="radio" aria-checked="true" data-choice="local">
+          <span class="dp-choice__name" data-i18n="choiceLocalTitle"></span>
+          <span class="dp-choice__glyph" data-glyph-slot="monitor"></span>
+          <span class="dp-choice__text" data-i18n="choiceLocalHint"></span>
+        </button>
+        <button type="button" class="dp-choice" role="radio" aria-checked="false" tabindex="-1" data-choice="remote">
+          <span class="dp-choice__name" data-i18n="choiceRemoteTitle"></span>
+          <span class="dp-choice__glyph" data-glyph-slot="server"></span>
+          <span class="dp-choice__text" data-i18n="choiceRemoteHint"></span>
+        </button>
+      </div>
+      <form class="dp-popup__remote" id="remote-found" hidden>
         <label class="dp-popup__label" for="server-found" data-i18n="popupServerLabel"></label>
         <input id="server-found" name="server" type="text" autocomplete="url" spellcheck="false" required
                data-i18n-placeholder="popupServerPlaceholder">
-        <button type="submit" class="dp-btn dp-btn--primary" data-i18n="popupConnectServer"></button>
       </form>
+      <button type="button" class="dp-btn dp-btn--primary" data-action="connect-chosen" data-i18n="popupConnectAction"></button>
     </section>
 
     <section data-state="not_found" hidden>

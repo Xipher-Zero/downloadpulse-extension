@@ -192,3 +192,40 @@ Full suite passes.
 - **Firefox's URL-bar icon** (shown when a page has a video) now counts only a video that is shown, player-sized (at least 320×180) and not inside a link.
 
 **Proof:** a video inside a link, and a video under a link's overlay, put no extension element in the page; the page's own video still gets its button. Without the rule, this fails. Full suite passes.
+
+## 15. An indexer's download link (NZBGeek): captured as the NZB
+
+**Seen:** NZBGeek's download icon links to its newznab API (`api.nzbgeek.info/cdn?t=get&id=…&apikey=…`). Fetching it returns the `.nzb`. The extension didn't recognize it (no `.nzb` in the path), so it would have sent the URL itself. That's a plain web link to DownloadPulse, and it carries the person's indexer key.
+
+**Fix:**
+- **Recognized:** a newznab download link (`?t=get&id=…`, whatever the path: the standard `/api`, NZBGeek's `/cdn`) is a download candidate (hover icon, right-click) and is captured as an NZB, as a `.torrent` behind a sign-in is. The browser fetches it, and DownloadPulse receives only the NZB's contents and name, **never the URL or the key**.
+- **Validated:** the answer must be an NZB document (an `<nzb>` root). A newznab indexer answers a refusal (bad key, limit reached) with an `<error>` document and 200. That's refused, and nothing is sent.
+- **Named** by the indexer's `Content-Disposition`, else by the NZB's own `<meta type="name">`, never "cdn.nzb".
+- **Also fixed:** adding a captured file's suffix stripped a dotted name's last part (`The.Odyssey.2026.2160p` became `The.Odyssey.2026.nzb`). Only a letters-only extension is replaced now; anything else is kept.
+
+**Proof:**
+- **Unit:** newznab get links are candidates and NZB captures; a search, or a get without an id, is neither.
+- **e2e (fake indexer):**
+  - named by the indexer;
+  - unnamed, named by the NZB itself;
+  - a limit `<error>` sends nothing;
+  - the key appears nowhere in what DownloadPulse received.
+
+## 16. Onboarding: choosing what to connect to, as DownloadPulse's wizard chooses a deployment type
+
+**Seen:** with DownloadPulse found on this computer, the choice was two stacked text buttons.
+
+**Fix:**
+- **Two choice cards side by side**, as the first-run wizard's Deployment Type step draws them: a title, a Lucide glyph (`monitor`, `server`, DownloadPulse's geometry) and a hint each. They are:
+  - **This computer**, "Connect to the DownloadPulse installed and running here.", chosen by default;
+  - **Remote server**, "A DownloadPulse server elsewhere on your network or the internet. You'll enter its address.".
+- **One primary Connect.** Choosing Remote server shows the address field, and Enter in it connects too.
+- **A radio group, as the wizard's:** the arrow keys move the choice, and the chosen card has the accent edge.
+- **Strings:** six new; the two old button strings are retired everywhere.
+
+**Proof:**
+- local chosen by default, each card with its glyph, side by side;
+- the arrows move the choice and its focus;
+- the address field shows only for Remote server;
+- connecting to a named server through the cards pairs with that server, and the local one is never asked.
+- **Translated** into 18 locales and independently reviewed. Two corrected: ru and uk "Connect" take the reflexive form, as the catalog's other connect buttons do, and so no longer clash with DownloadPulse's own pairing button.

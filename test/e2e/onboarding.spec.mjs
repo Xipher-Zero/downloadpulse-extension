@@ -53,7 +53,7 @@ test("found on this computer: offered first, then paired on approval, verified, 
     await popup.waitForTimeout(500);
     expect(fake.state.pairings.size).toBe(0);
     expect(context.pages()).toHaveLength(pages);   // no approval tab yet
-    await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
+    await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     // The approval page opened on that server, at its own path.
     await expect.poll(() => context.pages().map((page) => page.url())).toContain("http://127.0.0.1:8095/?connect-browser=ABCD-0001");
@@ -96,9 +96,26 @@ test("found on this computer, a different DownloadPulse can be chosen instead", 
   try {
     await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
     await expect(popup.getByLabel("Server address").filter({visible: true})).toHaveCount(0);
-    await popup.getByRole("button", {name: "Connect to a different DownloadPulse"}).click();
+    // Two choice cards, as DownloadPulse's setup wizard offers a deployment type: This computer is chosen.
+    const local_ = popup.getByRole("radio", {name: /^This computer/});
+    const remote_ = popup.getByRole("radio", {name: /^Remote server/});
+    await expect(local_).toHaveAttribute("aria-checked", "true");
+    await expect(remote_).toHaveAttribute("aria-checked", "false");
+    await expect(local_.locator("svg[data-glyph='monitor']")).toHaveCount(1);
+    await expect(remote_.locator("svg[data-glyph='server']")).toHaveCount(1);
+    const [a, b] = await Promise.all([local_.boundingBox(), remote_.boundingBox()]);
+    expect(Math.abs(a.y - b.y)).toBeLessThan(2);                       // side by side
+    // The arrow keys move the choice, as in the wizard.
+    await local_.focus();
+    await popup.keyboard.press("ArrowRight");
+    await expect(remote_).toHaveAttribute("aria-checked", "true");
+    await expect(remote_).toBeFocused();
+    await popup.keyboard.press("ArrowLeft");
+    await expect(local_).toHaveAttribute("aria-checked", "true");
+    await expect(popup.getByLabel("Server address").filter({visible: true})).toHaveCount(0);
+    await remote_.click();
     await popup.getByLabel("Server address").filter({visible: true}).fill(`http://localhost:${remote.port}`);
-    await popup.getByRole("button", {name: "Connect to this server"}).click();
+    await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     remote.answer("approved");
     // localhost, on any port, is this computer: named so; the connection is that server's own.
@@ -168,7 +185,7 @@ test("an older DownloadPulse on this computer says so, and a server can still be
   const {popup, close} = await launch();
   try {
     await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
-    await popup.getByRole("button", {name: "Connect to DownloadPulse on this computer"}).click();
+    await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("failure")).toHaveText("This DownloadPulse is too old to connect browsers. Update it, then connect again.");
     await popup.getByLabel("Or connect to a DownloadPulse server:").fill(`http://localhost:${current.port}`);
     await popup.locator('section[data-state="failed"]').getByRole("button", {name: "Connect to this server"}).click();
