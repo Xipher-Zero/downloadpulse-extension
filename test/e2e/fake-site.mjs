@@ -38,7 +38,8 @@ export async function fakeSite() {
         <p id="indexer-limit">http://${req.headers.host}/api?t=get&amp;id=over-limit&amp;apikey=SECRETINDEXERKEY</p>
         <p id="indexer-text">http://${req.headers.host}/cdn?t=get&amp;id=c59de97c&amp;apikey=SECRETINDEXERKEY http://${req.headers.host}/api?t=get&amp;id=nameless&amp;apikey=SECRETINDEXERKEY</p>
         <p id="text">Mirror: https://203.0.113.20/releases/disc.iso today</p>
-        <video id="video" width="320" height="180" style="background:#000"></video>
+        <div style="position:relative;width:320px;height:180px"><video id="video" width="320" height="180" style="background:#000"></video>
+          <svg id="play-icon" viewBox="0 0 24 24" width="40" height="40" style="position:absolute;left:140px;top:70px"><path d="M8 5v14l11-7z" fill="#fff"/></svg></div>
         <button id="full" onclick="document.querySelector('#video').requestFullscreen()">Fullscreen</button>
         <p><a id="thumb" href="/watch?v=inside"><video width="160" height="90" style="background:#222"></video></a></p>
         <div id="overlaid" style="position:relative;width:160px;height:90px"><video width="160" height="90" style="background:#333"></video>

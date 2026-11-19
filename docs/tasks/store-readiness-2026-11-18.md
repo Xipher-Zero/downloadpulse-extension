@@ -112,3 +112,13 @@ The reviewer also noted where the disclosure page summarizes `PRIVACY.md` rather
 **Fix:** `sendUrl` and `sendSelection` check that the connection may be used (`token()`, the gate) before anything else. `send()` still checks again before submitting.
 
 **Proof:** a button offered while usable is clicked after the connection is held. The source site is never asked, and no job is sent. Without the early check, the test fails.
+
+## Error log: `dom.openOrClosedShadowRoot` on KeepLinks (2026-11-19)
+
+**The error:** `Uncaught (in promise) TypeError: Error in invocation of dom.openOrClosedShadowRoot(HTMLElement element)`.
+
+**Cause:** while looking for a video under the pointer, `shadowOf` passed every element there to Chromium's `chrome.dom.openOrClosedShadowRoot`, which accepts only HTML elements. An SVG icon, as on KeepLinks, made it throw. That ended the pointer handling for that movement and logged the error.
+
+**Fix:** only an HTML element is looked into (only one can hold a shadow root), and the lookup cannot throw out of the handler.
+
+**Proof:** a play icon (SVG) over the fixture's video still finds the video and shows its button. With the old lookup, the test fails.

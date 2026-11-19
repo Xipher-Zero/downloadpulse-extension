@@ -299,10 +299,17 @@ let announced = false;
 
 function shadowOf(element: Element): ShadowRoot | null {
   if (element.shadowRoot) return element.shadowRoot;
+  // Only an HTML element can hold a shadow root; Chromium's chrome.dom lookup throws for any
+  // other (an SVG icon over a video, as on KeepLinks), which stopped the video search there.
+  if (!(element instanceof HTMLElement)) return null;
   const firefox = (element as Element & {openOrClosedShadowRoot?: ShadowRoot | null}).openOrClosedShadowRoot;
   if (firefox !== undefined) return firefox;
-  const dom = (chrome as unknown as {dom?: {openOrClosedShadowRoot?(element: Element): ShadowRoot | null}}).dom;
-  return dom?.openOrClosedShadowRoot?.(element) ?? null;
+  const dom = (chrome as unknown as {dom?: {openOrClosedShadowRoot?(element: HTMLElement): ShadowRoot | null}}).dom;
+  try {
+    return dom?.openOrClosedShadowRoot?.(element) ?? null;
+  } catch {
+    return null;
+  }
 }
 
 function videoAt(root: Document | ShadowRoot, x: number, y: number, depth = 0): HTMLVideoElement | null {

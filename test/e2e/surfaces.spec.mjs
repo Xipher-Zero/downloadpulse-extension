@@ -547,6 +547,16 @@ test("a video preview (inside a link, or under one) gets no video button; the pa
   await expect.poll(async () => (await openLayers(page)).length).toBe(1);
 });
 
+test("an SVG icon over the video (a player's play glyph) still finds the video (Chromium's shadow lookup refuses SVG)", async () => {
+  await connect();
+  const page = await sitePage();
+  await page.locator("#video").scrollIntoViewIfNeeded();
+  const icon = await page.locator("#play-icon").boundingBox();
+  await page.mouse.move(1, 1);
+  await page.mouse.move(icon.x + icon.width / 2, icon.y + icon.height / 2, {steps: 3});
+  await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+});
+
 test("not connected: nothing is offered on any page", async () => {
   const page = await sitePage();
   for (const selector of ["#zip", "#magnet", "#video"]) {
