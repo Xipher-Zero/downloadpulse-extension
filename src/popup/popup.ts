@@ -265,8 +265,10 @@ async function renderSettings(): Promise<void> {
   }
   const chosen = await settings();
   for (const input of document.querySelectorAll<HTMLInputElement>("[data-setting]")) {
-    input.checked = Boolean(chosen[input.dataset["setting"] as "hover" | "video"]);
+    input.checked = Boolean(chosen[input.dataset["setting"] as "inPage" | "hover" | "video"]);
   }
+  // Off, what the master switch governs is not shown at all.
+  $('[data-testid="in-page-options"]').hidden = !chosen.inPage;
   for (const input of document.querySelectorAll<HTMLInputElement>("[data-notify]")) {
     input.checked = Boolean(chosen.notify[input.dataset["notify"] as keyof Settings["notify"]]);
   }

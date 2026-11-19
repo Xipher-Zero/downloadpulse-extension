@@ -247,7 +247,7 @@
     "message": "Abrir DownloadPulse"
   },
   "optionsConnection": {
-    "message": "Conexión"
+    "message": "Conexión:"
   },
   "optionsNotConnected": {
     "message": "Este navegador no está conectado a DownloadPulse. Conéctelo desde el botón de la barra de herramientas."
@@ -414,5 +414,8 @@
         "example": "192.168.1.20:8095"
       }
     }
+  },
+  "optionsInPage": {
+    "message": "Mostrar un botón de descarga en las páginas web"
   }
 }

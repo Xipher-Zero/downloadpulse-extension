@@ -59,6 +59,15 @@ test("the first screen says what the extension does, how it is used, and connect
     });
     expect(around.above).toBeGreaterThanOrEqual(18 + 10 - 1);
     expect(Math.abs(around.above - around.below)).toBeLessThanOrEqual(1);
+    // And a blank row above and below the Connect tile.
+    const tileRows = await popup.evaluate(() => {
+      const next = document.querySelector(".dp-welcome__next").getBoundingClientRect();
+      const tile = document.querySelector(".dp-connect-tile").getBoundingClientRect();
+      const state = document.querySelector(".dp-welcome__state").getBoundingClientRect();
+      return {above: tile.top - next.bottom, below: state.top - tile.bottom};
+    });
+    expect(tileRows.above).toBeGreaterThanOrEqual(18 + 10 - 1);
+    expect(Math.abs(tileRows.above - tileRows.below)).toBeLessThanOrEqual(1);
     const box = await tile.boundingBox();
     expect(Math.abs(box.width - box.height)).toBeLessThan(36);              // near-square
     const main = await popup.locator("main").boundingBox();

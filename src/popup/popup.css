@@ -234,7 +234,7 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-welcome__ways { margin: var(--dp-row) 0; padding-inline-start: 18px; display: grid; gap: 5px; color: var(--dp-text-secondary); font-size: 12.5px; }
 .dp-welcome__ways li::marker { color: var(--dp-accent-purple-bright); }
 /* A near-square tile: the action above and below a glyph scaled to balance the words. */
-.dp-connect-tile { justify-self: center; display: grid; justify-items: center; align-content: center; gap: 8px;
+.dp-connect-tile { justify-self: center; margin-block: var(--dp-row); display: grid; justify-items: center; align-content: center; gap: 8px;
   inline-size: 148px; min-block-size: 124px; padding: 12px; white-space: normal; text-align: center; line-height: 1.25; font-size: 13.5px; }
 .dp-connect-tile__glyph { display: contents; }
 .dp-connect-tile svg { inline-size: 36px; block-size: 36px; }
@@ -325,10 +325,21 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 
 /* ── settings ── */
 .dp-settings { gap: 14px; }
-.dp-settings__title { margin: 0; font-size: 14px; font-weight: 650; }
+.dp-settings__title { margin: 0; font-size: 14px; font-weight: 650; text-align: center; }
 .dp-settings__group { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--dp-border-default); }
-.dp-settings h3 { margin: 0; font-size: 13px; font-weight: 650; }
-.dp-settings h4 { margin: 4px 0 0; font-size: 12px; font-weight: 650; color: var(--dp-text-secondary); }
+/* Section titles centred; a subsection's smaller, in the secondary colour, a blank row either side. */
+.dp-settings h3 { margin: 0; font-size: 13px; font-weight: 650; text-align: center; }
+.dp-settings h4 { margin: var(--dp-row) 0; font-size: 12px; font-weight: 600; color: var(--dp-text-secondary); text-align: center; }
+.dp-settings__centred { margin: 0; text-align: center; color: var(--dp-text-muted); font-size: 12px; }
+/* Connection: its details, a row, the Disconnect hint, a row, Disconnect, a row, then the separator. */
+.dp-settings__connection { display: grid; gap: var(--dp-row); margin-block-end: var(--dp-row); }
+.dp-settings__disconnect { justify-self: center; }
+/* What the master switch governs, indented beneath it. */
+.dp-settings__dependent { display: grid; gap: 8px; padding-inline-start: 22px; }
+/* Add site: the field the whole width, its button inside it at the end, vertically centred. */
+.dp-site-add { position: relative; display: grid; }
+.dp-site-add input[type="text"] { inline-size: 100%; box-sizing: border-box; min-block-size: 34px; padding-inline-end: 88px; }
+.dp-site-add .dp-btn { position: absolute; inset-inline-end: 4px; inset-block: 4px; min-height: 0; padding: 0 10px; }
 .dp-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 .dp-row input[type="text"] { flex: 1 1 160px; }
 .dp-check { display: flex; gap: 8px; align-items: center; }

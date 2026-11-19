@@ -59,7 +59,9 @@ async function frameState(sender: chrome.runtime.MessageSender):
   const chosen = await settings();
   const off = isOffSite(sender.tab?.url ?? sender.url ?? "", chosen.offSites);
   // The person's theme, by palette ID (not a secret): what the page's surfaces are drawn in.
-  return {connected: true, hover: chosen.hover && !off, video: chosen.video && !off, appearance: await appearance()};
+  // The master switch first: off, the page offers nothing (its own choices are kept for when it is on).
+  const on = chosen.inPage && !off;
+  return {connected: true, hover: on && chosen.hover, video: on && chosen.video, appearance: await appearance()};
 }
 
 const MENU_LINK = "dp-send-link";

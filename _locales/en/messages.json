@@ -316,8 +316,8 @@
     "description": "Popup link to the connected DownloadPulse: the server, or the application on this computer."
   },
   "optionsConnection": {
-    "message": "Connection",
-    "description": "Settings: section heading."
+    "message": "Connection:",
+    "description": "Settings: the title of the connection section (centred, with a colon)."
   },
   "optionsNotConnected": {
     "message": "This browser isn't connected to DownloadPulse. Connect it from the toolbar button.",
@@ -534,5 +534,9 @@
         "example": "192.168.1.20:8095"
       }
     }
+  },
+  "optionsInPage": {
+    "message": "Display download button on web pages",
+    "description": "Settings, On web pages: the master checkbox. Off, the extension shows no download buttons on web pages at all; on, the options below it apply."
   }
 }

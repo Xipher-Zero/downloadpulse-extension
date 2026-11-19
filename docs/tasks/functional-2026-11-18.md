@@ -327,3 +327,24 @@ The selection uses the same capture code as right-click. Right-click itself can'
   - on the choice step, between the status box and the cards, below the cards, and (Remote server) between the address hint and "Server address".
 
   The gaps around the cards stay equal and the geometry is still one (360 × 508 px either way). Tests measure each row.
+
+## 21. The first screen's Connect tile, and the settings view (operator's mockups)
+
+- **First screen:** a blank row above and below the Connect tile.
+- **Settings, top:** Back stands at the title row's end, where the gear does; "Settings" is centred.
+- **Section titles** are centred: "Connection:" (with its colon), On web pages, Notifications.
+- **Connection:** its details, a row, the Disconnect hint (centred), a row, Disconnect (centred), a row, then the separator.
+- **On web pages:**
+  - a new master switch, **Display download button on web pages**, governs every in-page button: the hover button, the video button and the selection batch.
+  - Off, the page offers nothing, and what it governs is not shown: the two checkboxes, this site's switch and the sites without buttons.
+  - Those choices are kept, and return when it's switched back on.
+  - **Sites without download buttons** is a subsection: centred, smaller, in the secondary colour, with a blank row either side. Its hint is centred.
+  - The Add site field takes the full width, with its button inside it at the end, vertically centred.
+- **Strings:** `optionsConnection` (now with a colon) and `optionsInPage`, in 18 locales, reviewed with no corrections.
+
+**Proof:**
+- **Layout:** Back at the end, the three titles centred, "Connection:", the hint and Disconnect centred, each of the three gaps a blank row.
+- **Add site:** the button inside the field, at its end, vertically centred.
+- **Master switch:**
+  - off hides its options and the page offers no button;
+  - on again restores the earlier choices (the video switch, kept off) and the button.

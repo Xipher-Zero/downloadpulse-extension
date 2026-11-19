@@ -247,7 +247,7 @@
     "message": "Открыть DownloadPulse"
   },
   "optionsConnection": {
-    "message": "Подключение"
+    "message": "Подключение:"
   },
   "optionsNotConnected": {
     "message": "Этот браузер не подключён к DownloadPulse. Подключите его с помощью кнопки на панели инструментов."
@@ -414,5 +414,8 @@
         "example": "192.168.1.20:8095"
       }
     }
+  },
+  "optionsInPage": {
+    "message": "Показывать кнопку загрузки на веб-страницах"
   }
 }

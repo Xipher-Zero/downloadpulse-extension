@@ -247,7 +247,7 @@
     "message": "Buka DownloadPulse"
   },
   "optionsConnection": {
-    "message": "Sambungan"
+    "message": "Sambungan:"
   },
   "optionsNotConnected": {
     "message": "Peramban ini tidak terhubung ke DownloadPulse. Hubungkan melalui tombol di bilah alat."
@@ -414,5 +414,8 @@
         "example": "192.168.1.20:8095"
       }
     }
+  },
+  "optionsInPage": {
+    "message": "Tampilkan tombol unduh di halaman web"
   }
 }

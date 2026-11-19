@@ -247,7 +247,7 @@
     "message": "Apri DownloadPulse"
   },
   "optionsConnection": {
-    "message": "Connessione"
+    "message": "Connessione:"
   },
   "optionsNotConnected": {
     "message": "Questo browser non è connesso a DownloadPulse. Connetterlo dal pulsante nella barra degli strumenti."
@@ -414,5 +414,8 @@
         "example": "192.168.1.20:8095"
       }
     }
+  },
+  "optionsInPage": {
+    "message": "Mostra un pulsante di download nelle pagine web"
   }
 }

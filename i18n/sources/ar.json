@@ -72,7 +72,7 @@
   "notifyFailed": "8c264bfbfb4b9a58",
   "notifyAttention": "4bcd0ec442dafd3c",
   "popupOpenServer": "183d1f93d1de838d",
-  "optionsConnection": "639a40e82b9a96f0",
+  "optionsConnection": "5d80f54b901ccb8c",
   "optionsNotConnected": "4ab461c5c68445ee",
   "optionsDisconnect": "acfc5be785a9bb3d",
   "optionsDisconnectHint": "6eeeee2d863e9ca7",
@@ -118,5 +118,6 @@
   "connectTileBottom": "aa7a2707f4da6d75",
   "foundIntro": "ca8255ce1e68bb1d",
   "localApproveHint": "e0793e3d88496145",
-  "remoteAddressHint": "96659337e86ad292"
+  "remoteAddressHint": "96659337e86ad292",
+  "optionsInPage": "e8601dcc2cd4ed38"
 }

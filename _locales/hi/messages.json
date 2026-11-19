@@ -247,7 +247,7 @@
     "message": "DownloadPulse खोलें"
   },
   "optionsConnection": {
-    "message": "कनेक्शन"
+    "message": "कनेक्शन:"
   },
   "optionsNotConnected": {
     "message": "यह ब्राउज़र DownloadPulse से कनेक्ट नहीं है। इसे टूलबार बटन से कनेक्ट करें।"
@@ -414,5 +414,8 @@
         "example": "192.168.1.20:8095"
       }
     }
+  },
+  "optionsInPage": {
+    "message": "वेब पेजों पर डाउनलोड बटन दिखाएँ"
   }
 }

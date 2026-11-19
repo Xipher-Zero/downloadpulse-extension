@@ -584,8 +584,8 @@
       ]
     },
     "optionsConnection": {
-      "source": "639a40e82b9a96f0",
-      "translation": "5d9316922f3ff5b4",
+      "source": "5d80f54b901ccb8c",
+      "translation": "633ac9d4f206cf5d",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -966,6 +966,14 @@
     "remoteAddressHint": {
       "source": "96659337e86ad292",
       "translation": "58ccfd08ec247c02",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsInPage": {
+      "source": "e8601dcc2cd4ed38",
+      "translation": "4b9ae5daf6a04c35",
       "provenance": [
         "ai-generated",
         "ai-review"

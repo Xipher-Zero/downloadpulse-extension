@@ -99,9 +99,56 @@ test("the gear opens the settings inside the dropdown, and Back returns", async 
   await expect(popup.getByRole("button", {name: "Disconnect"})).toBeVisible();
   await expect(popup.getByTestId("settings-server")).toHaveText("Locally installed instance");
   await expect(popup.getByRole("button", {name: "Open DownloadPulse"})).toBeHidden();
+  // The settings' layout (operator, 2026-11-18).
+  const layout = await popup.evaluate(() => {
+    const box = (sel) => document.querySelector(sel).getBoundingClientRect();
+    const main = box("main");
+    const centre = (r) => Math.abs((r.left + r.right) / 2 - (main.left + main.right) / 2);
+    const hint = document.querySelector(".dp-settings__connection .dp-settings__centred");
+    return {
+      backAtEnd: main.right - box("[data-action='back']").right < 20,
+      titles: [...document.querySelectorAll(".dp-settings h3")].map((h) => getComputedStyle(h).textAlign),
+      connection: document.querySelector("#connection-title").textContent,
+      hintCentred: getComputedStyle(hint).textAlign,
+      disconnectCentred: centre(box("[data-action='disconnect']")) < 2,
+      rows: {factsToHint: hint.getBoundingClientRect().top - box(".dp-settings__connection .dp-facts").bottom,
+        hintToButton: box("[data-action='disconnect']").top - hint.getBoundingClientRect().bottom,
+        buttonToSeparator: box("section[aria-labelledby='page-title']").top - box("[data-action='disconnect']").bottom},
+    };
+  });
+  expect(layout).toMatchObject({backAtEnd: true, titles: ["center", "center", "center"], connection: "Connection:",
+    hintCentred: "center", disconnectCentred: true});
+  for (const gap of Object.values(layout.rows)) expect(gap).toBeGreaterThanOrEqual(17);
   await popup.getByRole("button", {name: "Back"}).click();
   await expect(popup.getByRole("button", {name: "Open DownloadPulse"})).toBeVisible();
   await expect(popup.locator("[data-view='settings']")).toBeHidden();
+});
+
+test("the master switch governs every in-page button; off, what it governs is not shown, and its choices are kept", async () => {
+  const page = await context.newPage();
+  await page.goto(`${site.base}/page`);
+  expect(await hoverOffered(page, "#zip")).toBe(1);
+  await popup.bringToFront();
+  await popup.locator("header").getByRole("button", {name: "Settings"}).click();
+  const master = popup.getByLabel("Display download button on web pages");
+  await expect(master).toBeChecked();
+  await expect(popup.getByTestId("in-page-options")).toBeVisible();
+  // Add site: the field the whole width, its button inside it, at the end, vertically centred.
+  const [field, add] = await Promise.all([popup.locator("#site").boundingBox(), popup.getByRole("button", {name: "Add site"}).boundingBox()]);
+  expect(add.x + add.width).toBeLessThanOrEqual(field.x + field.width);
+  expect(add.x).toBeGreaterThan(field.x + field.width / 2);
+  expect(Math.abs((add.y + add.height / 2) - (field.y + field.height / 2))).toBeLessThanOrEqual(1);
+  await popup.getByLabel("Show a download button on video players").uncheck();
+  await master.uncheck();
+  await expect(popup.getByTestId("in-page-options")).toBeHidden();
+  await expect(popup.getByLabel("Show a download button beside download links")).toBeHidden();
+  await page.waitForTimeout(5500);                         // a frame's answer is kept for up to 5 s
+  expect(await hoverOffered(page, "#zip")).toBe(0);        // off: nothing offered
+  await master.check();
+  await expect(popup.getByLabel("Show a download button on video players")).not.toBeChecked();   // kept
+  await expect(popup.getByLabel("Show a download button beside download links")).toBeChecked();
+  await page.waitForTimeout(5500);
+  expect(await hoverOffered(page, "#zip")).toBe(1);
 });
 
 test("the per-site switch is in the settings, for the site of the current tab", async () => {

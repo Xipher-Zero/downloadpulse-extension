@@ -13,12 +13,13 @@
 <body>
   <main class="dp-popup">
     <header class="dp-head">
-      <button type="button" class="dp-glyph-btn dp-glyph-btn--bare" data-action="back" data-i18n-label="popupBack" hidden>
-        <span data-glyph-slot="chevronLeft"></span>
-      </button>
       <h1 class="dp-head__title dp-brand"><span data-logo-slot></span><span class="dp-brand__name">Download<span>Pulse</span></span></h1>
       <button type="button" class="dp-glyph-btn" data-action="settings" data-i18n-label="popupSettings">
         <span data-glyph-slot="settings"></span>
+      </button>
+      <!-- Back stands where the gear does: the title row's end (operator, 2026-11-18). -->
+      <button type="button" class="dp-glyph-btn" data-action="back" data-i18n-label="popupBack" hidden>
+        <span data-glyph-slot="chevronLeft"></span>
       </button>
     </header>
 
@@ -137,36 +138,39 @@
 
       <section class="dp-settings__group" aria-labelledby="connection-title">
         <h3 id="connection-title" data-i18n="optionsConnection"></h3>
-        <div data-connection="connected" hidden>
+        <div class="dp-settings__connection" data-connection="connected" hidden>
           <dl class="dp-facts">
             <div><dt data-i18n="popupServer"></dt><dd data-testid="settings-server"></dd></div>
             <div><dt data-i18n="popupAccount"></dt><dd data-testid="settings-account"></dd></div>
             <div><dt data-i18n="popupBrowser"></dt><dd data-testid="settings-label"></dd></div>
           </dl>
-          <p class="dp-row">
-            <button type="button" class="dp-btn dp-btn--danger dp-btn--sm" data-action="disconnect" data-i18n="optionsDisconnect"></button>
-          </p>
-          <p class="dp-popup__hint" data-i18n="optionsDisconnectHint"></p>
+          <p class="dp-settings__centred" data-i18n="optionsDisconnectHint"></p>
+          <button type="button" class="dp-btn dp-btn--danger dp-btn--sm dp-settings__disconnect" data-action="disconnect" data-i18n="optionsDisconnect"></button>
         </div>
-        <p class="dp-popup__hint" data-connection="disconnected" data-i18n="optionsNotConnected" hidden></p>
-        <p class="dp-popup__hint" role="status" data-testid="connection-note" hidden></p>
+        <p class="dp-settings__centred" data-connection="disconnected" data-i18n="optionsNotConnected" hidden></p>
+        <p class="dp-settings__centred" role="status" data-testid="connection-note" hidden></p>
       </section>
 
       <section class="dp-settings__group" aria-labelledby="page-title">
         <h3 id="page-title" data-i18n="optionsOnPages"></h3>
-        <label class="dp-check"><input type="checkbox" data-setting="hover"> <span data-i18n="optionsHover"></span></label>
-        <label class="dp-check"><input type="checkbox" data-setting="video"> <span data-i18n="optionsVideo"></span></label>
-        <label class="dp-check" data-testid="site-switch" hidden>
-          <input type="checkbox" data-testid="site-on"> <span data-testid="site-text"></span>
-        </label>
-        <h4 data-i18n="optionsOffSites"></h4>
-        <p class="dp-popup__hint" data-i18n="optionsOffSitesHint"></p>
-        <ul class="dp-sites" data-testid="off-sites"></ul>
-        <form class="dp-row" data-action="add-site">
-          <label class="dp-visually-hidden" for="site" data-i18n="optionsSiteLabel"></label>
-          <input id="site" type="text" spellcheck="false" autocomplete="off" data-i18n-placeholder="optionsSitePlaceholder">
-          <button type="submit" class="dp-btn dp-btn--sm" data-i18n="optionsAddSite"></button>
-        </form>
+        <!-- The in-page buttons' master switch: off, none is offered, and what depends
+             on it is not shown (its choices are kept for when it is on again). -->
+        <label class="dp-check"><input type="checkbox" data-setting="inPage"> <span data-i18n="optionsInPage"></span></label>
+        <div class="dp-settings__dependent" data-testid="in-page-options">
+          <label class="dp-check"><input type="checkbox" data-setting="hover"> <span data-i18n="optionsHover"></span></label>
+          <label class="dp-check"><input type="checkbox" data-setting="video"> <span data-i18n="optionsVideo"></span></label>
+          <label class="dp-check" data-testid="site-switch" hidden>
+            <input type="checkbox" data-testid="site-on"> <span data-testid="site-text"></span>
+          </label>
+          <h4 data-i18n="optionsOffSites"></h4>
+          <p class="dp-settings__centred" data-i18n="optionsOffSitesHint"></p>
+          <ul class="dp-sites" data-testid="off-sites"></ul>
+          <form class="dp-site-add" data-action="add-site">
+            <label class="dp-visually-hidden" for="site" data-i18n="optionsSiteLabel"></label>
+            <input id="site" type="text" spellcheck="false" autocomplete="off" data-i18n-placeholder="optionsSitePlaceholder">
+            <button type="submit" class="dp-btn dp-btn--sm" data-i18n="optionsAddSite"></button>
+          </form>
+        </div>
       </section>
 
       <section class="dp-settings__group" aria-labelledby="notify-title">

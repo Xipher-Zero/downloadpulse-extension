@@ -247,7 +247,7 @@
     "message": "Otwórz DownloadPulse"
   },
   "optionsConnection": {
-    "message": "Połączenie"
+    "message": "Połączenie:"
   },
   "optionsNotConnected": {
     "message": "Ta przeglądarka nie jest połączona z DownloadPulse. Można ją połączyć za pomocą przycisku na pasku narzędzi."
@@ -414,5 +414,8 @@
         "example": "192.168.1.20:8095"
       }
     }
+  },
+  "optionsInPage": {
+    "message": "Pokazuj przycisk pobierania na stronach internetowych"
   }
 }
