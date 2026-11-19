@@ -109,3 +109,16 @@ export function urlAt(text: string, offset: number): {url: string; start: number
   }
   return null;
 }
+
+/** The video's address: the frame's own ``reported`` one, or ``named`` (its current address) on that same origin. */
+export function videoAddress(named: unknown, reported: string | undefined): string | null {
+  try {
+    const frame = new URL(reported ?? "");
+    const current = typeof named === "string" ? new URL(named) : frame;
+    if (!/^https?:$/.test(frame.protocol) || current.origin !== frame.origin) return null;
+    current.hash = "";
+    return current.href;
+  } catch {
+    return null;
+  }
+}

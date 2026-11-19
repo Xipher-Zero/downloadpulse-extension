@@ -369,9 +369,10 @@ function showVideo(element: HTMLVideoElement): void {
     return;
   }
   video ??= sendButton(message("videoSend"), () => {
-    // The frame's own address: the embed, or the page itself (S3).
-    // The background takes this frame's address from the browser itself (with its cookies, if allowed).
-    void chrome.runtime.sendMessage({type: "dp-send-video"});
+    // The frame's own address: the embed, or the page itself (S3) -- its CURRENT address: a
+    // single-page site (YouTube) changes it in place, which the browser's own record of the
+    // frame does not follow (2026-11-19: videos were sent as the site's home page).
+    void chrome.runtime.sendMessage({type: "dp-send-video", url: location.href});
     withdraw(video);
   });
   videoBox = rect;

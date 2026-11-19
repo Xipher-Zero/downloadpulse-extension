@@ -7,6 +7,7 @@
 import {connection, forgetConnection, token} from "../shared/connection";
 import {controlJob, disconnectBrowser, isLocal, showApplication, withdrawJob} from "../shared/server";
 import {isOffSite, settings} from "../shared/settings";
+import {videoAddress} from "../shared/classify";
 import {appearance, type Appearance} from "../shared/appearance";
 import {refreshAppearance} from "./appearance";
 import {restIcon} from "./icon";
@@ -19,7 +20,7 @@ import {forgetSentKey} from "./sent-keys";
 type Request =
   | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string; insecure?: boolean}
   | {type: "cancel"} | {type: "dp-open"}
-  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-send-video"} | {type: "dp-send-selection"; text: string} | {type: "dp-has-video"}
+  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-send-video"; url?: string} | {type: "dp-send-selection"; text: string} | {type: "dp-has-video"}
   | {type: "dp-popup-open"} | {type: "dp-quick-add"; text: string} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
   | {type: "dp-disconnect"};
 
@@ -169,13 +170,17 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
         void sendUrl(request.url, {tabId: sender.tab.id, frameId: sender.frameId ?? 0});
       }
       return undefined;
-    case "dp-send-video":
-      // The frame's own address, as the browser reports it (never one the page names): a page
-      // can only ever send its own video, with the cookies for exactly that address.
-      if (fromPage && sender.url && sender.tab?.id !== undefined) {
-        void sendVideo(sender.url.split("#")[0]!, {tabId: sender.tab.id, frameId: sender.frameId ?? 0}, sender.tab);
+    case "dp-send-video": {
+      // The frame's current address (a single-page site changes it in place; the browser's
+      // record of the frame, sender.url, keeps the address it loaded), accepted only on the
+      // origin the browser reports for that frame: a frame sends only its own site's video,
+      // with the cookies for exactly that address (2026-11-19).
+      const href = videoAddress(request.url, sender.url);
+      if (fromPage && href && sender.tab?.id !== undefined) {
+        void sendVideo(href, {tabId: sender.tab.id, frameId: sender.frameId ?? 0}, sender.tab);
       }
       return undefined;
+    }
     case "dp-send-selection":
       // The page's selection, as the right-click "selection" item sends it (a site may block right-click).
       if (fromPage && typeof request.text === "string" && request.text.length <= 200_000 && sender.tab?.id !== undefined) {

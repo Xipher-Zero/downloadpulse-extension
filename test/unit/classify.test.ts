@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {captureKind, extractUrls, isDownloadCandidate, urlAt} from "../../src/shared/classify";
+import {captureKind, extractUrls, isDownloadCandidate, urlAt, videoAddress} from "../../src/shared/classify";
 
 test("download candidates: magnets, download file types, the download attribute, a non-HTML type", () => {
   assert.equal(isDownloadCandidate("magnet:?xt=urn:btih:abc"), true);
@@ -72,4 +72,15 @@ test("a stray % in a path is read as written, never an error (review, 2026-11-19
   assert.equal(captureKind("https://example.com/50%off/file.torrent"), "torrent");
   assert.equal(isDownloadCandidate("https://example.com/50%off/file.zip"), true);
   assert.equal(isDownloadCandidate("https://example.com/50%off/page"), false);
+});
+
+test("a video's address is the frame's current one, on the origin the browser reports for it (single-page sites)", () => {
+  // YouTube: loaded at the home page, then navigated in place to a video.
+  assert.equal(videoAddress("https://www.youtube.com/watch?v=abc#t=1", "https://www.youtube.com/"),
+    "https://www.youtube.com/watch?v=abc");
+  assert.equal(videoAddress(undefined, "https://player.example/embed/1#x"), "https://player.example/embed/1");
+  for (const named of ["https://other.example/watch?v=abc", "http://www.youtube.com/watch?v=abc", "javascript:alert(1)", "not a url"]) {
+    assert.equal(videoAddress(named, "https://www.youtube.com/"), null, named);
+  }
+  assert.equal(videoAddress("chrome-extension://x/a", "chrome-extension://x/"), null);
 });

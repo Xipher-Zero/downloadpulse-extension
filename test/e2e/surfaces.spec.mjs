@@ -580,6 +580,23 @@ test("a video goes with the person's sign-in on its site: that address's cookies
   expect(JSON.stringify(sent.source)).not.toContain("signed-in");
 });
 
+test("a single-page site's video is sent at its current address, not the one the page loaded with (2026-11-19)", async () => {
+  await connect();
+  await context.addCookies([{name: "site_session", value: "signed-in", url: site.base}]);
+  const page = await sitePage();
+  // As YouTube: loaded at one address, then moved to the video's in place (no new document).
+  await page.evaluate(() => history.pushState({}, "", "/watch?v=spa"));
+  await page.mouse.move(1, 1);
+  const video = await page.locator("#video").boundingBox();
+  await page.mouse.move(video.x + video.width / 2, video.y + video.height / 2, {steps: 3});
+  await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+  const [layer] = await openLayers(page);
+  await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
+  await expect.poll(() => dp.state.jobs.length).toBe(1);
+  expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: [`${site.base}/watch?v=spa`]});
+  expect(dp.state.jobs[0].body.cookies.map((c) => c.name)).toEqual(["site_session"]);
+});
+
 test("no cookies when switched off, nor to a DownloadPulse that doesn't say it takes them, nor with a link", async () => {
   const popup = await connect();
   await context.addCookies([{name: "site_session", value: "signed-in", url: site.base}]);
