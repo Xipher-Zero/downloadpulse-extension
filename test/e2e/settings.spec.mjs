@@ -64,6 +64,9 @@ async function hoverOffered(page, selector) {
 async function options() {
   const page = await context.newPage();
   await page.goto(`${base}/options/options.html`);
+  // Loaded: the switches are enabled once they show what is stored (popup.ts renderSettings).
+  // Before that a switch shows the markup's default, and acting on it would do nothing.
+  await expect(page.locator('[data-notify="completed"]')).toBeEnabled();
   return page;
 }
 

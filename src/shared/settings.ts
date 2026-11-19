@@ -22,10 +22,20 @@ export async function settings(): Promise<Settings> {
     offSites: Array.isArray(stored?.offSites) ? stored!.offSites.filter((site) => typeof site === "string") : []};
 }
 
-export async function saveSettings(change: Partial<Settings>): Promise<Settings> {
-  const next = {...(await settings()), ...change};
-  next.offSites = [...new Set(next.offSites.map(siteOf).filter(Boolean))].sort();
-  await chrome.storage.local.set({[KEY]: next});
+let saving: Promise<unknown> = Promise.resolve();
+
+/** One change, applied to what is stored now. ``change`` may be a function of the stored
+ * settings (a change to a list or to notify). Changes from this page apply one after
+ * another, so two quick switches never write over each other. */
+export function saveSettings(change: Partial<Settings> | ((current: Settings) => Partial<Settings>)): Promise<Settings> {
+  const next = saving.then(async () => {
+    const current = await settings();
+    const merged = {...current, ...(typeof change === "function" ? change(current) : change)};
+    merged.offSites = [...new Set(merged.offSites.map(siteOf).filter(Boolean))].sort();
+    await chrome.storage.local.set({[KEY]: merged});
+    return merged;
+  });
+  saving = next.catch(() => undefined);
   return next;
 }
 

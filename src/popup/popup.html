@@ -194,13 +194,13 @@
         <h3 id="page-title" data-i18n="optionsOnPages"></h3>
         <!-- The in-page buttons' master switch: off, none is offered, and what depends
              on it is not shown (its choices are kept for when it is on again). -->
-        <label class="dp-check"><input type="checkbox" data-setting="inPage"> <span data-i18n="optionsInPage"></span></label>
+        <label class="dp-check"><input type="checkbox" disabled data-setting="inPage"> <span data-i18n="optionsInPage"></span></label>
         <div class="dp-settings__dependent" data-testid="in-page-options">
-          <label class="dp-check"><input type="checkbox" data-setting="hover"> <span data-i18n="optionsHover"></span></label>
-          <label class="dp-check"><input type="checkbox" data-setting="video"> <span data-i18n="optionsVideo"></span></label>
-          <label class="dp-check"><input type="checkbox" data-setting="videoCookies"> <span data-i18n="optionsVideoCookies"></span></label>
+          <label class="dp-check"><input type="checkbox" disabled data-setting="hover"> <span data-i18n="optionsHover"></span></label>
+          <label class="dp-check"><input type="checkbox" disabled data-setting="video"> <span data-i18n="optionsVideo"></span></label>
+          <label class="dp-check"><input type="checkbox" disabled data-setting="videoCookies"> <span data-i18n="optionsVideoCookies"></span></label>
           <label class="dp-check" data-testid="site-switch" hidden>
-            <input type="checkbox" data-testid="site-on"> <span data-testid="site-text"></span>
+            <input type="checkbox" disabled data-testid="site-on"> <span data-testid="site-text"></span>
           </label>
           <h4 data-i18n="optionsOffSites"></h4>
           <p class="dp-settings__centred" data-i18n="optionsOffSitesHint"></p>
@@ -215,9 +215,9 @@
 
       <section class="dp-settings__group" aria-labelledby="notify-title">
         <h3 id="notify-title" data-i18n="optionsNotifications"></h3>
-        <label class="dp-check"><input type="checkbox" data-notify="completed"> <span data-i18n="optionsNotifyCompleted"></span></label>
-        <label class="dp-check"><input type="checkbox" data-notify="failed"> <span data-i18n="optionsNotifyFailed"></span></label>
-        <label class="dp-check"><input type="checkbox" data-notify="attention"> <span data-i18n="optionsNotifyAttention"></span></label>
+        <label class="dp-check"><input type="checkbox" disabled data-notify="completed"> <span data-i18n="optionsNotifyCompleted"></span></label>
+        <label class="dp-check"><input type="checkbox" disabled data-notify="failed"> <span data-i18n="optionsNotifyFailed"></span></label>
+        <label class="dp-check"><input type="checkbox" disabled data-notify="attention"> <span data-i18n="optionsNotifyAttention"></span></label>
         <a class="dp-disclosure__policy" data-testid="settings-privacy-policy" target="_blank" rel="noopener" data-i18n="privacyPolicy"></a>
       </section>
     </section>

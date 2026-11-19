@@ -291,8 +291,14 @@ async function renderSiteSwitch(offSites: string[]): Promise<void> {
   if (!site) return;
   label.dataset["site"] = site;
   text('[data-testid="site-text"]', message("popupSiteOn", [site]));
-  $<HTMLInputElement>('[data-testid="site-on"]').checked = !isOffSite(tab!.url!, offSites);
+  const switchInput = $<HTMLInputElement>('[data-testid="site-on"]');
+  switchInput.checked = !isOffSite(tab!.url!, offSites);
+  switchInput.disabled = false;
 }
+
+// The settings' own edits so far: a render whose read began before the latest one
+// never puts the earlier state back (the edit's own save redraws it).
+let settingsEdits = 0;
 
 async function renderSettings(): Promise<void> {
   const connected = await connection();
@@ -303,14 +309,20 @@ async function renderSettings(): Promise<void> {
     text('[data-testid="settings-account"]', connected.account);
     text('[data-testid="settings-label"]', connected.label);
   }
+  const edits = settingsEdits;
   const chosen = await settings();
+  if (edits !== settingsEdits) return;
+  // The switches are disabled in the markup until they show what is stored: nothing
+  // can be switched while it still shows a state that is not the person's.
   for (const input of document.querySelectorAll<HTMLInputElement>("[data-setting]")) {
     input.checked = Boolean(chosen[input.dataset["setting"] as "inPage" | "hover" | "video" | "videoCookies"]);
+    input.disabled = false;
   }
   // Off, what the master switch governs is not shown at all.
   $('[data-testid="in-page-options"]').hidden = !chosen.inPage;
   for (const input of document.querySelectorAll<HTMLInputElement>("[data-notify]")) {
     input.checked = Boolean(chosen.notify[input.dataset["notify"] as keyof Settings["notify"]]);
+    input.disabled = false;
   }
   $('[data-testid="off-sites"]').replaceChildren(...chosen.offSites.map((site) => {
     const item = document.createElement("li");
@@ -498,13 +510,17 @@ document.addEventListener("change", (event) => {
         .then((granted) => { if (!granted) input.checked = false; }, () => { input.checked = false; });
     }
   }
-  if (input.dataset["setting"]) void saveSettings({[input.dataset["setting"]]: input.checked});
+  // What the person chose, read now: never after an await, when a redraw may have changed the box.
+  const checked = input.checked;
+  if (input.dataset["setting"] || input.dataset["notify"] || input.dataset["testid"] === "site-on") settingsEdits += 1;
+  if (input.dataset["setting"]) void saveSettings({[input.dataset["setting"]]: checked});
   if (input.dataset["notify"]) {
-    void settings().then((chosen) => saveSettings({notify: {...chosen.notify, [input.dataset["notify"]!]: input.checked}}));
+    const kind = input.dataset["notify"];
+    void saveSettings((chosen) => ({notify: {...chosen.notify, [kind]: checked}}));
   }
   if (input.dataset["testid"] === "site-on") {
     const site = input.closest<HTMLElement>("[data-site]")?.dataset["site"] ?? "";
-    void settings().then((chosen) => saveSettings({offSites: input.checked
+    void saveSettings((chosen) => ({offSites: checked
       ? chosen.offSites.filter((item) => item !== site) : [...chosen.offSites, site]}));
   }
 });
@@ -522,7 +538,7 @@ document.addEventListener("click", (event) => {
   }
   const site = target.closest<HTMLElement>("[data-remove-site]")?.dataset["removeSite"];
   if (site) {
-    void settings().then((chosen) => saveSettings({offSites: chosen.offSites.filter((item) => item !== site)}));
+    void saveSettings((chosen) => ({offSites: chosen.offSites.filter((item) => item !== site)}));
     return;
   }
   const button = target.closest<HTMLElement>("button[data-action]");
@@ -603,7 +619,7 @@ $<HTMLFormElement>("form[data-action='add-site']").addEventListener("submit", (e
   const input = $<HTMLInputElement>("#site");
   const site = siteOf(input.value);
   if (!site) return;
-  void settings().then((chosen) => saveSettings({offSites: [...chosen.offSites, site]})).then(() => { input.value = ""; });
+  void saveSettings((chosen) => ({offSites: [...chosen.offSites, site]})).then(() => { input.value = ""; });
 });
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && "appearance" in changes) void appearance().then((value) => applyAppearance(document.documentElement, value));
