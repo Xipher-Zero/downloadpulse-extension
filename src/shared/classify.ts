@@ -29,13 +29,24 @@ function parsed(href: string): URL | null {
 
 /** The file DownloadPulse takes as contents, captured before sending (S1), or null. */
 /**
- * A newznab indexer's download link: the standard API's ``?t=get&id=…``
- * (``…/api``; NZBGeek's ``…/cdn``). Its answer is the NZB itself, and the link
- * carries the person's indexer key, so it is captured, never sent (operator,
- * 2026-11-18).
+ * A newznab indexer's download link: the standard API's
+ * ``?t=get&id=…&apikey=…`` (``…/api``; NZBGeek's ``…/cdn``). Its answer is the
+ * NZB itself, and the link carries the person's indexer key, so it is
+ * captured, never sent (operator, 2026-11-18). All three must be present, on a
+ * path with no file extension: an explicit file type (``backup.iso?t=get&id=42``,
+ * ``x.torrent?…``) is that file, never taken for an indexer link (review of
+ * affeb5d, P2).
  */
 export function isNewznabGet(url: URL): boolean {
-  return (url.searchParams.get("t") ?? "").toLowerCase() === "get" && Boolean(url.searchParams.get("id"));
+  const key = [...url.searchParams.keys()].some((name) => name.toLowerCase() === "apikey");
+  return (url.searchParams.get("t") ?? "").toLowerCase() === "get" && Boolean(url.searchParams.get("id")) && key
+    && extension(url.pathname) === "";
+}
+
+/** ``href`` is an indexer's download link (isNewznabGet). */
+export function isIndexerLink(href: string): boolean {
+  const url = parsed(href);
+  return Boolean(url && (url.protocol === "http:" || url.protocol === "https:") && isNewznabGet(url));
 }
 
 export function captureKind(href: string): CaptureKind | null {

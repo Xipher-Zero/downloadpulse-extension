@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "Bağlı değil"
+    "message": "Henüz bağlı değil"
   },
   "optionsTitle": {
     "message": "DownloadPulse uzantısı ayarları"
   },
   "popupConnect": {
-    "message": "Bir DownloadPulse örneğine bağlan"
+    "message": "DownloadPulse'a bağlan"
   },
   "popupProbing": {
     "message": "DownloadPulse aranıyor…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse bu bilgisayarda çalışıyor."
+    "message": "DownloadPulse bu bilgisayarda bulundu"
   },
   "popupChecking": {
     "message": "Bağlantı kontrol ediliyor…"
@@ -361,9 +361,58 @@
     "message": "Uzak sunucu"
   },
   "choiceRemoteHint": {
-    "message": "Ağınızda ya da internette başka bir yerdeki DownloadPulse sunucusu. Adresini gireceksiniz."
+    "message": "Ağınızda ya da internette başka bir yerdeki DownloadPulse sunucusu."
   },
   "popupConnectAction": {
     "message": "Bağlan"
+  },
+  "welcomeLead": {
+    "message": "İndirmeleri tarayıcınızdan DownloadPulse'a gönderin. DownloadPulse bunları sizin için bu bilgisayarda ya da bir sunucuda indirir."
+  },
+  "welcomeHover": {
+    "message": "Bir indirme bağlantısının üzerine geldiğinizde bir gönder düğmesi görünür."
+  },
+  "welcomeHighlight": {
+    "message": "Birden fazla bağlantıyı seçip birlikte gönderin."
+  },
+  "welcomeRightClick": {
+    "message": "Herhangi bir bağlantıya sağ tıklayın, ardından “$MENU$” seçeneğini seçin.",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "İlerlemeyi buradan izleyin, tamamlandığında bildirim alın."
+  },
+  "welcomeConnectHint": {
+    "message": "Bu tarayıcıyı bir DownloadPulse kurulumuna bağlayın."
+  },
+  "connectTileTop": {
+    "message": "DownloadPulse'a"
+  },
+  "connectTileBottom": {
+    "message": "bağlan"
+  },
+  "foundIntro": {
+    "message": "Bu tarayıcının indirmelerini göndereceği DownloadPulse'ı seçin."
+  },
+  "localApproveHint": {
+    "message": "Bağlan'ı seçtikten sonra, açılan DownloadPulse sekmesinde bu tarayıcıyı onaylayın."
+  },
+  "remoteAddressHint": {
+    "message": "DownloadPulse sunucunuzun adresini tarayıcınızda açtığınız biçimde girin, örneğin $HOST$ ya da $LAN$.",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

@@ -22,9 +22,23 @@
       </button>
     </header>
 
-    <section data-state="disconnected" hidden>
-      <p class="dp-popup__status" data-i18n="popupNotConnected" data-testid="status"></p>
-      <button type="button" class="dp-btn dp-btn--primary" data-action="connect-local" data-i18n="popupConnect"></button>
+    <!-- The first screen (operator, 2026-11-18): what the extension does, the
+         ways it is used, the next step, and one tile to connect. -->
+    <section data-state="disconnected" class="dp-welcome" hidden>
+      <p class="dp-welcome__lead" data-i18n="welcomeLead"></p>
+      <ul class="dp-welcome__ways">
+        <li data-i18n="welcomeHover"></li>
+        <li data-i18n="welcomeHighlight"></li>
+        <li data-testid="welcome-right-click"></li>
+        <li data-i18n="welcomeProgress"></li>
+      </ul>
+      <p class="dp-welcome__next" data-i18n="welcomeConnectHint"></p>
+      <button type="button" class="dp-btn dp-btn--primary dp-connect-tile" data-action="connect-local" data-i18n-label="popupConnect">
+        <span data-i18n="connectTileTop"></span>
+        <span class="dp-connect-tile__glyph" data-glyph-slot="plug"></span>
+        <span data-i18n="connectTileBottom"></span>
+      </button>
+      <p class="dp-welcome__state" data-testid="status"><span class="dp-welcome__dot" aria-hidden="true"></span><span data-i18n="popupNotConnected"></span></p>
     </section>
 
     <section data-state="probing" hidden>
@@ -33,8 +47,9 @@
 
     <!-- Found on this computer: choose it or a remote server, as DownloadPulse's
          first-run wizard chooses a deployment type (cards, a glyph, a hint). -->
-    <section data-state="found" hidden>
-      <p class="dp-popup__status" role="status" data-i18n="popupFoundLocal"></p>
+    <section data-state="found" class="dp-found" hidden>
+      <p class="dp-found__intro" data-i18n="foundIntro"></p>
+      <p class="dp-found__status" role="status"><span class="dp-found__dot" aria-hidden="true"></span><span data-i18n="popupFoundLocal"></span></p>
       <div class="dp-choices" role="radiogroup" data-i18n-aria="popupChooseInstance">
         <button type="button" class="dp-choice" role="radio" aria-checked="true" data-choice="local">
           <span class="dp-choice__name" data-i18n="choiceLocalTitle"></span>
@@ -47,11 +62,17 @@
           <span class="dp-choice__text" data-i18n="choiceRemoteHint"></span>
         </button>
       </div>
-      <form class="dp-popup__remote" id="remote-found" hidden>
-        <label class="dp-popup__label" for="server-found" data-i18n="popupServerLabel"></label>
-        <input id="server-found" name="server" type="text" autocomplete="url" spellcheck="false" required
-               data-i18n-placeholder="popupServerPlaceholder">
-      </form>
+      <!-- One slot for what follows the choice, as tall as its tallest: the page
+           keeps one geometry whichever card is chosen (operator, 2026-11-18). -->
+      <div class="dp-found__slot">
+        <p class="dp-found__next" data-panel="local" data-i18n="localApproveHint"></p>
+        <form class="dp-popup__remote" id="remote-found" data-panel="remote">
+          <p class="dp-found__next" data-testid="remote-hint"></p>
+          <label class="dp-popup__label" for="server-found" data-i18n="popupServerLabel"></label>
+          <input id="server-found" name="server" type="text" autocomplete="url" spellcheck="false" required
+                 data-i18n-placeholder="popupServerPlaceholder">
+        </form>
+      </div>
       <button type="button" class="dp-btn dp-btn--primary" data-action="connect-chosen" data-i18n="popupConnectAction"></button>
     </section>
 

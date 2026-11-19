@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "Non connecté"
+    "message": "Pas encore connecté"
   },
   "optionsTitle": {
     "message": "Paramètres de l’extension DownloadPulse"
   },
   "popupConnect": {
-    "message": "Se connecter à une instance DownloadPulse"
+    "message": "Se connecter à DownloadPulse"
   },
   "popupProbing": {
     "message": "Recherche de DownloadPulse…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse est en cours d’exécution sur cet ordinateur."
+    "message": "DownloadPulse trouvé sur cet ordinateur"
   },
   "popupChecking": {
     "message": "Vérification de la connexion…"
@@ -361,9 +361,58 @@
     "message": "Serveur distant"
   },
   "choiceRemoteHint": {
-    "message": "Un serveur DownloadPulse ailleurs sur votre réseau ou sur Internet. Vous saisirez son adresse."
+    "message": "Un serveur DownloadPulse ailleurs sur votre réseau ou sur Internet."
   },
   "popupConnectAction": {
     "message": "Se connecter"
+  },
+  "welcomeLead": {
+    "message": "Envoyez des téléchargements depuis votre navigateur vers DownloadPulse. DownloadPulse les récupère pour vous, sur cet ordinateur ou sur un serveur."
+  },
+  "welcomeHover": {
+    "message": "Un bouton d’envoi apparaît lorsque vous survolez un lien de téléchargement."
+  },
+  "welcomeHighlight": {
+    "message": "Sélectionnez plusieurs liens et envoyez-les ensemble."
+  },
+  "welcomeRightClick": {
+    "message": "Faites un clic droit sur un lien, puis cliquez sur « $MENU$ ».",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "Suivez la progression ici et recevez une notification une fois terminé."
+  },
+  "welcomeConnectHint": {
+    "message": "Connectez ce navigateur à une installation DownloadPulse."
+  },
+  "connectTileTop": {
+    "message": "Se connecter"
+  },
+  "connectTileBottom": {
+    "message": "à DownloadPulse"
+  },
+  "foundIntro": {
+    "message": "Choisissez le DownloadPulse auquel ce navigateur envoie ses téléchargements."
+  },
+  "localApproveHint": {
+    "message": "Après avoir choisi « Se connecter », approuvez ce navigateur dans l’onglet DownloadPulse qui s’ouvre."
+  },
+  "remoteAddressHint": {
+    "message": "Saisissez l’adresse de votre serveur DownloadPulse telle que vous l’ouvrez dans votre navigateur, par exemple $HOST$ ou $LAN$.",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

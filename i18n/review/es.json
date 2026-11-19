@@ -28,8 +28,8 @@
       ]
     },
     "popupNotConnected": {
-      "source": "0303e18246708180",
-      "translation": "5fa3989a76d1995a",
+      "source": "89856935661256a8",
+      "translation": "7fd9815ac30e1741",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -44,8 +44,8 @@
       ]
     },
     "popupConnect": {
-      "source": "e357b958fa80f536",
-      "translation": "feba8cf68a57dabb",
+      "source": "21b8e9b2f591e923",
+      "translation": "193a0ce9b1d4b0bb",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -764,8 +764,8 @@
       ]
     },
     "popupFoundLocal": {
-      "source": "e13d323a86be8b26",
-      "translation": "6ed1b35bc8039271",
+      "source": "2b20ada774beee4b",
+      "translation": "2ee45b4054ffa827",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -868,8 +868,8 @@
       ]
     },
     "choiceRemoteHint": {
-      "source": "e4537ad003a96763",
-      "translation": "6539b08f39582f18",
+      "source": "1a535d3401540ccf",
+      "translation": "a7ceb696ce81368c",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -878,6 +878,94 @@
     "popupConnectAction": {
       "source": "1a2303ede07493ac",
       "translation": "3b0b0fdfe2e3a691",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "welcomeLead": {
+      "source": "43aad72d57391940",
+      "translation": "b2b06e45f123d753",
+      "provenance": [
+        "ai-generated",
+        "ai-review-corrected"
+      ]
+    },
+    "welcomeHover": {
+      "source": "084ff73d9f0174ca",
+      "translation": "9ff67aaa9cb171a9",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "welcomeHighlight": {
+      "source": "773db0a68cef8e98",
+      "translation": "6211fe6abbbf12c9",
+      "provenance": [
+        "ai-generated",
+        "ai-review-corrected"
+      ]
+    },
+    "welcomeRightClick": {
+      "source": "92ae16bd56596aed",
+      "translation": "0af720219a830edc",
+      "provenance": [
+        "ai-generated",
+        "ai-review-corrected"
+      ]
+    },
+    "welcomeProgress": {
+      "source": "cee86dfe34648d1a",
+      "translation": "9f86ab4d741bf9e7",
+      "provenance": [
+        "ai-generated",
+        "ai-review-corrected"
+      ]
+    },
+    "welcomeConnectHint": {
+      "source": "d7f66faaffd4471c",
+      "translation": "1082eadca535a4c5",
+      "provenance": [
+        "ai-generated",
+        "ai-review-corrected"
+      ]
+    },
+    "connectTileTop": {
+      "source": "1a2303ede07493ac",
+      "translation": "189d025060f41057",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "connectTileBottom": {
+      "source": "aa7a2707f4da6d75",
+      "translation": "bac3cae453ea5545",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "foundIntro": {
+      "source": "ca8255ce1e68bb1d",
+      "translation": "f06fd1d22bf8b00e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "localApproveHint": {
+      "source": "e0793e3d88496145",
+      "translation": "40028dc55f1a0371",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "remoteAddressHint": {
+      "source": "96659337e86ad292",
+      "translation": "0889a5dffda5b4a1",
       "provenance": [
         "ai-generated",
         "ai-review"

@@ -34,7 +34,7 @@ test.beforeEach(async () => {
   base = `chrome-extension://${new URL(worker.url()).host}`;
   popup = await context.newPage();
   await popup.goto(`${base}/popup/popup.html`);
-  await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+  await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
@@ -74,7 +74,7 @@ test("Disconnect revokes this browser on the server and forgets it here", async 
   expect(dp.state.disconnects).toBe(1);
   await expect(settings.getByText("This browser isn't connected to DownloadPulse.", {exact: false})).toBeVisible();
   await popup.reload();
-  await expect(popup.getByRole("button", {name: "Connect to a DownloadPulse instance"})).toBeVisible();
+  await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
   const secret = await popup.evaluate(() => new Promise((done) => {
     const open = indexedDB.open("downloadpulse");
     open.onsuccess = () => {

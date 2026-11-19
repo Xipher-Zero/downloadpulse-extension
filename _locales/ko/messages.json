@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "연결되지 않음"
+    "message": "아직 연결되지 않음"
   },
   "optionsTitle": {
     "message": "DownloadPulse 확장 프로그램 설정"
   },
   "popupConnect": {
-    "message": "DownloadPulse 인스턴스에 연결"
+    "message": "DownloadPulse에 연결"
   },
   "popupProbing": {
     "message": "DownloadPulse를 찾는 중…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "이 컴퓨터에서 DownloadPulse가 실행 중입니다."
+    "message": "이 컴퓨터에서 DownloadPulse를 찾았습니다"
   },
   "popupChecking": {
     "message": "연결 확인 중…"
@@ -361,9 +361,58 @@
     "message": "원격 서버"
   },
   "choiceRemoteHint": {
-    "message": "네트워크나 인터넷의 다른 곳에 있는 DownloadPulse 서버입니다. 서버 주소를 입력합니다."
+    "message": "네트워크나 인터넷의 다른 곳에 있는 DownloadPulse 서버입니다."
   },
   "popupConnectAction": {
     "message": "연결"
+  },
+  "welcomeLead": {
+    "message": "브라우저에서 DownloadPulse로 다운로드를 보내세요. DownloadPulse가 이 컴퓨터나 서버에서 대신 다운로드합니다."
+  },
+  "welcomeHover": {
+    "message": "다운로드 링크에 마우스를 올리면 보내기 버튼이 나타납니다."
+  },
+  "welcomeHighlight": {
+    "message": "여러 링크를 선택해 한 번에 보내세요."
+  },
+  "welcomeRightClick": {
+    "message": "링크를 마우스 오른쪽 버튼으로 클릭한 다음 ‘$MENU$’를 선택하세요.",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "여기에서 진행 상황을 확인하고, 완료되면 알림을 받으세요."
+  },
+  "welcomeConnectHint": {
+    "message": "이 브라우저를 설치된 DownloadPulse에 연결하세요."
+  },
+  "connectTileTop": {
+    "message": "DownloadPulse에"
+  },
+  "connectTileBottom": {
+    "message": "연결"
+  },
+  "foundIntro": {
+    "message": "이 브라우저가 다운로드를 보낼 DownloadPulse를 선택하세요."
+  },
+  "localApproveHint": {
+    "message": "‘연결’을 선택한 후 열리는 DownloadPulse 탭에서 이 브라우저를 승인하세요."
+  },
+  "remoteAddressHint": {
+    "message": "브라우저에서 여는 것과 같은 형식으로 DownloadPulse 서버 주소를 입력하세요(예: $HOST$ 또는 $LAN$).",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

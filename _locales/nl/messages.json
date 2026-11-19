@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "Niet verbonden"
+    "message": "Nog niet verbonden"
   },
   "optionsTitle": {
     "message": "Instellingen van de DownloadPulse-extensie"
   },
   "popupConnect": {
-    "message": "Verbinden met een DownloadPulse-instantie"
+    "message": "Verbinden met DownloadPulse"
   },
   "popupProbing": {
     "message": "Zoeken naar DownloadPulse…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse draait op deze computer."
+    "message": "DownloadPulse gevonden op deze computer"
   },
   "popupChecking": {
     "message": "Verbinding controleren…"
@@ -361,9 +361,58 @@
     "message": "Externe server"
   },
   "choiceRemoteHint": {
-    "message": "Een DownloadPulse-server elders op uw netwerk of op internet. U voert het adres ervan in."
+    "message": "Een DownloadPulse-server elders op uw netwerk of op internet."
   },
   "popupConnectAction": {
     "message": "Verbinden"
+  },
+  "welcomeLead": {
+    "message": "Stuur downloads vanuit uw browser naar DownloadPulse. DownloadPulse haalt ze voor u op, op deze computer of op een server."
+  },
+  "welcomeHover": {
+    "message": "Er verschijnt een verzendknop als u de muis boven een downloadlink houdt."
+  },
+  "welcomeHighlight": {
+    "message": "Markeer meerdere links en verstuur ze samen."
+  },
+  "welcomeRightClick": {
+    "message": "Klik met rechts op een link en kies ‘$MENU$’.",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "Volg hier de voortgang en krijg een melding als het klaar is."
+  },
+  "welcomeConnectHint": {
+    "message": "Verbind deze browser met een DownloadPulse-installatie."
+  },
+  "connectTileTop": {
+    "message": "Verbinden"
+  },
+  "connectTileBottom": {
+    "message": "met DownloadPulse"
+  },
+  "foundIntro": {
+    "message": "Kies de DownloadPulse waarnaar deze browser zijn downloads stuurt."
+  },
+  "localApproveHint": {
+    "message": "Nadat u Verbinden hebt gekozen, keurt u deze browser goed in het DownloadPulse-tabblad dat wordt geopend."
+  },
+  "remoteAddressHint": {
+    "message": "Voer het adres van uw DownloadPulse-server in zoals u het in uw browser opent, bijvoorbeeld $HOST$ of $LAN$.",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

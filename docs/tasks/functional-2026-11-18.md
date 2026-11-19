@@ -229,3 +229,101 @@ Full suite passes.
 - the address field shows only for Remote server;
 - connecting to a named server through the cards pairs with that server, and the local one is never asked.
 - **Translated** into 18 locales and independently reviewed. Two corrected: ru and uk "Connect" take the reflexive form, as the catalog's other connect buttons do, and so no longer clash with DownloadPulse's own pairing button.
+
+## 17. No hover button on indexer download links (operator's choice: narrow)
+
+An indexer already draws its own download icon in a dense row (NZBGeek: download, basket, flag, info, CC), so a second button beside it is clutter that lands on its neighbours.
+
+**What changes:**
+- an indexer's download link (newznab `?t=get&id=…`) no longer gets the hover button;
+- right-click "Download with DownloadPulse" and a selection still send it, captured as the NZB;
+- every other link, `.nzb` and `.torrent` files included, is unchanged.
+
+**Proof:**
+- hovering the indexer link puts no extension element in the page;
+- two indexer links in selected text are sent as two captured NZBs (the indexer's name, then the NZB's own), and the key appears nowhere in what DownloadPulse received;
+- the indexer's limit `<error>` sends nothing.
+
+The selection uses the same capture code as right-click. Right-click itself can't be driven by the test browser.
+
+## 18. Review of affeb5d: three capture defects, fixed
+
+1. **P2: the newznab detector took ordinary links.**
+   - **Defect:** any URL with `t=get&id=` was taken for an indexer link before its file extension was looked at. `backup.iso?t=get&id=42` and `x.torrent?…` were fetched as NZBs, refused, and never sent.
+   - **Now:** an explicit file extension always wins. An extensionless link is an indexer download only with all three newznab signs: `t=get`, an `id`, and an `apikey` (the key that makes it credential-bearing). Such a link that fails to capture is refused; its URL is never forwarded.
+2. **P2: the NZB check rejected NZBs DownloadPulse accepts.**
+   - **Defect:** it required a literal `<nzb` root, so a namespace-prefixed NZB failed. It ran on plain `.nzb` links too.
+   - **Now:** the browser refuses only a newznab `<error>` document (and, as before, a web page). Validating the NZB is DownloadPulse's job.
+3. **P3: a `%` in a file name failed the capture.**
+   - **Defect:** the plain `filename=` was put through `decodeURIComponent`, so `100% Complete.nzb` threw.
+   - **Now:** only the RFC 8187 `filename*=` form is decoded (UTF-8, or ISO-8859-1 byte by byte; malformed is kept literal) and is preferred. A plain `filename=` is literal, with quoted-pair escapes undone. A path's last part is decoded only when well-formed.
+
+**Where:**
+- the rules are now pure functions in `src/shared/capture.ts` (`isIndexerRefusal`, `dispositionName`, `capturedName`), used by `submit.ts`;
+- the classifier is `isNewznabGet` in `classify.ts`.
+
+**Proof (unit):**
+- the reviewer's `backup.iso?t=get&id=42` is not captured and is sent as its link;
+- a `.torrent` with that query is captured as the torrent;
+- extensionless links need all three signs;
+- a namespaced NZB, a doctype or comment first, and an NZB mentioning "error" all pass, while three `<error>` forms are refused;
+- `100% Complete.nzb` (quoted and bare) is kept literal; `filename*` is decoded and preferred; ISO-8859-1 works; malformed is kept.
+
+13 unit tests, the e2e suite, the Firefox smoke install, lint and locales pass.
+
+**Still open from the earlier store (AMO) review,** not addressed here:
+- the "no data collected" declaration;
+- private-window behaviour;
+- the silent HTTPS-to-HTTP fallback when a server address is typed without a scheme.
+
+## 19. The first screen (operator's design, locked after three mockups)
+
+**Top to bottom:**
+- **Explanation:** one centred paragraph: what the extension does, ending "on this computer or on a server".
+- **How it's used,** four plain bullets, no glyphs:
+  - hover;
+  - highlight several links;
+  - right-click, which quotes the menu item from the `menuSend` string itself, so it matches the menu in every language;
+  - follow progress.
+- **Next step:** a centred line, "Connect this browser to a DownloadPulse install."
+- **Connect tile:** near-square (148 × 124 px), centred, primary. It reads "Connect" / a Lucide `plug` at 36 px / "to DownloadPulse". Its accessible name is the whole phrase, "Connect to DownloadPulse", which replaces "…a DownloadPulse instance".
+- **Status:** "Not connected yet", with a dot in DownloadPulse's error red.
+
+**Strings:** ten new or changed. The two tile lines let each language split its phrase naturally around the glyph. Translated into 18 locales and independently reviewed, with 29 corrections:
+- **formality** brought into line with each catalog (es, it, nl);
+- **zh:** no spaces around the name, and 您;
+- **tr:** the catalog's apostrophe;
+- **id:** the catalog's word for browser;
+- **ja, ko, zh:** "installed DownloadPulse" in the next-step line;
+- **de, fr, pl, pt_PT:** wording.
+
+**Proof:**
+- **e2e:** the explanation; the four bullets in order with the menu item quoted; the tile near-square, centred, with the plug between its two lines; its accessible name; the status and the red dot.
+- **locale smoke:** each language's tile name and second line; the right-click bullet carrying that language's menu item.
+
+## 20. The choice step: explained, its status a status, one geometry
+
+**Changes:**
+- **Explanation:** a centred line at the top, "Choose the DownloadPulse this browser sends its downloads to."
+- **The find is a status:** "DownloadPulse found on this computer", in a bordered box with a green dot, centred. It's the counterpart of the first screen's red "Not connected yet".
+- **The remote card's hint** no longer says "You'll enter its address": that guidance now sits where it's used.
+- **One geometry (operator):** the space under the cards is one slot, as tall as its tallest content, holding:
+  - with **This computer** chosen, "A tab opens where you approve this browser in DownloadPulse.", centred;
+  - with **Remote server** chosen, the address hint ("…as you open it in your browser, for example downloadpulse.example.com or 192.168.1.20:8095."; the examples are literal) above the field.
+
+  Both panels share the slot's grid cell. The one not chosen is `inert` (no clicks, focus or reading) and not drawn. Switching cards moves nothing.
+
+**Strings:** five new or changed, translated into 18 locales and independently reviewed; 4 corrected (es, id, ja, ko).
+
+**Proof:**
+- the intro, and the status with its border;
+- the dropdown's height and the Connect button's position are identical with either card chosen (both renders 360 × 454 px);
+- the right note in each state;
+- the field is inert while This computer is chosen.
+- **The two example addresses** in the remote hint are set apart in DownloadPulse's gold (operator). DownloadPulse has no gold accent token, so this is `--dp-state-caution` (#ffc13d dark, #d98a00 light), the gold it also gives literal UI values. Every palette keeps it at its mode's value. The extension names it `--dp-literal`, so a dedicated accent would be one change. Each example is its own element (bolder, unbroken) inside the translated sentence: the sentence is localized around two markers, which become the examples. A test checks both examples and their colour.
+- **This computer's note** sits at the top of the slot, where the remote hint starts, so the cards keep one gap above (from the status box) and below (to the note). It's reworded "After choosing Connect, approve this browser in the DownloadPulse tab that opens." (operator: the old wording was awkward). In every language it names that language's own Connect button label; it was translated and reviewed with no corrections. A test checks that the two gaps are equal and that the geometry is unchanged.
+- **Breathing room (operator):** a blank row (`--dp-row`, 18 px) is added:
+  - on the first screen, above and below the bullets;
+  - on the choice step, between the status box and the cards, below the cards, and (Remote server) between the address hint and "Server address".
+
+  The gaps around the cards stay equal and the geometry is still one (360 × 508 px either way). Tests measure each row.

@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "未連線"
+    "message": "尚未連線"
   },
   "optionsTitle": {
     "message": "DownloadPulse擴充功能設定"
   },
   "popupConnect": {
-    "message": "連線到DownloadPulse執行個體"
+    "message": "連線到DownloadPulse"
   },
   "popupProbing": {
     "message": "正在尋找DownloadPulse…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse正在這部電腦上執行。"
+    "message": "已在這部電腦上找到DownloadPulse"
   },
   "popupChecking": {
     "message": "正在檢查連線…"
@@ -361,9 +361,58 @@
     "message": "遠端伺服器"
   },
   "choiceRemoteHint": {
-    "message": "位於您網路中其他位置或網際網路上的DownloadPulse伺服器。您需要輸入它的位址。"
+    "message": "位於您網路中其他位置或網際網路上的DownloadPulse伺服器。"
   },
   "popupConnectAction": {
     "message": "連線"
+  },
+  "welcomeLead": {
+    "message": "將瀏覽器中的下載傳送到DownloadPulse。DownloadPulse會在這台電腦或伺服器上為您完成下載。"
+  },
+  "welcomeHover": {
+    "message": "將滑鼠游標移到下載連結上時，會出現傳送按鈕。"
+  },
+  "welcomeHighlight": {
+    "message": "選取多個連結，一次全部傳送。"
+  },
+  "welcomeRightClick": {
+    "message": "在任一連結上按一下滑鼠右鍵，然後選擇「$MENU$」。",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "在此查看進度，完成時會收到通知。"
+  },
+  "welcomeConnectHint": {
+    "message": "將此瀏覽器連線到已安裝的DownloadPulse。"
+  },
+  "connectTileTop": {
+    "message": "連線到"
+  },
+  "connectTileBottom": {
+    "message": "DownloadPulse"
+  },
+  "foundIntro": {
+    "message": "請選擇此瀏覽器要將下載傳送到的DownloadPulse。"
+  },
+  "localApproveHint": {
+    "message": "選擇「連線」後，請在開啟的DownloadPulse分頁中核准此瀏覽器。"
+  },
+  "remoteAddressHint": {
+    "message": "請依您在瀏覽器中開啟時的形式輸入DownloadPulse伺服器的位址，例如$HOST$或$LAN$。",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

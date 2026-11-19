@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "غير مرتبط"
+    "message": "غير مرتبط بعد"
   },
   "optionsTitle": {
     "message": "إعدادات إضافة DownloadPulse"
   },
   "popupConnect": {
-    "message": "الربط بنسخة DownloadPulse"
+    "message": "الربط بـ DownloadPulse"
   },
   "popupProbing": {
     "message": "جارٍ البحث عن DownloadPulse…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "يعمل DownloadPulse على هذا الكمبيوتر."
+    "message": "تم العثور على DownloadPulse على هذا الكمبيوتر"
   },
   "popupChecking": {
     "message": "جارٍ التحقق من الاتصال…"
@@ -361,9 +361,58 @@
     "message": "خادم بعيد"
   },
   "choiceRemoteHint": {
-    "message": "خادم DownloadPulse في مكان آخر على شبكتك أو على الإنترنت. ستُدخل عنوانه."
+    "message": "خادم DownloadPulse في مكان آخر على شبكتك أو على الإنترنت."
   },
   "popupConnectAction": {
     "message": "ربط"
+  },
+  "welcomeLead": {
+    "message": "أرسل التنزيلات من متصفحك إلى DownloadPulse. يتولى DownloadPulse تنزيلها نيابةً عنك، على هذا الكمبيوتر أو على خادم."
+  },
+  "welcomeHover": {
+    "message": "يظهر زر إرسال عند تمرير المؤشر فوق رابط تنزيل."
+  },
+  "welcomeHighlight": {
+    "message": "حدّد عدة روابط وأرسلها معًا."
+  },
+  "welcomeRightClick": {
+    "message": "انقر بزر الماوس الأيمن على أي رابط، ثم «$MENU$».",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "تابع التقدم هنا، واحصل على إشعار عند الانتهاء."
+  },
+  "welcomeConnectHint": {
+    "message": "اربط هذا المتصفح بنسخة مثبتة من DownloadPulse."
+  },
+  "connectTileTop": {
+    "message": "الربط"
+  },
+  "connectTileBottom": {
+    "message": "بـ DownloadPulse"
+  },
+  "foundIntro": {
+    "message": "اختر نسخة DownloadPulse التي يرسل إليها هذا المتصفح تنزيلاته."
+  },
+  "localApproveHint": {
+    "message": "بعد اختيار «ربط»، وافق على هذا المتصفح في علامة تبويب DownloadPulse التي تُفتح."
+  },
+  "remoteAddressHint": {
+    "message": "أدخل عنوان خادم DownloadPulse كما تفتحه في متصفحك، مثل $HOST$ أو $LAN$.",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

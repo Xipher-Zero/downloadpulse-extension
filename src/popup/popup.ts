@@ -343,7 +343,13 @@ function choose(choice: "local" | "remote", focus = false): void {
     card.tabIndex = on ? 0 : -1;
     if (on && focus) card.focus();
   }
-  $("#remote-found").hidden = choice !== "remote";
+  // Both panels keep their place in the slot (its height is the taller one's); the one
+  // not chosen is inert -- no clicks, focus or reading -- and not drawn.
+  for (const panel of document.querySelectorAll<HTMLElement>("[data-panel]")) {
+    const on = panel.dataset["panel"] === choice;
+    panel.inert = !on;
+    panel.classList.toggle("dp-found__panel--off", !on);
+  }
   if (choice === "remote" && !focus) $<HTMLInputElement>("#server-found").focus();
 }
 
@@ -369,6 +375,20 @@ async function openDownloadPulse(): Promise<void> {
 void appearance().then((value) => applyAppearance(document.documentElement, value));
 localize(document);
 placeGlyphs(document);
+choose("local");
+// The address hint's examples are literal (an address is no word to translate), each set
+// apart in the theme's literal colour (operator, 2026-11-18): the sentence is translated
+// around two markers, which become the examples' own elements.
+{
+  const hint = $('[data-testid="remote-hint"]');
+  const parts = message("remoteAddressHint", ["\u0001", "\u0002"]).split(/(\u0001|\u0002)/);
+  hint.replaceChildren(...parts.map((part) => {
+    if (part !== "\u0001" && part !== "\u0002") return document.createTextNode(part);
+    return span("dp-literal", part === "\u0001" ? "downloadpulse.example.com" : "192.168.1.20:8095");
+  }));
+}
+// The right-click way names the menu item as the menu itself says it, in every language.
+text('[data-testid="welcome-right-click"]', message("welcomeRightClick", [message("menuSend")]));
 for (const input of document.querySelectorAll<HTMLInputElement>("[data-i18n-placeholder]")) {
   input.placeholder = message(input.dataset["i18nPlaceholder"] ?? "");
 }

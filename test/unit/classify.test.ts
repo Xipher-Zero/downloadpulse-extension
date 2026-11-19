@@ -22,7 +22,7 @@ test("capture: .torrent, .nzb and .meta4 links only, over http(s)", () => {
   assert.equal(captureKind("https://t.example/dl/123/file.torrent?passkey=secret"), "torrent");
   assert.equal(captureKind("https://i.example/getnzb/5/Some.Release.NZB"), "nzb");
   // An indexer's newznab download link is an NZB, though its path has no .nzb (operator, 2026-11-18).
-  assert.equal(captureKind("https://i.example/api?t=get&id=5"), "nzb");
+  assert.equal(captureKind("https://i.example/api?t=get&id=5&apikey=K"), "nzb");
   assert.equal(captureKind("https://m.example/file.meta4"), "metalink");
   assert.equal(captureKind("https://m.example/file.metalink"), null);
   assert.equal(captureKind("https://m.example/file.zip"), null);
@@ -53,4 +53,17 @@ test("an indexer's newznab download link (?t=get&id=) is an NZB to capture, what
     assert.equal(isDownloadCandidate(href), false, href);
     assert.equal(captureKind(href), null, href);
   }
+});
+
+test("an explicit file type is that file, whatever its query; an indexer link needs t=get, an id and its key (review P2)", () => {
+  // The reviewer's cases: fetched as NZBs, refused, and never sent.
+  assert.equal(captureKind("https://files.example/backup.iso?t=get&id=42"), null);
+  assert.equal(isDownloadCandidate("https://files.example/backup.iso?t=get&id=42"), true);   // sent as the link it is
+  assert.equal(captureKind("https://t.example/x.torrent?t=get&id=42&apikey=K"), "torrent");
+  assert.equal(captureKind("https://files.example/backup.iso?t=get&id=42&apikey=K"), null);
+  // Extensionless: all three newznab signs, or it is not an indexer link.
+  assert.equal(captureKind("https://i.example/api?t=get&id=5"), null);
+  assert.equal(captureKind("https://i.example/api?t=get&apikey=K"), null);
+  assert.equal(captureKind("https://i.example/api?t=search&id=5&apikey=K"), null);
+  assert.equal(captureKind("https://i.example/cdn?t=get&id=5&ApiKey=K"), "nzb");
 });

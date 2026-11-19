@@ -44,7 +44,7 @@ test.afterEach(async () => {
 async function connect() {
   const popup = await context.newPage();
   await popup.goto(`chrome-extension://${extensionId}/popup/popup.html`);
-  await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+  await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
@@ -384,26 +384,42 @@ test("a .torrent behind a sign-in is captured with the site's cookie; its URL is
   expect(dp.state.jobs[0].cookie).toBeNull();                       // DownloadPulse never gets the site's cookie
 });
 
-test("an indexer's download link (newznab ?t=get) is captured as the NZB; its key never reaches DownloadPulse", async () => {
+test("an indexer's download link gets no hover button; sent by selection (as by right-click) it is captured as the NZB", async () => {
   await connect();
   const page = await sitePage();
+  // No hover button: the indexer draws its own download icon; right-click and a selection send it.
   await page.locator("#indexer").scrollIntoViewIfNeeded();
-  await hoverAndClick(page, "#indexer");
-  await expect.poll(() => dp.state.jobs.length).toBe(1);
-  const {source} = dp.state.jobs[0].body;
-  expect(source.kind).toBe("nzb");
-  expect(source.filename).toBe("The.Odyssey.2026.1080p.nzb");                 // the indexer's own name for it
-  expect(Buffer.from(source.nzb_base64, "base64").equals(NZB)).toBe(true);
-  // Unnamed by the indexer: the NZB's own name, never "api.nzb".
-  await page.mouse.move(1, 1);
-  await page.waitForTimeout(400);
-  await hoverAndClick(page, "#indexer-unnamed");
+  const box = await page.locator("#indexer").boundingBox();
+  await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+  await page.waitForTimeout(600);
+  expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length)).toBe(0);
+  // Sent: captured -- the indexer's name, or the NZB's own; the key never reaches DownloadPulse.
+  await page.locator("#indexer-text").scrollIntoViewIfNeeded();
+  await page.evaluate(() => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector("#indexer-text"));
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+  });
+  await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+  const [layer] = await openLayers(page);
+  await page.mouse.click(layer.left + 8, layer.top + 8);
   await expect.poll(() => dp.state.jobs.length).toBe(2);
-  expect(dp.state.jobs[1].body.source.filename).toBe("The.Odyssey.2026.2160p.nzb");
-  // The indexer refusing (an <error> document, with 200): nothing is sent, and the person is told.
+  const sources = dp.state.jobs.map((job) => job.body.source);
+  expect(sources.map((source) => source.kind)).toEqual(["nzb", "nzb"]);
+  expect(sources.map((source) => source.filename)).toEqual(["The.Odyssey.2026.1080p.nzb", "The.Odyssey.2026.2160p.nzb"]);
+  for (const source of sources) expect(Buffer.from(source.nzb_base64, "base64").equals(NZB)).toBe(true);
+  // The indexer refusing (an <error> document, with 200): nothing is sent.
   await page.mouse.move(1, 1);
-  await page.waitForTimeout(400);
-  await hoverAndClick(page, "#indexer-refused");
+  await page.evaluate(() => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector("#indexer-limit"));
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+  });
+  await expect.poll(async () => (await openLayers(page)).filter((l) => l.top < 700).length).toBeGreaterThan(0);
+  const [limited] = (await openLayers(page)).filter((l) => l.top < 700);
+  await page.mouse.click(limited.left + 8, limited.top + 8);
   await page.waitForTimeout(1500);
   expect(dp.state.jobs.length).toBe(2);
   expect(JSON.stringify(dp.state.jobs)).not.toContain("SECRETINDEXERKEY");

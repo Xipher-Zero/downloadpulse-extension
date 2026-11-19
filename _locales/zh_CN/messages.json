@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "未连接"
+    "message": "尚未连接"
   },
   "optionsTitle": {
     "message": "DownloadPulse扩展设置"
   },
   "popupConnect": {
-    "message": "连接到DownloadPulse实例"
+    "message": "连接到DownloadPulse"
   },
   "popupProbing": {
     "message": "正在查找DownloadPulse…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse正在此计算机上运行。"
+    "message": "已在此计算机上找到DownloadPulse"
   },
   "popupChecking": {
     "message": "正在检查连接…"
@@ -361,9 +361,58 @@
     "message": "远程服务器"
   },
   "choiceRemoteHint": {
-    "message": "位于您网络中其他位置或互联网上的DownloadPulse服务器。您需要输入它的地址。"
+    "message": "位于您网络中其他位置或互联网上的DownloadPulse服务器。"
   },
   "popupConnectAction": {
     "message": "连接"
+  },
+  "welcomeLead": {
+    "message": "将浏览器中的下载发送到DownloadPulse。DownloadPulse会在这台电脑或服务器上为您完成下载。"
+  },
+  "welcomeHover": {
+    "message": "将鼠标悬停在下载链接上时，会出现发送按钮。"
+  },
+  "welcomeHighlight": {
+    "message": "选中多个链接，一次全部发送。"
+  },
+  "welcomeRightClick": {
+    "message": "右键点击任意链接，然后选择“$MENU$”。",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "在此查看进度，完成后会收到通知。"
+  },
+  "welcomeConnectHint": {
+    "message": "将此浏览器连接到已安装的DownloadPulse。"
+  },
+  "connectTileTop": {
+    "message": "连接到"
+  },
+  "connectTileBottom": {
+    "message": "DownloadPulse"
+  },
+  "foundIntro": {
+    "message": "请选择此浏览器要将下载发送到的DownloadPulse。"
+  },
+  "localApproveHint": {
+    "message": "选择“连接”后，请在打开的DownloadPulse标签页中批准此浏览器。"
+  },
+  "remoteAddressHint": {
+    "message": "请按您在浏览器中打开时的形式输入DownloadPulse服务器的地址，例如$HOST$或$LAN$。",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

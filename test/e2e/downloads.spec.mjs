@@ -33,7 +33,7 @@ test.beforeEach(async () => {
   const worker = context.serviceWorkers()[0] || await context.waitForEvent("serviceworker");
   popup = await context.newPage();
   await popup.goto(`chrome-extension://${new URL(worker.url()).host}/popup/popup.html`);
-  await popup.getByRole("button", {name: "Connect to a DownloadPulse instance"}).click();
+  await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");

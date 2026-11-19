@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "未接続"
+    "message": "まだ接続されていません"
   },
   "optionsTitle": {
     "message": "DownloadPulse 拡張機能の設定"
   },
   "popupConnect": {
-    "message": "DownloadPulse インスタンスに接続"
+    "message": "DownloadPulse に接続"
   },
   "popupProbing": {
     "message": "DownloadPulse を探しています…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "このコンピューターで DownloadPulse が実行されています。"
+    "message": "このコンピューターで DownloadPulse が見つかりました"
   },
   "popupChecking": {
     "message": "接続を確認しています…"
@@ -361,9 +361,58 @@
     "message": "リモートサーバー"
   },
   "choiceRemoteHint": {
-    "message": "ネットワーク上またはインターネット上の別の場所にある DownloadPulse サーバー。アドレスを入力します。"
+    "message": "ネットワーク上またはインターネット上の別の場所にある DownloadPulse サーバー。"
   },
   "popupConnectAction": {
     "message": "接続"
+  },
+  "welcomeLead": {
+    "message": "ブラウザーから DownloadPulse にダウンロードを送信できます。DownloadPulse がこのコンピューターまたはサーバー上でダウンロードします。"
+  },
+  "welcomeHover": {
+    "message": "ダウンロードリンクにカーソルを合わせると、送信ボタンが表示されます。"
+  },
+  "welcomeHighlight": {
+    "message": "複数のリンクを選択して、まとめて送信できます。"
+  },
+  "welcomeRightClick": {
+    "message": "リンクを右クリックして「$MENU$」を選択します。",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "進行状況はここで確認でき、完了すると通知されます。"
+  },
+  "welcomeConnectHint": {
+    "message": "このブラウザーを、インストール済みの DownloadPulse に接続してください。"
+  },
+  "connectTileTop": {
+    "message": "DownloadPulse に"
+  },
+  "connectTileBottom": {
+    "message": "接続"
+  },
+  "foundIntro": {
+    "message": "このブラウザーがダウンロードを送信する DownloadPulse を選んでください。"
+  },
+  "localApproveHint": {
+    "message": "「接続」を選んだ後、開いた DownloadPulse のタブでこのブラウザーを承認してください。"
+  },
+  "remoteAddressHint": {
+    "message": "DownloadPulse サーバーのアドレスを、ブラウザーで開くときと同じ形で入力してください（例：$HOST$ または $LAN$）。",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

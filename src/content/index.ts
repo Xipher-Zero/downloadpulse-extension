@@ -9,7 +9,7 @@
 // and hands the background a URL to send.
 
 import {parseAppearance} from "../shared/appearance";
-import {extractUrls, isDownloadCandidate, urlAt} from "../shared/classify";
+import {extractUrls, isDownloadCandidate, isIndexerLink, urlAt} from "../shared/classify";
 import {message} from "../shared/i18n";
 import {pageColours, type PageColours} from "../shared/page-theme";
 
@@ -216,6 +216,16 @@ function renderedLine(anchor: HTMLAnchorElement, y: number): DOMRect {
   return new DOMRect(left, top, right - left, bottom - top);
 }
 
+/**
+ * Whether a link gets the hover button: a download candidate, but not an
+ * indexer's download link -- the indexer already draws its own download icon
+ * in a dense row, and right-click (or a selection) sends it, captured
+ * (operator, 2026-11-18).
+ */
+function hoverable(href: string, attributes?: {download?: boolean; type?: string}): boolean {
+  return isDownloadCandidate(href, attributes) && !isIndexerLink(href);
+}
+
 /** A candidate under the pointer: its URL, where it is drawn, and how to find where it is drawn now. */
 interface Found { url: string; rect: DOMRect; rtl: boolean; anchor: () => DOMRect }
 
@@ -223,7 +233,7 @@ function candidateAt(event: Pointer): Found | null {
   const anchor = event.path.find((node): node is HTMLAnchorElement =>
     node instanceof HTMLAnchorElement && Boolean(node.href));
   if (anchor) {
-    if (!isDownloadCandidate(anchor.href, {download: anchor.hasAttribute("download"), type: anchor.type})) return null;
+    if (!hoverable(anchor.href, {download: anchor.hasAttribute("download"), type: anchor.type})) return null;
     // Only on what the link draws (its text, or its image), not the rest of a box a
     // page stretches across a row (operator, 2026-11-18: along a release row the
     // icon stayed up), with a little slack, and the way across to the icon.
@@ -244,7 +254,7 @@ function candidateAt(event: Pointer): Found | null {
   const offset = caret?.offset ?? range?.startOffset ?? 0;
   if (!node || node.nodeType !== Node.TEXT_NODE || node.parentElement?.closest("a, input, textarea")) return null;
   const found = urlAt(node.textContent ?? "", offset);
-  if (!found || !isDownloadCandidate(found.url)) return null;
+  if (!found || !hoverable(found.url)) return null;
   const span = document.createRange();
   span.setStart(node, found.start);
   span.setEnd(node, found.end);

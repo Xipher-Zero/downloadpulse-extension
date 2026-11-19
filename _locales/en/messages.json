@@ -12,16 +12,16 @@
     "description": "Tooltip of the toolbar button."
   },
   "popupNotConnected": {
-    "message": "Not connected",
-    "description": "Toolbar popup: the extension is not connected to a DownloadPulse server."
+    "message": "Not connected yet",
+    "description": "Popup first screen: the status under the connect tile, beside a red dot."
   },
   "optionsTitle": {
     "message": "DownloadPulse extension settings",
     "description": "Title of the extension's settings page."
   },
   "popupConnect": {
-    "message": "Connect to a DownloadPulse instance",
-    "description": "Popup button: start connecting this browser."
+    "message": "Connect to DownloadPulse",
+    "description": "Popup first screen: the accessible name and tooltip of the connect tile (its visible words are connectTileTop and connectTileBottom)."
   },
   "popupProbing": {
     "message": "Looking for DownloadPulse…",
@@ -410,8 +410,8 @@
     "description": "Popup, after a failure: label of the server address field, offered so a failing DownloadPulse on this computer never traps the person."
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse is running on this computer.",
-    "description": "Popup: a DownloadPulse was found on this computer; the person now chooses it or a different one."
+    "message": "DownloadPulse found on this computer",
+    "description": "Popup: a status (in a bordered box with a green dot): DownloadPulse was found running on this computer."
   },
   "popupChecking": {
     "message": "Checking connection…",
@@ -468,11 +468,71 @@
     "description": "Popup choice card title: connect to a DownloadPulse server elsewhere instead (a short card title)."
   },
   "choiceRemoteHint": {
-    "message": "A DownloadPulse server elsewhere on your network or the internet. You'll enter its address.",
-    "description": "Popup choice card hint under \"Remote server\"; choosing it shows the server address field."
+    "message": "A DownloadPulse server elsewhere on your network or the internet.",
+    "description": "Popup choice card hint under \"Remote server\"."
   },
   "popupConnectAction": {
     "message": "Connect",
     "description": "Popup: the primary button under the choice cards; connects to the chosen DownloadPulse."
+  },
+  "welcomeLead": {
+    "message": "Send downloads from your browser to DownloadPulse. DownloadPulse fetches them for you, on this computer or on a server.",
+    "description": "Popup first screen: what the extension does (centred, one paragraph)."
+  },
+  "welcomeHover": {
+    "message": "A send button appears when you hover over a download link.",
+    "description": "Popup first screen, bullet: the button the extension shows beside a download link."
+  },
+  "welcomeHighlight": {
+    "message": "Highlight several links and send them together.",
+    "description": "Popup first screen, bullet: selecting text with several links offers to send them as one batch."
+  },
+  "welcomeRightClick": {
+    "message": "Right-click any link, then “$MENU$”.",
+    "description": "Popup first screen, bullet. MENU is the right-click menu item exactly as the browser shows it (the menuSend string); quote it with your language's quotation marks.",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "Follow progress here, and get notified when it's done.",
+    "description": "Popup first screen, bullet: the list of sent downloads and the notifications."
+  },
+  "welcomeConnectHint": {
+    "message": "Connect this browser to a DownloadPulse install.",
+    "description": "Popup first screen: the next step, above the connect tile (centred)."
+  },
+  "connectTileTop": {
+    "message": "Connect",
+    "description": "Connect tile, the line ABOVE its plug glyph. connectTileTop + glyph + connectTileBottom read as \"Connect to DownloadPulse\": split that phrase across the two lines as your language reads naturally (either line may hold most of it). Keep both short."
+  },
+  "connectTileBottom": {
+    "message": "to DownloadPulse",
+    "description": "Connect tile, the line BELOW its plug glyph; see connectTileTop. DownloadPulse stays in Latin script."
+  },
+  "foundIntro": {
+    "message": "Choose the DownloadPulse this browser sends its downloads to.",
+    "description": "Popup: centred explanation at the top of the step where the person chooses This computer or Remote server."
+  },
+  "localApproveHint": {
+    "message": "After choosing Connect, approve this browser in the DownloadPulse tab that opens.",
+    "description": "Popup: shown under the cards while \"This computer\" is chosen: what the person does after pressing Connect (a DownloadPulse tab opens, where they approve this browser)."
+  },
+  "remoteAddressHint": {
+    "message": "Enter your DownloadPulse server's address, as you open it in your browser, for example $HOST$ or $LAN$.",
+    "description": "Popup: shown above the server address field while \"Remote server\" is chosen. HOST and LAN are example addresses, shown as written.",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

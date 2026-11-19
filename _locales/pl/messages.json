@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "Nie połączono"
+    "message": "Jeszcze nie połączono"
   },
   "optionsTitle": {
     "message": "Ustawienia rozszerzenia DownloadPulse"
   },
   "popupConnect": {
-    "message": "Połącz z instancją DownloadPulse"
+    "message": "Połącz z DownloadPulse"
   },
   "popupProbing": {
     "message": "Wyszukiwanie DownloadPulse…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse działa na tym komputerze."
+    "message": "Znaleziono DownloadPulse na tym komputerze"
   },
   "popupChecking": {
     "message": "Sprawdzanie połączenia…"
@@ -361,9 +361,58 @@
     "message": "Serwer zdalny"
   },
   "choiceRemoteHint": {
-    "message": "Serwer DownloadPulse w innym miejscu sieci lub w internecie. Należy podać jego adres."
+    "message": "Serwer DownloadPulse w innym miejscu sieci lub w internecie."
   },
   "popupConnectAction": {
     "message": "Połącz"
+  },
+  "welcomeLead": {
+    "message": "Wysyłaj pobrania z przeglądarki do DownloadPulse. DownloadPulse je pobiera — na tym komputerze lub na serwerze."
+  },
+  "welcomeHover": {
+    "message": "Po najechaniu na link do pobrania pojawia się przycisk wysyłania."
+  },
+  "welcomeHighlight": {
+    "message": "Zaznacz kilka linków i wyślij je razem."
+  },
+  "welcomeRightClick": {
+    "message": "Kliknij prawym przyciskiem dowolny link, a następnie „$MENU$”.",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "Śledź tutaj postęp i otrzymaj powiadomienie po zakończeniu."
+  },
+  "welcomeConnectHint": {
+    "message": "Połącz tę przeglądarkę z instalacją DownloadPulse."
+  },
+  "connectTileTop": {
+    "message": "Połącz"
+  },
+  "connectTileBottom": {
+    "message": "z DownloadPulse"
+  },
+  "foundIntro": {
+    "message": "Należy wybrać DownloadPulse, do którego ta przeglądarka wysyła pobrania."
+  },
+  "localApproveHint": {
+    "message": "Po wybraniu „Połącz” należy zatwierdzić tę przeglądarkę na karcie DownloadPulse, która się otworzy."
+  },
+  "remoteAddressHint": {
+    "message": "Należy wpisać adres serwera DownloadPulse w takiej postaci, w jakiej otwiera się go w przeglądarce, na przykład $HOST$ lub $LAN$.",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

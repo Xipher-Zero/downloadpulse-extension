@@ -21,6 +21,8 @@ const GEOMETRY = {
     ["path", {d: "M10 11v5"}], ["path", {d: "M14 11v5"}],
   ],
   chevronRight: [["path", {d: "m9 18 6-6-6-6"}]],
+  plug: [["path", {d: "M12 22v-5"}], ["path", {d: "M9 8V2"}], ["path", {d: "M15 8V2"}],
+    ["path", {d: "M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"}]],
   monitor: [["rect", {width: "20", height: "14", x: "2", y: "3", rx: "2"}], ["path", {d: "M8 21h8"}], ["path", {d: "M12 17v4"}]],
   server: [
     ["rect", {width: "20", height: "8", x: "2", y: "2", rx: "2", ry: "2"}],

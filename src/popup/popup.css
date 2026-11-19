@@ -223,6 +223,42 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-popup__code { font-family: ui-monospace, Menlo, Consolas, monospace; letter-spacing: .08em; }
 .dp-popup__error { color: var(--dp-state-error); }
 
+/* A blank row: the breathing space between the onboarding pages' blocks (operator, 2026-11-18). */
+:root { --dp-row: 18px; }
+
+/* ── the first screen ── */
+.dp-welcome { gap: 12px; }
+.dp-welcome__lead, .dp-welcome__next { text-align: center; margin: 0; }
+.dp-welcome__lead { color: var(--dp-text-secondary); }
+.dp-welcome__next { color: var(--dp-text-muted); font-size: 12.5px; }
+.dp-welcome__ways { margin: var(--dp-row) 0; padding-inline-start: 18px; display: grid; gap: 5px; color: var(--dp-text-secondary); font-size: 12.5px; }
+.dp-welcome__ways li::marker { color: var(--dp-accent-purple-bright); }
+/* A near-square tile: the action above and below a glyph scaled to balance the words. */
+.dp-connect-tile { justify-self: center; display: grid; justify-items: center; align-content: center; gap: 8px;
+  inline-size: 148px; min-block-size: 124px; padding: 12px; white-space: normal; text-align: center; line-height: 1.25; font-size: 13.5px; }
+.dp-connect-tile__glyph { display: contents; }
+.dp-connect-tile svg { inline-size: 36px; block-size: 36px; }
+.dp-welcome__state { justify-self: center; display: inline-flex; align-items: center; gap: 7px; margin: 0; font-size: 12px; color: var(--dp-text-muted); }
+.dp-welcome__dot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--dp-state-error); }
+
+/* ── found on this computer: what this step decides, the find as a status, the choice, one slot ── */
+.dp-found__intro { margin: 0; text-align: center; color: var(--dp-text-secondary); }
+.dp-found__status { justify-self: center; display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 6px 12px;
+  border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1); font-size: 12.5px;
+  color: var(--dp-text-primary); text-align: center; }
+.dp-found__dot { inline-size: 8px; block-size: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--dp-state-success); }
+.dp-found .dp-choices { margin-block: var(--dp-row); }
+.dp-found__slot { display: grid; }
+#remote-found [data-testid="remote-hint"] { margin-block-end: var(--dp-row); }
+.dp-found__slot > [data-panel] { grid-area: 1 / 1; margin: 0; }
+/* The note sits where the remote hint starts: the cards keep one gap above and below (operator). */
+.dp-found__slot > [data-panel="local"] { align-self: start; }
+.dp-found__panel--off { visibility: hidden; }
+.dp-found__next { margin: 0; text-align: center; color: var(--dp-text-muted); font-size: 12.5px; }
+/* A literal value in a sentence (an example address): DownloadPulse's gold, the one it gives
+   literal UI values; its state token, which every palette keeps in its mode's value. */
+.dp-literal { color: var(--dp-literal, var(--dp-state-caution)); font-weight: 600; white-space: nowrap; }
+
 /* ── choosing what to connect to: DownloadPulse's wizard choice cards ── */
 .dp-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .dp-choice {

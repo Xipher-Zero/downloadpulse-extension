@@ -24,7 +24,12 @@ for (const [lang, folder, dir] of [["de", "de", "ltr"], ["ar", "ar", "rtl"], ["z
       await popup.goto(`chrome-extension://${new URL(worker.url()).host}/popup/popup.html`);
       await expect(popup.getByTestId("status")).toHaveText(catalog.popupNotConnected.message);
       expect(catalog.popupNotConnected.message).not.toBe(english.popupNotConnected.message);
-      await expect(popup.locator("button[data-action='connect-local']").first()).toHaveText(catalog.popupConnect.message);
+      // The connect tile: its two lines in the language, its accessible name the whole phrase.
+      const tile = popup.locator("button[data-action='connect-local']").first();
+      await expect(tile).toHaveAttribute("aria-label", catalog.popupConnect.message);
+      await expect(tile).toContainText(catalog.connectTileBottom.message);
+      // The right-click way quotes the menu item exactly as the menu says it.
+      await expect(popup.getByTestId("welcome-right-click")).toContainText(catalog.menuSend.message);
       await expect(popup.locator("html")).toHaveAttribute("dir", dir);
     } finally {
       await context.close();

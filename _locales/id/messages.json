@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "Tidak terhubung"
+    "message": "Belum terhubung"
   },
   "optionsTitle": {
     "message": "Pengaturan ekstensi DownloadPulse"
   },
   "popupConnect": {
-    "message": "Hubungkan ke instans DownloadPulse"
+    "message": "Hubungkan ke DownloadPulse"
   },
   "popupProbing": {
     "message": "Mencari DownloadPulse…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse berjalan di komputer ini."
+    "message": "DownloadPulse ditemukan di komputer ini"
   },
   "popupChecking": {
     "message": "Memeriksa sambungan…"
@@ -361,9 +361,58 @@
     "message": "Server jarak jauh"
   },
   "choiceRemoteHint": {
-    "message": "Server DownloadPulse di tempat lain di jaringan Anda atau di internet. Anda akan memasukkan alamatnya."
+    "message": "Server DownloadPulse di tempat lain di jaringan Anda atau di internet."
   },
   "popupConnectAction": {
     "message": "Hubungkan"
+  },
+  "welcomeLead": {
+    "message": "Kirim unduhan dari peramban Anda ke DownloadPulse. DownloadPulse mengunduhnya untuk Anda, di komputer ini atau di server."
+  },
+  "welcomeHover": {
+    "message": "Tombol kirim muncul saat Anda mengarahkan kursor ke tautan unduhan."
+  },
+  "welcomeHighlight": {
+    "message": "Sorot beberapa tautan dan kirim sekaligus."
+  },
+  "welcomeRightClick": {
+    "message": "Klik kanan tautan mana pun, lalu “$MENU$”.",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "Pantau progres di sini, dan dapatkan notifikasi saat selesai."
+  },
+  "welcomeConnectHint": {
+    "message": "Hubungkan peramban ini ke instalasi DownloadPulse."
+  },
+  "connectTileTop": {
+    "message": "Hubungkan"
+  },
+  "connectTileBottom": {
+    "message": "ke DownloadPulse"
+  },
+  "foundIntro": {
+    "message": "Pilih DownloadPulse yang akan menerima unduhan dari peramban ini."
+  },
+  "localApproveHint": {
+    "message": "Setelah memilih “Hubungkan”, setujui peramban ini di tab DownloadPulse yang terbuka."
+  },
+  "remoteAddressHint": {
+    "message": "Masukkan alamat server DownloadPulse Anda seperti saat Anda membukanya di peramban, misalnya $HOST$ atau $LAN$.",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

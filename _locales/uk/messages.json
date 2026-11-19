@@ -9,13 +9,13 @@
     "message": "DownloadPulse"
   },
   "popupNotConnected": {
-    "message": "Не підключено"
+    "message": "Ще не підключено"
   },
   "optionsTitle": {
     "message": "Параметри розширення DownloadPulse"
   },
   "popupConnect": {
-    "message": "Підключитися до екземпляра DownloadPulse"
+    "message": "Підключитися до DownloadPulse"
   },
   "popupProbing": {
     "message": "Пошук DownloadPulse…"
@@ -316,7 +316,7 @@
     }
   },
   "popupFoundLocal": {
-    "message": "DownloadPulse запущено на цьому комп’ютері."
+    "message": "DownloadPulse знайдено на цьому комп’ютері"
   },
   "popupChecking": {
     "message": "Перевірка підключення…"
@@ -361,9 +361,58 @@
     "message": "Віддалений сервер"
   },
   "choiceRemoteHint": {
-    "message": "Сервер DownloadPulse в іншому місці вашої мережі або в інтернеті. Ви введете його адресу."
+    "message": "Сервер DownloadPulse в іншому місці вашої мережі або в інтернеті."
   },
   "popupConnectAction": {
     "message": "Підключитися"
+  },
+  "welcomeLead": {
+    "message": "Надсилайте завантаження з браузера до DownloadPulse. DownloadPulse завантажить їх за вас — на цьому комп’ютері або на сервері."
+  },
+  "welcomeHover": {
+    "message": "Коли ви наводите вказівник на посилання для завантаження, з’являється кнопка надсилання."
+  },
+  "welcomeHighlight": {
+    "message": "Виділіть кілька посилань і надішліть їх разом."
+  },
+  "welcomeRightClick": {
+    "message": "Клацніть правою кнопкою на посиланні, потім виберіть «$MENU$».",
+    "placeholders": {
+      "menu": {
+        "content": "$1",
+        "example": "Download with DownloadPulse"
+      }
+    }
+  },
+  "welcomeProgress": {
+    "message": "Стежте тут за перебігом і отримуйте сповіщення, коли все готово."
+  },
+  "welcomeConnectHint": {
+    "message": "Підключіть цей браузер до встановленого DownloadPulse."
+  },
+  "connectTileTop": {
+    "message": "Підключитися"
+  },
+  "connectTileBottom": {
+    "message": "до DownloadPulse"
+  },
+  "foundIntro": {
+    "message": "Виберіть DownloadPulse, на який цей браузер надсилатиме завантаження."
+  },
+  "localApproveHint": {
+    "message": "Після вибору «Підключитися» підтвердьте цей браузер на вкладці DownloadPulse, що відкриється."
+  },
+  "remoteAddressHint": {
+    "message": "Введіть адресу свого сервера DownloadPulse так, як ви відкриваєте його в браузері, наприклад $HOST$ або $LAN$.",
+    "placeholders": {
+      "host": {
+        "content": "$1",
+        "example": "downloadpulse.example.com"
+      },
+      "lan": {
+        "content": "$2",
+        "example": "192.168.1.20:8095"
+      }
+    }
   }
 }

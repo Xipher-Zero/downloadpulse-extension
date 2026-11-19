@@ -33,6 +33,8 @@ export async function fakeSite() {
         <p><a id="indexer" href="/cdn?t=get&amp;id=c59de97c&amp;apikey=SECRETINDEXERKEY">Get NZB</a></p>
         <p><a id="indexer-unnamed" href="/api?t=get&amp;id=nameless&amp;apikey=SECRETINDEXERKEY">Get</a></p>
         <p><a id="indexer-refused" href="/api?t=get&amp;id=over-limit&amp;apikey=SECRETINDEXERKEY">Get (limit)</a></p>
+        <p id="indexer-limit">http://${req.headers.host}/api?t=get&amp;id=over-limit&amp;apikey=SECRETINDEXERKEY</p>
+        <p id="indexer-text">http://${req.headers.host}/cdn?t=get&amp;id=c59de97c&amp;apikey=SECRETINDEXERKEY http://${req.headers.host}/api?t=get&amp;id=nameless&amp;apikey=SECRETINDEXERKEY</p>
         <p id="text">Mirror: https://203.0.113.20/releases/disc.iso today</p>
         <video id="video" width="320" height="180" style="background:#000"></video>
         <button id="full" onclick="document.querySelector('#video').requestFullscreen()">Fullscreen</button>
