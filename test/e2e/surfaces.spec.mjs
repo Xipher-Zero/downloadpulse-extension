@@ -448,6 +448,22 @@ test("captures follow no redirect and never use plain HTTP across the internet (
   expect(JSON.stringify(dp.state.jobs)).not.toContain("SECRETPUBLIC");
 });
 
+test("a held connection fetches nothing: a button still offered from a page's cached answer contacts no site (store review)", async () => {
+  const popup = await connect();
+  const page = await sitePage();
+  await context.addCookies([{name: "site_session", value: "signed-in", url: site.base}]);
+  const box = await page.locator("#torrent").boundingBox();
+  await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+  await expect.poll(async () => (await openLayers(page)).length).toBe(1);   // offered while usable (cached up to 5 s)
+  await popup.evaluate(() => chrome.storage.local.remove("consent"));        // now held
+  const [layer] = await openLayers(page);
+  await page.mouse.move(layer.left + layer.width / 2, layer.top + layer.height / 2, {steps: 2});
+  await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
+  await page.waitForTimeout(1500);
+  expect(site.state.requests.some((r) => r.path.startsWith("/files/private.torrent"))).toBe(false);   // the site was never asked
+  expect(dp.state.jobs).toEqual([]);
+});
+
 test("a sign-in page answering for a .torrent is refused, not sent", async () => {
   await connect();
   const page = await sitePage();

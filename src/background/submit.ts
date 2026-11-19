@@ -150,13 +150,27 @@ async function settle(origin: Origin, work: () => Promise<void>): Promise<void> 
 }
 
 /** A link: right-click, the hover icon, the video button, the URL-bar icon (B1, B3, B4). */
+/**
+ * The connection may be used (connection.ts token(): agreed to, the transport rules met) --
+ * checked before anything else happens, so no file is fetched from a site for a send that
+ * cannot go anywhere (store review of cd9556b: a page's buttons may still be offered for a
+ * few seconds after a connection is held). send() checks again before submitting.
+ */
+async function mayUseConnection(): Promise<void> {
+  if (!(await token())) throw new Refused("sendNotConnected");
+}
+
 export function sendUrl(href: string, origin: Origin): Promise<void> {
-  return settle(origin, async () => send(await sourceFor(href)));
+  return settle(origin, async () => {
+    await mayUseConnection();
+    await send(await sourceFor(href));
+  });
 }
 
 /** A selection: its http(s) URLs as one batch, each magnet on its own (B2). */
 export function sendSelection(text: string, origin: Origin): Promise<void> {
   return settle(origin, async () => {
+    await mayUseConnection();
     const urls = extractUrls(text);
     if (!urls.length) throw new Refused("sendNothingFound");
     // Plain links go as one batch; a magnet, and a file DownloadPulse takes

@@ -104,3 +104,11 @@ The reviewer also noted where the disclosure page summarizes `PRIVACY.md` rather
 5. **BUILDING.md:** reviewers stop at `npm run build`. `npm run package` works outside a Git checkout, writing the two packages and no source archive.
 
 **Strings:** two new, in 18 locales, reviewed; 3 corrected (ru, uk, ja).
+
+## Third review (of cd9556b), fixed
+
+**Finding:** the send handler captured a file before checking the connection. A page's buttons may still be offered for up to 5 s (the frame's cached answer) after a connection is held, so a click then contacted the source site with the person's credentials, then reported "Not connected".
+
+**Fix:** `sendUrl` and `sendSelection` check that the connection may be used (`token()`, the gate) before anything else. `send()` still checks again before submitting.
+
+**Proof:** a button offered while usable is clicked after the connection is held. The source site is never asked, and no job is sent. Without the early check, the test fails.
