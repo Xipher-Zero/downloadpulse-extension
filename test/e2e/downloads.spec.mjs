@@ -53,7 +53,7 @@ async function sendArchive() {
   await page.goto(`${site.base}/page`);
   const box = await page.locator("#zip").boundingBox();
   await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
-  await expect.poll(() => page.evaluate(() => document.querySelectorAll("downloadpulse-layer:popover-open").length)).toBe(1);
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer:popover-open")].filter((h) => getComputedStyle(h).display !== "none").length)).toBe(1);
   const at = await page.evaluate(() => {
     const r = document.querySelector("downloadpulse-layer:popover-open").getBoundingClientRect();
     return {x: r.left + r.width / 2, y: r.top + r.height / 2};
@@ -216,7 +216,7 @@ test("Clear removes the finished downloads from this list only; active ones stay
   await page.goto(`${site.base}/page`);
   const box = await page.locator("#row").boundingBox();
   await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
-  await expect.poll(() => page.evaluate(() => document.querySelectorAll("downloadpulse-layer:popover-open").length)).toBe(1);
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer:popover-open")].filter((h) => getComputedStyle(h).display !== "none").length)).toBe(1);
   const at = await page.evaluate(() => {
     const r = document.querySelector("downloadpulse-layer:popover-open").getBoundingClientRect();
     return {x: r.left + r.width / 2, y: r.top + r.height / 2};

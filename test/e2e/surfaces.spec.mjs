@@ -61,7 +61,7 @@ async function sitePage() {
 
 /** The extension's open in-page layers (light-DOM hosts; their content is a closed shadow root). */
 const openLayers = (page) => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
-  .filter((host) => host.matches(":popover-open")).map((host) => {
+  .filter((host) => (host.matches(":popover-open") && getComputedStyle(host).display !== "none")).map((host) => {
     const r = host.getBoundingClientRect();
     return {left: r.left, top: r.top, width: r.width, height: r.height};
   }));
@@ -103,11 +103,10 @@ const textLine = (page, selector, y) => page.evaluate(([sel, at]) => {
 test("the hover icon sits a constant gap after the link's text, however wide the link's box", async () => {
   await connect();
   const page = await sitePage();
-  for (const [selector, at] of [["#zip", "start"], ["#row", "start"], ["#row", "far"], ["#wrapped", "second line"]]) {
+  for (const [selector, at] of [["#zip", "start"], ["#row", "start"], ["#wrapped", "second line"]]) {
     const box = await page.locator(selector).boundingBox();
     let y = box.y + box.height / 2;
     let x = box.x + 5;
-    if (at === "far") x = box.x + box.width - 20;            // the stretched box's empty end: still that link
     if (at === "second line") {
       const lines = await page.locator(selector).evaluate((el) => [...el.getClientRects()].map((r) => ({x: r.left, y: (r.top + r.bottom) / 2})));
       expect(lines.length).toBeGreaterThan(1);
@@ -159,6 +158,39 @@ test("the in-page surfaces are drawn in the person's DownloadPulse theme", async
   expect(await button()).toEqual({primary: "linear-gradient(145deg, #5e81ac 0%, #5e81ac 100%)", border: "#5e81ac", text: "#eceff4"});
 });
 
+test("a link stretched across its row offers the icon only on its text; along the row it goes", async () => {
+  await connect();
+  const page = await sitePage();
+  const box = await page.locator("#row").boundingBox();
+  const text = await textLine(page, "#row", box.y + box.height / 2);
+  expect(box.x + box.width - text.right).toBeGreaterThan(200);       // the box runs far past the text
+  await page.mouse.move(box.x + box.width - 20, box.y + box.height / 2, {steps: 3});   // the box's empty end
+  await page.waitForTimeout(500);
+  expect(await openLayers(page)).toEqual([]);
+  await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 6});               // on the text
+  await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+  const [icon] = await openLayers(page);
+  await page.mouse.move(icon.left + icon.width / 2, icon.top + icon.height / 2, {steps: 6});   // across to the icon: stays
+  await page.waitForTimeout(500);
+  expect((await openLayers(page)).length).toBe(1);
+  await page.mouse.move(box.x + box.width - 20, box.y + box.height / 2, {steps: 10});  // along the row, off the text
+  await expect.poll(async () => (await openLayers(page)).length, {timeout: 1500}).toBe(0);
+});
+
+test("the hover icon goes once the pointer moves off the link, withdrawn from the page entirely", async () => {
+  await connect();
+  const page = await sitePage();
+  for (const selector of ["#zip", "#row"]) {
+    const box = await page.locator(selector).boundingBox();
+    await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+    await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+    await page.mouse.move(980, box.y + box.height / 2, {steps: 6});   // off the link, into empty space
+    await expect.poll(async () => (await openLayers(page)).length, {timeout: 1500}).toBe(0);
+    // Withdrawn entirely: nothing of the extension's is left in the page.
+    expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length)).toBe(0);
+  }
+});
+
 test("the hover icon goes when the page scrolls or the pointer leaves the page", async () => {
   await connect();
   const page = await sitePage();
@@ -179,7 +211,7 @@ test("the hover icon goes when the page scrolls or the pointer leaves the page",
 
 /** The open layers other than the toast (which sits at the bottom corner). */
 const buttonLayers = (page) => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
-  .filter((host) => host.matches(":popover-open") && host.style.bottom !== "16px").map((host) => {
+  .filter((host) => (host.matches(":popover-open") && getComputedStyle(host).display !== "none") && host.style.bottom !== "16px").map((host) => {
     const r = host.getBoundingClientRect();
     return {left: r.left, top: r.top, width: r.width, height: r.height};
   }));
@@ -248,7 +280,7 @@ test("selected links get a send button with their count, which sends them as one
     scrollBy(0, 60);
     await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
     return [...document.querySelectorAll("downloadpulse-layer")]
-      .filter((host) => host.matches(":popover-open") && host.style.bottom !== "16px").length;
+      .filter((host) => (host.matches(":popover-open") && getComputedStyle(host).display !== "none") && host.style.bottom !== "16px").length;
   })).toBe(0);
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
   const [moved] = await buttonLayers(page);
@@ -304,7 +336,7 @@ test("a toast leaves on its own, and at once when clicked", async () => {
     await page.mouse.click(layer.left + 8, layer.top + 8);
   };
   const toastOpen = () => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
-    .filter((host) => host.matches(":popover-open") && host.style.bottom === "16px").length);
+    .filter((host) => (host.matches(":popover-open") && getComputedStyle(host).display !== "none") && host.style.bottom === "16px").length);
   await send();
   await expect.poll(toastOpen).toBe(1);
   await expect.poll(toastOpen, {timeout: 6000}).toBe(0);

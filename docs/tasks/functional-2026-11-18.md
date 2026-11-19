@@ -130,3 +130,25 @@ The full suite (46 cases), the Firefox smoke install, lint and locales pass.
 - with no visible text left in the selection, nothing is offered.
 
 **Proof:** rows of links followed by an empty block, all selected: the button sits 8 px after the last link's text, and goes when the selection is cleared. With the old measurement put back, it fails. Full suite: 46 cases pass.
+
+## 11. "Hover a link, move away, the button remains", on any link (Brave and Firefox)
+
+**Seen:** on a Forgejo releases page (`git.notrexed.dev/Hookshot/Hookshot/releases`), the icon stayed after the pointer moved away from the link. Reproduced by the operator in Brave and Firefox.
+
+**Cause:**
+- At the operator's window width, Forgejo's asset links stretch across their row: a link's box ran x 686–1374 while its text ended at about 941.
+- The extension offered the icon anywhere over the link's box, an earlier rule ("a stretched box's empty end still offers it").
+- So moving along the row towards the size or date never left the link.
+- The test browser's 1400 px window lays the row out narrower, which is why it didn't show here before.
+
+**Fix:**
+- **Offered only over what the link draws:** its text and its images or icons (Forgejo's file glyph counts), with 4 px slack, plus the way across to the icon.
+- **Withdrawn entirely (operator):** every layer (the hover icon, the video button, the batch button and the toast) is put into the page when shown and taken out when withdrawn. Nothing of the extension's stays in a page hidden.
+- **Its own record of whether a layer is shown:** the extension never reads the browser's popover state back to decide.
+- **The build is visible in Chromium's extensions page:** `version_name`, for example `0.1.0 (955856b)`, with `+` when built from uncommitted changes. Firefox has no such field.
+
+**Proof:**
+- **Fixture:** a link stretched across its row offers nothing at the box's empty end. It offers on its text, stays while crossing to the icon, and goes once the pointer moves along the row off the text.
+- **Moving off a link** leaves no extension element in the page.
+- **On the real Forgejo page at 1936 px:** on the glyph and on the name it's shown; along the row, and after a jump away, no element is left in the page.
+- **Full suite** (48 cases), the Firefox smoke install, lint and locales pass.

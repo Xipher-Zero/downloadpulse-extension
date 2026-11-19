@@ -48,7 +48,7 @@ test.afterEach(async () => {
   await site.close();
 });
 
-const openLayers = (page) => page.evaluate(() => document.querySelectorAll("downloadpulse-layer:popover-open").length);
+const openLayers = (page) => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer:popover-open")].filter((h) => getComputedStyle(h).display !== "none").length);
 
 async function hoverOffered(page, selector) {
   const box = await page.locator(selector).boundingBox();

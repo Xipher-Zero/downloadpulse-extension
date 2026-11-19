@@ -16,6 +16,7 @@ import {pageColours, type PageColours} from "../shared/page-theme";
 const BUTTON = 22;
 const HIDE_DELAY_MS = 300;
 const GAP = 8;   // between a link's text and the icon
+const SLACK = 4; // around a link's text, still on it
 const TOAST_MS = 3500;
 interface Offer { hover: boolean; video: boolean; colours: PageColours }
 const prefersDark = () => matchMedia("(prefers-color-scheme: dark)").matches;
@@ -93,7 +94,8 @@ function arrow(): SVGSVGElement {
   return svg;
 }
 
-interface Layer { host: HTMLElement; root: ShadowRoot }
+/** A layer the extension draws on a page, and whether it is shown -- its own record, never read back from the page. */
+interface Layer { host: HTMLElement; root: ShadowRoot; shown: boolean }
 
 function layer(): Layer {
   const host = document.createElement("downloadpulse-layer");
@@ -104,8 +106,7 @@ function layer(): Layer {
   const style = document.createElement("style");
   style.textContent = STYLE;
   root.append(style);
-  document.documentElement.append(host);
-  const made = {host, root};
+  const made = {host, root, shown: false};
   layers.push(made);
   colour(made, offer?.colours ?? pageColours(null, prefersDark() ? "dark" : "light"));
   return made;
@@ -115,15 +116,35 @@ function place(target: Layer, left: number, top: number): void {
   const x = Math.max(2, Math.min(left, innerWidth - BUTTON - 2));
   const y = Math.max(2, Math.min(top, innerHeight - BUTTON - 2));
   Object.assign(target.host.style, {left: `${x}px`, top: `${y}px`});
-  if (!target.host.matches(":popover-open")) target.host.showPopover();
+  reveal(target);
 }
 
-function hide(target: Layer | null): void {
+/**
+ * Shown by putting the layer into the page and withdrawn by taking it out
+ * (operator, 2026-11-18), with the extension's own record of which: the
+ * browser's popover state is never read back to decide. The top layer is only
+ * how it stays above the page.
+ */
+function reveal(target: Layer): void {
+  if (!target.host.isConnected) document.documentElement.append(target.host);
+  target.shown = true;
   try {
-    if (target?.host.matches(":popover-open")) target.host.hidePopover();
+    if (!target.host.matches(":popover-open")) target.host.showPopover();
   } catch {
-    // a page that moved or removed the layer: it is not shown anyway
+    // already in the top layer: it is in the page and drawn either way
   }
+}
+
+/** Withdraw a layer: out of the page entirely (operator, 2026-11-18), not left there hidden. */
+function hide(target: Layer | null): void {
+  if (!target) return;
+  target.shown = false;
+  try {
+    if (target.host.matches(":popover-open")) target.host.hidePopover();
+  } catch {
+    // a page that moved or removed the layer
+  }
+  target.host.remove();
 }
 
 function sendButton(label: string, onSend: () => void): Layer {
@@ -178,11 +199,12 @@ function renderedLine(anchor: HTMLAnchorElement, y: number): DOMRect {
     range.selectNodeContents(node);
     for (const rect of range.getClientRects()) if (rect.width > 1 && rect.height > 1) pieces.push(rect);
   }
-  if (!pieces.length) {
-    for (const image of anchor.querySelectorAll("img, svg, picture, video")) {
-      const rect = image.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) pieces.push(rect);
-    }
+  // Its images and icons are drawn content too (a file icon before its name).
+  for (const image of anchor.querySelectorAll("img, svg, picture, video")) {
+    const shown = image as Element & {checkVisibility?(options?: object): boolean};
+    if (shown.checkVisibility && !shown.checkVisibility({visibilityProperty: true, opacityProperty: true})) continue;
+    const rect = image.getBoundingClientRect();
+    if (rect.width > 1 && rect.height > 1) pieces.push(rect);
   }
   if (!pieces.length) return anchor.getBoundingClientRect();
   // The line under the pointer (a wrapped link has several), else the nearest one.
@@ -202,8 +224,17 @@ function candidateAt(event: Pointer): Found | null {
     node instanceof HTMLAnchorElement && Boolean(node.href));
   if (anchor) {
     if (!isDownloadCandidate(anchor.href, {download: anchor.hasAttribute("download"), type: anchor.type})) return null;
-    return {url: anchor.href, rect: renderedLine(anchor, event.clientY), rtl: getComputedStyle(anchor).direction === "rtl",
-      anchor: () => anchor.getBoundingClientRect()};
+    // Only on what the link draws (its text, or its image), not the rest of a box a
+    // page stretches across a row (operator, 2026-11-18: along a release row the
+    // icon stayed up), with a little slack, and the way across to the icon.
+    const line = renderedLine(anchor, event.clientY);
+    const rtl = getComputedStyle(anchor).direction === "rtl";
+    const reach = GAP + BUTTON + SLACK;
+    const left = line.left - (rtl ? reach : SLACK), right = line.right + (rtl ? SLACK : reach);
+    if (event.clientX < left || event.clientX > right || event.clientY < line.top - SLACK || event.clientY > line.bottom + SLACK) {
+      return null;
+    }
+    return {url: anchor.href, rect: line, rtl, anchor: () => anchor.getBoundingClientRect()};
   }
   // Plain text that is a URL, under the pointer.
   const caret = (document as Document & {caretPositionFromPoint?(x: number, y: number):
@@ -465,15 +496,15 @@ function watch(): void {
   if (watching) return;
   watching = true;
   const look = () => {
-    const hoverShown = Boolean(hover?.host.matches(":popover-open"));
-    const batchShown = Boolean(batch?.host.matches(":popover-open"));
+    const hoverShown = Boolean(hover?.shown);
+    const batchShown = Boolean(batch?.shown);
     if (hoverShown && hoverAnchor && moved(hoverAnchor(), hoverAt)) hidePointerSurfaces();
     if (batchShown && moved(selected()?.rect ?? null, batchAt)) {
       hide(batch);
       clearTimeout(scrollTimer);
       scrollTimer = window.setTimeout(() => void offerSelection(), 200);
     }
-    if (hover?.host.matches(":popover-open") || batch?.host.matches(":popover-open")) requestAnimationFrame(look);
+    if (hover?.shown || batch?.shown) requestAnimationFrame(look);
     else watching = false;
   };
   requestAnimationFrame(look);
@@ -500,7 +531,7 @@ chrome.runtime.onMessage.addListener((request: {type?: string; text?: string; ok
   box.addEventListener("click", () => hide(toast));
   toast.root.append(box);
   Object.assign(toast.host.style, {right: "16px", bottom: "16px", left: "auto", top: "auto"});
-  if (!toast.host.matches(":popover-open")) toast.host.showPopover();
+  reveal(toast);
   clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => hide(toast), TOAST_MS + 300);
 });

@@ -2,11 +2,21 @@
 // Builds dist/chromium and dist/firefox from the same sources (WS-E0 B1).
 import { build } from "esbuild";
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
 import { manifest } from "../src/manifest.mjs";
 
 const root = new URL("..", import.meta.url);
 const path = (p) => new URL(p, root).pathname;
 const { version } = JSON.parse(await readFile(path("package.json"), "utf8"));
+// Which build a browser runs, at a glance in its extensions page (Chromium's
+// version_name; Firefox has none): the commit, "+" when built from changes.
+let commit = "";
+try {
+  commit = execFileSync("git", ["rev-parse", "--short=7", "HEAD"], { encoding: "utf8" }).trim();
+  if (execFileSync("git", ["status", "--porcelain", "--untracked-files=no"], { encoding: "utf8" }).trim()) commit += "+";
+} catch {
+  commit = "";
+}
 
 const ENTRIES = {
   "background": "src/background/index.ts",
@@ -54,6 +64,8 @@ for (const browser of ["chromium", "firefox"]) {
   }
   await mkdir(out + "options", { recursive: true });
   await writeFile(out + "options/options.html", optionsPage);
-  await writeFile(out + "manifest.json", JSON.stringify(manifest(browser, version), null, 2) + "\n");
+  const made = manifest(browser, version);
+  if (browser === "chromium" && commit) made.version_name = `${version} (${commit})`;
+  await writeFile(out + "manifest.json", JSON.stringify(made, null, 2) + "\n");
 }
 console.log(`built dist/chromium and dist/firefox (version ${version})`);
