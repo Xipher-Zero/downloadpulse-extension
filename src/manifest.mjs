@@ -2,9 +2,9 @@
 // The one manifest definition (WS-E0 B2): both browsers share everything
 // except how the background is declared and Firefox's own settings.
 
-// INPUT REQUIRED (PLAN D6): the store add-on ID. This development ID is the
-// only one to replace before the first Firefox store submission.
-export const FIREFOX_ADDON_ID = "downloadpulse-dev@downloadpulse.invalid";
+// The permanent Firefox add-on ID (PLAN D6, operator 2026-11-19). AMO ties the
+// listing and every update to it: it must never change.
+export const FIREFOX_ADDON_ID = "downloadpulse@downloadpulse.net";
 
 /** @param {"chromium" | "firefox"} browser @param {string} version */
 export function manifest(browser, version) {

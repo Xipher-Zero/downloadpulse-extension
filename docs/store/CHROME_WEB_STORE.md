@@ -22,6 +22,7 @@ Send the downloads the person chooses in their browser (links, files, video page
 - **Health, financial, personal communications, location, user activity:** no.
 - **Certifications:** not sold to third parties; not used or transferred for purposes unrelated to the single purpose; not used for creditworthiness or lending.
 - **Privacy policy URL:** https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md
+- **Support email / homepage:** `dpsupport@xipherzero.com` (the same address as the Firefox listing and PRIVACY.md); homepage <https://github.com/Xipher-Zero/downloadpulse-extension> until downloadpulse.net has a site.
 
 ## Prominent disclosure
 Before anything is sent, the extension shows its disclosure page (what is sent, what stays, the policy link), and the user presses **Agree and continue**. The listing description must say the same: links, files and video pages the user chooses go to the user's own DownloadPulse; nothing goes anywhere else.

@@ -2,19 +2,22 @@
 
 The extension sends downloads to the user's own **DownloadPulse**, a self-hosted server or desktop application (GPL-2.0-or-later, <https://github.com/Xipher-Zero/debridpulse>). It does nothing until connected to one.
 
-**Test instance:** `<OPERATOR: HTTPS URL>`, sign in as `<OPERATOR: username>` / `<OPERATOR: password>` (disposable). Alternatively, install the DownloadPulse desktop application for your platform (`<OPERATOR: installer links>`). It listens on `127.0.0.1:8095` and the extension finds it automatically.
+**Test instance:** its HTTPS address and a disposable sign-in are in the **Notes to reviewer** field of this submission (they are never kept in this public repository). The instance has no real download-service accounts and limited storage; the account is deleted after review.
+Alternatively, install the DownloadPulse desktop application for your platform (links in the same field). It listens on `127.0.0.1:8095` and the extension finds it automatically.
 
 **Steps:**
 1. **Pair:**
    - Click the toolbar button, then **Connect to DownloadPulse**.
    - Read the disclosure and press **Agree and continue**.
-   - Choose **This computer** (desktop application) or **Remote server** (enter the test instance's HTTPS address), then **Connect**.
-   - A DownloadPulse tab opens. Sign in, check the code matches the one in the extension, and choose **Connect**. The extension shows **Connected**.
+   - With the desktop application running: the extension says **DownloadPulse found on this computer**. Choose **This computer**, then **Connect**.
+   - With the test instance: choose **Remote server**, enter the test instance's HTTPS address in **Server address**, then **Connect**. (When no DownloadPulse is found on this computer, the extension shows the **Server address** field directly; enter the address there and choose **Connect to this server**.)
+   - A DownloadPulse tab opens on **Connect a browser**. Sign in (test instance only), check the code matches the one the extension shows, and choose **Connect**. The extension shows **Connected** and the account's name.
 2. **Send a download:**
-   - On any page, hover a download link (for example a `.zip`) and click the button beside it. Or right-click a link and choose **Download with DownloadPulse**.
-   - It appears under **Sent Downloads**, and in DownloadPulse's Downloads list.
+   - On any page, hover a download link (for example a `.zip` or `.iso`) and click the button beside it. Or right-click a link and choose **Download with DownloadPulse**.
+   - It appears under **Sent Downloads:**, and in DownloadPulse's Downloads list.
+   - **A video:** hover a video player (for example on YouTube) and click the button beside it. With **Send my sign-in on the site with videos** on (Settings; on by default), the video's sign-in cookies for that address go with it, so DownloadPulse can download what the user can watch; they are sent only over HTTPS or to DownloadPulse on the same computer. Why each permission is requested: `docs/store/PERMISSIONS.md`.
 3. **Verify revocation:**
-   - In DownloadPulse, open **My Account › Connected browsers** and disconnect this browser (or use the extension's Settings › Disconnect).
+   - In DownloadPulse, open **My Account › Connected browsers** and disconnect this browser (or use the extension's Settings › **Disconnect**).
    - The extension shows **This browser was disconnected in DownloadPulse.** and sends nothing further.
 
 **Building from source:** `BUILDING.md`.

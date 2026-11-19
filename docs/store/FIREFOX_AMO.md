@@ -1,6 +1,10 @@
 # Firefox Add-ons (AMO): submission notes (draft for the operator)
 
-- **Add-on ID:** `FIREFOX_ADDON_ID` in `src/manifest.mjs` is still the development placeholder. Set the permanent ID at submission (operator, 2026-11-18). It can never change afterwards.
+- **Add-on ID:** `downloadpulse@downloadpulse.net` (`FIREFOX_ADDON_ID` in `src/manifest.mjs`; operator, 2026-11-19). Permanent: AMO ties the listing and every update to it.
+- **Listing fields:**
+  - **Support email:** `dpsupport@xipherzero.com` (shown publicly on the listing; the same address as PRIVACY.md's Contact section). Send it a test message before submitting: reviewers sometimes write to it.
+  - **Homepage:** <https://github.com/Xipher-Zero/downloadpulse-extension> until downloadpulse.net has a site. The listing's URLs can be changed later without a new version.
+  - **Privacy policy:** <https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md>.
 - **Platforms:** desktop only (Firefox 140+). Do not list for Android.
 - **Data collection** (`browser_specific_settings.gecko.data_collection_permissions`):
   - **Required:**
@@ -14,4 +18,4 @@
 - **Private windows:** `incognito: "not_allowed"`.
 - **Source code:** the package is bundled with esbuild. Upload the source archive built alongside it (`downloadpulse-source-<version>.zip`, from `git archive`, lockfile included) and point reviewers to `BUILDING.md`.
 - **Policies:** use the public-listing policy and the updated agreement if submitting on or after 2026-12-01.
-- **Reviewer notes:** see `docs/store/REVIEWERS.md`.
+- **Reviewer notes:** the text of `docs/store/REVIEWERS.md`, with the test instance's real address and sign-in typed into AMO's **Notes to reviewer** field only (never into this repository, which is public).

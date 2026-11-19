@@ -74,4 +74,4 @@ The extension does not run in private or incognito windows.
 
 ## Contact
 
-Questions and reports: <https://github.com/Xipher-Zero/downloadpulse-extension/issues>.
+Questions and reports: <dpsupport@xipherzero.com>, or <https://github.com/Xipher-Zero/downloadpulse-extension/issues>.
