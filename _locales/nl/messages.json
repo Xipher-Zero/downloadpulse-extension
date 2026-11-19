@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Deze server moet HTTPS gebruiken. Onversleuteld HTTP is alleen toegestaan op uw eigen netwerk."
+  },
+  "sendCaptureRedirect": {
+    "message": "Die site leidt zijn downloadlink om, dus hij kan hiervandaan niet veilig worden opgehaald. Voeg hem in plaats daarvan toe met Snel toevoegen in DownloadPulse."
+  },
+  "sendCaptureInsecure": {
+    "message": "Die link gebruikt onversleuteld HTTP buiten uw netwerk, dus hij wordt niet met uw aanmelding opgehaald. Voeg hem in plaats daarvan toe met Snel toevoegen in DownloadPulse."
   }
 }

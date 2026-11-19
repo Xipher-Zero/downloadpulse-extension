@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Server ini harus memakai HTTPS. HTTP tanpa enkripsi hanya diizinkan di jaringan Anda sendiri."
+  },
+  "sendCaptureRedirect": {
+    "message": "Situs itu mengalihkan tautan unduhannya, jadi tautan itu tidak dapat diambil dengan aman dari sini. Sebagai gantinya, tambahkan dengan “Tambah cepat” di DownloadPulse."
+  },
+  "sendCaptureInsecure": {
+    "message": "Tautan itu memakai HTTP tanpa enkripsi di luar jaringan Anda, jadi tidak diambil dengan sesi masuk Anda. Sebagai gantinya, tambahkan dengan “Tambah cepat” di DownloadPulse."
   }
 }

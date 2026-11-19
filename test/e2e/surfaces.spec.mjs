@@ -427,6 +427,27 @@ test("an indexer's download link gets no hover button; sent by selection (as by 
   expect(JSON.stringify(dp.state.jobs)).not.toContain("apikey");
 });
 
+test("captures follow no redirect and never use plain HTTP across the internet (store review)", async () => {
+  await connect();
+  const page = await sitePage();
+  const toast = () => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")].filter((h) => h.style.bottom === "16px").length);
+  await hoverAndClick(page, "#redirecting");
+  await expect.poll(toast).toBe(1);
+  await page.waitForTimeout(800);
+  // The redirect was answered, and its target never requested: nothing followed it.
+  expect(site.state.requests.some((r) => r.path.startsWith("/files/redirecting.torrent"))).toBe(true);
+  expect(site.state.requests.some((r) => r.path.startsWith("/files/redirect-target.torrent"))).toBe(false);
+  expect(dp.state.jobs).toEqual([]);
+  // A plain-HTTP link on the internet: refused before any request.
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(4200);                    // the first toast leaves
+  await hoverAndClick(page, "#public-http");
+  await expect.poll(toast).toBe(1);
+  await page.waitForTimeout(800);
+  expect(dp.state.jobs).toEqual([]);
+  expect(JSON.stringify(dp.state.jobs)).not.toContain("SECRETPUBLIC");
+});
+
 test("a sign-in page answering for a .torrent is refused, not sent", async () => {
   await connect();
   const page = await sitePage();
@@ -541,6 +562,8 @@ test("a WS-E1 token in storage is moved out on first read", async () => {
   await popup.evaluate(() => chrome.storage.local.set({connection: {server: "http://127.0.0.1:8095", token: "dp_fake-token",
     tokenId: "tok-1", label: "Laptop-Chrome", account: "Una"}}));
   await popup.reload();
+  // A WS-E1 connection has no agreement on record: it is held until the person agrees (store review).
+  await popup.getByRole("button", {name: "Agree and continue"}).click();
   await expect(popup.getByTestId("account")).toHaveText("Una");
   expect(JSON.stringify(await popup.evaluate(() => chrome.storage.local.get(null)))).not.toContain("dp_fake-token");
   // And it still works: a send goes through with it.

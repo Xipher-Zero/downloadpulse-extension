@@ -8,7 +8,7 @@
 // requested here, on the person's click (L20).
 
 import {appearance, applyAppearance} from "../shared/appearance";
-import {connection, pairing, setPairing} from "../shared/connection";
+import {choosePlainHttp, connection, connectionState, forgetConnection, pairing, setPairing} from "../shared/connection";
 import {glyph, placeGlyphs, type GlyphName} from "../shared/glyphs";
 import {localize, message} from "../shared/i18n";
 import {consented, recordConsent} from "../shared/consent";
@@ -337,6 +337,16 @@ async function render(): Promise<void> {
     text('[data-testid="failure"]', message(FAILURE_KEYS[pending.failure]));
   } else if (pending) {
     show(pending.state);
+  } else if (connected && (await connectionState(connected)) !== "ok") {
+    // A saved connection the gate holds (connection.ts): the screen that settles it, sending nothing.
+    const state = await connectionState(connected);
+    if (state === "insecure") {
+      await forgetConnection();
+      await setPairing({state: "failed", failure: "insecure_refused"});
+      return;
+    }
+    if (state === "plain-http") showInsecure(connected.server);
+    show(state === "consent" ? "disclosure" : "insecure");
   } else if (connected) {
     show("connected");
     text('[data-testid="server"]', serverName(connected.server));
@@ -358,10 +368,7 @@ async function connectRemote(form: HTMLFormElement): Promise<void> {
   if (target.transport === "public-http") return setPairing({state: "failed", failure: "insecure_refused"});
   if (target.transport === "lan-http") {
     // Plain HTTP on a private network: only after the person has read what that means.
-    insecureTarget = target.origin;
-    const hint = $('[data-testid="insecure-text"]');
-    const parts = message("insecureText", ["\u0001"]).split("\u0001");
-    hint.replaceChildren(document.createTextNode(parts[0] ?? ""), span("dp-literal", target.origin), document.createTextNode(parts[1] ?? ""));
+    showInsecure(target.origin);
     screen = "insecure";
     return render();
   }
@@ -374,6 +381,14 @@ async function connectTo(origin: string, address: string, insecure: boolean): Pr
   const granted = await chrome.permissions.request({origins: [origin + "/*"]});
   if (!granted) return setPairing({state: "failed", failure: "permission"});
   await chrome.runtime.sendMessage({type: "connect-remote", address, insecure});
+}
+
+/** The plain-HTTP warning for ``origin`` (its address in the literal colour). */
+function showInsecure(origin: string): void {
+  insecureTarget = origin;
+  const hint = $('[data-testid="insecure-text"]');
+  const parts = message("insecureText", ["\u0001"]).split("\u0001");
+  hint.replaceChildren(document.createTextNode(parts[0] ?? ""), span("dp-literal", origin), document.createTextNode(parts[1] ?? ""));
 }
 
 /** Connecting begins with the disclosure until the person has agreed to it. */
@@ -522,13 +537,17 @@ document.addEventListener("click", (event) => {
   } else if (action === "agree") {
     const named = $<HTMLInputElement>('[data-testid="device-name"]').checked;
     screen = null;
-    void recordConsent(named).then(() => chrome.runtime.sendMessage({type: "connect-local"}));
+    // Already connected (paired before the disclosure, or it changed): agreeing unlocks that connection.
+    void Promise.all([recordConsent(named), connection()]).then(([, connected]) =>
+      connected ? render() : chrome.runtime.sendMessage({type: "connect-local"}));
   } else if (action === "screen-back") {
     screen = null;
     void render();
   } else if (action === "insecure-continue") {
     screen = null;
-    void connectTo(insecureTarget, insecureTarget, true);
+    // A saved connection held for its plain HTTP: the choice is recorded; else connect with it.
+    void connection().then((connected) => connected ? choosePlainHttp().then(render)
+      : connectTo(insecureTarget, insecureTarget, true));
   } else if (action === "cancel") {
     void chrome.runtime.sendMessage({type: action});
   }

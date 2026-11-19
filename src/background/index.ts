@@ -56,7 +56,8 @@ async function openDownloadPulse(): Promise<{tab: boolean}> {
 /** What a frame may offer: nothing unless connected, then as the settings say for its tab's site. */
 async function frameState(sender: chrome.runtime.MessageSender):
     Promise<{connected: boolean; hover: boolean; video: boolean; appearance: Appearance | null}> {
-  if (!(await connection())) return {connected: false, hover: false, video: false, appearance: null};
+  // A connection held by the gate (connection.ts connectionState) offers nothing on a page.
+  if (!(await token())) return {connected: false, hover: false, video: false, appearance: null};
   const chosen = await settings();
   const off = isOffSite(sender.tab?.url ?? sender.url ?? "", chosen.offSites);
   // The person's theme, by palette ID (not a secret): what the page's surfaces are drawn in.
@@ -70,7 +71,7 @@ const MENU_SELECTION = "dp-send-selection";
 
 async function refreshMenus(): Promise<void> {
   await chrome.contextMenus.removeAll();
-  if (!(await connection())) return;
+  if (!(await token())) return;
   const title = message("menuSend");
   chrome.contextMenus.create({id: MENU_LINK, title, contexts: ["link"]});
   chrome.contextMenus.create({id: MENU_SELECTION, title, contexts: ["selection"]});
@@ -106,7 +107,7 @@ async function act(request: {type: "dp-control"; id: string; kind: "pause" | "re
   }
 }
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && "connection" in changes) void refreshMenus();
+  if (area === "local" && ("connection" in changes || "consent" in changes)) void refreshMenus();
   // The toolbar icon in the person's theme, redrawn when it changes (or the connection goes).
   if (area === "local" && "appearance" in changes) void restIcon();
 });

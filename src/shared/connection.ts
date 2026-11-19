@@ -5,7 +5,8 @@
 // and live only in the extension origin's IndexedDB (src/shared/secrets.ts,
 // WS-E2 B10).
 
-import type {Failure} from "./server";
+import {consent} from "./consent";
+import {serverAddress, type Failure} from "./server";
 import {secret, setSecret} from "./secrets";
 
 export interface Connection {
@@ -13,6 +14,34 @@ export interface Connection {
   tokenId: string;
   label: string;
   account: string;
+  /** Plain HTTP to a server on the private network, chosen by the person on the warning screen. */
+  plainHttp?: boolean;
+}
+
+/**
+ * Whether a saved connection may be used now (store review, 2026-11-18): the
+ * disclosure agreed to (at its current version), and the server reached as the
+ * transport rules allow -- a connection saved before them, or by an older
+ * build, is held until it meets them.
+ *   ok          usable;
+ *   consent     the disclosure must be agreed to first;
+ *   plain-http  a private-network server over plain HTTP, not yet chosen on the warning;
+ *   insecure    plain HTTP across the internet: never usable.
+ */
+export type ConnectionState = "ok" | "consent" | "plain-http" | "insecure";
+
+export async function connectionState(value: Connection): Promise<ConnectionState> {
+  const address = serverAddress(value.server);
+  if (!address || address.transport === "public-http") return "insecure";
+  if (!(await consent())) return "consent";
+  if (address.transport === "lan-http" && !value.plainHttp) return "plain-http";
+  return "ok";
+}
+
+/** The person chose plain HTTP for the saved private-network connection (the warning screen). */
+export async function choosePlainHttp(): Promise<void> {
+  const value = await connection();
+  if (value) await chrome.storage.local.set({[CONNECTION]: {...value, plainHttp: true}});
 }
 
 export type Pairing =
@@ -38,9 +67,14 @@ export async function connection(): Promise<Connection | null> {
   return value;
 }
 
-/** The browser token: background only (content scripts never ask for it). */
+/**
+ * The browser token: background only (content scripts never ask for it), and only while the
+ * saved connection may be used (connectionState): every request that carries it goes through here.
+ */
 export async function token(): Promise<string | null> {
-  return (await connection()) ? await secret("token") : null;
+  const value = await connection();
+  if (!value || (await connectionState(value)) !== "ok") return null;
+  return secret("token");
 }
 
 export async function saveConnection(value: Connection, browserToken: string): Promise<void> {

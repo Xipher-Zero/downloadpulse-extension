@@ -92,7 +92,7 @@ export async function connectRemote(address: string, insecure = false): Promise<
     }
     return fail(found, generation);
   }
-  await pair(target.origin, generation);
+  await pair(target.origin, generation, target.transport === "lan-http");
 }
 
 export async function cancel(): Promise<void> {
@@ -101,20 +101,21 @@ export async function cancel(): Promise<void> {
   await badge("");
 }
 
-async function pair(origin: string, generation: number): Promise<void> {
+async function pair(origin: string, generation: number, plainHttp = false): Promise<void> {
   try {
     const started = await startPairing(origin, await clientName());
     if (generation !== active) return;
     const expiresAt = Date.now() + started.expires_in * 1000;
     await setPairing({state: "waiting", server: origin, userCode: started.user_code, expiresAt}, started.device_code);
     await chrome.tabs.create({url: origin + started.verification_path});
-    await waitForApproval(origin, started.interval, expiresAt, generation);
+    await waitForApproval(origin, started.interval, expiresAt, generation, plainHttp);
   } catch (error) {
     await fail(error instanceof ServerError ? error.failure : "failed", generation);
   }
 }
 
-async function waitForApproval(origin: string, interval: number, expiresAt: number, generation: number): Promise<void> {
+async function waitForApproval(origin: string, interval: number, expiresAt: number, generation: number,
+                               plainHttp: boolean): Promise<void> {
   let pace = interval;
   let tick = 0;
   while (generation === active && Date.now() < expiresAt) {
@@ -132,7 +133,7 @@ async function waitForApproval(origin: string, interval: number, expiresAt: numb
     const session = await readSession(origin, answer.token);
     if (generation !== active) return;
     await saveConnection({server: origin, tokenId: session.token.id, label: session.token.label,
-      account: session.account.display_name}, answer.token);
+      account: session.account.display_name, ...(plainHttp ? {plainHttp: true} : {})}, answer.token);
     await saveAppearance(session.appearance);
     await setPairing(null);
     await badge("");

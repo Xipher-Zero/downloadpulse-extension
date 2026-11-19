@@ -1082,6 +1082,22 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "sendCaptureRedirect": {
+      "source": "266118fc57b781b4",
+      "translation": "7e6b325009c88db4",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendCaptureInsecure": {
+      "source": "4672d0f46cfc1718",
+      "translation": "81a8d25e6920be15",
+      "provenance": [
+        "ai-generated",
+        "ai-review-corrected"
+      ]
     }
   }
 }

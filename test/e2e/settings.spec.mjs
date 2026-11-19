@@ -216,6 +216,33 @@ test("the dropdown and the settings page are drawn in the person's DownloadPulse
   expect(await background(popup)).toBe("rgb(5, 8, 20)");
 });
 
+test("a saved connection without the agreement sends nothing until agreed; one over internet HTTP is forgotten", async () => {
+  const before = await popup.evaluate(async () => (await chrome.storage.local.get("consent")).consent);
+  expect(before).toBeTruthy();
+  // As a connection paired by an earlier build (no agreement recorded).
+  await popup.evaluate(() => chrome.storage.local.remove("consent"));
+  await popup.reload();
+  await expect(popup.getByText("Before you connect, here is what DownloadPulse receives from this browser.")).toBeVisible();
+  await popup.waitForTimeout(2500);
+  const polls = dp.state.listPolls.length, sessions = dp.state.sessionAuth.length;
+  await popup.waitForTimeout(4500);
+  expect(dp.state.listPolls.length).toBe(polls);        // held: no polling with the key
+  expect(dp.state.sessionAuth.length).toBe(sessions);   // nor the theme refresh
+  const pairings = dp.state.pairings.size;
+  await popup.getByRole("button", {name: "Agree and continue"}).click();
+  await expect(popup.getByTestId("account")).toHaveText("Una");   // the same connection, unlocked: no new pairing
+  expect(dp.state.pairings.size).toBe(pairings);
+  await expect.poll(() => dp.state.listPolls.length, {timeout: 10_000}).toBeGreaterThan(polls);
+  // A connection to a server over plain HTTP across the internet (seeded): forgotten, refused, nothing sent.
+  await popup.evaluate(async () => {
+    const {connection} = await chrome.storage.local.get("connection");
+    await chrome.storage.local.set({connection: {...connection, server: "http://203.0.113.9:8095"}});
+  });
+  await popup.reload();
+  await expect(popup.getByTestId("failure")).toHaveText("This server must use HTTPS. Plain HTTP is only allowed on your own network.");
+  expect(await popup.evaluate(async () => (await chrome.storage.local.get("connection")).connection ?? null)).toBeNull();
+});
+
 test("a browser disconnected in DownloadPulse is told so and forgets its token", async () => {
   dp.state.revoked = true;            // as if removed under My Account › Connected browsers
   await popup.reload();               // the open popup polls the list: 401

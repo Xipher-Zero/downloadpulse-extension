@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Dieser Server muss HTTPS verwenden. Unverschlüsseltes HTTP ist nur in Ihrem eigenen Netzwerk erlaubt."
+  },
+  "sendCaptureRedirect": {
+    "message": "Diese Website leitet ihren Download-Link weiter, daher kann er von hier aus nicht sicher abgerufen werden. Fügen Sie ihn stattdessen in DownloadPulse mit „Schnell hinzufügen“ hinzu."
+  },
+  "sendCaptureInsecure": {
+    "message": "Dieser Link verwendet unverschlüsseltes HTTP außerhalb Ihres Netzwerks, daher wird er nicht mit Ihrer Anmeldung abgerufen. Fügen Sie ihn stattdessen in DownloadPulse mit „Schnell hinzufügen“ hinzu."
   }
 }

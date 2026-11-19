@@ -73,6 +73,8 @@ export function serverAddress(input: string): ServerAddress | null {
 }
 
 async function request(origin: string, path: string, init: RequestInit = {}): Promise<Response> {
+  // Never plain HTTP across the internet, whatever asked (the transport rule's last guard).
+  if (serverAddress(origin)?.transport === "public-http") throw new ServerError("insecure_refused");
   try {
     return await fetch(origin + path, {
       ...init, credentials: "omit", cache: "no-store", redirect: "error", signal: AbortSignal.timeout(TIMEOUT_MS),

@@ -2,7 +2,11 @@
 
 _Last updated: 2026-11-18. Applies to the DownloadPulse extension for Firefox and Chromium-based browsers._
 
-The extension sends downloads you choose from your browser to **your own DownloadPulse**, a server or desktop application that you, or whoever runs it for you, operate. It has no servers of its own, no analytics and no telemetry. It sends nothing to its authors or to any third party.
+The extension sends downloads you choose from your browser to **your own DownloadPulse**, a server or desktop application that you, or whoever runs it for you, operate. It has no servers of its own, no analytics and no telemetry, and sends nothing to its authors.
+
+It contacts only two kinds of place:
+- **your DownloadPulse;**
+- **a website you send a file link from,** to fetch that file with the session you already have there (see below), only when you send it.
 
 ## What is sent to your DownloadPulse, and when
 
@@ -15,10 +19,14 @@ Nothing is sent before you agree to the disclosure shown when you first connect.
   You approve the connection in DownloadPulse, which then gives the extension a **connection key**.
 - **When you send something:**
   - **A link:** its address.
-  - **A `.torrent`, `.nzb` or `.meta4` link, or an indexer's download link:** the extension fetches the file in your browser, using the session you already have with that website (your sign-in there), and sends **the file and its name**, not the link. The website's cookies and the link itself (which may carry a key of yours for that site) are **never** sent to DownloadPulse. A file whose link was redirected from HTTPS to HTTP is not captured.
+  - **A `.torrent`, `.nzb` or `.meta4` link, or an indexer's download link:** the extension fetches the file in your browser, using the session you already have with that website (your sign-in there), and sends **the file and its name**, not the link. The website's cookies and the link itself (which may carry a key of yours for that site) are **never** sent to DownloadPulse.
+    - The fetch is made only over HTTPS, or over plain HTTP to a site on this computer or your private network.
+    - It never follows a redirect: a redirecting link is refused before anything else is requested.
   - **A video:** the address of the page it plays on.
 - **While downloads run, or the extension's menu is open,** it asks your DownloadPulse for the status of the downloads sent from this browser, and for your DownloadPulse colour theme, so its pages match it.
 - **When you choose to:** pausing, resuming or removing a download sent from this browser; bringing the DownloadPulse desktop application's window forward; disconnecting.
+
+A connection made before you agreed to this disclosure (for example, by an earlier version), or one that no longer meets the transport rules below, is held: nothing is sent with it until you agree, or choose plain HTTP for a server on your network. A connection to a server over plain HTTP across the internet is forgotten.
 
 Every request to DownloadPulse carries the connection key and **never your browser's cookies**.
 
@@ -26,7 +34,7 @@ Every request to DownloadPulse carries the connection key and **never your brows
 
 Stored by the extension in your browser profile only:
 - the connection key (in the extension's own storage, not readable by websites);
-- the server's address, your account's display name and the connection's name;
+- the server's address, your DownloadPulse account's display name (which may be your name or user name) and the connection's name;
 - your settings;
 - your agreement to the disclosure;
 - your DownloadPulse theme's palette names.

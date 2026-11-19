@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {isLocal, isPrivateHost, serverAddress} from "../../src/shared/server";
+import {isLocal, isPrivateHost, readSession, ServerError, serverAddress} from "../../src/shared/server";
 
 const addr = (input: string) => {
   const found = serverAddress(input);
@@ -51,4 +51,10 @@ test("DownloadPulse on this computer is any loopback origin, whatever its port; 
   for (const origin of ["https://downloadpulse.example.com", "http://192.168.1.20:8095", "http://127.0.0.1.example.com", "not a url"]) {
     assert.equal(isLocal(origin), false, origin);
   }
+});
+
+test("no request ever goes over plain HTTP across the internet, whatever asks (the request helper's guard)", async () => {
+  // Refused before fetching: an unreachable host would otherwise fail as "unreachable", not "insecure_refused".
+  await assert.rejects(readSession("http://203.0.113.9:8095", "dp_key"),
+    (error: unknown) => error instanceof ServerError && error.failure === "insecure_refused");
 });

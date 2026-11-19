@@ -9,7 +9,7 @@ import {connection, forgetConnection, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {capturedName, isIndexerRefusal} from "../shared/capture";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
-import {submitJob, type Source} from "../shared/server";
+import {isLocal, isPrivateHost, submitJob, type Source} from "../shared/server";
 import {wake} from "./monitor";
 
 const LIMITS: Record<CaptureKind, number> = {torrent: 16 * 1024 * 1024, nzb: 8 * 1024 * 1024, metalink: 16 * 1024 * 1024};
@@ -45,18 +45,22 @@ function base64(bytes: Uint8Array): string {
 /** B5: fetch the file as the browser would, with the person's cookies for that site. */
 async function capture(href: string, kind: CaptureKind): Promise<Source> {
   const url = new URL(href);
+  // The capture transport rule, decided before any request (operator, 2026-11-18; store review):
+  // HTTPS, or plain HTTP only on this computer or the private network; never across the
+  // internet, where the link (which may carry a key) and the person's sign-in would cross unencrypted.
+  if (url.protocol !== "https:" && !isLocal(url.origin) && !isPrivateHost(url.hostname)) throw new Refused("sendCaptureInsecure");
   if (!(await chrome.permissions.contains({origins: [`${url.origin}/*`]}))) throw new Refused("sendNoSiteAccess");
   let response: Response;
   try {
-    response = await fetch(url, {credentials: "include", redirect: "follow", cache: "no-store",
+    // No redirect is followed: a browser does not show where one leads before following it, so a
+    // redirect could carry the request (and the sign-in) to plain HTTP. One is refused instead.
+    response = await fetch(url, {credentials: "include", redirect: "manual", cache: "no-store",
       signal: AbortSignal.timeout(CAPTURE_TIMEOUT_MS)});
   } catch {
     throw new Refused("sendCaptureFailed");
   }
+  if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) throw new Refused("sendCaptureRedirect");
   if (!response.ok) throw new Refused("sendCaptureFailed");
-  // An HTTPS link redirected to plain HTTP is not followed into a capture: the file and the
-  // person's sign-in on that site would have crossed the network unencrypted.
-  if (url.protocol === "https:" && response.url && !response.url.startsWith("https:")) throw new Refused("sendCaptureFailed");
   if (/^\s*(text\/html|application\/xhtml)/i.test(response.headers.get("Content-Type") ?? "")) {
     throw new Refused("sendCaptureWebPage");
   }

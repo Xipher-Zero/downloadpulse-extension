@@ -132,5 +132,7 @@
   "insecureText": "7b8218256a531804",
   "insecureContinue": "68953bb10794121f",
   "failureHttpsOnly": "5f5bf97464eb7b2c",
-  "failureInsecureRefused": "e462077214cbbc47"
+  "failureInsecureRefused": "e462077214cbbc47",
+  "sendCaptureRedirect": "266118fc57b781b4",
+  "sendCaptureInsecure": "4672d0f46cfc1718"
 }

@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "此伺服器必須使用HTTPS。僅在您自己的網路中才允許使用未加密的HTTP。"
+  },
+  "sendCaptureRedirect": {
+    "message": "該網站會重新導向其下載連結，因此無法從此處安全取得。請改為在DownloadPulse中使用「快速新增」新增它。"
+  },
+  "sendCaptureInsecure": {
+    "message": "該連結在您的網路之外使用未加密的HTTP，因此不會使用您的登入狀態取得。請改為在DownloadPulse中使用「快速新增」新增它。"
   }
 }

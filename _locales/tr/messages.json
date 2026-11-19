@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Bu sunucu HTTPS kullanmalıdır. Şifrelenmemiş HTTP'ye yalnızca kendi ağınızda izin verilir."
+  },
+  "sendCaptureRedirect": {
+    "message": "Bu site indirme bağlantısını yönlendiriyor, bu yüzden buradan güvenli şekilde alınamaz. Bunun yerine DownloadPulse'ta Hızlı ekle ile ekleyin."
+  },
+  "sendCaptureInsecure": {
+    "message": "Bu bağlantı ağınızın dışında şifrelenmemiş HTTP kullanıyor, bu yüzden oturumunuzla alınmaz. Bunun yerine DownloadPulse'ta Hızlı ekle ile ekleyin."
   }
 }

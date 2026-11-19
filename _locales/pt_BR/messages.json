@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Este servidor precisa usar HTTPS. HTTP sem criptografia só é permitido na sua própria rede."
+  },
+  "sendCaptureRedirect": {
+    "message": "Esse site redireciona o link de download, então ele não pode ser obtido com segurança daqui. Adicione-o pela Adição rápida no DownloadPulse."
+  },
+  "sendCaptureInsecure": {
+    "message": "Esse link usa HTTP sem criptografia fora da sua rede, então ele não é obtido com o seu login. Adicione-o pela Adição rápida no DownloadPulse."
   }
 }

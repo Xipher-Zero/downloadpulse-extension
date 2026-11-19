@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "このサーバーは HTTPS を使用する必要があります。暗号化されていない HTTP は、自分のネットワーク内でのみ許可されています。"
+  },
+  "sendCaptureRedirect": {
+    "message": "そのサイトはダウンロードリンクをリダイレクトするため、ここから安全に取得できません。代わりに DownloadPulse の「クイック追加」で追加してください。"
+  },
+  "sendCaptureInsecure": {
+    "message": "そのリンクはネットワーク外で暗号化されていない HTTP を使用しているため、あなたのサインインを使って取得されることはありません。代わりに DownloadPulse の「クイック追加」で追加してください。"
   }
 }

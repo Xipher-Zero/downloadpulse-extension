@@ -73,3 +73,34 @@ The reviewer also noted where the disclosure page summarizes `PRIVACY.md` rather
 - the progress checks while the menu is open, and the theme request, aren't mentioned;
 - "what stays" names the key and settings, not every stored detail;
 - the user-triggered requests aren't listed.
+
+## Second review (of e56ed58), fixed
+
+1. **A capture followed an insecure redirect before refusing it.**
+   - **The capture transport rule** (operator's choice) is decided before any request:
+     - HTTPS;
+     - or plain HTTP only on this computer or the private network;
+     - never plain HTTP across the internet (`sendCaptureInsecure`).
+   - **No redirect is followed** (`redirect: "manual"`): a browser hides where one leads until it's followed, so a redirecting link is refused (`sendCaptureRedirect`, which points to Quick Add).
+   - **Proof:** a fixture link redirects to another address with a key in its query. The extension refuses it and the target is never requested. With redirects followed again, the test fails.
+2. **Saved connections bypassed the consent and transport rules.**
+   - `connectionState` (`ok`, `consent`, `plain-http`, `insecure`) gates the connection key at its one reader, `token()`. A held connection sends nothing:
+     - no polling, no theme refresh, no send, no controls, no Open DownloadPulse;
+     - no in-page buttons and no menu items.
+   - **The popup settles it:**
+     - `consent`: the disclosure page; agreeing unlocks the same connection, with no new pairing;
+     - `plain-http`: the warning for that server; continuing records the choice;
+     - `insecure`: forgotten locally, and the refusal shown.
+   - A changed `CONSENT_VERSION` now holds already-paired browsers too.
+   - **The request helper refuses plain HTTP across the internet,** whatever asks.
+   - **Proof:**
+     - a connection whose agreement is removed stops polling and the theme refresh until "Agree and continue", which unlocks it with no new pairing;
+     - a saved internet-HTTP connection is forgotten and refused;
+     - unit: the helper refuses before any request.
+3. **Firefox:** `authenticationInfo` (the connection key) is added to the required data categories, and the AMO notes are updated.
+4. **Chrome and the policy:**
+   - the draft declares personally identifiable information (the account display name);
+   - `PRIVACY.md` no longer claims "nothing to any third party". It names the two kinds of place contacted (the person's DownloadPulse, and a website a file link is sent from), the capture rule, and how held connections behave.
+5. **BUILDING.md:** reviewers stop at `npm run build`. `npm run package` works outside a Git checkout, writing the two packages and no source archive.
+
+**Strings:** two new, in 18 locales, reviewed; 3 corrected (ru, uk, ja).

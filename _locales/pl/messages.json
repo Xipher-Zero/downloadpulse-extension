@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Ten serwer musi używać HTTPS. Nieszyfrowany HTTP jest dozwolony tylko we własnej sieci."
+  },
+  "sendCaptureRedirect": {
+    "message": "Ta witryna przekierowuje swój link do pobierania, więc nie można go stąd bezpiecznie pobrać. Należy zamiast tego dodać go przez „Szybkie dodawanie” w DownloadPulse."
+  },
+  "sendCaptureInsecure": {
+    "message": "Ten link używa nieszyfrowanego HTTP poza własną siecią, więc nie jest pobierany z użyciem sesji logowania. Należy zamiast tego dodać go przez „Szybkie dodawanie” w DownloadPulse."
   }
 }

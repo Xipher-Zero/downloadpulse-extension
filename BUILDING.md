@@ -7,8 +7,17 @@ Requirements: Node.js 24 or later, npm.
 ```sh
 npm ci --ignore-scripts      # the exact dependency versions in package-lock.json
 npm run build                # writes dist/firefox and dist/chromium
-npm run package              # writes web-ext-artifacts/downloadpulse-{firefox,chromium}-<version>.zip
 ```
+
+**Reviewers:** stop here. `dist/firefox` is the Firefox package's content, file for file.
+
+Maintainers, from a Git checkout, also run:
+
+```sh
+npm run package              # web-ext-artifacts/downloadpulse-{firefox,chromium}-<version>.zip, and the source archive
+```
+
+Outside a Git checkout (an unpacked source archive), `npm run package` writes the two packages and no source archive.
 
 - `dist/firefox` is the Firefox package's content and `dist/chromium` the Chromium package's.
 - The build is deterministic for a given source and lockfile.

@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Este servidor tem de utilizar HTTPS. O HTTP sem encriptação só é permitido na sua própria rede."
+  },
+  "sendCaptureRedirect": {
+    "message": "Esse site redireciona a ligação de transferência, por isso não pode ser obtida de forma segura a partir daqui. Adicione-a com a Adição rápida no DownloadPulse."
+  },
+  "sendCaptureInsecure": {
+    "message": "Essa ligação utiliza HTTP sem encriptação fora da sua rede, por isso não é obtida com a sua sessão iniciada. Adicione-a com a Adição rápida no DownloadPulse."
   }
 }

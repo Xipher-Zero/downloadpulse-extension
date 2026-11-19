@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Questo server deve usare HTTPS. L'HTTP non crittografato è consentito solo nella propria rete."
+  },
+  "sendCaptureRedirect": {
+    "message": "Quel sito reindirizza il proprio link di download, quindi non può essere recuperato in modo sicuro da qui. Aggiungerlo invece con «Aggiunta rapida» in DownloadPulse."
+  },
+  "sendCaptureInsecure": {
+    "message": "Quel link usa HTTP non crittografato fuori dalla propria rete, quindi non viene recuperato usando l'accesso effettuato. Aggiungerlo invece con «Aggiunta rapida» in DownloadPulse."
   }
 }

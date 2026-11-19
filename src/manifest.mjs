@@ -43,10 +43,12 @@ export function manifest(browser, version) {
     browser_specific_settings: {
       gecko: {
         id: FIREFOX_ADDON_ID, strict_min_version: "140.0",
-        // What reaches the person's DownloadPulse (PRIVACY.md): the links and pages they send
-        // (browsing activity), a captured file (website content); the browser and system that
+        // What the extension handles (PRIVACY.md): the links and pages the person sends (browsing
+        // activity), a captured file (website content), the DownloadPulse connection key it
+        // receives, stores and sends (authentication information); the browser and system that
         // name the connection only with optional consent (technical data).
-        data_collection_permissions: { required: ["browsingActivity", "websiteContent"], optional: ["technicalAndInteraction"] },
+        data_collection_permissions: { required: ["authenticationInfo", "browsingActivity", "websiteContent"],
+          optional: ["technicalAndInteraction"] },
       },
     },
   };

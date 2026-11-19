@@ -30,6 +30,8 @@ export async function fakeSite() {
         <p><a id="magnet" href="magnet:?xt=urn:btih:${"d".repeat(40)}&dn=thing">A magnet</a></p>
         <p><a id="torrent" href="/files/private.torrent?passkey=SECRETPASSKEY">private.torrent</a></p>
         <p><a id="login" href="/files/needs-login.torrent">needs-login.torrent</a></p>
+        <p><a id="redirecting" href="/files/redirecting.torrent">redirecting.torrent</a></p>
+        <p><a id="public-http" href="http://203.0.113.9/files/public.torrent?passkey=SECRETPUBLIC">public.torrent</a></p>
         <p><a id="indexer" href="/cdn?t=get&amp;id=c59de97c&amp;apikey=SECRETINDEXERKEY">Get NZB</a></p>
         <p><a id="indexer-unnamed" href="/api?t=get&amp;id=nameless&amp;apikey=SECRETINDEXERKEY">Get</a></p>
         <p><a id="indexer-refused" href="/api?t=get&amp;id=over-limit&amp;apikey=SECRETINDEXERKEY">Get (limit)</a></p>
@@ -48,6 +50,11 @@ https://send.now/ijn6gxxf9bj8</textarea>
         <div id="rows" style="font:14px monospace;width:700px"><div>https://datanodes.to/wcqpgqc6jdh8/GF161126-HITC-RN.rar</div><div>https://ddownload.com/pu8xjt8cajxq/GF161126-HITC-RN.rar</div><div style="height:60px"></div></div>
         <div style="height:1600px"></div>
       </body></html>`);
+    }
+    if (url.pathname === "/files/redirecting.torrent") {
+      // A redirect to another address (the reviewer's case: HTTPS to HTTP); the extension must not follow it.
+      res.writeHead(302, {Location: `http://${req.headers.host}/files/redirect-target.torrent?passkey=SECRETREDIRECT`});
+      return res.end();
     }
     if (url.pathname === "/files/private.torrent") {
       if (!(req.headers.cookie ?? "").includes("site_session=signed-in")) {

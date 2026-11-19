@@ -596,5 +596,13 @@
   "failureInsecureRefused": {
     "message": "This server must use HTTPS. Plain HTTP is only allowed on your own network.",
     "description": "Failure status: an http:// address on the internet is refused."
+  },
+  "sendCaptureRedirect": {
+    "message": "That site redirects its download link, so it can't be fetched securely from here. Add it with Quick Add in DownloadPulse instead.",
+    "description": "Toast: a .torrent/.nzb/indexer link answered with a redirect; the extension does not follow redirects for captures (it cannot see where they lead first)."
+  },
+  "sendCaptureInsecure": {
+    "message": "That link uses plain HTTP outside your network, so it isn't fetched with your sign-in. Add it with Quick Add in DownloadPulse instead.",
+    "description": "Toast: a .torrent/.nzb/indexer link is plain http:// on the internet; the extension only fetches such files over HTTPS (or plain HTTP on this computer or the private network)."
   }
 }

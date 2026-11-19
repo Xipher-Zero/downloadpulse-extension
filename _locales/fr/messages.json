@@ -462,5 +462,11 @@
   },
   "failureInsecureRefused": {
     "message": "Ce serveur doit utiliser HTTPS. Le HTTP non chiffré n’est autorisé que sur votre propre réseau."
+  },
+  "sendCaptureRedirect": {
+    "message": "Ce site redirige son lien de téléchargement, il ne peut donc pas être récupéré de façon sécurisée d’ici. Ajoutez-le plutôt avec « Ajout rapide » dans DownloadPulse."
+  },
+  "sendCaptureInsecure": {
+    "message": "Ce lien utilise du HTTP non chiffré en dehors de votre réseau, il n’est donc pas récupéré avec votre connexion. Ajoutez-le plutôt avec « Ajout rapide » dans DownloadPulse."
   }
 }
