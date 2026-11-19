@@ -1041,7 +1041,9 @@
       "provenance": [
         "ai-generated",
         "ai-review"
-      ]
+      ],
+      "identical": true,
+      "note": "\"Browser\" is the word in this language too (independently reviewed)."
     },
     "insecureTitle": {
       "source": "2069b2872f765f91",
