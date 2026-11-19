@@ -49,11 +49,20 @@ export function isIndexerLink(href: string): boolean {
   return Boolean(url && (url.protocol === "http:" || url.protocol === "https:") && isNewznabGet(url));
 }
 
+/** A path decoded for reading its name; a stray ``%`` (``/50%off/``) leaves it as written (review, 2026-11-19). */
+function decodedPath(pathname: string): string {
+  try {
+    return decodeURIComponent(pathname);
+  } catch {
+    return pathname;
+  }
+}
+
 export function captureKind(href: string): CaptureKind | null {
   const url = parsed(href);
   if (!url || (url.protocol !== "http:" && url.protocol !== "https:")) return null;
   if (isNewznabGet(url)) return "nzb";
-  const kind = extension(decodeURIComponent(url.pathname));
+  const kind = extension(decodedPath(url.pathname));
   return kind === "torrent" ? "torrent" : kind === "nzb" ? "nzb" : kind === "meta4" ? "metalink" : null;
 }
 
@@ -66,7 +75,7 @@ export function isDownloadCandidate(href: string, attributes: {download?: boolea
   const type = (attributes.type ?? "").toLowerCase();
   if (type && !type.startsWith("text/html") && !type.startsWith("application/xhtml")) return true;
   if (isNewznabGet(url)) return true;
-  const path = decodeURIComponent(url.pathname);
+  const path = decodedPath(url.pathname);
   return DOWNLOAD_EXTENSIONS.has(extension(path)) || MULTIPART.test(path);
 }
 

@@ -422,7 +422,7 @@
     "message": "De links die u verstuurt. Bij een .torrent-, .nzb- of indexerlink haalt deze browser het bestand op met uw aanmelding op die site en verstuurt hij het bestand; de cookies van de site worden nooit verstuurd."
   },
   "discloseVideo": {
-    "message": "Bij een video het adres van de bijbehorende pagina."
+    "message": "Bij een video het adres van de speler en, tenzij u dit uitschakelt in Instellingen, uw aanmelding op die site (de cookies van de site voor dat adres), zodat DownloadPulse kan downloaden wat u kunt bekijken. DownloadPulse bewaart ze alleen in het geheugen, totdat die download is afgerond."
   },
   "disclosePolling": {
     "message": "Terwijl downloads lopen, controleert deze browser de voortgang ervan bij uw DownloadPulse."
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "Die link gebruikt onversleuteld HTTP buiten uw netwerk, dus hij wordt niet met uw aanmelding opgehaald. Voeg hem in plaats daarvan toe met Snel toevoegen in DownloadPulse."
+  },
+  "failureBlocked": {
+    "message": "Iets vóór DownloadPulse, zoals een aanmeldpagina of een proxy, antwoordde in plaats daarvan. Laat de extensie DownloadPulse rechtstreeks bereiken en maak daarna opnieuw verbinding."
+  },
+  "sendSelectionCapped": {
+    "message": "De eerste 100 links zijn gestuurd. Voeg de rest toe met Snel toevoegen in DownloadPulse."
+  },
+  "quickAddTitle": {
+    "message": "Snel toevoegen"
+  },
+  "quickAddPlaceholder": {
+    "message": "Plak een link of magnet"
+  },
+  "quickAddButton": {
+    "message": "Toevoegen"
+  },
+  "quickAddDone": {
+    "message": "Aan DownloadPulse toegevoegd"
+  },
+  "quickAddNothing": {
+    "message": "Geen link of magnet gevonden"
+  },
+  "optionsVideoCookies": {
+    "message": "Mijn aanmelding op de site met video's meesturen (de cookies van de site), zodat video's die alleen voor leden zijn of een leeftijdsgrens hebben, kunnen worden gedownload"
   }
 }

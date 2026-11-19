@@ -13,19 +13,19 @@ import {restIcon} from "./icon";
 import {popupOpen, wake} from "./monitor";
 import {message} from "../shared/i18n";
 import {cancel, connectLocal, connectRemote, pairLocal} from "./pairing";
-import {sendSelection, sendUrl} from "./submit";
+import {sendSelection, sendUrl, forgetSentKey, quickAdd, sendVideo} from "./submit";
 
 type Request =
   | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string; insecure?: boolean}
   | {type: "cancel"} | {type: "dp-open"}
-  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-send-selection"; text: string} | {type: "dp-has-video"}
-  | {type: "dp-popup-open"} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
+  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-send-video"} | {type: "dp-send-selection"; text: string} | {type: "dp-has-video"}
+  | {type: "dp-popup-open"} | {type: "dp-quick-add"; text: string} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
   | {type: "dp-disconnect"};
 
 /** WS-E4: Disconnect revokes this browser's token on the server, then forgets it here (even if the server is unreachable). */
 async function disconnect(): Promise<{revoked: boolean}> {
   const connected = await connection();
-  const browserToken = await token();
+  const browserToken = connected ? await token(connected.server) : null;
   let revoked = false;
   if (connected && browserToken) {
     try {
@@ -35,7 +35,7 @@ async function disconnect(): Promise<{revoked: boolean}> {
       revoked = false;
     }
   }
-  await forgetConnection();
+  if (connected) await forgetConnection(false, connected.server);
   return {revoked};
 }
 
@@ -47,7 +47,7 @@ async function disconnect(): Promise<{revoked: boolean}> {
 async function openDownloadPulse(): Promise<{tab: boolean}> {
   const connected = await connection();
   if (!connected) return {tab: false};
-  const browserToken = await token();
+  const browserToken = connected ? await token(connected.server) : null;
   if (isLocal(connected.server) && browserToken && await showApplication(connected.server, browserToken)) return {tab: false};
   await chrome.tabs.create({url: `${connected.server}/`});
   return {tab: true};
@@ -91,11 +91,12 @@ chrome.runtime.onStartup.addListener(() => {
 async function act(request: {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}):
     Promise<{ok: boolean; reason?: string}> {
   const connected = await connection();
-  const browserToken = await token();
+  const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) return {ok: false, reason: "not_connected"};
   try {
     if (request.type === "dp-withdraw") {
       await withdrawJob(connected.server, browserToken, request.id);
+      await forgetSentKey(request.id);
       return {ok: true};
     }
     const decision = await controlJob(connected.server, browserToken, request.id, request.kind);
@@ -107,7 +108,7 @@ async function act(request: {type: "dp-control"; id: string; kind: "pause" | "re
   }
 }
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && ("connection" in changes || "consent" in changes)) void refreshMenus();
+  if (area === "local" && ("connections" in changes || "activeServer" in changes || "consent" in changes)) void refreshMenus();
   // The toolbar icon in the person's theme, redrawn when it changes (or the connection goes).
   if (area === "local" && "appearance" in changes) void restIcon();
 });
@@ -122,7 +123,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 const pageAction = (globalThis as unknown as {browser?: {pageAction?: {show(tabId: number): Promise<void>;
   onClicked: {addListener(listener: (tab: chrome.tabs.Tab) => void): void}}}}).browser?.pageAction;
 pageAction?.onClicked.addListener((tab) => {
-  if (tab.url && tab.id !== undefined) void sendUrl(tab.url, {tabId: tab.id, frameId: 0});
+  if (tab.url && tab.id !== undefined) void sendVideo(tab.url, {tabId: tab.id, frameId: 0}, tab);
 });
 
 chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
@@ -139,6 +140,10 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
       void openDownloadPulse().then(respond);
       return true;
     case "cancel": if (!fromPage) void cancel(); return undefined;
+    case "dp-quick-add":
+      if (fromPage || typeof request.text !== "string" || request.text.length > 200_000) return undefined;
+      void quickAdd(request.text).then(respond);
+      return true;
     case "dp-popup-open":
       if (!fromPage) {
         popupOpen();
@@ -161,6 +166,13 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
     case "dp-send":
       if (fromPage && typeof request.url === "string" && sender.tab?.id !== undefined) {
         void sendUrl(request.url, {tabId: sender.tab.id, frameId: sender.frameId ?? 0});
+      }
+      return undefined;
+    case "dp-send-video":
+      // The frame's own address, as the browser reports it (never one the page names): a page
+      // can only ever send its own video, with the cookies for exactly that address.
+      if (fromPage && sender.url && sender.tab?.id !== undefined) {
+        void sendVideo(sender.url.split("#")[0]!, {tabId: sender.tab.id, frameId: sender.frameId ?? 0}, sender.tab);
       }
       return undefined;
     case "dp-send-selection":

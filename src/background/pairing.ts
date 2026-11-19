@@ -12,7 +12,7 @@ import {consented, deviceNameAllowed} from "../shared/consent";
 import {deviceCode, saveConnection, setPairing} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {
-  LOCAL_ORIGINS, ServerError, serverAddress, pollPairing, probe, readSession, startPairing,
+  LOCAL_ORIGINS, ServerError, effectiveAddress, pollPairing, probe, readSession, startPairing,
   type Failure,
 } from "../shared/server";
 
@@ -78,7 +78,7 @@ export async function connectRemote(address: string, insecure = false): Promise<
   if (!(await consented())) return;
   const generation = ++active;
   await setPairing({state: "probing"});
-  const target = serverAddress(address);
+  const target = await effectiveAddress(address);
   if (!target) return fail("unreachable", generation);
   // Plain HTTP: never across the internet; on a private network only once the person chose it.
   if (target.transport === "public-http" || (target.transport === "lan-http" && !insecure)) {

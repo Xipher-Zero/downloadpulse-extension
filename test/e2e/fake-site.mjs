@@ -31,6 +31,7 @@ export async function fakeSite() {
         <p><a id="torrent" href="/files/private.torrent?passkey=SECRETPASSKEY">private.torrent</a></p>
         <p><a id="login" href="/files/needs-login.torrent">needs-login.torrent</a></p>
         <p><a id="redirecting" href="/files/redirecting.torrent">redirecting.torrent</a></p>
+        <p><a id="endless" href="/files/endless.torrent">endless.torrent</a></p>
         <p><a id="public-http" href="http://203.0.113.9/files/public.torrent?passkey=SECRETPUBLIC">public.torrent</a></p>
         <p><a id="indexer" href="/cdn?t=get&amp;id=c59de97c&amp;apikey=SECRETINDEXERKEY">Get NZB</a></p>
         <p><a id="indexer-unnamed" href="/api?t=get&amp;id=nameless&amp;apikey=SECRETINDEXERKEY">Get</a></p>
@@ -50,7 +51,22 @@ https://send.now/ijn6gxxf9bj8</textarea>
         <p id="one">See https://example.org/about for details.</p>
         <div id="rows" style="font:14px monospace;width:700px"><div>https://datanodes.to/wcqpgqc6jdh8/GF161126-HITC-RN.rar</div><div>https://ddownload.com/pu8xjt8cajxq/GF161126-HITC-RN.rar</div><div style="height:60px"></div></div>
         <div style="height:1600px"></div>
-      </body></html>`);
+      <div id="many" style="font:12px monospace">${Array.from({length: 101}, (_, i) => `https://example.com/f/${i}.zip`).join("<br>")}</div>
+        </body></html>`);
+    }
+    if (url.pathname === "/files/endless.torrent") {
+      // No Content-Length, and no end (1 MB every 50 ms, for minutes): a reader that waits for the
+      // whole body never finishes; one that counts as it reads stops at the 16 MB a .torrent may be.
+      res.writeHead(200, {"Content-Type": "application/x-bittorrent"});
+      const chunk = Buffer.alloc(1024 * 1024, 0x61);
+      let sent = 0;
+      const timer = setInterval(() => {
+        if (res.destroyed || sent >= 4000) { clearInterval(timer); return res.destroyed || res.end(); }
+        sent += 1;
+        res.write(chunk);
+      }, 50);
+      res.on("close", () => clearInterval(timer));
+      return;
     }
     if (url.pathname === "/files/redirecting.torrent") {
       // A redirect to another address (the reviewer's case: HTTPS to HTTP); the extension must not follow it.

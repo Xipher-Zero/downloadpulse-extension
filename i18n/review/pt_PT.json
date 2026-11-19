@@ -988,8 +988,8 @@
       ]
     },
     "discloseVideo": {
-      "source": "7d43fabd5ffe507f",
-      "translation": "c20a3b4b04a02da9",
+      "source": "51b72b4ba9588855",
+      "translation": "866ba66abe59c6d5",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -1094,6 +1094,70 @@
     "sendCaptureInsecure": {
       "source": "4672d0f46cfc1718",
       "translation": "3cd28b8ebcb1112b",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureBlocked": {
+      "source": "1cb8ad19892b8ff9",
+      "translation": "f9cc2fb014c9c2af",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendSelectionCapped": {
+      "source": "2b03a1bfacf2c977",
+      "translation": "479b9463472c5323",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "quickAddTitle": {
+      "source": "a1c22d74f4587d16",
+      "translation": "b11e756dbdf929ee",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "quickAddPlaceholder": {
+      "source": "226e2a29262da3a3",
+      "translation": "d8ac309778ed8dd4",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "quickAddButton": {
+      "source": "9fd728c66c9a256b",
+      "translation": "967bcf34a9138e10",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "quickAddDone": {
+      "source": "33956abc80788340",
+      "translation": "790c0fa421023cfb",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "quickAddNothing": {
+      "source": "64c89f6c2057f45d",
+      "translation": "bfd6e6d6436d7075",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "optionsVideoCookies": {
+      "source": "8421908309eb1940",
+      "translation": "d6abb3863aa4991e",
       "provenance": [
         "ai-generated",
         "ai-review"

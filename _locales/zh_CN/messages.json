@@ -422,7 +422,7 @@
     "message": "您发送的链接。对于.torrent、.nzb或索引器链接，此浏览器会使用您在该网站的登录状态获取文件，并发送该文件；绝不会发送该网站的Cookie。"
   },
   "discloseVideo": {
-    "message": "对于视频：其页面的地址。"
+    "message": "对于视频：其播放器的地址；除非您在“设置”中关闭此项，还包括您在该网站的登录状态（该网站针对该地址的Cookie），以便DownloadPulse能够下载您可以观看的内容。DownloadPulse仅将其保存在内存中，直到该下载结束。"
   },
   "disclosePolling": {
     "message": "下载进行期间，此浏览器会向您的DownloadPulse查询下载进度。"
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "该链接在您的网络之外使用未加密的HTTP，因此不会使用您的登录状态获取。请改为在DownloadPulse中使用“快速添加”添加它。"
+  },
+  "failureBlocked": {
+    "message": "DownloadPulse前面的某个服务（例如登录页面或代理）代替它作出了响应。请让扩展程序直接访问DownloadPulse，然后重新连接。"
+  },
+  "sendSelectionCapped": {
+    "message": "已发送前100个链接。请在DownloadPulse中使用“快速添加”添加其余链接。"
+  },
+  "quickAddTitle": {
+    "message": "快速添加"
+  },
+  "quickAddPlaceholder": {
+    "message": "粘贴链接或磁力链接"
+  },
+  "quickAddButton": {
+    "message": "添加"
+  },
+  "quickAddDone": {
+    "message": "已添加到DownloadPulse"
+  },
+  "quickAddNothing": {
+    "message": "未找到链接或磁力链接"
+  },
+  "optionsVideoCookies": {
+    "message": "随视频发送我在该网站的登录状态（其Cookie），以便下载仅限会员和有年龄限制的视频"
   }
 }

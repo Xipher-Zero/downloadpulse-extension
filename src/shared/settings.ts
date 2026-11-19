@@ -7,12 +7,13 @@ export interface Settings {
   inPage: boolean;                // the in-page buttons at all (their master switch; off, none is offered)
   hover: boolean;                 // the hover icon beside download links
   video: boolean;                 // the video-player button and Firefox's URL-bar icon
+  videoCookies: boolean;          // a video goes with the person's sign-in on its site (its cookies); on unless switched off
   offSites: string[];             // sites (host names) where neither is offered
   notify: {completed: boolean; failed: boolean; attention: boolean};
 }
 
 const KEY = "settings";
-export const DEFAULTS: Settings = {inPage: true, hover: true, video: true, offSites: [],
+export const DEFAULTS: Settings = {inPage: true, hover: true, video: true, videoCookies: true, offSites: [],
   notify: {completed: true, failed: true, attention: true}};
 
 export async function settings(): Promise<Settings> {

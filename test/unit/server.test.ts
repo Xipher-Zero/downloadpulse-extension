@@ -39,13 +39,19 @@ test("private hosts", () => {
   for (const host of ["10.1.2.3", "192.168.0.1", "172.20.0.1", "169.254.0.1", "printer", "nas.local", "fd00::1", "fe80::2"]) {
     assert.equal(isPrivateHost(host), true, host);
   }
-  for (const host of ["example.com", "1.1.1.1", "172.15.0.1", "192.169.0.1", "2001:db8::1"]) {
+  // Tailscale's addresses and names are the person's network (operator, 2026-11-19); the range's neighbours aren't.
+  for (const host of ["100.64.0.1", "100.101.102.103", "100.127.255.254", "nas.tailnet-1234.ts.net"]) {
+    assert.equal(isPrivateHost(host), true, host);
+  }
+  for (const host of ["example.com", "1.1.1.1", "172.15.0.1", "192.169.0.1", "2001:db8::1", "100.63.255.255", "100.128.0.1",
+    "ts.net.example.com"]) {
     assert.equal(isPrivateHost(host), false, host);
   }
 });
 
 test("DownloadPulse on this computer is any loopback origin, whatever its port; anything else is a server", () => {
-  for (const origin of ["http://127.0.0.1:8095", "http://localhost:8095", "http://localhost:33381", "http://[::1]:9000"]) {
+  for (const origin of ["http://127.0.0.1:8095", "http://localhost:8095", "http://localhost:33381", "http://[::1]:9000",
+    "http://127.0.0.2:8095", "http://127.255.0.9"]) {
     assert.equal(isLocal(origin), true, origin);
   }
   for (const origin of ["https://downloadpulse.example.com", "http://192.168.1.20:8095", "http://127.0.0.1.example.com", "not a url"]) {

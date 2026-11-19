@@ -22,21 +22,30 @@ interface Offer { hover: boolean; video: boolean; colours: PageColours }
 const prefersDark = () => matchMedia("(prefers-color-scheme: dark)").matches;
 let offer: Offer | null = null;
 let askedAt = 0;
+let asking: Promise<Offer> | null = null;
 
-/** What this frame may offer, as the background says (connected, and the person's settings for this site). */
-async function mayOffer(): Promise<Offer> {
-  if (offer !== null && Date.now() - askedAt < 5_000) return offer;
-  askedAt = Date.now();
+/** What this frame may offer, as the background says (connected, and the person's settings for this site).
+ * Kept for 5 s; once that has passed, every caller waits for the one fresh answer (never the expired one). */
+function mayOffer(): Promise<Offer> {
+  if (offer !== null && Date.now() - askedAt < 5_000) return Promise.resolve(offer);
+  asking ??= ask().finally(() => { asking = null; });
+  return asking;
+}
+
+async function ask(): Promise<Offer> {
+  let fresh: Offer;
   try {
     const state = await chrome.runtime.sendMessage({type: "dp-state"}) as
       {hover?: boolean; video?: boolean; appearance?: unknown} | undefined;
-    offer = {hover: Boolean(state?.hover), video: Boolean(state?.video),
+    fresh = {hover: Boolean(state?.hover), video: Boolean(state?.video),
       colours: pageColours(parseAppearance(state?.appearance), prefersDark() ? "dark" : "light")};
   } catch {
-    offer = {hover: false, video: false, colours: pageColours(null, prefersDark() ? "dark" : "light")};
+    fresh = {hover: false, video: false, colours: pageColours(null, prefersDark() ? "dark" : "light")};
   }
-  paint(offer.colours);
-  return offer;
+  offer = fresh;
+  askedAt = Date.now();
+  paint(fresh.colours);
+  return fresh;
 }
 
 // The page surfaces in the person's DownloadPulse theme (src/shared/page-theme.ts):
@@ -361,7 +370,8 @@ function showVideo(element: HTMLVideoElement): void {
   }
   video ??= sendButton(message("videoSend"), () => {
     // The frame's own address: the embed, or the page itself (S3).
-    void chrome.runtime.sendMessage({type: "dp-send", url: location.href});
+    // The background takes this frame's address from the browser itself (with its cookies, if allowed).
+    void chrome.runtime.sendMessage({type: "dp-send-video"});
     withdraw(video);
   });
   videoBox = rect;

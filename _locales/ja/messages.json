@@ -422,7 +422,7 @@
     "message": "送信したリンク。.torrent、.nzb、またはインデクサーのリンクの場合、このブラウザーはそのサイトでのあなたのサインインを使ってファイルを取得し、そのファイルを送信します。サイトの Cookie が送信されることは決してありません。"
   },
   "discloseVideo": {
-    "message": "動画の場合は、そのページのアドレス。"
+    "message": "動画の場合は、そのプレーヤーのアドレスと、設定でオフにしない限り、そのサイトでのあなたのサインイン（そのアドレスに対するサイトの Cookie）。これにより DownloadPulse は、あなたが視聴できるものをダウンロードできます。DownloadPulse はそれらを、そのダウンロードが終わるまでメモリ内にのみ保持します。"
   },
   "disclosePolling": {
     "message": "ダウンロードの実行中、このブラウザーはあなたの DownloadPulse で進行状況を確認します。"
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "そのリンクはネットワーク外で暗号化されていない HTTP を使用しているため、あなたのサインインを使って取得されることはありません。代わりに DownloadPulse の「クイック追加」で追加してください。"
+  },
+  "failureBlocked": {
+    "message": "サインインページやプロキシなど、DownloadPulse の手前にあるものが代わりに応答しました。拡張機能が DownloadPulse に直接接続できるようにしてから、もう一度接続してください。"
+  },
+  "sendSelectionCapped": {
+    "message": "最初の 100 件のリンクを送信しました。残りは DownloadPulse の「クイック追加」で追加してください。"
+  },
+  "quickAddTitle": {
+    "message": "クイック追加"
+  },
+  "quickAddPlaceholder": {
+    "message": "リンクまたはマグネットリンクを貼り付け"
+  },
+  "quickAddButton": {
+    "message": "追加"
+  },
+  "quickAddDone": {
+    "message": "DownloadPulse に追加しました"
+  },
+  "quickAddNothing": {
+    "message": "リンクまたはマグネットリンクが見つかりません"
+  },
+  "optionsVideoCookies": {
+    "message": "動画と一緒にサイトでのサインイン（サイトの Cookie）を送信し、メンバー限定や年齢制限のある動画をダウンロードできるようにする"
   }
 }

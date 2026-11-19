@@ -21,7 +21,9 @@ export function manifest(browser, version) {
       default_icon: { 16: "icons/icon-16.png", 32: "icons/icon-32.png" },
     },
     options_ui: { page: "options/options.html", open_in_tab: true },
-    permissions: ["storage", "contextMenus", "notifications", "alarms"],
+    // cookies: a video's sign-in on its site, for DownloadPulse's video downloader (operator,
+    // 2026-11-19; docs/store/PERMISSIONS.md), only for a video send, switchable in the settings.
+    permissions: ["storage", "contextMenus", "notifications", "alarms", "cookies"],
     // Web pages only, http and https (store review, 2026-11-18; docs/store/PERMISSIONS.md):
     // the in-page buttons run on whatever page the person browses, in its frames too
     // (a video player is often embedded in one); a .torrent/.nzb/indexer link is
@@ -37,6 +39,9 @@ export function manifest(browser, version) {
   }
   return {
     ...shared,
+    // dns: a server or file-link name that resolves only to private addresses (split DNS) counts as
+    // the person's network (operator, 2026-11-19; docs/store/PERMISSIONS.md). Firefox only: Chromium has no such API.
+    permissions: [...shared.permissions, "dns"],
     background: { scripts: ["background.js"] },
     // The URL-bar icon, shown on a page whose content script saw a video (WS-E2 B4).
     page_action: { default_title: "__MSG_pageActionSend__", default_icon: { 16: "icons/icon-16.png", 32: "icons/icon-32.png" } },

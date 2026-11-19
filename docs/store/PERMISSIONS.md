@@ -7,6 +7,8 @@
 | `storage` | The connection's details, settings, the disclosure agreement and the theme (see PRIVACY.md). The connection key itself is in the extension origin's IndexedDB. | — |
 | `contextMenus` | "Download with DownloadPulse" on links and selected text, shown only while connected. | — |
 | `notifications` | Finished, failed and needs-attention notices, each switchable. | — |
+| `dns` (Firefox only) | Whether a server or file-link name that looks like an internet name resolves only to private addresses (split DNS, e.g. `nas.home.example.com`), so plain HTTP may be allowed there after the warning screen. The browser's own resolver; no lookup leaves the system's usual DNS path. | Read only: resolves a name the person entered, or a file link they sent. |
+| `cookies` | A video the person sends goes with their sign-in on its site: the cookies the browser would send to the video's own address (for an embed, the player's address, with its partitioned cookies under the page's site), from the tab's own cookie store (a Firefox container's). Only for a video send, only to a DownloadPulse whose session says it accepts them; on by default, switchable ("Send my sign-in on the site with videos"). | Read only, never set or removed; never for links, files or selections; never kept by the extension. |
 | `alarms` | Wakes the monitor of unsettled downloads (MV3 background lifetime). | — |
 | `incognito: not_allowed` | Never in private windows: a private session's downloads would enter DownloadPulse's lasting queue. | — |
 

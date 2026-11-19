@@ -122,3 +122,5 @@ The reviewer also noted where the disclosure page summarizes `PRIVACY.md` rather
 **Fix:** only an HTML element is looked into (only one can hold a shadow root), and the lookup cannot throw out of the handler.
 
 **Proof:** a play icon (SVG) over the fixture's video still finds the video and shows its button. With the old lookup, the test fails.
+
+**CI on c0eb8da** failed the test "a saved connection … over internet HTTP is forgotten": the popup showed the first screen instead of the refusal. The cause was a real race. The popup forgot the connection, then recorded the refusal, and a redraw prompted by the forgetting could read "no connection, no refusal" and finish last. The refusal is now recorded first, so every later redraw finds it.

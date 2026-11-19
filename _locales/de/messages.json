@@ -422,7 +422,7 @@
     "message": "Die Links, die Sie senden. Bei einem .torrent-, .nzb- oder Indexer-Link ruft dieser Browser die Datei mit Ihrer Anmeldung auf dieser Website ab und sendet die Datei; die Cookies der Website werden nie gesendet."
   },
   "discloseVideo": {
-    "message": "Bei einem Video die Adresse seiner Seite."
+    "message": "Bei einem Video die Adresse seines Players und, sofern Sie dies nicht in den Optionen ausschalten, Ihre Anmeldung auf dieser Website (deren Cookies für diese Adresse), damit DownloadPulse herunterladen kann, was Sie ansehen können. DownloadPulse behält sie nur im Arbeitsspeicher, bis dieser Download endet."
   },
   "disclosePolling": {
     "message": "Während Downloads laufen, fragt dieser Browser deren Fortschritt bei Ihrem DownloadPulse ab."
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "Dieser Link verwendet unverschlüsseltes HTTP außerhalb Ihres Netzwerks, daher wird er nicht mit Ihrer Anmeldung abgerufen. Fügen Sie ihn stattdessen in DownloadPulse mit „Schnell hinzufügen“ hinzu."
+  },
+  "failureBlocked": {
+    "message": "Etwas vor DownloadPulse, etwa eine Anmeldeseite oder ein Proxy, hat an seiner Stelle geantwortet. Lassen Sie die Erweiterung DownloadPulse direkt erreichen und verbinden Sie sich dann erneut."
+  },
+  "sendSelectionCapped": {
+    "message": "Die ersten 100 Links wurden gesendet. Fügen Sie die übrigen in DownloadPulse mit „Schnell hinzufügen“ hinzu."
+  },
+  "quickAddTitle": {
+    "message": "Schnell hinzufügen"
+  },
+  "quickAddPlaceholder": {
+    "message": "Link oder Magnet-Link einfügen"
+  },
+  "quickAddButton": {
+    "message": "Hinzufügen"
+  },
+  "quickAddDone": {
+    "message": "Zu DownloadPulse hinzugefügt"
+  },
+  "quickAddNothing": {
+    "message": "Kein Link oder Magnet-Link gefunden"
+  },
+  "optionsVideoCookies": {
+    "message": "Mit Videos meine Anmeldung auf der Website senden (deren Cookies), damit Videos nur für Mitglieder und Videos mit Altersbeschränkung heruntergeladen werden können"
   }
 }

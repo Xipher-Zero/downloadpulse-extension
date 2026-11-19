@@ -3,7 +3,8 @@
 // disclosure page; store review, 2026-11-18): recorded before any pairing, and
 // asked again whenever the disclosure changes (CONSENT_VERSION). Not a secret.
 
-export const CONSENT_VERSION = 1;
+// 2: a video goes with the person's sign-in on its site (operator, 2026-11-19).
+export const CONSENT_VERSION = 2;
 const KEY = "consent";
 
 export interface Consent { version: number; deviceName: boolean; at: number }

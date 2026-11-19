@@ -7,7 +7,7 @@ import http from "node:http";
 export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
   const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
     views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null,
-    desktop: false, shows: 0, down: false,
+    desktop: false, shows: 0, down: false, keys: new Map(), dropNext: false, submits: 0, videoCookies: true,
     appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"}};
   // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
   const touch = (view) => { view.cursor = ++state.seq; state.views.set(view.id, view); return view; };
@@ -23,6 +23,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
     };
     const url = new URL(req.url, "http://fake");
     if (state.mode === "not-downloadpulse") return send(200, "<html>a router</html>", "text/html");
+    // ``proxy``: a sign-in gate in front of DownloadPulse, redirecting everything to its login.
+    if (state.mode === "proxy") { res.writeHead(302, {Location: "/login"}); return res.end(); }
     // ``down``: answering, but not DownloadPulse's API (as a stopped or restarting server's proxy would).
     if (state.down && url.pathname.startsWith("/api/browser/v1/")) return send(503, {detail: "Service Unavailable"});
     if (url.pathname === "/api/health") return send(200, {status: "ok", version: "1.0.14"});
@@ -68,13 +70,29 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
       return send(200, {protocol: state.mode === "wrong-protocol" ? "debridpulse.browser/0" : "debridpulse.browser/1",
         token: {id: "tok-1", label: "Laptop-Chrome"}, account: {display_name: "Una"},
-        ...(state.appearance ? {appearance: state.appearance} : {})});
+        ...(state.appearance ? {appearance: state.appearance} : {}),
+        // A DownloadPulse that takes a video's cookies says so (``videoCookies``; an older one says nothing).
+        ...(state.videoCookies ? {capabilities: {cookies: {max_count: 300, max_bytes: 32768, sources: ["links"]}}} : {})});
     }
     if (url.pathname === "/api/browser/v1/jobs" && req.method === "POST") {
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
       if (state.refuse) return send(422, {detail: {code: state.refuse, message: "refused", retryable: false}});
+      state.submits += 1;
+      // DebridPulse's idempotency: the same key answers the same job (200), never a second one.
+      const known = state.keys.get(body.idempotency_key);
+      if (known) return send(200, state.views.get(known));
       state.jobs.push({body, cookie: req.headers.cookie ?? null});
       const id = `job_${state.jobs.length}`;
+      state.keys.set(body.idempotency_key, id);
+      // ``dropNext``: the job is made, but no answer comes before the extension's 8 s timeout
+      // (a connection reset alone is retried by the browser itself, so it would prove nothing).
+      if (state.dropNext) {
+        state.dropNext = false;
+        touch({id, submitted_at: new Date().toISOString(), display_name: body.display_name ?? "", name: "placeholder",
+          source: {kind: body.source?.kind}, phase: "accepted", reason: "awaiting_resolution", actionability: "wait",
+          paused_by: null, progress: null, estimate: null});
+        return setTimeout(() => req.socket.destroy(), 9500);
+      }
       touch({id, submitted_at: new Date().toISOString(), display_name: body.display_name ?? "",
         name: body.display_name || "placeholder",
         source: {kind: body.source?.kind}, phase: "accepted", reason: "awaiting_resolution", actionability: "wait",

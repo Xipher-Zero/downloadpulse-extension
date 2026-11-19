@@ -319,6 +319,16 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px;
   margin: 2px -14px -14px; padding: 10px 14px; border-top: 1px solid var(--dp-border-default); }
 
+/* ── Quick Add (operator, 2026-11-19): its title row also carries the last Add's result, so nothing moves. ── */
+.dp-quick { display: grid; gap: 6px; }
+.dp-quick__head { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-width: 0; block-size: 18px; }
+.dp-quick__head .dp-popup__heading { flex: 0 0 auto; line-height: 18px; }
+.dp-quick__result { flex: 1 1 auto; min-width: 0; text-align: end; font-size: 12px; line-height: 18px; font-weight: 600;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dp-quick__result[data-ok="true"] { color: var(--dp-state-success); }
+.dp-quick__result[data-ok="false"] { color: var(--dp-state-error); }
+.dp-quick__form .dp-btn { padding: 0 14px; }
+
 /* ── Sent Downloads ── */
 .dp-popup__heading { margin: 2px 0 0; font-size: 13px; font-weight: 650; }
 .dp-jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 340px; overflow-y: auto; }

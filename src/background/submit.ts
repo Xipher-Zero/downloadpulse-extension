@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-// Sending downloads (WS-E2): one gesture is one submission under one fresh
-// idempotency key (B7). A .torrent/.nzb/.meta4 link is captured first, with
+// Sending downloads (WS-E2): one gesture is one submission under one
+// idempotency key (B7), reused for a repeat of the same send within 10 minutes
+// (operator, 2026-11-19), so DownloadPulse never queues it twice. A .torrent/.nzb/.meta4 link is captured first, with
 // the person's own login for that site (spike S1, B5): the file URL itself
 // is never sent, stored or logged. Feedback goes to the frame the gesture
 // came from, else to the toolbar badge (B6).
@@ -9,11 +10,18 @@ import {connection, forgetConnection, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {capturedName, isIndexerRefusal} from "../shared/capture";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
-import {isLocal, isPrivateHost, submitJob, type Source} from "../shared/server";
+import {isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, submitJob, type Cookie, type Source} from "../shared/server";
+import {settings} from "../shared/settings";
+import {cookiesFor} from "./cookies";
 import {wake} from "./monitor";
 
 const LIMITS: Record<CaptureKind, number> = {torrent: 16 * 1024 * 1024, nzb: 8 * 1024 * 1024, metalink: 16 * 1024 * 1024};
 const CAPTURE_TIMEOUT_MS = 30_000;
+/** How long a repeat of the same send reuses its idempotency key. */
+const KEY_WINDOW_MS = 10 * 60_000;
+const KEYS = "sendKeys";
+/** At most this many plain links go in one selection's batch; the person is told when more were found. */
+const BATCH_LIMIT = 100;
 
 export interface Origin {
   tabId?: number;
@@ -48,7 +56,8 @@ async function capture(href: string, kind: CaptureKind): Promise<Source> {
   // The capture transport rule, decided before any request (operator, 2026-11-18; store review):
   // HTTPS, or plain HTTP only on this computer or the private network; never across the
   // internet, where the link (which may carry a key) and the person's sign-in would cross unencrypted.
-  if (url.protocol !== "https:" && !isLocal(url.origin) && !isPrivateHost(url.hostname)) throw new Refused("sendCaptureInsecure");
+  if (url.protocol !== "https:" && !isLocal(url.origin) && !isPrivateHost(url.hostname)
+      && !(await resolvesPrivate(url.hostname))) throw new Refused("sendCaptureInsecure");
   if (!(await chrome.permissions.contains({origins: [`${url.origin}/*`]}))) throw new Refused("sendNoSiteAccess");
   let response: Response;
   try {
@@ -66,9 +75,8 @@ async function capture(href: string, kind: CaptureKind): Promise<Source> {
   }
   const declared = Number(response.headers.get("Content-Length") ?? "0");
   if (declared > LIMITS[kind]) throw new Refused("sendTooLarge");
-  const bytes = new Uint8Array(await response.arrayBuffer());
+  const bytes = await bounded(response, LIMITS[kind]);
   if (!bytes.length) throw new Refused("sendCaptureFailed");
-  if (bytes.length > LIMITS[kind]) throw new Refused("sendTooLarge");
   // A newznab indexer answers a refusal with an <error> document and 200: that
   // is not the file. Anything else goes to DownloadPulse, which validates it.
   const head = new TextDecoder().decode(bytes.subarray(0, 65536));
@@ -77,6 +85,71 @@ async function capture(href: string, kind: CaptureKind): Promise<Source> {
   const encoded = base64(bytes);
   return kind === "torrent" ? {kind, filename, torrent_base64: encoded}
     : kind === "nzb" ? {kind, filename, nzb_base64: encoded} : {kind, filename, metalink_base64: encoded};
+}
+
+/**
+ * The body, read as it arrives and stopped past ``limit`` (review, 2026-11-19): a file with
+ * no Content-Length is never buffered whole first, and a timeout mid-read is a capture failure.
+ */
+async function bounded(response: Response, limit: number): Promise<Uint8Array> {
+  const reader = response.body?.getReader();
+  if (!reader) return new Uint8Array();
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  try {
+    for (;;) {
+      const {done, value} = await reader.read();
+      if (done) break;
+      size += value.length;
+      if (size > limit) {
+        void reader.cancel();
+        throw new Refused("sendTooLarge");
+      }
+      chunks.push(value);
+    }
+  } catch (error) {
+    if (error instanceof Refused) throw error;
+    throw new Refused("sendCaptureFailed");
+  }
+  const bytes = new Uint8Array(size);
+  let at = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, at);
+    at += chunk.length;
+  }
+  return bytes;
+}
+
+interface SentKey { key: string; at: number; job?: string }
+
+/**
+ * The idempotency key for ``source`` to ``server``: the one a repeat of the same send in the
+ * last 10 minutes used, else a fresh one. Kept for the browser session only, by a digest of
+ * the server and the source (never the link itself).
+ */
+async function keyFor(server: string, source: Source): Promise<{digest: string; key: string}> {
+  const data = new TextEncoder().encode(server + "\n" + JSON.stringify(source));
+  const digest = [...new Uint8Array(await crypto.subtle.digest("SHA-256", data))]
+    .map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  const kept = ((await chrome.storage.session.get(KEYS))[KEYS] ?? {}) as Record<string, SentKey>;
+  const now = Date.now();
+  for (const [name, entry] of Object.entries(kept)) if (now - entry.at > KEY_WINDOW_MS) delete kept[name];
+  const entry = kept[digest] ?? {key: crypto.randomUUID(), at: now};
+  kept[digest] = entry;
+  await chrome.storage.session.set({[KEYS]: kept});
+  return {digest, key: entry.key};
+}
+
+async function keyAnswered(digest: string, job: string): Promise<void> {
+  const kept = ((await chrome.storage.session.get(KEYS))[KEYS] ?? {}) as Record<string, SentKey>;
+  if (kept[digest]) await chrome.storage.session.set({[KEYS]: {...kept, [digest]: {...kept[digest], job}}});
+}
+
+/** A download removed from the extension: sending it again is a new request, not the removed one. */
+export async function forgetSentKey(job: string): Promise<void> {
+  const kept = ((await chrome.storage.session.get(KEYS))[KEYS] ?? {}) as Record<string, SentKey>;
+  const left = Object.fromEntries(Object.entries(kept).filter(([, entry]) => entry.job !== job));
+  await chrome.storage.session.set({[KEYS]: left});
 }
 
 /** B6 (WS-E3): what the download is called in the list. */
@@ -102,19 +175,32 @@ function displayName(source: Source): string {
   return source.filename;
 }
 
-async function send(source: Source): Promise<void> {
+async function send(source: Source, cookies: Cookie[] = []): Promise<void> {
   const connected = await connection();
-  const browserToken = await token();
+  const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
-  const key = crypto.randomUUID();
+  const {digest, key} = await keyFor(connected.server, source);
   const name = displayName(source);
-  let answer = await submitJob(connected.server, browserToken, key, source, name);
+  // A request that timed out or lost its connection may still have arrived: it is retried
+  // once with the same key, so DownloadPulse answers the same job (review, 2026-11-19).
+  const attempt = async (): Promise<Awaited<ReturnType<typeof submitJob>>> => {
+    try {
+      return await submitJob(connected.server, browserToken, key, source, name, cookies);
+    } catch (error) {
+      if (error instanceof ServerError && (error.failure === "unreachable" || error.failure === "certificate")) {
+        return {ok: false, code: "unreachable", retryable: true};
+      }
+      throw error;
+    }
+  };
+  let answer = await attempt();
   if (!answer.ok && answer.retryable) {
     // The same gesture, the same key: never a second download (B7).
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    answer = await submitJob(connected.server, browserToken, key, source, name);
+    answer = await attempt();
   }
-  if (!answer.ok && answer.code === "unauthorized") await forgetConnection(true);
+  if (answer.ok && answer.id) await keyAnswered(digest, answer.id);
+  if (!answer.ok && answer.code === "unauthorized") await forgetConnection(true, connected.server);
   if (!answer.ok) throw new Refused(REFUSALS[answer.code] ?? "sendFailed");
   wake();
 }
@@ -140,10 +226,10 @@ async function feedback(origin: Origin, key: string, ok: boolean): Promise<void>
   setTimeout(() => void chrome.action.setBadgeText({text: ""}), 4000);
 }
 
-async function settle(origin: Origin, work: () => Promise<void>): Promise<void> {
+async function settle(origin: Origin, work: () => Promise<string | void>): Promise<void> {
   try {
-    await work();
-    await feedback(origin, "sendDone", true);
+    const said = await work();
+    await feedback(origin, said || "sendDone", true);
   } catch (error) {
     await feedback(origin, error instanceof Refused ? error.key : "sendFailed", false);
   }
@@ -162,22 +248,69 @@ async function mayUseConnection(): Promise<void> {
 
 export function sendUrl(href: string, origin: Origin): Promise<void> {
   return settle(origin, async () => {
+    // Only a web page or file (http, https) or a magnet is ever sent (review, 2026-11-19).
+    if (!/^magnet:\?/i.test(href) && !/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
     await mayUseConnection();
     await send(await sourceFor(href));
   });
 }
 
+/**
+ * A video (the player's button; Firefox's URL-bar icon): its address -- the player's own, for an
+ * embedded one -- with the person's sign-in on that site, unless switched off, and only to a
+ * DownloadPulse that says it takes it (operator, 2026-11-19).
+ */
+export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | undefined): Promise<void> {
+  return settle(origin, async () => {
+    if (!/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
+    await mayUseConnection();
+    let cookies: Cookie[] = [];
+    if ((await settings()).videoCookies) {
+      const connected = await connection();
+      const browserToken = connected ? await token(connected.server) : null;
+      try {
+        if (connected && browserToken && (await readSession(connected.server, browserToken)).videoCookies) {
+          cookies = await cookiesFor(href, tab);
+        }
+      } catch {
+        cookies = [];   // its capabilities unknown: the video goes without
+      }
+    }
+    await send({kind: "links", links: [href]}, cookies);
+  });
+}
+
 /** A selection: its http(s) URLs as one batch, each magnet on its own (B2). */
 export function sendSelection(text: string, origin: Origin): Promise<void> {
-  return settle(origin, async () => {
+  return settle(origin, () => sendText(text, "sendNothingFound"));
+}
+
+/**
+ * Quick Add in the popup (operator, 2026-11-19): the typed or pasted text sent as a selection is,
+ * its result answered to the popup (which shows it on its title row) instead of a toast.
+ */
+export async function quickAdd(text: string): Promise<{ok: boolean; text: string}> {
+  try {
+    const said = await sendText(text, "quickAddNothing");
+    return {ok: true, text: message(said || "quickAddDone")};
+  } catch (error) {
+    return {ok: false, text: message(error instanceof Refused ? error.key : "sendFailed")};
+  }
+}
+
+async function sendText(text: string, nothing: string): Promise<string | void> {
+  {
     await mayUseConnection();
     const urls = extractUrls(text);
-    if (!urls.length) throw new Refused("sendNothingFound");
+    if (!urls.length) throw new Refused(nothing);
     // Plain links go as one batch; a magnet, and a file DownloadPulse takes
     // as contents (captured), each on its own.
     const single = urls.filter((url) => /^magnet:\?/i.test(url) || captureKind(url));
-    const links = urls.filter((url) => !single.includes(url)).slice(0, 100);
+    const plain = urls.filter((url) => !single.includes(url));
+    const links = plain.slice(0, BATCH_LIMIT);
     if (links.length) await send({kind: "links", links});
     for (const url of single) await send(await sourceFor(url));
-  });
+    // More plain links than one batch takes: the person is told, never a silent drop.
+    return plain.length > BATCH_LIMIT ? "sendSelectionCapped" : undefined;
+  }
 }

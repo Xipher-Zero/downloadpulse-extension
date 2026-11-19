@@ -9,16 +9,20 @@ export const LOCAL_ORIGINS = ["http://127.0.0.1:8095", "http://localhost:8095"] 
 /** DownloadPulse on this computer: a loopback origin (the desktop application, or a local install). */
 export function isLocal(origin: string): boolean {
   try {
-    return ["127.0.0.1", "localhost", "[::1]"].includes(new URL(origin).hostname);
+    const host = new URL(origin).hostname;
+    // All of 127.0.0.0/8 is this computer, not only 127.0.0.1 (review, 2026-11-19).
+    return host === "localhost" || host === "[::1]" || /^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(host);
   } catch {
     return false;
   }
 }
 const TIMEOUT_MS = 8000;
+/** A submission carrying a captured file (up to ~21 MB as base64) gets longer than a plain request. */
+export const UPLOAD_TIMEOUT_MS = 120_000;
 
 export type Failure =
   | "unreachable" | "certificate" | "not_downloadpulse" | "too_old" | "denied" | "expired"
-  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused";
+  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused" | "blocked";
 
 export class ServerError extends Error {
   constructor(public readonly failure: Failure, message = failure) {
@@ -43,10 +47,36 @@ export function isPrivateHost(hostname: string): boolean {
   const v4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
   if (v4) {
     const [a, b] = [Number(v4[1]), Number(v4[2])];
-    return a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254);
+    // 100.64.0.0/10: Tailscale's addresses, counted as the person's network (operator, 2026-11-19).
+    return a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254)
+      || (a === 100 && b >= 64 && b <= 127);
   }
   if (host.includes(":")) return /^f[cd][0-9a-f]{2}:/.test(host) || /^fe[89ab][0-9a-f]:/.test(host);
-  return !host.includes(".") || /\.(local|lan|home\.arpa|internal|localdomain)$/.test(host);
+  return !host.includes(".") || /\.(local|lan|home\.arpa|internal|localdomain|ts\.net)$/.test(host);
+}
+
+/** An address (as DNS answers it) on this computer or the private network. */
+function privateAddress(address: string): boolean {
+  const host = address.toLowerCase();
+  if (host === "::1" || /^127\./.test(host)) return true;
+  return (/^\d{1,3}(\.\d{1,3}){3}$/.test(host) || host.includes(":")) && isPrivateHost(host);
+}
+
+/**
+ * Split DNS (operator, 2026-11-19): a name that looks like an internet name but
+ * resolves only to private addresses (``nas.home.example.com``) counts as the
+ * private network. Firefox only: Chromium gives an extension no DNS lookup, so
+ * there such a name stays HTTPS-only. Every address must be private.
+ */
+export async function resolvesPrivate(hostname: string): Promise<boolean> {
+  const dns = (globalThis as unknown as {browser?: {dns?: {resolve(host: string): Promise<{addresses: string[]}>}}}).browser?.dns;
+  if (!dns) return false;
+  try {
+    const {addresses} = await dns.resolve(hostname.replace(/^\[|\]$/g, ""));
+    return addresses.length > 0 && addresses.every(privateAddress);
+  } catch {
+    return false;
+  }
 }
 
 /**
@@ -72,18 +102,30 @@ export function serverAddress(input: string): ServerAddress | null {
   return {origin: url.origin, transport, schemeGiven, privateHost};
 }
 
-async function request(origin: string, path: string, init: RequestInit = {}): Promise<Response> {
+/** serverAddress, with a split-DNS name resolving only to private addresses counted as the private network. */
+export async function effectiveAddress(input: string): Promise<ServerAddress | null> {
+  const address = serverAddress(input);
+  if (address?.transport !== "public-http" || !(await resolvesPrivate(new URL(address.origin).hostname))) return address;
+  return {...address, transport: "lan-http", privateHost: true};
+}
+
+async function request(origin: string, path: string, init: RequestInit = {}, timeout = TIMEOUT_MS): Promise<Response> {
   // Never plain HTTP across the internet, whatever asked (the transport rule's last guard).
-  if (serverAddress(origin)?.transport === "public-http") throw new ServerError("insecure_refused");
+  if ((await effectiveAddress(origin))?.transport === "public-http") throw new ServerError("insecure_refused");
+  let response: Response;
   try {
-    return await fetch(origin + path, {
-      ...init, credentials: "omit", cache: "no-store", redirect: "error", signal: AbortSignal.timeout(TIMEOUT_MS),
+    // No redirect is followed: DownloadPulse's API doesn't redirect, so one means something in
+    // front of it (a sign-in page, a proxy): named for what it is (review, 2026-11-19).
+    response = await fetch(origin + path, {
+      ...init, credentials: "omit", cache: "no-store", redirect: "manual", signal: AbortSignal.timeout(timeout),
     });
   } catch {
     // A TLS failure and an unreachable host look the same to fetch; an https
     // origin is named for the certificate case too (WS-E1 B6, PLAN D7).
     throw new ServerError(origin.startsWith("https:") ? "certificate" : "unreachable");
   }
+  if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) throw new ServerError("blocked");
+  return response;
 }
 
 async function json(response: Response): Promise<Record<string, unknown>> {
@@ -99,13 +141,16 @@ async function json(response: Response): Promise<Record<string, unknown>> {
  * What answers at ``origin``: DownloadPulse (its health endpoint says so),
  * something else, or nothing reachable (``unreachable`` / ``certificate``).
  */
-export async function probe(origin: string): Promise<"downloadpulse" | "not_downloadpulse" | "unreachable" | "certificate"> {
+export async function probe(origin: string): Promise<"downloadpulse" | "not_downloadpulse" | "unreachable" | "certificate" | "blocked"> {
   let response: Response;
   try {
     response = await request(origin, "/api/health");
   } catch (error) {
-    return error instanceof ServerError && error.failure === "certificate" ? "certificate" : "unreachable";
+    if (error instanceof ServerError && (error.failure === "certificate" || error.failure === "blocked")) return error.failure;
+    return "unreachable";
   }
+  // DownloadPulse's health answers anyone: a sign-in demanded for it is something in front of it.
+  if ([401, 403, 407].includes(response.status)) return "blocked";
   try {
     const body = response.ok ? await json(response) : {};
     return body["status"] === "ok" && typeof body["version"] === "string" ? "downloadpulse" : "not_downloadpulse";
@@ -165,6 +210,8 @@ export interface Session {
   account: {display_name: string};
   /** The person's appearance, by palette ID (a current DownloadPulse; absent from an older one). */
   appearance?: unknown;
+  /** Whether this DownloadPulse takes a video's cookies (its session's capabilities.cookies, for links). */
+  videoCookies: boolean;
 }
 
 /** The server's own account of this token: how a pairing is verified (L19). */
@@ -177,8 +224,20 @@ export async function readSession(origin: string, token: string): Promise<Sessio
   const token_ = body["token"] as Record<string, unknown> | undefined;
   const account = body["account"] as Record<string, unknown> | undefined;
   if (body["protocol"] !== PROTOCOL || !token_ || !account) throw new ServerError("too_old");
+  const capabilities = (body["capabilities"] ?? {}) as Record<string, unknown>;
   return {token: {id: String(token_["id"] ?? ""), label: String(token_["label"] ?? "")},
-    account: {display_name: String(account["display_name"] ?? "")}, appearance: body["appearance"]};
+    account: {display_name: String(account["display_name"] ?? "")}, appearance: body["appearance"],
+    // Only a DownloadPulse that says it takes a video's cookies (with links) is ever sent them.
+    videoCookies: Array.isArray((capabilities["cookies"] as {sources?: unknown} | undefined)?.sources)
+      && ((capabilities["cookies"] as {sources: unknown[]}).sources).includes("links")};
+}
+
+/** One cookie as DownloadPulse takes it for a video (DebridPulse BROWSER_CLIENT.md, video sign-in). */
+export interface Cookie {
+  name: string; value: string; domain: string; path: string;
+  secure: boolean; http_only: boolean; host_only: boolean;
+  /** Unix seconds; null for a session cookie. */
+  expires: number | null;
 }
 
 export type Source =
@@ -189,17 +248,27 @@ export type Source =
   | {kind: "metalink"; filename: string; metalink_base64: string};
 
 /** The server's answer to a submission: accepted, or refused with its code. */
-export type Submitted = {ok: true} | {ok: false; code: string; retryable: boolean};
+export type Submitted = {ok: true; id: string} | {ok: false; code: string; retryable: boolean};
 
 /** One submission under one idempotency key (DebridPulse BROWSER_CLIENT.md §2a). */
 export async function submitJob(origin: string, browserToken: string, key: string, source: Source,
-                                displayName = ""): Promise<Submitted> {
+                                displayName = "", cookies: Cookie[] = []): Promise<Submitted> {
   const response = await request(origin, "/api/browser/v1/jobs", {
     method: "POST",
     headers: {"Content-Type": "application/json", Authorization: `Bearer ${browserToken}`},
-    body: JSON.stringify({idempotency_key: key, source, ...(displayName ? {display_name: displayName.slice(0, 256)} : {})}),
-  });
-  if (response.ok) return {ok: true};
+    body: JSON.stringify({idempotency_key: key, source, ...(displayName ? {display_name: displayName.slice(0, 256)} : {}),
+      ...(cookies.length ? {cookies} : {})}),
+  }, source.kind === "links" || source.kind === "magnet" ? TIMEOUT_MS : UPLOAD_TIMEOUT_MS);
+  if (response.ok) {
+    let id = "";
+    try {
+      const body = (await response.json()) as {id?: unknown};
+      id = typeof body.id === "string" ? body.id : "";
+    } catch {
+      id = "";
+    }
+    return {ok: true, id};
+  }
   if (response.status === 401) return {ok: false, code: "unauthorized", retryable: false};
   let detail: Record<string, unknown> = {};
   try {

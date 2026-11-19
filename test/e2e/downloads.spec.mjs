@@ -220,6 +220,42 @@ test("the status is centred on its row; the footer holds Open DownloadPulse at i
   expect(row).toBeTruthy();
 });
 
+test("Quick Add: above Sent Downloads, its Add inside the field; the result on the title row, nothing moving", async () => {
+  const quick = popup.locator(".dp-quick");
+  const field = popup.locator("#quick"), add = quick.getByRole("button", {name: "Add", exact: true});
+  const [title, list, input, button] = await Promise.all([quick.getByRole("heading", {name: "Quick Add"}).boundingBox(),
+    popup.getByRole("heading", {name: "Sent Downloads:"}).boundingBox(), field.boundingBox(), add.boundingBox()]);
+  expect(title.y).toBeLessThan(input.y);
+  expect(input.y + input.height).toBeLessThan(list.y);
+  expect(title.x).toBeLessThanOrEqual(input.x + 1);                                        // left-aligned title
+  expect(button.x + button.width).toBeGreaterThan(input.x + input.width - 8);              // Add at the field's end
+  expect(button.x).toBeGreaterThan(input.x + input.width / 2);
+  expect(Math.abs((button.y + button.height / 2) - (input.y + input.height / 2))).toBeLessThanOrEqual(1);   // centred
+  await expect(add).toHaveClass(/dp-btn--primary/);                                          // DownloadPulse's primary Add
+  const before = await quick.boundingBox();
+  // Nothing to send: said on the title row, the text kept.
+  await field.fill("just words");
+  await add.click();
+  await expect(popup.getByTestId("quick-result")).toHaveText("No link or magnet found");
+  await expect(field).toHaveValue("just words");
+  expect((await quick.boundingBox()).height).toBe(before.height);
+  // A link: sent (DownloadPulse has it), said in green, the field emptied.
+  const jobs = dp.state.jobs.length;
+  await field.fill("https://example.com/files/quick.zip");
+  await add.click();
+  await expect(popup.getByTestId("quick-result")).toHaveText("Added to DownloadPulse");
+  await expect(field).toHaveValue("");
+  expect(dp.state.jobs.length).toBe(jobs + 1);
+  expect(dp.state.jobs.at(-1).body.source).toEqual({kind: "links", links: ["https://example.com/files/quick.zip"]});
+  expect(await colour(popup.getByTestId("quick-result"))).toBe(await popup.evaluate(() =>
+    getComputedStyle(document.documentElement).getPropertyValue("--dp-state-success").trim() &&
+    (() => { const probe = document.createElement("span"); probe.style.color = "var(--dp-state-success)"; document.body.append(probe);
+      const value = getComputedStyle(probe).color; probe.remove(); return value; })()));
+  expect((await quick.boundingBox()).height).toBe(before.height);
+  await popup.screenshot({path: "test-results/quick-add.png"});
+  await expect(popup.getByTestId("quick-result")).toHaveText("", {timeout: 6000});
+});
+
 test("Clear removes the finished downloads from this list only; active ones stay, and a later change lists one again", async () => {
   const clear = popup.getByRole("button", {name: "Clear finished downloads"});
   await expect(clear).toBeDisabled();                              // nothing finished yet

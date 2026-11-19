@@ -422,7 +422,7 @@
     "message": "Tautan yang Anda kirim. Untuk tautan .torrent, .nzb, atau pengindeks, peramban ini mengambil berkas dengan sesi masuk Anda di situs itu lalu mengirim berkasnya; cookie situs itu tidak pernah dikirim."
   },
   "discloseVideo": {
-    "message": "Untuk video, alamat halamannya."
+    "message": "Untuk video, alamat pemutarnya dan, kecuali Anda menonaktifkannya di Pengaturan, sesi masuk Anda di situs itu (cookie situs itu untuk alamat tersebut), agar DownloadPulse dapat mengunduh apa yang dapat Anda tonton. DownloadPulse hanya menyimpannya di memori, sampai unduhan itu selesai."
   },
   "disclosePolling": {
     "message": "Selama unduhan berjalan, peramban ini memeriksa progresnya pada DownloadPulse Anda."
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "Tautan itu memakai HTTP tanpa enkripsi di luar jaringan Anda, jadi tidak diambil dengan sesi masuk Anda. Sebagai gantinya, tambahkan dengan “Tambah cepat” di DownloadPulse."
+  },
+  "failureBlocked": {
+    "message": "Sesuatu di depan DownloadPulse, seperti halaman masuk atau proksi, menjawab sebagai gantinya. Biarkan ekstensi menjangkau DownloadPulse secara langsung, lalu hubungkan lagi."
+  },
+  "sendSelectionCapped": {
+    "message": "100 tautan pertama terkirim. Tambahkan sisanya dengan “Tambah cepat” di DownloadPulse."
+  },
+  "quickAddTitle": {
+    "message": "Tambah cepat"
+  },
+  "quickAddPlaceholder": {
+    "message": "Tempel tautan atau magnet"
+  },
+  "quickAddButton": {
+    "message": "Tambah"
+  },
+  "quickAddDone": {
+    "message": "Ditambahkan ke DownloadPulse"
+  },
+  "quickAddNothing": {
+    "message": "Tautan atau magnet tidak ditemukan"
+  },
+  "optionsVideoCookies": {
+    "message": "Kirim sesi masuk saya di situs bersama video (cookie situs itu), agar video khusus anggota dan video dengan batasan usia dapat diunduh"
   }
 }

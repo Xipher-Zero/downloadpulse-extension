@@ -427,6 +427,55 @@ test("an indexer's download link gets no hover button; sent by selection (as by 
   expect(JSON.stringify(dp.state.jobs)).not.toContain("apikey");
 });
 
+test("the same link sent again is the same request, and an answer lost on the way is retried as it (review, 2026-11-19)", async () => {
+  await connect();
+  const page = await sitePage();
+  const toastText = () => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+    .filter((h) => h.style.bottom === "16px").length);
+  // The answer to the first send is lost (made, but never answered): retried with the same key.
+  dp.state.dropNext = true;
+  await hoverAndClick(page, "#zip");
+  await expect.poll(() => dp.state.submits, {timeout: 20_000}).toBe(2);
+  await expect.poll(toastText).toBe(1);
+  expect(dp.state.jobs.length).toBe(1);
+  // Sent again on purpose a moment later: the same key, so DownloadPulse answers the same job.
+  await page.mouse.move(1, 1);
+  await page.waitForTimeout(4200);
+  await hoverAndClick(page, "#zip");
+  await expect.poll(() => dp.state.submits).toBe(3);
+  expect(dp.state.jobs.length).toBe(1);
+});
+
+test("a captured file is read with its cap as it arrives: an oversize one without a length is stopped, not buffered", async () => {
+  await connect();
+  const page = await sitePage();
+  await hoverAndClick(page, "#endless");
+  // Refused at the cap within seconds; a reader waiting for the whole body would only fail at its 30 s timeout.
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+    .filter((h) => h.style.bottom === "16px").length), {timeout: 8_000}).toBe(1);
+  expect(dp.state.jobs).toEqual([]);
+});
+
+test("more than 100 links selected: the first 100 are sent and the person is told (review, 2026-11-19)", async () => {
+  await connect();
+  const page = await sitePage();
+  await page.evaluate(() => document.querySelector("#many").scrollIntoView({block: "end"}));   // the selection's end in view
+  await page.evaluate(() => {
+    const range = document.createRange();
+    range.selectNodeContents(document.querySelector("#many"));
+    getSelection().removeAllRanges();
+    getSelection().addRange(range);
+  });
+  await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
+  const [layer] = await buttonLayers(page);
+  await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
+  await expect.poll(() => dp.state.jobs.length).toBe(1);
+  expect(dp.state.jobs[0].body.source.links.length).toBe(100);
+  // The toast is in a closed shadow root: that one is shown is checked here; its words ("the first 100") by the unit of meaning, the string.
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+    .filter((h) => h.style.bottom === "16px").length)).toBe(1);
+});
+
 test("captures follow no redirect and never use plain HTTP across the internet (store review)", async () => {
   await connect();
   const page = await sitePage();
@@ -506,6 +555,67 @@ test("the video button sends the page's own address", async () => {
   expect(dp.state.jobs[0].body.display_name).toBeUndefined();
 });
 
+test("a video goes with the person's sign-in on its site: that address's cookies only, never another site's", async () => {
+  await connect();
+  await context.addCookies([
+    {name: "site_session", value: "signed-in", url: site.base},
+    {name: "elsewhere", value: "not-this-site", domain: "other.example", path: "/"},
+  ]);
+  const page = await sitePage();
+  const sendVideo = async () => {
+    await page.mouse.move(1, 1);
+    const video = await page.locator("#video").boundingBox();
+    await page.mouse.move(video.x + video.width / 2, video.y + video.height / 2, {steps: 3});
+    await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+    const [layer] = await openLayers(page);
+    await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
+  };
+  await sendVideo();
+  await expect.poll(() => dp.state.jobs.length).toBe(1);
+  const sent = dp.state.jobs[0].body;
+  expect(sent.source).toEqual({kind: "links", links: [`${site.base}/page`]});
+  expect(sent.cookies.map((c) => c.name)).toEqual(["site_session"]);
+  expect(sent.cookies[0]).toMatchObject({value: "signed-in", domain: new URL(site.base).hostname, path: "/", expires: null});
+  // Never in the request's identity: the cookies go beside the source, not in it.
+  expect(JSON.stringify(sent.source)).not.toContain("signed-in");
+});
+
+test("no cookies when switched off, nor to a DownloadPulse that doesn't say it takes them, nor with a link", async () => {
+  const popup = await connect();
+  await context.addCookies([{name: "site_session", value: "signed-in", url: site.base}]);
+  const page = await sitePage();
+  const sendVideo = async () => {
+    await page.mouse.move(1, 1);
+    await page.waitForTimeout(300);
+    const video = await page.locator("#video").boundingBox();
+    await page.mouse.move(video.x + video.width / 2, video.y + video.height / 2, {steps: 3});
+    await expect.poll(async () => (await openLayers(page)).length).toBe(1);
+    const [layer] = await openLayers(page);
+    await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
+  };
+  // An older DownloadPulse (no capability): the video goes, without them.
+  dp.state.videoCookies = false;
+  await sendVideo();
+  await expect.poll(() => dp.state.submits).toBe(1);
+  expect(dp.state.jobs[0].body.cookies).toBeUndefined();
+  // Switched off in the settings.
+  dp.state.videoCookies = true;
+  await popup.evaluate(async () => {
+    const {settings} = await chrome.storage.local.get("settings");
+    await chrome.storage.local.set({settings: {...(settings ?? {}), videoCookies: false}});
+  });
+  dp.state.keys.clear();                        // a fresh request, not the same one answered again
+  await page.waitForTimeout(4200);
+  await sendVideo();
+  await expect.poll(() => dp.state.submits).toBe(2);
+  expect(dp.state.jobs.at(-1).body.cookies).toBeUndefined();
+  // A link is never sent with cookies.
+  await page.waitForTimeout(4200);
+  await hoverAndClick(page, "#zip");
+  await expect.poll(() => dp.state.submits).toBe(3);
+  expect(dp.state.jobs.at(-1).body.cookies).toBeUndefined();
+});
+
 test("the video button is not drawn fullscreen, nor where there is no room beside the frame", async () => {
   await connect();
   const page = await sitePage();
@@ -575,7 +685,8 @@ test("the token is in the extension's own storage, never where a content script 
   const secret = await popup.evaluate(() => new Promise((done) => {
     const open = indexedDB.open("downloadpulse");
     open.onsuccess = () => {
-      const read = open.result.transaction("secrets").objectStore("secrets").get("token");
+      // Each server's token in its own slot (multi-server preparation).
+      const read = open.result.transaction("secrets").objectStore("secrets").get("token@http://127.0.0.1:8095");
       read.onsuccess = () => done(read.result);
     };
   }));

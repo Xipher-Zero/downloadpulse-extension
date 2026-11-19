@@ -422,7 +422,7 @@
     "message": "Gönderdiğiniz bağlantılar. Bir .torrent, .nzb veya dizinleyici bağlantısı için bu tarayıcı, dosyayı o sitedeki oturumunuzla alır ve dosyayı gönderir; sitenin çerezleri asla gönderilmez."
   },
   "discloseVideo": {
-    "message": "Bir video için, sayfasının adresi."
+    "message": "Bir video için, oynatıcısının adresi ve Ayarlar'da kapatmadığınız sürece o sitedeki oturumunuz (sitenin o adres için çerezleri); böylece DownloadPulse izleyebildiğiniz içeriği indirebilir. DownloadPulse bunları yalnızca bellekte, o indirme bitene kadar tutar."
   },
   "disclosePolling": {
     "message": "İndirmeler sürerken bu tarayıcı, ilerlemelerini DownloadPulse'unuz üzerinden kontrol eder."
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "Bu bağlantı ağınızın dışında şifrelenmemiş HTTP kullanıyor, bu yüzden oturumunuzla alınmaz. Bunun yerine DownloadPulse'ta Hızlı ekle ile ekleyin."
+  },
+  "failureBlocked": {
+    "message": "DownloadPulse'un önündeki bir şey, örneğin bir oturum açma sayfası veya proxy, onun yerine yanıt verdi. Uzantının DownloadPulse'a doğrudan ulaşmasına izin verin ve ardından yeniden bağlanın."
+  },
+  "sendSelectionCapped": {
+    "message": "İlk 100 bağlantı gönderildi. Kalanları DownloadPulse'ta Hızlı ekle ile ekleyin."
+  },
+  "quickAddTitle": {
+    "message": "Hızlı ekle"
+  },
+  "quickAddPlaceholder": {
+    "message": "Bağlantı veya magnet yapıştırın"
+  },
+  "quickAddButton": {
+    "message": "Ekle"
+  },
+  "quickAddDone": {
+    "message": "DownloadPulse'a eklendi"
+  },
+  "quickAddNothing": {
+    "message": "Bağlantı veya magnet bulunamadı"
+  },
+  "optionsVideoCookies": {
+    "message": "Videolarla birlikte sitedeki oturumumu (sitenin çerezlerini) gönder; böylece yalnızca üyelere açık ve yaş sınırlamalı videolar indirilebilir"
   }
 }

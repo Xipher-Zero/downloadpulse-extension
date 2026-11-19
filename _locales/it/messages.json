@@ -422,7 +422,7 @@
     "message": "I link inviati. Per un link .torrent, .nzb o di un indexer, questo browser recupera il file usando l'accesso già effettuato su quel sito e invia il file; i cookie del sito non vengono mai inviati."
   },
   "discloseVideo": {
-    "message": "Per un video, l'indirizzo della sua pagina."
+    "message": "Per un video, l'indirizzo del suo lettore e, se non lo si disattiva in Opzioni, l'accesso effettuato su quel sito (i suoi cookie per quell'indirizzo), così DownloadPulse può scaricare ciò che si può guardare. DownloadPulse li conserva solo in memoria, fino al termine di quel download."
   },
   "disclosePolling": {
     "message": "Mentre i download sono in corso, questo browser ne verifica l'avanzamento presso il proprio DownloadPulse."
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "Quel link usa HTTP non crittografato fuori dalla propria rete, quindi non viene recuperato usando l'accesso effettuato. Aggiungerlo invece con «Aggiunta rapida» in DownloadPulse."
+  },
+  "failureBlocked": {
+    "message": "Qualcosa davanti a DownloadPulse, come una pagina di accesso o un proxy, ha risposto al suo posto. Consentire all'estensione di raggiungere direttamente DownloadPulse, poi connettersi di nuovo."
+  },
+  "sendSelectionCapped": {
+    "message": "Inviati i primi 100 link. Aggiungere i restanti con «Aggiunta rapida» in DownloadPulse."
+  },
+  "quickAddTitle": {
+    "message": "Aggiunta rapida"
+  },
+  "quickAddPlaceholder": {
+    "message": "Incollare un link o un magnet"
+  },
+  "quickAddButton": {
+    "message": "Aggiungi"
+  },
+  "quickAddDone": {
+    "message": "Aggiunto a DownloadPulse"
+  },
+  "quickAddNothing": {
+    "message": "Nessun link o magnet trovato"
+  },
+  "optionsVideoCookies": {
+    "message": "Invia con i video il mio accesso al sito (i suoi cookie), per poter scaricare video riservati agli iscritti e con limiti di età"
   }
 }

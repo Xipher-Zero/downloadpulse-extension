@@ -149,6 +149,17 @@
         <div><dt data-i18n="popupAccount"></dt><dd data-testid="account"></dd></div>
         <div><dt data-i18n="popupBrowser"></dt><dd data-testid="label"></dd></div>
       </dl>
+      <section class="dp-quick" aria-labelledby="quick-title">
+        <div class="dp-quick__head">
+          <h2 class="dp-popup__heading" id="quick-title" data-i18n="quickAddTitle"></h2>
+          <span class="dp-quick__result" data-testid="quick-result" role="status" aria-live="polite"></span>
+        </div>
+        <form class="dp-site-add dp-quick__form" data-action="quick-add">
+          <label class="dp-visually-hidden" for="quick" data-i18n="quickAddPlaceholder"></label>
+          <input id="quick" type="text" spellcheck="false" autocomplete="off" data-i18n-placeholder="quickAddPlaceholder">
+          <button type="submit" class="dp-btn dp-btn--primary dp-btn--sm" data-i18n="quickAddButton"></button>
+        </form>
+      </section>
       <h2 class="dp-popup__heading" data-i18n="listTitle"></h2>
       <p class="dp-popup__hint" data-i18n="listEmpty" data-testid="list-empty"></p>
       <ul class="dp-jobs" data-testid="jobs"></ul>
@@ -187,6 +198,7 @@
         <div class="dp-settings__dependent" data-testid="in-page-options">
           <label class="dp-check"><input type="checkbox" data-setting="hover"> <span data-i18n="optionsHover"></span></label>
           <label class="dp-check"><input type="checkbox" data-setting="video"> <span data-i18n="optionsVideo"></span></label>
+          <label class="dp-check"><input type="checkbox" data-setting="videoCookies"> <span data-i18n="optionsVideoCookies"></span></label>
           <label class="dp-check" data-testid="site-switch" hidden>
             <input type="checkbox" data-testid="site-on"> <span data-testid="site-text"></span>
           </label>

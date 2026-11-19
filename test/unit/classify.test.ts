@@ -67,3 +67,9 @@ test("an explicit file type is that file, whatever its query; an indexer link ne
   assert.equal(captureKind("https://i.example/api?t=search&id=5&apikey=K"), null);
   assert.equal(captureKind("https://i.example/cdn?t=get&id=5&ApiKey=K"), "nzb");
 });
+
+test("a stray % in a path is read as written, never an error (review, 2026-11-19)", () => {
+  assert.equal(captureKind("https://example.com/50%off/file.torrent"), "torrent");
+  assert.equal(isDownloadCandidate("https://example.com/50%off/file.zip"), true);
+  assert.equal(isDownloadCandidate("https://example.com/50%off/page"), false);
+});

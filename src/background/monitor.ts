@@ -6,16 +6,13 @@
 // a notification when a job completes, fails or needs attention. It runs
 // only while a job is unsettled or the popup is open.
 
-import {connection, forgetConnection, token} from "../shared/connection";
+import {connections, forgetConnection, token} from "../shared/connection";
+import {stateKey} from "../shared/server-state";
 import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
 import {listJobs, ServerError, type Job} from "../shared/server";
 import {restIcon, themedIcon} from "./icon";
 
-const JOBS = "jobs";
-const REACH = "reach";   // whether the last look reached DownloadPulse: {ok, at}
-const CURSOR = "jobsCursor";
-const NOTIFIED = "jobsNotified";
 const ALARM = "dp-monitor";
 const POLL_MS = 2000;
 const FRAME_MS = 125;
@@ -28,8 +25,16 @@ let popupSeenAt = 0;
 export const unsettled = (job: Job): boolean => ["accepted", "queued", "processing"].includes(job.phase);
 export const active = (job: Job): boolean => unsettled(job) && job.reason !== "paused";
 
-export async function cachedJobs(): Promise<Record<string, Job>> {
-  return ((await chrome.storage.session.get(JOBS))[JOBS] as Record<string, Job> | undefined) ?? {};
+/** ``server``'s downloads as last seen (each server's under its own key: server-state.ts). */
+export async function cachedJobs(server: string): Promise<Record<string, Job>> {
+  const key = stateKey(server, "jobs");
+  return ((await chrome.storage.session.get(key))[key] as Record<string, Job> | undefined) ?? {};
+}
+
+/** Every saved server's downloads, together (what the icon and the wake-up alarm follow). */
+async function everyJob(): Promise<Job[]> {
+  const servers = Object.keys(await connections());
+  return (await Promise.all(servers.map(cachedJobs))).flatMap((jobs) => Object.values(jobs));
 }
 
 /** The popup is open: keep the list fresh while it is. */
@@ -100,31 +105,39 @@ function notice(job: Job, before: Job | undefined): string | null {
   return null;
 }
 
-async function notify(job: Job, kind: string): Promise<void> {
+async function notify(server: string, job: Job, kind: string): Promise<void> {
   // Only the notifications the person keeps on (WS-E4).
   if (!(await settings()).notify[kind as "completed" | "failed" | "attention"]) return;
-  const notified = ((await chrome.storage.session.get(NOTIFIED))[NOTIFIED] as string[] | undefined) ?? [];
+  const seen = stateKey(server, "jobsNotified");
+  const notified = ((await chrome.storage.session.get(seen))[seen] as string[] | undefined) ?? [];
   const id = `dp:${job.id}:${kind}`;
   if (notified.includes(id)) return;
-  await chrome.storage.session.set({[NOTIFIED]: [...notified, id].slice(-300)});
+  await chrome.storage.session.set({[seen]: [...notified, id].slice(-300)});
   const key = kind === "completed" ? "notifyCompleted" : kind === "failed" ? "notifyFailed" : "notifyAttention";
   await chrome.notifications.create(id, {type: "basic", iconUrl: "icons/icon-128.png", title: message("extName"),
     message: message(key, [jobName(job)])});
 }
 
+/** Every saved connection that may be used is looked at; whether any could be. */
 async function poll(): Promise<boolean> {
-  const connected = await connection();
-  const browserToken = await token();
-  if (!connected || !browserToken) return false;
-  const jobs = await cachedJobs();
+  const servers = Object.keys(await connections());
+  const results = await Promise.all(servers.map(pollServer));
+  return results.some(Boolean);
+}
+
+async function pollServer(server: string): Promise<boolean> {
+  const browserToken = await token(server);
+  if (!browserToken) return false;
+  const jobs = await cachedJobs(server);
+  const CURSOR = stateKey(server, "jobsCursor"), REACH = stateKey(server, "reach"), JOBS = stateKey(server, "jobs");
   let cursor = Number((await chrome.storage.session.get(CURSOR))[CURSOR] ?? 0);
   try {
     for (let page = 0; page < 10; page++) {
-      const listing = await listJobs(connected.server, browserToken, cursor);
+      const listing = await listJobs(server, browserToken, cursor);
       for (const job of listing.jobs) {
         const kind = notice(job, jobs[job.id]);
         // A job first seen already settled (an earlier session's) is listed quietly.
-        if (kind && (jobs[job.id] || unsettled(job) || cursor > 0)) await notify(job, kind);
+        if (kind && (jobs[job.id] || unsettled(job) || cursor > 0)) await notify(server, job, kind);
         jobs[job.id] = job;
       }
       cursor = listing.next_cursor;
@@ -132,8 +145,8 @@ async function poll(): Promise<boolean> {
     }
   } catch (error) {
     if (error instanceof ServerError && error.failure === "unauthorized") {
-      // Disconnected in DownloadPulse (Connected browsers): forget it here, and say so.
-      await forgetConnection(true);
+      // Disconnected in DownloadPulse (Connected browsers): forget that one here, and say so.
+      await forgetConnection(true, server);
       return false;
     }
     await chrome.storage.session.set({[REACH]: {ok: false, at: Date.now()}});
@@ -149,16 +162,21 @@ async function loop(): Promise<void> {
   let frame = 0;
   let polledAt = 0;
   let ringing = false;
+  let alarmed: boolean | null = null;
   try {
     for (;;) {
       if (Date.now() - polledAt >= POLL_MS) {
         polledAt = Date.now();
         if (!(await poll())) break;
       }
-      const jobs = Object.values(await cachedJobs());
+      const jobs = await everyJob();
       const anyUnsettled = jobs.some(unsettled);
-      if (anyUnsettled) await chrome.alarms.create(ALARM, {periodInMinutes: 1});
-      else await chrome.alarms.clear(ALARM);
+      // The wake-up alarm is set or cleared when that changes, not on every pass (review, 2026-11-19).
+      if (anyUnsettled !== alarmed) {
+        alarmed = anyUnsettled;
+        if (anyUnsettled) await chrome.alarms.create(ALARM, {periodInMinutes: 1});
+        else await chrome.alarms.clear(ALARM);
+      }
       if (!anyUnsettled && Date.now() - popupSeenAt > POPUP_GRACE_MS) break;
       if (jobs.some(active)) {
         ringing = true;
@@ -167,7 +185,9 @@ async function loop(): Promise<void> {
         ringing = false;
         await restoreIcon();
       }
-      await new Promise((resolve) => setTimeout(resolve, FRAME_MS));
+      // Frames only while the icon breathes; otherwise (only paused jobs, or the popup open
+      // with nothing active) the loop wakes at the polling pace, not every frame.
+      await new Promise((resolve) => setTimeout(resolve, ringing ? FRAME_MS : Math.max(FRAME_MS, POLL_MS - (Date.now() - polledAt))));
     }
   } finally {
     if (ringing) await restoreIcon();

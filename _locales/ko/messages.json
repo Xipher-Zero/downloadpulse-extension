@@ -422,7 +422,7 @@
     "message": "보내는 링크. .torrent, .nzb 또는 인덱서 링크의 경우 이 브라우저가 해당 사이트의 로그인 상태로 파일을 가져와 그 파일을 보냅니다. 사이트의 쿠키는 절대 전송되지 않습니다."
   },
   "discloseVideo": {
-    "message": "동영상의 경우 해당 페이지의 주소."
+    "message": "동영상의 경우 해당 플레이어의 주소와, 설정에서 끄지 않는 한 해당 사이트의 로그인 상태(그 주소에 대한 사이트의 쿠키). 이를 통해 DownloadPulse가 시청할 수 있는 것을 다운로드할 수 있습니다. DownloadPulse는 해당 다운로드가 끝날 때까지 이를 메모리에만 보관합니다."
   },
   "disclosePolling": {
     "message": "다운로드가 진행되는 동안 이 브라우저가 사용자의 DownloadPulse에서 진행 상황을 확인합니다."
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "해당 링크는 사용자 네트워크 외부에서 암호화되지 않은 HTTP를 사용하므로 로그인 상태로 가져오지 않습니다. 대신 DownloadPulse의 ‘빠른 추가’로 추가하세요."
+  },
+  "failureBlocked": {
+    "message": "로그인 페이지나 프록시처럼 DownloadPulse 앞에 있는 무언가가 대신 응답했습니다. 확장 프로그램이 DownloadPulse에 직접 연결할 수 있게 한 후 다시 연결하세요."
+  },
+  "sendSelectionCapped": {
+    "message": "처음 100개의 링크를 보냈습니다. 나머지는 DownloadPulse의 ‘빠른 추가’로 추가하세요."
+  },
+  "quickAddTitle": {
+    "message": "빠른 추가"
+  },
+  "quickAddPlaceholder": {
+    "message": "링크 또는 마그넷 링크 붙여넣기"
+  },
+  "quickAddButton": {
+    "message": "추가"
+  },
+  "quickAddDone": {
+    "message": "DownloadPulse에 추가했습니다"
+  },
+  "quickAddNothing": {
+    "message": "링크 또는 마그넷 링크를 찾을 수 없습니다"
+  },
+  "optionsVideoCookies": {
+    "message": "회원 전용 및 연령 제한 동영상을 다운로드할 수 있도록 동영상과 함께 사이트의 로그인 상태(사이트의 쿠키) 보내기"
   }
 }

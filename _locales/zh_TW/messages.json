@@ -422,7 +422,7 @@
     "message": "您傳送的連結。對於.torrent、.nzb或索引器連結，此瀏覽器會使用您在該網站的登入狀態取得檔案，並傳送該檔案；絕不會傳送該網站的Cookie。"
   },
   "discloseVideo": {
-    "message": "對於影片：其頁面的位址。"
+    "message": "對於影片：其播放器的位址；除非您在「設定」中關閉此項，還包括您在該網站的登入狀態（該網站針對該位址的Cookie），讓DownloadPulse能夠下載您可以觀看的內容。DownloadPulse僅將其保存在記憶體中，直到該下載結束。"
   },
   "disclosePolling": {
     "message": "下載進行期間，此瀏覽器會向您的DownloadPulse查詢下載進度。"
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "該連結在您的網路之外使用未加密的HTTP，因此不會使用您的登入狀態取得。請改為在DownloadPulse中使用「快速新增」新增它。"
+  },
+  "failureBlocked": {
+    "message": "DownloadPulse前方的某個服務（例如登入頁面或代理伺服器）代替它作出了回應。請讓擴充功能直接連上DownloadPulse，然後重新連線。"
+  },
+  "sendSelectionCapped": {
+    "message": "已傳送前100個連結。請在DownloadPulse中使用「快速新增」新增其餘連結。"
+  },
+  "quickAddTitle": {
+    "message": "快速新增"
+  },
+  "quickAddPlaceholder": {
+    "message": "貼上連結或磁力連結"
+  },
+  "quickAddButton": {
+    "message": "新增"
+  },
+  "quickAddDone": {
+    "message": "已新增到DownloadPulse"
+  },
+  "quickAddNothing": {
+    "message": "找不到連結或磁力連結"
+  },
+  "optionsVideoCookies": {
+    "message": "隨影片傳送我在該網站的登入狀態（其Cookie），以便下載僅限會員及有年齡限制的影片"
   }
 }

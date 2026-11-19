@@ -15,7 +15,7 @@ let readAt = 0;
 export async function refreshAppearance(): Promise<void> {
   if (Date.now() - readAt < REFRESH_MS) return;
   const connected = await connection();
-  const browserToken = await token();
+  const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) return;
   readAt = Date.now();
   try {

@@ -422,7 +422,7 @@
     "message": "Wysyłane linki. W przypadku linku .torrent, .nzb lub linku indeksera ta przeglądarka pobiera plik, korzystając z sesji logowania w tej witrynie, i wysyła ten plik; pliki cookie witryny nigdy nie są wysyłane."
   },
   "discloseVideo": {
-    "message": "W przypadku filmu — adres jego strony."
+    "message": "W przypadku filmu — adres jego odtwarzacza oraz, o ile nie zostanie to wyłączone w Ustawieniach, sesja logowania w tej witrynie (jej pliki cookie dla tego adresu), aby DownloadPulse mógł pobrać to, co można obejrzeć. DownloadPulse przechowuje je tylko w pamięci, do zakończenia tego pobierania."
   },
   "disclosePolling": {
     "message": "Podczas trwania pobrań ta przeglądarka sprawdza ich postęp w używanym DownloadPulse."
@@ -468,5 +468,29 @@
   },
   "sendCaptureInsecure": {
     "message": "Ten link używa nieszyfrowanego HTTP poza własną siecią, więc nie jest pobierany z użyciem sesji logowania. Należy zamiast tego dodać go przez „Szybkie dodawanie” w DownloadPulse."
+  },
+  "failureBlocked": {
+    "message": "Zamiast DownloadPulse odpowiedziało coś, co znajduje się przed nim, na przykład strona logowania lub serwer proxy. Należy umożliwić rozszerzeniu bezpośredni dostęp do DownloadPulse, a następnie połączyć się ponownie."
+  },
+  "sendSelectionCapped": {
+    "message": "Wysłano pierwsze 100 linków. Pozostałe należy dodać przez „Szybkie dodawanie” w DownloadPulse."
+  },
+  "quickAddTitle": {
+    "message": "Szybkie dodawanie"
+  },
+  "quickAddPlaceholder": {
+    "message": "Wklej link lub link magnet"
+  },
+  "quickAddButton": {
+    "message": "Dodaj"
+  },
+  "quickAddDone": {
+    "message": "Dodano do DownloadPulse"
+  },
+  "quickAddNothing": {
+    "message": "Nie znaleziono linku ani linku magnet"
+  },
+  "optionsVideoCookies": {
+    "message": "Wysyłaj z filmami sesję logowania w witrynie (jej pliki cookie), aby można było pobierać filmy tylko dla członków i z ograniczeniem wiekowym"
   }
 }

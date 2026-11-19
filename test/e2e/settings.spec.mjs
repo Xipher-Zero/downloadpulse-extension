@@ -79,11 +79,70 @@ test("Disconnect revokes this browser on the server and forgets it here", async 
   const secret = await popup.evaluate(() => new Promise((done) => {
     const open = indexedDB.open("downloadpulse");
     open.onsuccess = () => {
-      const read = open.result.transaction("secrets").objectStore("secrets").get("token");
+      const read = open.result.transaction("secrets").objectStore("secrets").get("token@http://127.0.0.1:8095");
       read.onsuccess = () => done(read.result ?? null);
     };
   }));
   expect(secret).toBeNull();
+});
+
+/** A secret slot in the extension's IndexedDB: read (value undefined) or written (null deletes). */
+const slot = (page, name, value) => page.evaluate(([key, v, write]) => new Promise((done) => {
+  const open = indexedDB.open("downloadpulse");
+  open.onsuccess = () => {
+    const store = open.result.transaction("secrets", write ? "readwrite" : "readonly").objectStore("secrets");
+    const request = !write ? store.get(key) : v === null ? store.delete(key) : store.put(v, key);
+    request.onsuccess = () => done(write ? true : (request.result ?? null));
+  };
+}), [name, value ?? null, value !== undefined]);
+
+test("an earlier build's single connection and token are moved to their server's place, and keep working (multi-server preparation)", async () => {
+  // As 29cf776 left them: one "connection", one "token" slot.
+  const shown = await popup.evaluate(async () => {
+    const {connections, activeServer} = await chrome.storage.local.get(["connections", "activeServer"]);
+    return connections[activeServer];
+  });
+  // The secret first: the background moves the old layout as soon as it sees it.
+  await slot(popup, "token", "dp_fake-token");
+  await slot(popup, "token@http://127.0.0.1:8095", null);
+  await popup.evaluate(async (value) => {
+    await chrome.storage.local.remove(["connections", "activeServer"]);
+    await chrome.storage.local.set({connection: value});
+  }, shown);
+  await popup.reload();
+  await expect(popup.getByTestId("account")).toHaveText("Una");
+  const stored = await popup.evaluate(() => chrome.storage.local.get(null));
+  expect(stored.connection).toBeUndefined();
+  expect(Object.keys(stored.connections)).toEqual(["http://127.0.0.1:8095"]);
+  expect(stored.activeServer).toBe("http://127.0.0.1:8095");
+  expect(await slot(popup, "token")).toBeNull();
+  expect(await slot(popup, "token@http://127.0.0.1:8095")).toBe("dp_fake-token");
+  const polls = dp.state.listPolls.length;
+  await expect.poll(() => dp.state.listPolls.length, {timeout: 10_000}).toBeGreaterThan(polls);   // and it is used
+});
+
+test("forgetting one server keeps another's connection, token and downloads (multi-server preparation)", async () => {
+  const other = "https://second.example.invalid";
+  await popup.evaluate(async (server) => {
+    const {connections} = await chrome.storage.local.get("connections");
+    await chrome.storage.local.set({connections: {...connections,
+      [server]: {server, tokenId: "tok-2", label: "Laptop-Chrome", account: "Ira"}}});
+    await chrome.storage.session.set({[`jobs@${server}`]: {j1: {id: "j1"}}});
+  }, other);
+  await slot(popup, `token@${other}`, "dp_second-token");
+  const settings = await options();
+  await settings.getByRole("button", {name: "Disconnect"}).click();
+  await expect(settings.getByTestId("connection-note")).toHaveText("Disconnected. DownloadPulse no longer accepts this browser.");
+  const after = await popup.evaluate(async (server) => ({
+    local: await chrome.storage.local.get(["connections", "activeServer"]),
+    session: await chrome.storage.session.get(null),
+  }), other);
+  expect(Object.keys(after.local.connections)).toEqual([other]);
+  expect(after.local.activeServer).toBe(other);
+  expect(after.session[`jobs@${other}`]).toEqual({j1: {id: "j1"}});
+  expect(Object.keys(after.session).some((key) => key.endsWith("@http://127.0.0.1:8095"))).toBe(false);
+  expect(await slot(popup, `token@${other}`)).toBe("dp_second-token");
+  expect(await slot(popup, "token@http://127.0.0.1:8095")).toBeNull();
 });
 
 test("the gear opens the settings inside the dropdown, and Back returns", async () => {
@@ -234,13 +293,19 @@ test("a saved connection without the agreement sends nothing until agreed; one o
   expect(dp.state.pairings.size).toBe(pairings);
   await expect.poll(() => dp.state.listPolls.length, {timeout: 10_000}).toBeGreaterThan(polls);
   // A connection to a server over plain HTTP across the internet (seeded): forgotten, refused, nothing sent.
+  // (Seeded as the one in use, beside the real one, which is kept.)
+  const real = await popup.evaluate(async () => (await chrome.storage.local.get("activeServer")).activeServer);
   await popup.evaluate(async () => {
-    const {connection} = await chrome.storage.local.get("connection");
-    await chrome.storage.local.set({connection: {...connection, server: "http://203.0.113.9:8095"}});
+    const {connections} = await chrome.storage.local.get("connections");
+    const seeded = {...Object.values(connections)[0], server: "http://203.0.113.9:8095"};
+    await chrome.storage.local.set({connections: {...connections, [seeded.server]: seeded}, activeServer: seeded.server});
   });
   await popup.reload();
   await expect(popup.getByTestId("failure")).toHaveText("This server must use HTTPS. Plain HTTP is only allowed on your own network.");
-  expect(await popup.evaluate(async () => (await chrome.storage.local.get("connection")).connection ?? null)).toBeNull();
+  // The refusal is shown first, then the connection forgotten (popup.ts): only that one.
+  await expect.poll(async () => Object.keys((await popup.evaluate(async () =>
+    chrome.storage.local.get("connections"))).connections)).toEqual([real]);
+  expect((await popup.evaluate(async () => chrome.storage.local.get("activeServer"))).activeServer).toBe(real);
 });
 
 test("a browser disconnected in DownloadPulse is told so and forgets its token", async () => {

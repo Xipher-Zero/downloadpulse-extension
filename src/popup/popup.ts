@@ -8,18 +8,19 @@
 // requested here, on the person's click (L20).
 
 import {appearance, applyAppearance} from "../shared/appearance";
-import {choosePlainHttp, connection, connectionState, forgetConnection, pairing, setPairing} from "../shared/connection";
+import {choosePlainHttp, connection, connectionState, forgetConnection, pairing, setPairing, activeServer} from "../shared/connection";
+import {isStateKey, stateKey} from "../shared/server-state";
 import {glyph, placeGlyphs, type GlyphName} from "../shared/glyphs";
 import {localize, message} from "../shared/i18n";
 import {consented, recordConsent} from "../shared/consent";
-import {isLocal, serverAddress, type Failure, type Job} from "../shared/server";
+import {effectiveAddress, isLocal, type Failure, type Job} from "../shared/server";
 import {isOffSite, saveSettings, settings, siteOf, type Settings} from "../shared/settings";
 
 const FAILURE_KEYS: Record<Failure, string> = {
   unreachable: "failureUnreachable", certificate: "failureCertificate", not_downloadpulse: "failureNotDownloadPulse",
   too_old: "failureTooOld", denied: "failureDenied", expired: "failureExpired", permission: "failurePermission",
   unauthorized: "failureUnauthorized", failed: "failureFailed",
-  https_only: "failureHttpsOnly", insecure_refused: "failureInsecureRefused",
+  https_only: "failureHttpsOnly", insecure_refused: "failureInsecureRefused", blocked: "failureBlocked",
 };
 const PRIVACY_URL = "https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md";
 
@@ -57,7 +58,9 @@ function serverName(server: string): string {
 async function renderReach(): Promise<void> {
   const element = document.querySelector<HTMLElement>('[data-testid="reach"]');
   if (!element) return;
-  const reach = (await chrome.storage.session.get("reach"))["reach"] as {ok: boolean; at: number} | undefined;
+  const server = await activeServer();
+  const key = server ? stateKey(server, "reach") : "";
+  const reach = key ? (await chrome.storage.session.get(key))[key] as {ok: boolean; at: number} | undefined : undefined;
   const state = !reach || Date.now() - reach.at > REACH_FRESH_MS ? "checking" : reach.ok ? "ok" : "unreachable";
   element.dataset["reach"] = state;
   text('[data-testid="reach-text"]', message(state === "ok" ? "popupConnected" : state === "unreachable"
@@ -231,21 +234,30 @@ async function act(id: string, action: string): Promise<void> {
  * download list clears), and nothing else -- DownloadPulse keeps them, and an
  * entry DownloadPulse changes afterwards (its change cursor moves) is listed again.
  */
-const CLEARED = "jobsCleared";
 const finished = (job: Job): boolean => !unsettled(job);
 
+/** The server in use's list keys (each server's own: server-state.ts). */
+async function listKeys(): Promise<{jobs: string; cleared: string} | null> {
+  const server = await activeServer();
+  return server ? {jobs: stateKey(server, "jobs"), cleared: stateKey(server, "jobsCleared")} : null;
+}
+
 async function listed(): Promise<Job[]> {
-  const stored = await chrome.storage.session.get(["jobs", CLEARED]);
-  const jobs = (stored["jobs"] ?? {}) as Record<string, Job>;
-  const cleared = (stored[CLEARED] ?? {}) as Record<string, number>;
+  const keys = await listKeys();
+  if (!keys) return [];
+  const stored = await chrome.storage.session.get([keys.jobs, keys.cleared]);
+  const jobs = (stored[keys.jobs] ?? {}) as Record<string, Job>;
+  const cleared = (stored[keys.cleared] ?? {}) as Record<string, number>;
   return Object.values(jobs).filter((job) => !(job.id in cleared) || job.cursor > cleared[job.id]!)
     .sort((a, b) => b.cursor - a.cursor);
 }
 
 async function clearFinished(): Promise<void> {
-  const cleared = ((await chrome.storage.session.get(CLEARED))[CLEARED] ?? {}) as Record<string, number>;
+  const keys = await listKeys();
+  if (!keys) return;
+  const cleared = ((await chrome.storage.session.get(keys.cleared))[keys.cleared] ?? {}) as Record<string, number>;
   for (const job of (await listed()).filter(finished)) cleared[job.id] = job.cursor;
-  await chrome.storage.session.set({[CLEARED]: cleared});
+  await chrome.storage.session.set({[keys.cleared]: cleared});
 }
 
 async function renderList(): Promise<void> {
@@ -293,7 +305,7 @@ async function renderSettings(): Promise<void> {
   }
   const chosen = await settings();
   for (const input of document.querySelectorAll<HTMLInputElement>("[data-setting]")) {
-    input.checked = Boolean(chosen[input.dataset["setting"] as "inPage" | "hover" | "video"]);
+    input.checked = Boolean(chosen[input.dataset["setting"] as "inPage" | "hover" | "video" | "videoCookies"]);
   }
   // Off, what the master switch governs is not shown at all.
   $('[data-testid="in-page-options"]').hidden = !chosen.inPage;
@@ -322,6 +334,17 @@ function note(key: string): void {
 // ── the whole dropdown ──────────────────────────────────────────────────
 
 async function render(): Promise<void> {
+  const held = await connection();
+  if (held && (await connectionState(held)) === "insecure") {
+    // Plain HTTP across the internet: never usable. Settled first on every redraw, each step
+    // safe to repeat, so a popup closed half-way (or reloaded) leaves nothing half done:
+    // the refusal recorded, then that server's connection forgotten by name.
+    const before = await pairing();
+    if (!(before?.state === "failed" && before.failure === "insecure_refused")) {
+      await setPairing({state: "failed", failure: "insecure_refused"});
+    }
+    await forgetConnection(false, held.server);
+  }
   const connected = await connection();
   const pending = await pairing();
   if (screen && !connected && pending?.state !== "waiting" && pending?.state !== "probing") {
@@ -339,12 +362,8 @@ async function render(): Promise<void> {
     show(pending.state);
   } else if (connected && (await connectionState(connected)) !== "ok") {
     // A saved connection the gate holds (connection.ts): the screen that settles it, sending nothing.
+    // (An insecure one was settled at the top of render.)
     const state = await connectionState(connected);
-    if (state === "insecure") {
-      await forgetConnection();
-      await setPairing({state: "failed", failure: "insecure_refused"});
-      return;
-    }
     if (state === "plain-http") showInsecure(connected.server);
     show(state === "consent" ? "disclosure" : "insecure");
   } else if (connected) {
@@ -363,7 +382,7 @@ async function render(): Promise<void> {
 
 async function connectRemote(form: HTMLFormElement): Promise<void> {
   const typed = String(new FormData(form).get("server") ?? "");
-  const target = serverAddress(typed);
+  const target = await effectiveAddress(typed);
   if (!target) return setPairing({state: "failed", failure: "unreachable"});
   if (target.transport === "public-http") return setPairing({state: "failed", failure: "insecure_refused"});
   if (target.transport === "lan-http") {
@@ -559,6 +578,26 @@ for (const form of document.querySelectorAll<HTMLFormElement>('form[data-action=
     void connectRemote(event.currentTarget as HTMLFormElement);
   });
 }
+let quickTimer = 0;
+$<HTMLFormElement>("form[data-action='quick-add']").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const input = $<HTMLInputElement>("#quick");
+  const button = $<HTMLButtonElement>("form[data-action='quick-add'] button");
+  const result = $('[data-testid="quick-result"]');
+  if (!input.value.trim()) return;
+  button.disabled = true;
+  void (chrome.runtime.sendMessage({type: "dp-quick-add", text: input.value}) as Promise<{ok: boolean; text: string} | undefined>)
+    .then((answer) => {
+      const ok = Boolean(answer?.ok);
+      result.textContent = answer?.text ?? message("sendFailed");
+      result.title = result.textContent;
+      result.dataset["ok"] = String(ok);
+      if (ok) input.value = "";         // a failure keeps what was typed, to correct or try again
+      clearTimeout(quickTimer);
+      quickTimer = window.setTimeout(() => { result.textContent = ""; result.title = ""; delete result.dataset["ok"]; }, 4000);
+    })
+    .finally(() => { button.disabled = false; });
+});
 $<HTMLFormElement>("form[data-action='add-site']").addEventListener("submit", (event) => {
   event.preventDefault();
   const input = $<HTMLInputElement>("#site");
@@ -569,7 +608,7 @@ $<HTMLFormElement>("form[data-action='add-site']").addEventListener("submit", (e
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && "appearance" in changes) void appearance().then((value) => applyAppearance(document.documentElement, value));
   // The status alone changes every look: redraw only it, so the list (and a focused control) stays put.
-  if (Object.keys(changes).every((key) => key === "reach")) void renderReach();
+  if (Object.keys(changes).every((key) => isStateKey(key, "reach"))) void renderReach();
   else void render();
 });
 void render();

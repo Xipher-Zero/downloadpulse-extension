@@ -544,8 +544,8 @@
     "description": "Disclosure page, bullet: what is sent for a link."
   },
   "discloseVideo": {
-    "message": "For a video, the address of its page.",
-    "description": "Disclosure page, bullet: what is sent for a video."
+    "message": "For a video, the address of its player and, unless you turn it off in Settings, your sign-in on that site (its cookies for that address), so DownloadPulse can download what you can watch. DownloadPulse keeps them only in memory, until that download ends.",
+    "description": "Disclosure page bullet: what a video send carries. 'Settings' is the extension's settings view. Cookies are the site's sign-in cookies for the video's own address."
   },
   "disclosePolling": {
     "message": "While downloads run, this browser checks their progress with your DownloadPulse.",
@@ -604,5 +604,37 @@
   "sendCaptureInsecure": {
     "message": "That link uses plain HTTP outside your network, so it isn't fetched with your sign-in. Add it with Quick Add in DownloadPulse instead.",
     "description": "Toast: a .torrent/.nzb/indexer link is plain http:// on the internet; the extension only fetches such files over HTTPS (or plain HTTP on this computer or the private network)."
+  },
+  "failureBlocked": {
+    "message": "Something in front of DownloadPulse, such as a sign-in page or a proxy, answered instead of it. Let the extension reach DownloadPulse directly, then connect again.",
+    "description": "Connect failure: the server address answered DownloadPulse's health check with a redirect or a sign-in demand (401/403/407) — a reverse proxy or single sign-on in front of DownloadPulse. The extension never sends browser cookies, so it can't pass such a gate."
+  },
+  "sendSelectionCapped": {
+    "message": "Sent the first 100 links. Add the rest with Quick Add in DownloadPulse.",
+    "description": "Toast after sending a selection that held more than 100 plain links: only the first 100 were sent. \"Quick Add\" is DownloadPulse's feature name."
+  },
+  "quickAddTitle": {
+    "message": "Quick Add",
+    "description": "Popup: title of the field for pasting a link or magnet to send to DownloadPulse. DownloadPulse's own feature name: use the exact term the catalog's other strings use for Quick Add."
+  },
+  "quickAddPlaceholder": {
+    "message": "Paste a link or magnet",
+    "description": "Popup: placeholder (and accessible label) of the Quick Add field."
+  },
+  "quickAddButton": {
+    "message": "Add",
+    "description": "Popup: the button inside the Quick Add field. Short; DownloadPulse's own Add button."
+  },
+  "quickAddDone": {
+    "message": "Added to DownloadPulse",
+    "description": "Popup: shown on the Quick Add title row for a few seconds after a successful Add. No final period; short (it shares a narrow row with the title)."
+  },
+  "quickAddNothing": {
+    "message": "No link or magnet found",
+    "description": "Popup: shown on the Quick Add title row when the text has no http(s) link or magnet. No final period; short."
+  },
+  "optionsVideoCookies": {
+    "message": "Send my sign-in on the site with videos (its cookies), so members-only and age-restricted videos can be downloaded",
+    "description": "Settings switch, on by default: a video sent to DownloadPulse carries the site's cookies for the video's address. DownloadPulse keeps them in memory only, until that download ends."
   }
 }
