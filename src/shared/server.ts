@@ -18,7 +18,7 @@ const TIMEOUT_MS = 8000;
 
 export type Failure =
   | "unreachable" | "certificate" | "not_downloadpulse" | "too_old" | "denied" | "expired"
-  | "permission" | "unauthorized" | "failed";
+  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused";
 
 export class ServerError extends Error {
   constructor(public readonly failure: Failure, message = failure) {
@@ -27,26 +27,49 @@ export class ServerError extends Error {
 }
 
 /**
- * A server address as the person typed it, as candidate origins in the order to
- * try: a scheme given is kept; none means https, then http. Only an origin is
- * kept (no path, query or credentials). Empty or malformed: [].
+ * How a server is reached (store review, 2026-11-18): DownloadPulse on this
+ * computer over plain HTTP; any other server over HTTPS; plain HTTP to another
+ * server only as the person's deliberate choice, and only on a private network
+ * (the connection key and downloads would cross it unencrypted); never plain
+ * HTTP across the internet. Nothing falls back from HTTPS to HTTP silently.
  */
-export function candidateOrigins(input: string): string[] {
-  const text = input.trim();
-  if (!text) return [];
-  const schemes = /^[a-z][a-z0-9+.-]*:\/\//i.test(text) ? [""] : ["https://", "http://"];
-  const origins: string[] = [];
-  for (const scheme of schemes) {
-    try {
-      const url = new URL(scheme + text);
-      if ((url.protocol === "http:" || url.protocol === "https:") && url.hostname && !url.username && !url.password) {
-        origins.push(url.origin);
-      }
-    } catch {
-      // not a URL with this scheme
-    }
+export type Transport = "local" | "https" | "lan-http" | "public-http";
+
+export interface ServerAddress { origin: string; transport: Transport; schemeGiven: boolean; privateHost: boolean }
+
+/** A host on a private network: RFC 1918 and link-local addresses, IPv6 unique-local and link-local, local names. */
+export function isPrivateHost(hostname: string): boolean {
+  const host = hostname.replace(/^\[|\]$/g, "").toLowerCase();
+  const v4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
+  if (v4) {
+    const [a, b] = [Number(v4[1]), Number(v4[2])];
+    return a === 10 || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 169 && b === 254);
   }
-  return origins;
+  if (host.includes(":")) return /^f[cd][0-9a-f]{2}:/.test(host) || /^fe[89ab][0-9a-f]:/.test(host);
+  return !host.includes(".") || /\.(local|lan|home\.arpa|internal|localdomain)$/.test(host);
+}
+
+/**
+ * A server address as the person typed it: its origin (no path, query or
+ * credentials) and how it would be reached. No scheme: this computer over
+ * HTTP, any other host over HTTPS only. Empty or malformed: null.
+ */
+export function serverAddress(input: string): ServerAddress | null {
+  const text = input.trim();
+  if (!text) return null;
+  const schemeGiven = /^[a-z][a-z0-9+.-]*:\/\//i.test(text);
+  let url: URL;
+  try {
+    url = new URL(schemeGiven ? text : `https://${text}`);
+  } catch {
+    return null;
+  }
+  if ((url.protocol !== "http:" && url.protocol !== "https:") || !url.hostname || url.username || url.password) return null;
+  const local = isLocal(url.origin);
+  if (local && !schemeGiven) url = new URL(`http://${url.host}`);
+  const privateHost = isPrivateHost(url.hostname);
+  const transport: Transport = local ? "local" : url.protocol === "https:" ? "https" : privateHost ? "lan-http" : "public-http";
+  return {origin: url.origin, transport, schemeGiven, privateHost};
 }
 
 async function request(origin: string, path: string, init: RequestInit = {}): Promise<Response> {

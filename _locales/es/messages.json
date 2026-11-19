@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Conectar de nuevo"
+  },
+  "discloseLead": {
+    "message": "Antes de conectarse, esto es lo que DownloadPulse recibe de este navegador."
+  },
+  "discloseLinks": {
+    "message": "Los enlaces que envíe. Para un enlace .torrent, .nzb o de indexador, este navegador obtiene el archivo con su sesión iniciada en ese sitio y envía el archivo; las cookies del sitio nunca se envían."
+  },
+  "discloseVideo": {
+    "message": "Para un vídeo, la dirección de su página."
+  },
+  "disclosePolling": {
+    "message": "Mientras haya descargas en curso, este navegador comprueba su progreso en su DownloadPulse."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse registra cada descarga como enviada desde este navegador. Su clave de conexión y sus ajustes se quedan en este navegador. No se envía nada a ningún otro lugar."
+  },
+  "discloseDeviceName": {
+    "message": "Nombrar esta conexión según este navegador y sistema (p. ej., «Brave en Linux»)"
+  },
+  "privacyPolicy": {
+    "message": "Política de privacidad"
+  },
+  "discloseAgree": {
+    "message": "Aceptar y continuar"
+  },
+  "pairingClientGeneric": {
+    "message": "Navegador"
+  },
+  "insecureTitle": {
+    "message": "¿Conectarse sin cifrado?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ no usa HTTPS. La clave de conexión de este navegador y las descargas que envíe cruzarían su red sin cifrar. Continúe solo en una red en la que confíe.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Conectarse sin cifrado"
+  },
+  "failureHttpsOnly": {
+    "message": "No se puede acceder a ese servidor por HTTPS. Si no usa HTTPS, escriba su dirección empezando por http:// para conectarse sin cifrado."
+  },
+  "failureInsecureRefused": {
+    "message": "Este servidor debe usar HTTPS. HTTP sin cifrar solo se permite en su propia red."
   }
 }

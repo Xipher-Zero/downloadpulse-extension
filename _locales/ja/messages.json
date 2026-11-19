@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "もう一度接続"
+  },
+  "discloseLead": {
+    "message": "接続する前に、DownloadPulse がこのブラウザーから受け取る内容をご確認ください。"
+  },
+  "discloseLinks": {
+    "message": "送信したリンク。.torrent、.nzb、またはインデクサーのリンクの場合、このブラウザーはそのサイトでのあなたのサインインを使ってファイルを取得し、そのファイルを送信します。サイトの Cookie が送信されることは決してありません。"
+  },
+  "discloseVideo": {
+    "message": "動画の場合は、そのページのアドレス。"
+  },
+  "disclosePolling": {
+    "message": "ダウンロードの実行中、このブラウザーはあなたの DownloadPulse で進行状況を確認します。"
+  },
+  "discloseStays": {
+    "message": "DownloadPulse は、各ダウンロードをこのブラウザーから送信されたものとして記録します。接続キーと設定はこのブラウザー内にとどまります。それ以外の場所には何も送信されません。"
+  },
+  "discloseDeviceName": {
+    "message": "この接続にこのブラウザーとシステムの名前を付ける（例：「Brave（Linux）」）"
+  },
+  "privacyPolicy": {
+    "message": "プライバシーポリシー"
+  },
+  "discloseAgree": {
+    "message": "同意して続行"
+  },
+  "pairingClientGeneric": {
+    "message": "ブラウザー"
+  },
+  "insecureTitle": {
+    "message": "暗号化せずに接続しますか？"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ は HTTPS を使用していません。このブラウザーの接続キーと送信するダウンロードが、暗号化されずにネットワーク上を流れることになります。信頼できるネットワークでのみ続行してください。",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "暗号化せずに接続"
+  },
+  "failureHttpsOnly": {
+    "message": "そのサーバーに HTTPS で接続できません。サーバーが HTTPS を使用していない場合は、http:// で始まるアドレスを入力して、暗号化せずに接続してください。"
+  },
+  "failureInsecureRefused": {
+    "message": "このサーバーは HTTPS を使用する必要があります。暗号化されていない HTTP は、自分のネットワーク内でのみ許可されています。"
   }
 }

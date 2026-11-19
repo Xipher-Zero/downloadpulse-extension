@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Conectar novamente"
+  },
+  "discloseLead": {
+    "message": "Antes de conectar, veja o que o DownloadPulse recebe deste navegador."
+  },
+  "discloseLinks": {
+    "message": "Os links que você envia. Para um link .torrent, .nzb ou de indexador, este navegador obtém o arquivo usando o seu login nesse site e envia o arquivo; os cookies do site nunca são enviados."
+  },
+  "discloseVideo": {
+    "message": "Para um vídeo, o endereço da página dele."
+  },
+  "disclosePolling": {
+    "message": "Enquanto os downloads estão em andamento, este navegador verifica o progresso deles no seu DownloadPulse."
+  },
+  "discloseStays": {
+    "message": "O DownloadPulse registra cada download como enviado deste navegador. Sua chave de conexão e seus ajustes ficam neste navegador. Nada é enviado para nenhum outro lugar."
+  },
+  "discloseDeviceName": {
+    "message": "Dar a esta conexão o nome deste navegador e sistema (por exemplo, “Brave no Linux”)"
+  },
+  "privacyPolicy": {
+    "message": "Política de privacidade"
+  },
+  "discloseAgree": {
+    "message": "Concordar e continuar"
+  },
+  "pairingClientGeneric": {
+    "message": "Navegador"
+  },
+  "insecureTitle": {
+    "message": "Conectar sem criptografia?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ não usa HTTPS. A chave de conexão deste navegador e os downloads que você envia atravessariam sua rede sem criptografia. Só continue em uma rede em que você confia.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Conectar sem criptografia"
+  },
+  "failureHttpsOnly": {
+    "message": "Não foi possível acessar esse servidor por HTTPS. Se ele não usa HTTPS, digite o endereço começando com http:// para conectar sem criptografia."
+  },
+  "failureInsecureRefused": {
+    "message": "Este servidor precisa usar HTTPS. HTTP sem criptografia só é permitido na sua própria rede."
   }
 }

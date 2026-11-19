@@ -34,6 +34,7 @@ test.beforeEach(async () => {
   popup = await context.newPage();
   await popup.goto(`chrome-extension://${new URL(worker.url()).host}/popup/popup.html`);
   await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+  await popup.getByRole("button", {name: "Agree and continue"}).click();
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
@@ -67,7 +68,7 @@ async function sendArchive() {
 
 const row = (id) => popup.locator(`li[data-job-id="${id}"]`);
 // The status line as read: the estimate's time is a left-to-right isolate (U+2066..U+2069).
-const stateOf = (id) => row(id).locator(".dp-job__state").evaluate((el) => el.textContent.replace(/[\u2066\u2069]/g, ""));
+const stateOf = (id) => row(id).locator("[data-testid='state']").evaluate((el) => el.textContent.replace(/[\u2066\u2069]/g, ""));
 const colour = (locator) => locator.evaluate((el) => getComputedStyle(el).color);
 
 test("a sent download: its name on one line, its status in DownloadPulse's colour, a compact estimate", async () => {
@@ -117,15 +118,27 @@ test("a sent download: its name on one line, its status in DownloadPulse's colou
   await expect(row(id).getByRole("progressbar")).toHaveCount(0);
   dp.setJob(id, {phase: "completed", reason: "completed", actionability: "none"});
   await expect(row(id)).toHaveAttribute("data-tone", "none");
-  // A terminal status stands alone on its line, centred in the row.
+  // Done, as DownloadPulse shows it: the bar full in its completion green, "Done" in green right of the bar.
+  const bar = row(id).getByRole("progressbar");
+  await expect(bar).toHaveAttribute("aria-valuenow", "100");
+  const done = await row(id).evaluate((li) => {
+    const bar = li.querySelector(".dp-job__bar").getBoundingClientRect();
+    const fill = li.querySelector(".dp-job__fill");
+    const word = li.querySelector("[data-testid='state']");
+    const at = word.getBoundingClientRect();
+    return {fill: getComputedStyle(fill).backgroundColor, full: Math.round(fill.getBoundingClientRect().width) === Math.round(bar.width),
+      word: word.textContent, colour: getComputedStyle(word).color, right: at.left >= bar.right,
+      middle: Math.abs((at.top + at.bottom) / 2 - (bar.top + bar.bottom) / 2) <= 2, line: li.querySelector(".dp-job__line") === null};
+  });
+  expect(done).toEqual({fill: "rgb(0, 230, 118)", full: true, word: "Done", colour: "rgb(0, 230, 118)", right: true, middle: true, line: true});
+  dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});
+  // A failed download's status stands alone on its line, centred in the row.
   const centred = () => row(id).evaluate((li) => {
     const range = document.createRange();
     range.selectNodeContents(li.querySelector(".dp-job__status"));
     const text = range.getBoundingClientRect(), box = li.getBoundingClientRect();
     return Math.abs((text.left + text.right) / 2 - (box.left + box.right) / 2) <= 1.5;
   });
-  await expect.poll(centred).toBe(true);
-  dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});
   await expect(row(id)).toHaveAttribute("data-tone", "failed");
   await expect.poll(centred).toBe(true);
 });

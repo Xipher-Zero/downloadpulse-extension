@@ -534,5 +534,67 @@
   "popupConnectAgain": {
     "message": "Connect again",
     "description": "Popup failure screen: the primary button (with a plug glyph) that starts connecting again: it looks for DownloadPulse on this computer, then offers this computer or a remote server."
+  },
+  "discloseLead": {
+    "message": "Before you connect, here is what DownloadPulse receives from this browser.",
+    "description": "Disclosure page (before connecting; required by the browser stores): centred lead line."
+  },
+  "discloseLinks": {
+    "message": "The links you send. For a .torrent, .nzb or indexer link, this browser fetches the file with your sign-in on that site and sends the file; the site's cookies are never sent.",
+    "description": "Disclosure page, bullet: what is sent for a link."
+  },
+  "discloseVideo": {
+    "message": "For a video, the address of its page.",
+    "description": "Disclosure page, bullet: what is sent for a video."
+  },
+  "disclosePolling": {
+    "message": "While downloads run, this browser checks their progress with your DownloadPulse.",
+    "description": "Disclosure page, bullet: the background progress checks."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse records each download as sent from this browser. Your connection key and settings stay in this browser. Nothing is sent anywhere else.",
+    "description": "Disclosure page: centred note under the bullets."
+  },
+  "discloseDeviceName": {
+    "message": "Name this connection after this browser and system (e.g. \"Brave on Linux\")",
+    "description": "Disclosure page: optional checkbox, off by default; consent to send the browser and operating system names to name the connection."
+  },
+  "privacyPolicy": {
+    "message": "Privacy policy",
+    "description": "Link to the extension's privacy policy (opens in a tab)."
+  },
+  "discloseAgree": {
+    "message": "Agree and continue",
+    "description": "Disclosure page: the primary button; agreeing to what is described, then connecting."
+  },
+  "pairingClientGeneric": {
+    "message": "Browser",
+    "description": "The neutral name a new connection is given when the person did not agree to name it after the browser and system; they can rename it in DownloadPulse."
+  },
+  "insecureTitle": {
+    "message": "Connect without encryption?",
+    "description": "Plain-HTTP warning screen: the title in a caution-coloured status box."
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ doesn't use HTTPS. This browser's connection key and the downloads you send would cross your network unencrypted. Only continue on a network you trust.",
+    "description": "Plain-HTTP warning screen: the explanation. ADDRESS is the server's address, shown as typed.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Connect without encryption",
+    "description": "Plain-HTTP warning screen: the button that connects over plain HTTP anyway."
+  },
+  "failureHttpsOnly": {
+    "message": "That server can't be reached over HTTPS. If it doesn't use HTTPS, enter its address starting with http:// to connect without encryption.",
+    "description": "Failure status: a private-network address typed without http(s):// was tried over HTTPS only and could not be reached."
+  },
+  "failureInsecureRefused": {
+    "message": "This server must use HTTPS. Plain HTTP is only allowed on your own network.",
+    "description": "Failure status: an http:// address on the internet is refused."
   }
 }

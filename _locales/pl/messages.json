@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Połącz ponownie"
+  },
+  "discloseLead": {
+    "message": "Przed połączeniem: oto, co DownloadPulse otrzymuje z tej przeglądarki."
+  },
+  "discloseLinks": {
+    "message": "Wysyłane linki. W przypadku linku .torrent, .nzb lub linku indeksera ta przeglądarka pobiera plik, korzystając z sesji logowania w tej witrynie, i wysyła ten plik; pliki cookie witryny nigdy nie są wysyłane."
+  },
+  "discloseVideo": {
+    "message": "W przypadku filmu — adres jego strony."
+  },
+  "disclosePolling": {
+    "message": "Podczas trwania pobrań ta przeglądarka sprawdza ich postęp w używanym DownloadPulse."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse zapisuje każde pobranie jako wysłane z tej przeglądarki. Klucz połączenia i ustawienia pozostają w tej przeglądarce. Nic nie jest wysyłane nigdzie indziej."
+  },
+  "discloseDeviceName": {
+    "message": "Nadaj temu połączeniu nazwę tej przeglądarki i systemu (np. „Brave w systemie Linux”)"
+  },
+  "privacyPolicy": {
+    "message": "Polityka prywatności"
+  },
+  "discloseAgree": {
+    "message": "Zaakceptuj i kontynuuj"
+  },
+  "pairingClientGeneric": {
+    "message": "Przeglądarka"
+  },
+  "insecureTitle": {
+    "message": "Połączyć bez szyfrowania?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ nie używa HTTPS. Klucz połączenia tej przeglądarki i wysyłane pobrania przechodziłyby przez sieć bez szyfrowania. Należy kontynuować tylko w zaufanej sieci.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Połącz bez szyfrowania"
+  },
+  "failureHttpsOnly": {
+    "message": "Nie można połączyć się z tym serwerem przez HTTPS. Jeśli nie używa on HTTPS, należy wpisać jego adres zaczynający się od http://, aby połączyć się bez szyfrowania."
+  },
+  "failureInsecureRefused": {
+    "message": "Ten serwer musi używać HTTPS. Nieszyfrowany HTTP jest dozwolony tylko we własnej sieci."
   }
 }

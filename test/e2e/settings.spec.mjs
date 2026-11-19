@@ -35,6 +35,7 @@ test.beforeEach(async () => {
   popup = await context.newPage();
   await popup.goto(`${base}/popup/popup.html`);
   await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+  await popup.getByRole("button", {name: "Agree and continue"}).click();
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
@@ -262,7 +263,7 @@ test("a notification kind switched off is not raised", async () => {
   dp.setJob(id, {phase: "processing", reason: "downloading"});
   await expect(popup.locator(`li[data-job-id="${id}"] .dp-job__status`)).toHaveText("Downloading");
   dp.setJob(id, {phase: "completed", reason: "completed", actionability: "none"});
-  await expect(popup.locator(`li[data-job-id="${id}"] .dp-job__status`)).toHaveText("Done");
+  await expect(popup.locator(`li[data-job-id="${id}"] [data-testid='state']`)).toHaveText("Done");
   await popup.waitForTimeout(1500);
   expect(Object.keys(await popup.evaluate(() => new Promise((done) => chrome.notifications.getAll(done))))).toEqual([]);
   dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});

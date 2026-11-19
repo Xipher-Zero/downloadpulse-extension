@@ -16,7 +16,7 @@ import {cancel, connectLocal, connectRemote, pairLocal} from "./pairing";
 import {sendSelection, sendUrl} from "./submit";
 
 type Request =
-  | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string}
+  | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string; insecure?: boolean}
   | {type: "cancel"} | {type: "dp-open"}
   | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-send-selection"; text: string} | {type: "dp-has-video"}
   | {type: "dp-popup-open"} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
@@ -132,7 +132,7 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
   switch (request.type) {
     case "connect-local": if (!fromPage) void connectLocal(); return undefined;
     case "pair-local": if (!fromPage) void pairLocal(String(request.origin || "")); return undefined;
-    case "connect-remote": if (!fromPage) void connectRemote(String(request.address || "")); return undefined;
+    case "connect-remote": if (!fromPage) void connectRemote(String(request.address || ""), request.insecure === true); return undefined;
     case "dp-open":
       if (fromPage) return undefined;
       void openDownloadPulse().then(respond);

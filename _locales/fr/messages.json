@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Se connecter à nouveau"
+  },
+  "discloseLead": {
+    "message": "Avant de vous connecter, voici ce que DownloadPulse reçoit de ce navigateur."
+  },
+  "discloseLinks": {
+    "message": "Les liens que vous envoyez. Pour un lien .torrent, .nzb ou d’indexeur, ce navigateur récupère le fichier avec votre connexion à ce site et envoie le fichier ; les cookies du site ne sont jamais envoyés."
+  },
+  "discloseVideo": {
+    "message": "Pour une vidéo, l’adresse de sa page."
+  },
+  "disclosePolling": {
+    "message": "Pendant les téléchargements, ce navigateur vérifie leur progression auprès de votre DownloadPulse."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse enregistre chaque téléchargement comme envoyé depuis ce navigateur. Votre clé de connexion et vos paramètres restent dans ce navigateur. Rien n’est envoyé ailleurs."
+  },
+  "discloseDeviceName": {
+    "message": "Nommer cette connexion d’après ce navigateur et ce système (p. ex. « Brave sur Linux »)"
+  },
+  "privacyPolicy": {
+    "message": "Politique de confidentialité"
+  },
+  "discloseAgree": {
+    "message": "Accepter et continuer"
+  },
+  "pairingClientGeneric": {
+    "message": "Navigateur"
+  },
+  "insecureTitle": {
+    "message": "Se connecter sans chiffrement ?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ n’utilise pas HTTPS. La clé de connexion de ce navigateur et les téléchargements que vous envoyez traverseraient votre réseau sans chiffrement. Ne continuez que sur un réseau auquel vous faites confiance.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Se connecter sans chiffrement"
+  },
+  "failureHttpsOnly": {
+    "message": "Ce serveur est injoignable en HTTPS. S’il n’utilise pas HTTPS, saisissez son adresse en commençant par http:// pour vous connecter sans chiffrement."
+  },
+  "failureInsecureRefused": {
+    "message": "Ce serveur doit utiliser HTTPS. Le HTTP non chiffré n’est autorisé que sur votre propre réseau."
   }
 }

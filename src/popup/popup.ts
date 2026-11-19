@@ -11,14 +11,21 @@ import {appearance, applyAppearance} from "../shared/appearance";
 import {connection, pairing, setPairing} from "../shared/connection";
 import {glyph, placeGlyphs, type GlyphName} from "../shared/glyphs";
 import {localize, message} from "../shared/i18n";
-import {candidateOrigins, isLocal, type Failure, type Job} from "../shared/server";
+import {consented, recordConsent} from "../shared/consent";
+import {isLocal, serverAddress, type Failure, type Job} from "../shared/server";
 import {isOffSite, saveSettings, settings, siteOf, type Settings} from "../shared/settings";
 
 const FAILURE_KEYS: Record<Failure, string> = {
   unreachable: "failureUnreachable", certificate: "failureCertificate", not_downloadpulse: "failureNotDownloadPulse",
   too_old: "failureTooOld", denied: "failureDenied", expired: "failureExpired", permission: "failurePermission",
   unauthorized: "failureUnauthorized", failed: "failureFailed",
+  https_only: "failureHttpsOnly", insecure_refused: "failureInsecureRefused",
 };
+const PRIVACY_URL = "https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md";
+
+// A screen of the dropdown's own before anything is sent: the disclosure, or the plain-HTTP choice.
+let screen: "disclosure" | "insecure" | null = null;
+let insecureTarget = "";
 // How long the last look at DownloadPulse says anything: older, it is looked at again.
 const REACH_FRESH_MS = 15_000;
 
@@ -148,7 +155,28 @@ function renderJobs(jobs: Job[]): void {
     const eta = unsettled(job) ? estimate(job) : "";
     if (eta) status.append(" · ", span("dp-job__eta", eta));
     line.append(status);
-    row.append(name, line);
+    if (job.phase === "completed") {
+      // Done, as DownloadPulse shows a finished transfer: the bar full in its completion
+      // green, and "Done" in green where the percent was (operator, 2026-11-18).
+      const progress = document.createElement("div");
+      progress.className = "dp-job__progress";
+      const bar = document.createElement("span");
+      bar.className = "dp-job__bar";
+      bar.setAttribute("role", "progressbar");
+      for (const [name_, value] of [["aria-valuemin", "0"], ["aria-valuemax", "100"], ["aria-valuenow", "100"]]) {
+        bar.setAttribute(name_!, value!);
+      }
+      const fill = document.createElement("span");
+      fill.className = "dp-job__fill";
+      fill.style.inlineSize = "100%";
+      bar.append(fill);
+      const done = span("dp-job__pct dp-job__done", message(key));
+      done.dataset["testid"] = "state";
+      progress.append(bar, done);
+      row.append(name, progress);
+    } else {
+      row.append(name, line);
+    }
     if (unsettled(job)) {
       const controls = document.createElement("span");
       controls.className = "dp-job__controls";
@@ -296,6 +324,11 @@ function note(key: string): void {
 async function render(): Promise<void> {
   const connected = await connection();
   const pending = await pairing();
+  if (screen && !connected && pending?.state !== "waiting" && pending?.state !== "probing") {
+    show(screen);
+    if (view === "settings") await renderSettings();
+    return;
+  }
   if (pending?.state === "waiting") {
     show("waiting");
     text('[data-testid="code"]', pending.userCode);
@@ -319,19 +352,38 @@ async function render(): Promise<void> {
 }
 
 async function connectRemote(form: HTMLFormElement): Promise<void> {
-  const address = String(new FormData(form).get("server") ?? "");
-  const origins = candidateOrigins(address);
-  if (!origins.length) {
-    await setPairing({state: "failed", failure: "unreachable"});
-    return;
+  const typed = String(new FormData(form).get("server") ?? "");
+  const target = serverAddress(typed);
+  if (!target) return setPairing({state: "failed", failure: "unreachable"});
+  if (target.transport === "public-http") return setPairing({state: "failed", failure: "insecure_refused"});
+  if (target.transport === "lan-http") {
+    // Plain HTTP on a private network: only after the person has read what that means.
+    insecureTarget = target.origin;
+    const hint = $('[data-testid="insecure-text"]');
+    const parts = message("insecureText", ["\u0001"]).split("\u0001");
+    hint.replaceChildren(document.createTextNode(parts[0] ?? ""), span("dp-literal", target.origin), document.createTextNode(parts[1] ?? ""));
+    screen = "insecure";
+    return render();
   }
+  return connectTo(target.origin, typed, false);
+}
+
+/** ``address``: as the person typed it (the background reads whether a scheme was given). */
+async function connectTo(origin: string, address: string, insecure: boolean): Promise<void> {
   // Access to exactly that server, asked now, on this click (L20).
-  const granted = await chrome.permissions.request({origins: origins.map((origin) => origin + "/*")});
-  if (!granted) {
-    await setPairing({state: "failed", failure: "permission"});
+  const granted = await chrome.permissions.request({origins: [origin + "/*"]});
+  if (!granted) return setPairing({state: "failed", failure: "permission"});
+  await chrome.runtime.sendMessage({type: "connect-remote", address, insecure});
+}
+
+/** Connecting begins with the disclosure until the person has agreed to it. */
+async function startConnecting(): Promise<void> {
+  if (await consented()) {
+    await chrome.runtime.sendMessage({type: "connect-local"});
     return;
   }
-  await chrome.runtime.sendMessage({type: "connect-remote", address});
+  screen = "disclosure";
+  await render();
 }
 
 // Found on this computer: the person chooses it (the default) or a remote server.
@@ -377,6 +429,7 @@ async function openDownloadPulse(): Promise<void> {
 void appearance().then((value) => applyAppearance(document.documentElement, value));
 localize(document);
 placeGlyphs(document);
+for (const link of document.querySelectorAll<HTMLAnchorElement>(".dp-disclosure__policy")) link.href = PRIVACY_URL;
 choose("local");
 // The address hint's examples are literal (an address is no word to translate), each set
 // apart in the theme's literal colour (operator, 2026-11-18): the sentence is translated
@@ -403,6 +456,14 @@ for (const element of document.querySelectorAll<HTMLElement>("[data-i18n-label]"
 }
 document.addEventListener("change", (event) => {
   const input = event.target as HTMLInputElement;
+  if (input.dataset["testid"] === "device-name" && input.checked) {
+    // Firefox: the browser and system are technical data, sent only with its optional consent.
+    const firefox = (globalThis as unknown as {browser?: {permissions?: {request(r: {data_collection: string[]}): Promise<boolean>}}}).browser;
+    if (firefox?.permissions && /Firefox\//.test(navigator.userAgent)) {
+      void firefox.permissions.request({data_collection: ["technicalAndInteraction"]})
+        .then((granted) => { if (!granted) input.checked = false; }, () => { input.checked = false; });
+    }
+  }
   if (input.dataset["setting"]) void saveSettings({[input.dataset["setting"]]: input.checked});
   if (input.dataset["notify"]) {
     void settings().then((chosen) => saveSettings({notify: {...chosen.notify, [input.dataset["notify"]!]: input.checked}}));
@@ -456,7 +517,19 @@ document.addEventListener("click", (event) => {
   } else if (action === "disconnect") {
     void chrome.runtime.sendMessage({type: "dp-disconnect"}).then((answer: {revoked?: boolean} | undefined) =>
       note(answer?.revoked ? "optionsDisconnected" : "optionsDisconnectedLocally"));
-  } else if (action === "connect-local" || action === "cancel") {
+  } else if (action === "connect-local") {
+    void startConnecting();
+  } else if (action === "agree") {
+    const named = $<HTMLInputElement>('[data-testid="device-name"]').checked;
+    screen = null;
+    void recordConsent(named).then(() => chrome.runtime.sendMessage({type: "connect-local"}));
+  } else if (action === "screen-back") {
+    screen = null;
+    void render();
+  } else if (action === "insecure-continue") {
+    screen = null;
+    void connectTo(insecureTarget, insecureTarget, true);
+  } else if (action === "cancel") {
     void chrome.runtime.sendMessage({type: action});
   }
 });

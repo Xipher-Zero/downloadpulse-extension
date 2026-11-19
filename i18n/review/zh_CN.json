@@ -970,6 +970,118 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "discloseLead": {
+      "source": "67c417bc57f3e819",
+      "translation": "aab1de74ca8cfd32",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "discloseLinks": {
+      "source": "0f470bc52e1c9ec4",
+      "translation": "63bada2961b6d4cd",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "discloseVideo": {
+      "source": "7d43fabd5ffe507f",
+      "translation": "1e783c07fe8002ad",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "disclosePolling": {
+      "source": "4b01ccb94737ab8f",
+      "translation": "6dc391529f281d29",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "discloseStays": {
+      "source": "c40be22cd5d05e24",
+      "translation": "6f343d0a2a48bb18",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "discloseDeviceName": {
+      "source": "02cfda3ac3f20d8c",
+      "translation": "aa5672176da22c5e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "privacyPolicy": {
+      "source": "ba445cff3898a3f2",
+      "translation": "e464b41fd5c45ba5",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "discloseAgree": {
+      "source": "a52b321e566a1c6e",
+      "translation": "81c92013219dd115",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "pairingClientGeneric": {
+      "source": "d31de1a5c5c8ba2a",
+      "translation": "e19c3b9e266c69c9",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "insecureTitle": {
+      "source": "2069b2872f765f91",
+      "translation": "8878d2e3399a8570",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "insecureText": {
+      "source": "7b8218256a531804",
+      "translation": "499c5308636028fc",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "insecureContinue": {
+      "source": "68953bb10794121f",
+      "translation": "bbbf8aea0c477b69",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureHttpsOnly": {
+      "source": "5f5bf97464eb7b2c",
+      "translation": "9ef1e1992b51fceb",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureInsecureRefused": {
+      "source": "e462077214cbbc47",
+      "translation": "f9cacf0a4f484808",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

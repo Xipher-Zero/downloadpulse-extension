@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Opnieuw verbinden"
+  },
+  "discloseLead": {
+    "message": "Voordat u verbinding maakt, ziet u hier wat DownloadPulse van deze browser ontvangt."
+  },
+  "discloseLinks": {
+    "message": "De links die u verstuurt. Bij een .torrent-, .nzb- of indexerlink haalt deze browser het bestand op met uw aanmelding op die site en verstuurt hij het bestand; de cookies van de site worden nooit verstuurd."
+  },
+  "discloseVideo": {
+    "message": "Bij een video het adres van de bijbehorende pagina."
+  },
+  "disclosePolling": {
+    "message": "Terwijl downloads lopen, controleert deze browser de voortgang ervan bij uw DownloadPulse."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse registreert elke download als verstuurd vanuit deze browser. Uw verbindingssleutel en instellingen blijven in deze browser. Er wordt niets naar een andere plek verstuurd."
+  },
+  "discloseDeviceName": {
+    "message": "Deze verbinding vernoemen naar deze browser en dit systeem (bijv. ‘Brave op Linux’)"
+  },
+  "privacyPolicy": {
+    "message": "Privacybeleid"
+  },
+  "discloseAgree": {
+    "message": "Akkoord en doorgaan"
+  },
+  "pairingClientGeneric": {
+    "message": "Browser"
+  },
+  "insecureTitle": {
+    "message": "Verbinden zonder versleuteling?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ gebruikt geen HTTPS. De verbindingssleutel van deze browser en de downloads die u verstuurt, zouden onversleuteld over uw netwerk gaan. Ga alleen door op een netwerk dat u vertrouwt.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Verbinden zonder versleuteling"
+  },
+  "failureHttpsOnly": {
+    "message": "Die server is niet bereikbaar via HTTPS. Als hij geen HTTPS gebruikt, voert u het adres in beginnend met http:// om zonder versleuteling verbinding te maken."
+  },
+  "failureInsecureRefused": {
+    "message": "Deze server moet HTTPS gebruiken. Onversleuteld HTTP is alleen toegestaan op uw eigen netwerk."
   }
 }

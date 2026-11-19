@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "重新連線"
+  },
+  "discloseLead": {
+    "message": "連線之前，請了解DownloadPulse會從此瀏覽器接收哪些內容。"
+  },
+  "discloseLinks": {
+    "message": "您傳送的連結。對於.torrent、.nzb或索引器連結，此瀏覽器會使用您在該網站的登入狀態取得檔案，並傳送該檔案；絕不會傳送該網站的Cookie。"
+  },
+  "discloseVideo": {
+    "message": "對於影片：其頁面的位址。"
+  },
+  "disclosePolling": {
+    "message": "下載進行期間，此瀏覽器會向您的DownloadPulse查詢下載進度。"
+  },
+  "discloseStays": {
+    "message": "DownloadPulse會將每個下載記錄為從此瀏覽器傳送。您的連線金鑰和設定會保留在此瀏覽器中。不會向任何其他地方傳送任何內容。"
+  },
+  "discloseDeviceName": {
+    "message": "以此瀏覽器和系統命名此連線（例如「Linux上的Brave」）"
+  },
+  "privacyPolicy": {
+    "message": "隱私權政策"
+  },
+  "discloseAgree": {
+    "message": "同意並繼續"
+  },
+  "pairingClientGeneric": {
+    "message": "瀏覽器"
+  },
+  "insecureTitle": {
+    "message": "要在不加密的情況下連線嗎？"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$未使用HTTPS。此瀏覽器的連線金鑰和您傳送的下載將以未加密的方式通過您的網路。請僅在您信任的網路上繼續。",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "不加密連線"
+  },
+  "failureHttpsOnly": {
+    "message": "無法透過HTTPS連上該伺服器。如果它不使用HTTPS，請輸入以http://開頭的位址，以不加密的方式連線。"
+  },
+  "failureInsecureRefused": {
+    "message": "此伺服器必須使用HTTPS。僅在您自己的網路中才允許使用未加密的HTTP。"
   }
 }

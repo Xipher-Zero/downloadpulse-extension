@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Yeniden bağlan"
+  },
+  "discloseLead": {
+    "message": "Bağlanmadan önce, DownloadPulse'un bu tarayıcıdan neler aldığını burada görebilirsiniz."
+  },
+  "discloseLinks": {
+    "message": "Gönderdiğiniz bağlantılar. Bir .torrent, .nzb veya dizinleyici bağlantısı için bu tarayıcı, dosyayı o sitedeki oturumunuzla alır ve dosyayı gönderir; sitenin çerezleri asla gönderilmez."
+  },
+  "discloseVideo": {
+    "message": "Bir video için, sayfasının adresi."
+  },
+  "disclosePolling": {
+    "message": "İndirmeler sürerken bu tarayıcı, ilerlemelerini DownloadPulse'unuz üzerinden kontrol eder."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse her indirmeyi bu tarayıcıdan gönderilmiş olarak kaydeder. Bağlantı anahtarınız ve ayarlarınız bu tarayıcıda kalır. Başka hiçbir yere hiçbir şey gönderilmez."
+  },
+  "discloseDeviceName": {
+    "message": "Bu bağlantıyı bu tarayıcıya ve sisteme göre adlandır (ör. “Linux üzerinde Brave”)"
+  },
+  "privacyPolicy": {
+    "message": "Gizlilik politikası"
+  },
+  "discloseAgree": {
+    "message": "Kabul et ve devam et"
+  },
+  "pairingClientGeneric": {
+    "message": "Tarayıcı"
+  },
+  "insecureTitle": {
+    "message": "Şifreleme olmadan bağlanılsın mı?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ HTTPS kullanmıyor. Bu tarayıcının bağlantı anahtarı ve gönderdiğiniz indirmeler ağınızda şifrelenmeden iletilecek. Yalnızca güvendiğiniz bir ağda devam edin.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Şifreleme olmadan bağlan"
+  },
+  "failureHttpsOnly": {
+    "message": "Bu sunucuya HTTPS üzerinden ulaşılamıyor. HTTPS kullanmıyorsa, şifreleme olmadan bağlanmak için adresini http:// ile başlayarak girin."
+  },
+  "failureInsecureRefused": {
+    "message": "Bu sunucu HTTPS kullanmalıdır. Şifrelenmemiş HTTP'ye yalnızca kendi ağınızda izin verilir."
   }
 }

@@ -28,6 +28,7 @@ const STATIC = [
   ["_locales", "_locales"],
   ["static/icons", "icons"],
   ["static/fonts", "fonts"],
+  ["LICENSE", "LICENSE"],
 ];
 
 for (const browser of ["chromium", "firefox"]) {

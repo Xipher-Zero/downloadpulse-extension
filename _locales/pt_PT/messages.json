@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Ligar novamente"
+  },
+  "discloseLead": {
+    "message": "Antes de ligar, veja o que o DownloadPulse recebe deste navegador."
+  },
+  "discloseLinks": {
+    "message": "As ligações que enviar. Para uma ligação .torrent, .nzb ou de indexador, este navegador obtém o ficheiro com a sua sessão iniciada nesse site e envia o ficheiro; os cookies do site nunca são enviados."
+  },
+  "discloseVideo": {
+    "message": "Para um vídeo, o endereço da respetiva página."
+  },
+  "disclosePolling": {
+    "message": "Enquanto os downloads decorrem, este navegador verifica o respetivo progresso no seu DownloadPulse."
+  },
+  "discloseStays": {
+    "message": "O DownloadPulse regista cada download como enviado a partir deste navegador. A sua chave de ligação e as suas definições ficam neste navegador. Nada é enviado para mais nenhum lado."
+  },
+  "discloseDeviceName": {
+    "message": "Dar a esta ligação o nome deste navegador e sistema (por exemplo, «Brave em Linux»)"
+  },
+  "privacyPolicy": {
+    "message": "Política de privacidade"
+  },
+  "discloseAgree": {
+    "message": "Concordar e continuar"
+  },
+  "pairingClientGeneric": {
+    "message": "Navegador"
+  },
+  "insecureTitle": {
+    "message": "Ligar sem encriptação?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ não utiliza HTTPS. A chave de ligação deste navegador e os downloads que enviar atravessariam a sua rede sem encriptação. Continue apenas numa rede em que confie.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Ligar sem encriptação"
+  },
+  "failureHttpsOnly": {
+    "message": "Não é possível aceder a esse servidor por HTTPS. Se o servidor não utilizar HTTPS, introduza o endereço começado por http:// para ligar sem encriptação."
+  },
+  "failureInsecureRefused": {
+    "message": "Este servidor tem de utilizar HTTPS. O HTTP sem encriptação só é permitido na sua própria rede."
   }
 }

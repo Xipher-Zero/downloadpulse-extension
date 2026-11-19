@@ -21,6 +21,8 @@ const GEOMETRY = {
     ["path", {d: "M10 11v5"}], ["path", {d: "M14 11v5"}],
   ],
   chevronRight: [["path", {d: "m9 18 6-6-6-6"}]],
+  triangleAlert: [["path", {d: "m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"}],
+    ["path", {d: "M12 9v4"}], ["path", {d: "M12 17h.01"}]],
   circleX: [["circle", {cx: "12", cy: "12", r: "10"}], ["path", {d: "m15 9-6 6"}], ["path", {d: "m9 9 6 6"}]],
   plug: [["path", {d: "M12 22v-5"}], ["path", {d: "M9 8V2"}], ["path", {d: "M15 8V2"}],
     ["path", {d: "M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"}]],

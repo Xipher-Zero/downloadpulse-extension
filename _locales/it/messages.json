@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Connetti di nuovo"
+  },
+  "discloseLead": {
+    "message": "Prima di connettersi, ecco cosa riceve DownloadPulse da questo browser."
+  },
+  "discloseLinks": {
+    "message": "I link inviati. Per un link .torrent, .nzb o di un indexer, questo browser recupera il file usando l'accesso già effettuato su quel sito e invia il file; i cookie del sito non vengono mai inviati."
+  },
+  "discloseVideo": {
+    "message": "Per un video, l'indirizzo della sua pagina."
+  },
+  "disclosePolling": {
+    "message": "Mentre i download sono in corso, questo browser ne verifica l'avanzamento presso il proprio DownloadPulse."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse registra ogni download come inviato da questo browser. La chiave di connessione e le impostazioni restano in questo browser. Non viene inviato nulla da nessun'altra parte."
+  },
+  "discloseDeviceName": {
+    "message": "Assegnare a questa connessione il nome di questo browser e sistema (ad es. «Brave su Linux»)"
+  },
+  "privacyPolicy": {
+    "message": "Informativa sulla privacy"
+  },
+  "discloseAgree": {
+    "message": "Accetta e continua"
+  },
+  "pairingClientGeneric": {
+    "message": "Browser"
+  },
+  "insecureTitle": {
+    "message": "Connettersi senza crittografia?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ non usa HTTPS. La chiave di connessione di questo browser e i download inviati attraverserebbero la rete senza crittografia. Continuare solo su una rete di cui ci si fida.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Connetti senza crittografia"
+  },
+  "failureHttpsOnly": {
+    "message": "Impossibile raggiungere quel server tramite HTTPS. Se non usa HTTPS, inserirne l'indirizzo iniziando con http:// per connettersi senza crittografia."
+  },
+  "failureInsecureRefused": {
+    "message": "Questo server deve usare HTTPS. L'HTTP non crittografato è consentito solo nella propria rete."
   }
 }

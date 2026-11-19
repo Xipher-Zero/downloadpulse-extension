@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "重新连接"
+  },
+  "discloseLead": {
+    "message": "连接之前，请了解DownloadPulse会从此浏览器接收哪些内容。"
+  },
+  "discloseLinks": {
+    "message": "您发送的链接。对于.torrent、.nzb或索引器链接，此浏览器会使用您在该网站的登录状态获取文件，并发送该文件；绝不会发送该网站的Cookie。"
+  },
+  "discloseVideo": {
+    "message": "对于视频：其页面的地址。"
+  },
+  "disclosePolling": {
+    "message": "下载进行期间，此浏览器会向您的DownloadPulse查询下载进度。"
+  },
+  "discloseStays": {
+    "message": "DownloadPulse会将每个下载记录为从此浏览器发送。您的连接密钥和设置会保留在此浏览器中。不会向任何其他地方发送任何内容。"
+  },
+  "discloseDeviceName": {
+    "message": "以此浏览器和系统命名此连接（例如“Linux上的Brave”）"
+  },
+  "privacyPolicy": {
+    "message": "隐私政策"
+  },
+  "discloseAgree": {
+    "message": "同意并继续"
+  },
+  "pairingClientGeneric": {
+    "message": "浏览器"
+  },
+  "insecureTitle": {
+    "message": "要在不加密的情况下连接吗？"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$未使用HTTPS。此浏览器的连接密钥和您发送的下载将以未加密的方式经过您的网络。请仅在您信任的网络上继续。",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "不加密连接"
+  },
+  "failureHttpsOnly": {
+    "message": "无法通过HTTPS访问该服务器。如果它不使用HTTPS，请输入以http://开头的地址，以不加密的方式连接。"
+  },
+  "failureInsecureRefused": {
+    "message": "此服务器必须使用HTTPS。仅在您自己的网络中才允许使用未加密的HTTP。"
   }
 }

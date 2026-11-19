@@ -8,10 +8,11 @@
 // where a fetch alone does not (spike S2).
 
 import {saveAppearance} from "../shared/appearance";
+import {consented, deviceNameAllowed} from "../shared/consent";
 import {deviceCode, saveConnection, setPairing} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {
-  LOCAL_ORIGINS, ServerError, candidateOrigins, pollPairing, probe, readSession, startPairing,
+  LOCAL_ORIGINS, ServerError, serverAddress, pollPairing, probe, readSession, startPairing,
   type Failure,
 } from "../shared/server";
 
@@ -29,6 +30,9 @@ async function fail(failure: Failure, generation: number): Promise<void> {
 
 /** The browser's own name for this connection, for example "Firefox on Linux". */
 export async function clientName(): Promise<string> {
+  // The browser and system only with the person's optional consent (the disclosure page; in
+  // Firefox, its technical-data consent too); else a neutral name, renamed in DownloadPulse.
+  if (!(await deviceNameAllowed())) return message("pairingClientGeneric") || "Browser";
   const platform = await chrome.runtime.getPlatformInfo();
   const system = ({mac: "macOS", win: "Windows", linux: "Linux", cros: "ChromeOS", android: "Android",
     openbsd: "OpenBSD", fuchsia: "Fuchsia"} as Record<string, string>)[platform.os] ?? platform.os;
@@ -49,6 +53,7 @@ function browserName(): string {
  * 2026-11-18).
  */
 export async function connectLocal(): Promise<void> {
+  if (!(await consented())) return;
   const generation = ++active;
   await setPairing({state: "probing"});
   for (const origin of LOCAL_ORIGINS) {
@@ -69,26 +74,25 @@ export async function pairLocal(origin: string): Promise<void> {
 }
 
 /** B3: a server the person named (its origin access already granted by the popup). */
-export async function connectRemote(address: string): Promise<void> {
+export async function connectRemote(address: string, insecure = false): Promise<void> {
+  if (!(await consented())) return;
   const generation = ++active;
   await setPairing({state: "probing"});
-  const origins = candidateOrigins(address);
-  if (!origins.length) return fail("unreachable", generation);
-  // The most specific reason any candidate gave: something that is not
-  // DownloadPulse beats a certificate failure beats nothing reachable.
-  const rank = {unreachable: 0, certificate: 1, not_downloadpulse: 2} as const;
-  let reason: keyof typeof rank = "unreachable";
-  let reached: string | null = null;
-  for (const origin of origins) {
-    const found = await probe(origin);
-    if (found === "downloadpulse") {
-      reached = origin;
-      break;
-    }
-    if (rank[found] > rank[reason]) reason = found;
+  const target = serverAddress(address);
+  if (!target) return fail("unreachable", generation);
+  // Plain HTTP: never across the internet; on a private network only once the person chose it.
+  if (target.transport === "public-http" || (target.transport === "lan-http" && !insecure)) {
+    return fail("insecure_refused", generation);
   }
-  if (!reached) return fail(reason, generation);
-  await pair(reached, generation);
+  const found = await probe(target.origin);
+  if (found !== "downloadpulse") {
+    // A private-network address typed without a scheme was tried over HTTPS only: say how to choose HTTP.
+    if (found !== "not_downloadpulse" && !target.schemeGiven && target.privateHost && target.transport === "https") {
+      return fail("https_only", generation);
+    }
+    return fail(found, generation);
+  }
+  await pair(target.origin, generation);
 }
 
 export async function cancel(): Promise<void> {

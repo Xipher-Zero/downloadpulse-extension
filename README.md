@@ -3,12 +3,14 @@
 The DownloadPulse browser extension, for Firefox and for Chromium-based
 browsers (Chrome, Edge, Brave and others), built from one codebase.
 
-It sends downloads from the browser to a DownloadPulse server as an external
-client of DownloadPulse's External Client Protocol (`debridpulse.external/1`):
-it authenticates with an Integration token and submits demand, and
-DownloadPulse decides everything after that.
+It sends the downloads you choose (links, files, video pages, selected links)
+to your own DownloadPulse server or desktop application, and shows and
+manages them from the toolbar. It connects with DownloadPulse's browser
+pairing (`debridpulse.browser/1`); DownloadPulse decides everything after that.
 
-**Status:** in development. The scaffold builds and tests both packages; there are no features yet.
+- Privacy: [`PRIVACY.md`](PRIVACY.md).
+- Building from source: [`BUILDING.md`](BUILDING.md).
+- Store notes: [`docs/store/`](docs/store/).
 
 ## Licence
 

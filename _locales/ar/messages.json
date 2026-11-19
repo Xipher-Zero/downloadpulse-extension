@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "ربط مرة أخرى"
+  },
+  "discloseLead": {
+    "message": "قبل الربط، إليك ما يتلقاه DownloadPulse من هذا المتصفح."
+  },
+  "discloseLinks": {
+    "message": "الروابط التي ترسلها. بالنسبة إلى رابط .torrent أو .nzb أو رابط مفهرس، يجلب هذا المتصفح الملف باستخدام تسجيل دخولك إلى ذلك الموقع ثم يرسل الملف؛ ولا تُرسَل ملفات تعريف الارتباط الخاصة بالموقع أبدًا."
+  },
+  "discloseVideo": {
+    "message": "بالنسبة إلى الفيديو، عنوان صفحته."
+  },
+  "disclosePolling": {
+    "message": "أثناء تشغيل التنزيلات، يتحقق هذا المتصفح من تقدمها لدى DownloadPulse الخاص بك."
+  },
+  "discloseStays": {
+    "message": "يسجّل DownloadPulse كل تنزيل على أنه مُرسَل من هذا المتصفح. ويبقى مفتاح الربط وإعداداتك في هذا المتصفح. ولا يُرسَل أي شيء إلى أي مكان آخر."
+  },
+  "discloseDeviceName": {
+    "message": "تسمية هذا الربط باسم هذا المتصفح والنظام (مثل «Brave على Linux»)"
+  },
+  "privacyPolicy": {
+    "message": "سياسة الخصوصية"
+  },
+  "discloseAgree": {
+    "message": "الموافقة والمتابعة"
+  },
+  "pairingClientGeneric": {
+    "message": "المتصفح"
+  },
+  "insecureTitle": {
+    "message": "هل تريد الربط دون تشفير؟"
+  },
+  "insecureText": {
+    "message": "لا يستخدم $ADDRESS$ بروتوكول HTTPS. سينتقل مفتاح الربط الخاص بهذا المتصفح والتنزيلات التي ترسلها عبر شبكتك دون تشفير. لا تتابع إلا على شبكة تثق بها.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "الربط دون تشفير"
+  },
+  "failureHttpsOnly": {
+    "message": "يتعذر الوصول إلى ذلك الخادم عبر HTTPS. إذا كان لا يستخدم HTTPS، فأدخل عنوانه بدءًا بـ http:// للربط دون تشفير."
+  },
+  "failureInsecureRefused": {
+    "message": "يجب أن يستخدم هذا الخادم HTTPS. لا يُسمح باستخدام HTTP غير المشفّر إلا على شبكتك الخاصة."
   }
 }

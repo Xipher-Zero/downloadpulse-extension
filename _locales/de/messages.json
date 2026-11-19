@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Erneut verbinden"
+  },
+  "discloseLead": {
+    "message": "Bevor Sie sich verbinden, sehen Sie hier, was DownloadPulse von diesem Browser erhält."
+  },
+  "discloseLinks": {
+    "message": "Die Links, die Sie senden. Bei einem .torrent-, .nzb- oder Indexer-Link ruft dieser Browser die Datei mit Ihrer Anmeldung auf dieser Website ab und sendet die Datei; die Cookies der Website werden nie gesendet."
+  },
+  "discloseVideo": {
+    "message": "Bei einem Video die Adresse seiner Seite."
+  },
+  "disclosePolling": {
+    "message": "Während Downloads laufen, fragt dieser Browser deren Fortschritt bei Ihrem DownloadPulse ab."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse verzeichnet jeden Download als von diesem Browser gesendet. Ihr Verbindungsschlüssel und Ihre Einstellungen bleiben in diesem Browser. An andere Stellen wird nichts gesendet."
+  },
+  "discloseDeviceName": {
+    "message": "Diese Verbindung nach diesem Browser und System benennen (z. B. „Brave unter Linux“)"
+  },
+  "privacyPolicy": {
+    "message": "Datenschutzerklärung"
+  },
+  "discloseAgree": {
+    "message": "Zustimmen und fortfahren"
+  },
+  "pairingClientGeneric": {
+    "message": "Browser"
+  },
+  "insecureTitle": {
+    "message": "Ohne Verschlüsselung verbinden?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ verwendet kein HTTPS. Der Verbindungsschlüssel dieses Browsers und die Downloads, die Sie senden, würden unverschlüsselt durch Ihr Netzwerk übertragen. Fahren Sie nur in einem Netzwerk fort, dem Sie vertrauen.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Ohne Verschlüsselung verbinden"
+  },
+  "failureHttpsOnly": {
+    "message": "Dieser Server ist über HTTPS nicht erreichbar. Wenn er kein HTTPS verwendet, geben Sie seine Adresse beginnend mit http:// ein, um sich ohne Verschlüsselung zu verbinden."
+  },
+  "failureInsecureRefused": {
+    "message": "Dieser Server muss HTTPS verwenden. Unverschlüsseltes HTTP ist nur in Ihrem eigenen Netzwerk erlaubt."
   }
 }

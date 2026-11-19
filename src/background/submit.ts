@@ -54,6 +54,9 @@ async function capture(href: string, kind: CaptureKind): Promise<Source> {
     throw new Refused("sendCaptureFailed");
   }
   if (!response.ok) throw new Refused("sendCaptureFailed");
+  // An HTTPS link redirected to plain HTTP is not followed into a capture: the file and the
+  // person's sign-in on that site would have crossed the network unencrypted.
+  if (url.protocol === "https:" && response.url && !response.url.startsWith("https:")) throw new Refused("sendCaptureFailed");
   if (/^\s*(text\/html|application\/xhtml)/i.test(response.headers.get("Content-Type") ?? "")) {
     throw new Refused("sendCaptureWebPage");
   }

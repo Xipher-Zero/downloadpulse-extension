@@ -44,7 +44,7 @@ test("the first screen says what the extension does, how it is used, and connect
   const {popup, close} = await launch();
   try {
     await expect(popup.getByText("Send downloads from your browser to DownloadPulse.", {exact: false})).toBeVisible();
-    const ways = popup.locator(".dp-welcome__ways li");
+    const ways = popup.locator('section[data-state="disconnected"] .dp-welcome__ways li');
     await expect(ways).toHaveText(["A send button appears when you hover over a download link.",
       "Highlight several links and send them together.", "Right-click any link, then “Download with DownloadPulse”.",
       "Follow progress here, and get notified when it's done."]);
@@ -84,6 +84,69 @@ test("the first screen says what the extension does, how it is used, and connect
   }
 });
 
+test("the disclosure comes before anything is sent: Back returns, agreeing is remembered, the device name only by choice", async () => {
+  const fake = await fakeDownloadPulse({port: 8095});
+  const {context, popup, close} = await launch();
+  try {
+    await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await expect(popup.getByText("Before you connect, here is what DownloadPulse receives from this browser.")).toBeVisible();
+    await expect(popup.locator('section[data-state="disclosure"] li')).toHaveCount(3);
+    await expect(popup.getByTestId("privacy-policy")).toHaveAttribute("href",
+      "https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md");
+    await expect(popup.getByTestId("device-name")).not.toBeChecked();             // off by default
+    await popup.waitForTimeout(500);
+    expect(fake.state.pairings.size).toBe(0);                                      // nothing sent yet
+    await popup.getByRole("button", {name: "Back"}).click();
+    await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
+    // Agreeing with the device name chosen: the connection is named after this browser and system.
+    await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await popup.getByTestId("device-name").check();
+    await popup.getByRole("button", {name: "Agree and continue"}).click();
+    await popup.getByRole("button", {name: "Connect", exact: true}).click();
+    await expect(popup.getByTestId("code")).toBeVisible();
+    expect(fake.state.lastClientName).toMatch(/^Chrom\w* on \w+/);
+    // Agreed once: the disclosure is not asked again.
+    await popup.getByRole("button", {name: "Cancel"}).click();
+    await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await expect(popup.getByRole("radio", {name: /^This computer/})).toBeVisible();
+    expect(await context.pages()[0].evaluate(() => 1)).toBe(1);
+  } finally {
+    await close();
+    await fake.close();
+  }
+});
+
+test("no silent downgrade: plain HTTP is explained on a private network, refused across the internet", async () => {
+  const {popup, close} = await launch();
+  try {
+    await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await popup.getByRole("button", {name: "Agree and continue"}).click();
+    await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();   // nothing on this computer
+    const field = () => popup.getByLabel("Server address").filter({visible: true});
+    // A private-network http:// address: the warning first, the address in the literal colour.
+    await field().fill("http://192.168.1.20:8095");
+    await popup.getByRole("button", {name: "Connect to this server"}).click();
+    await expect(popup.getByText("Connect without encryption?")).toBeVisible();
+    await expect(popup.getByTestId("insecure-text").locator(".dp-literal")).toHaveText("http://192.168.1.20:8095");
+    await expect(popup.getByRole("button", {name: "Connect without encryption"})).toBeVisible();
+    await popup.getByRole("button", {name: "Back"}).click();
+    await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();
+    // An internet http:// address: refused.
+    await field().fill("http://downloadpulse.example.com");
+    await popup.getByRole("button", {name: "Connect to this server"}).click();
+    await expect(popup.getByTestId("failure")).toHaveText("This server must use HTTPS. Plain HTTP is only allowed on your own network.");
+    // A private-network address without a scheme: HTTPS only, and how to choose HTTP.
+    await popup.getByRole("button", {name: "Connect again"}).click();
+    await field().fill("192.168.1.20:8095");
+    await popup.getByRole("button", {name: "Connect to this server"}).click();
+    await expect(popup.getByTestId("failure")).toHaveText(
+      "That server can't be reached over HTTPS. If it doesn't use HTTPS, enter its address starting with http:// to connect without encryption.",
+      {timeout: 15_000});
+  } finally {
+    await close();
+  }
+});
+
 test("found on this computer: offered first, then paired on approval, verified, and shown connected", async () => {
   const fake = await fakeDownloadPulse({port: 8095});
   const {context, popup, close} = await launch();
@@ -91,6 +154,7 @@ test("found on this computer: offered first, then paired on approval, verified, 
     // A signed-in DownloadPulse session in this browser: it must never ride along (credentials omitted).
     await context.addCookies([{name: "dp_session", value: "a-real-session", domain: "127.0.0.1", path: "/"}]);
     await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await popup.getByRole("button", {name: "Agree and continue"}).click();
     // Found, and asked: nothing is paired until the person chooses it.
     const pages = context.pages().length;
     await expect(popup.getByText("DownloadPulse found on this computer", {exact: true})).toBeVisible();
@@ -101,7 +165,7 @@ test("found on this computer: offered first, then paired on approval, verified, 
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     // The approval page opened on that server, at its own path.
     await expect.poll(() => context.pages().map((page) => page.url())).toContain("http://127.0.0.1:8095/?connect-browser=ABCD-0001");
-    expect(fake.state.lastClientName).toMatch(/^Chrom\w* on \w+/);
+    expect(fake.state.lastClientName).toBe("Browser");   // no device name without the person's optional consent
     fake.answer("approved");
     await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
     // The details are behind the chevron; DownloadPulse on this computer is named, never its loopback address.
@@ -139,6 +203,7 @@ test("found on this computer, a different DownloadPulse can be chosen instead", 
   const {popup, close} = await launch();
   try {
     await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await popup.getByRole("button", {name: "Agree and continue"}).click();
     await expect(popup.getByLabel("Server address").filter({visible: true})).toHaveCount(0);
     // Two choice cards, as DownloadPulse's setup wizard offers a deployment type: This computer is chosen.
     const local_ = popup.getByRole("radio", {name: /^This computer/});
@@ -219,6 +284,7 @@ test("nothing on this computer: Check again, then a named server", async () => {
   const fake = await fakeDownloadPulse();
   try {
     await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await popup.getByRole("button", {name: "Agree and continue"}).click();
     await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();
     await popup.getByRole("button", {name: "Check again"}).click();
     await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();
@@ -248,6 +314,7 @@ for (const [mode, answer, text] of [
     const {popup, close} = await launch();
     try {
       await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+      await popup.getByRole("button", {name: "Agree and continue"}).click();
       await popup.getByLabel("Server address").filter({visible: true}).fill(`http://localhost:${fake.port}`);
       await popup.getByRole("button", {name: "Connect to this server"}).click();
       if (answer) {
@@ -273,6 +340,7 @@ test("an older DownloadPulse on this computer says so; Connect again offers a re
   const {popup, close} = await launch();
   try {
     await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await popup.getByRole("button", {name: "Agree and continue"}).click();
     await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("failure")).toHaveText("This DownloadPulse is too old to connect browsers. Update it, then connect again.");
     await popup.getByRole("button", {name: "Connect again"}).click();

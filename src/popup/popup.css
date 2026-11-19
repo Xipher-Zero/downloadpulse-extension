@@ -270,6 +270,19 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-failed__plug { display: contents; }
 .dp-failed__again svg { inline-size: 16px; block-size: 16px; }
 
+/* ── the disclosure and the plain-HTTP choice: the first screen's form ── */
+.dp-disclosure, .dp-insecure { gap: 12px; }
+.dp-disclosure .dp-welcome__ways { margin-block: var(--dp-row) 0; }
+.dp-disclosure .dp-welcome__next { margin-block: var(--dp-row) 0; }
+.dp-disclosure__device { justify-self: center; font-size: 12.5px; color: var(--dp-text-secondary); margin-block-start: 4px; }
+.dp-disclosure__policy { justify-self: center; font-size: 12.5px; color: var(--dp-accent-purple-bright); margin-block: 0 var(--dp-row); }
+.dp-disclosure__back { justify-self: center; }
+.dp-caution__status { display: grid; justify-items: center; gap: 8px; padding: 14px 12px;
+  border: 1px solid color-mix(in srgb, var(--dp-state-caution) 40%, var(--dp-border-default)); border-radius: 8px;
+  background: color-mix(in srgb, var(--dp-state-caution) 8%, var(--dp-surface-1)); color: var(--dp-state-caution); text-align: center; }
+.dp-caution__status svg { inline-size: 26px; block-size: 26px; }
+.dp-insecure__text { margin-block: var(--dp-row); }
+
 /* ── choosing what to connect to: DownloadPulse's wizard choice cards ── */
 .dp-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .dp-choice {
@@ -333,6 +346,9 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-job[data-tone="processing"] .dp-job__fill { background: var(--dp-state-processing-badge); }
 .dp-job__pct { flex: 0 0 5.5ch; text-align: end; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--dp-text-secondary); }
 .dp-job__note { color: var(--dp-text-muted); font-size: 12px; }
+/* Done: the full bar and its word in DownloadPulse's completion green; the slot grows to the word. */
+.dp-job[data-phase="completed"] .dp-job__fill { background: var(--dp-state-success); }
+.dp-job__done { flex: 0 0 auto; min-inline-size: 5.5ch; color: var(--dp-state-success); font-weight: 600; white-space: nowrap; }
 
 /* ── settings ── */
 .dp-settings { gap: 14px; }

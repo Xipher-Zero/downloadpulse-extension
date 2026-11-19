@@ -1,0 +1,64 @@
+# DownloadPulse browser extension: privacy policy
+
+_Last updated: 2026-11-18. Applies to the DownloadPulse extension for Firefox and Chromium-based browsers._
+
+The extension sends downloads you choose from your browser to **your own DownloadPulse**, a server or desktop application that you, or whoever runs it for you, operate. It has no servers of its own, no analytics and no telemetry. It sends nothing to its authors or to any third party.
+
+## What is sent to your DownloadPulse, and when
+
+Nothing is sent before you agree to the disclosure shown when you first connect.
+
+- **Connecting.** The extension first checks whether DownloadPulse is running on this computer (a request to `127.0.0.1:8095` and `localhost:8095`), or contacts the server address you enter. It asks to connect, under a name for this connection:
+  - **"Browser"**, by default;
+  - **this browser and system** (for example "Brave on Linux"), only if you tick that option. In Firefox, that also needs its optional technical-data consent.
+
+  You approve the connection in DownloadPulse, which then gives the extension a **connection key**.
+- **When you send something:**
+  - **A link:** its address.
+  - **A `.torrent`, `.nzb` or `.meta4` link, or an indexer's download link:** the extension fetches the file in your browser, using the session you already have with that website (your sign-in there), and sends **the file and its name**, not the link. The website's cookies and the link itself (which may carry a key of yours for that site) are **never** sent to DownloadPulse. A file whose link was redirected from HTTPS to HTTP is not captured.
+  - **A video:** the address of the page it plays on.
+- **While downloads run, or the extension's menu is open,** it asks your DownloadPulse for the status of the downloads sent from this browser, and for your DownloadPulse colour theme, so its pages match it.
+- **When you choose to:** pausing, resuming or removing a download sent from this browser; bringing the DownloadPulse desktop application's window forward; disconnecting.
+
+Every request to DownloadPulse carries the connection key and **never your browser's cookies**.
+
+## What stays in your browser
+
+Stored by the extension in your browser profile only:
+- the connection key (in the extension's own storage, not readable by websites);
+- the server's address, your account's display name and the connection's name;
+- your settings;
+- your agreement to the disclosure;
+- your DownloadPulse theme's palette names.
+
+The list of sent downloads is kept only until the browser closes. Disconnecting deletes the key and the connection details. Removing the extension deletes everything.
+
+## What DownloadPulse records
+
+Your DownloadPulse records each download you send as yours, sent from this browser's connection (under its name), and keeps a journal of connections and disconnections. What it does with downloads is governed by DownloadPulse and by whoever operates it. You can see and remove this browser's connection in DownloadPulse under **My Account › Connected browsers**, and an administrator can do the same.
+
+## Transport
+
+- DownloadPulse on this computer is reached over plain HTTP on the loopback address.
+- Any other server is reached over **HTTPS**. Plain HTTP is used only for a server on your private network, and only after you choose it on a screen explaining that the connection key and downloads would cross that network unencrypted.
+- Plain HTTP across the internet is refused.
+- Nothing falls back from HTTPS to HTTP silently.
+
+## Private browsing
+
+The extension does not run in private or incognito windows.
+
+## Permissions
+
+- **Every web page (http and https)**, including the frames inside them:
+  - to show its download buttons beside links, video players and selected links;
+  - to fetch a `.torrent`, `.nzb` or indexer file with your sign-in on the site serving it;
+  - to reach your DownloadPulse.
+- **Storage:** to keep the items listed above.
+- **Context menus:** the "Download with DownloadPulse" item.
+- **Notifications:** download finished, failed or needs attention, each switchable in Settings.
+- **Alarms:** to keep checking downloads in progress.
+
+## Contact
+
+Questions and reports: <https://github.com/Xipher-Zero/downloadpulse-extension/issues>.

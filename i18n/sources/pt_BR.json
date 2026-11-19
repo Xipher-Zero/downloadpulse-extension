@@ -118,5 +118,19 @@
   "localApproveHint": "e0793e3d88496145",
   "remoteAddressHint": "96659337e86ad292",
   "optionsInPage": "e8601dcc2cd4ed38",
-  "popupConnectAgain": "7da41f1987b1d0bc"
+  "popupConnectAgain": "7da41f1987b1d0bc",
+  "discloseLead": "67c417bc57f3e819",
+  "discloseLinks": "0f470bc52e1c9ec4",
+  "discloseVideo": "7d43fabd5ffe507f",
+  "disclosePolling": "4b01ccb94737ab8f",
+  "discloseStays": "c40be22cd5d05e24",
+  "discloseDeviceName": "02cfda3ac3f20d8c",
+  "privacyPolicy": "ba445cff3898a3f2",
+  "discloseAgree": "a52b321e566a1c6e",
+  "pairingClientGeneric": "d31de1a5c5c8ba2a",
+  "insecureTitle": "2069b2872f765f91",
+  "insecureText": "7b8218256a531804",
+  "insecureContinue": "68953bb10794121f",
+  "failureHttpsOnly": "5f5bf97464eb7b2c",
+  "failureInsecureRefused": "e462077214cbbc47"
 }

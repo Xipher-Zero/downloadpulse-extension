@@ -8,3 +8,6 @@ for (const browser of ["chromium", "firefox"]) {
   execFileSync("npx", ["web-ext", "build", "--source-dir", `dist/${browser}`, "--artifacts-dir", "web-ext-artifacts",
     "--filename", `downloadpulse-${browser}-${version}.zip`, "--overwrite-dest"], { stdio: "inherit" });
 }
+// The corresponding source (GPL; AMO's source upload): the commit's tree, lockfile and BUILDING.md included.
+execFileSync("git", ["archive", "--format=zip", "--prefix=downloadpulse-extension/", "-o",
+  `web-ext-artifacts/downloadpulse-source-${version}.zip`, "HEAD"], { stdio: "inherit" });

@@ -22,12 +22,15 @@ export function manifest(browser, version) {
     },
     options_ui: { page: "options/options.html", open_in_tab: true },
     permissions: ["storage", "contextMenus", "notifications", "alarms"],
-    // Every site (WS-E2 B9): a .torrent/.nzb/.meta4 is captured from whatever
-    // site serves it, with the person's own login there (spike S1); the
-    // in-page surfaces run everywhere. This includes a DownloadPulse on this
-    // computer (WS-E1 B2) and any server the person names (L20).
-    host_permissions: ["<all_urls>"],
-    content_scripts: [{matches: ["<all_urls>"], js: ["content.js"], all_frames: true, run_at: "document_idle"}],
+    // Web pages only, http and https (store review, 2026-11-18; docs/store/PERMISSIONS.md):
+    // the in-page buttons run on whatever page the person browses, in its frames too
+    // (a video player is often embedded in one); a .torrent/.nzb/indexer link is
+    // captured from whatever site serves it, with the person's own sign-in there
+    // (spike S1); the DownloadPulse on this computer, or the server the person names.
+    host_permissions: ["http://*/*", "https://*/*"],
+    content_scripts: [{matches: ["http://*/*", "https://*/*"], js: ["content.js"], all_frames: true, run_at: "document_idle"}],
+    // Never in private windows: a private session's downloads would land in DownloadPulse's lasting queue.
+    incognito: "not_allowed",
   };
   if (browser === "chromium") {
     return { ...shared, background: { service_worker: "background.js" }, minimum_chrome_version: "120" };
@@ -38,7 +41,13 @@ export function manifest(browser, version) {
     // The URL-bar icon, shown on a page whose content script saw a video (WS-E2 B4).
     page_action: { default_title: "__MSG_pageActionSend__", default_icon: { 16: "icons/icon-16.png", 32: "icons/icon-32.png" } },
     browser_specific_settings: {
-      gecko: { id: FIREFOX_ADDON_ID, strict_min_version: "140.0", data_collection_permissions: { required: ["none"] } },
+      gecko: {
+        id: FIREFOX_ADDON_ID, strict_min_version: "140.0",
+        // What reaches the person's DownloadPulse (PRIVACY.md): the links and pages they send
+        // (browsing activity), a captured file (website content); the browser and system that
+        // name the connection only with optional consent (technical data).
+        data_collection_permissions: { required: ["browsingActivity", "websiteContent"], optional: ["technicalAndInteraction"] },
+      },
     },
   };
 }

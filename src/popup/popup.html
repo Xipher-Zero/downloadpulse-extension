@@ -42,6 +42,33 @@
       <p class="dp-welcome__state" data-testid="status"><span class="dp-welcome__dot" aria-hidden="true"></span><span data-i18n="popupNotConnected"></span></p>
     </section>
 
+    <!-- Before connecting: what this browser sends to DownloadPulse, agreed to before
+         anything is sent (store review, 2026-11-18; PRIVACY.md). -->
+    <section data-state="disclosure" class="dp-disclosure" hidden>
+      <p class="dp-welcome__lead" data-i18n="discloseLead"></p>
+      <ul class="dp-welcome__ways">
+        <li data-i18n="discloseLinks"></li>
+        <li data-i18n="discloseVideo"></li>
+        <li data-i18n="disclosePolling"></li>
+      </ul>
+      <p class="dp-welcome__next" data-i18n="discloseStays"></p>
+      <label class="dp-check dp-disclosure__device"><input type="checkbox" data-testid="device-name"> <span data-i18n="discloseDeviceName"></span></label>
+      <a class="dp-disclosure__policy" data-testid="privacy-policy" target="_blank" rel="noopener" data-i18n="privacyPolicy"></a>
+      <button type="button" class="dp-btn dp-btn--primary" data-action="agree" data-i18n="discloseAgree"></button>
+      <button type="button" class="dp-btn dp-btn--ghost dp-disclosure__back" data-action="screen-back" data-i18n="popupBack"></button>
+    </section>
+
+    <!-- A plain-HTTP server on a private network: the person's deliberate choice, explained first. -->
+    <section data-state="insecure" class="dp-insecure" hidden>
+      <div class="dp-caution__status" role="alert">
+        <span class="dp-failed__glyph" data-glyph-slot="triangleAlert"></span>
+        <p class="dp-failed__text" data-i18n="insecureTitle"></p>
+      </div>
+      <p class="dp-welcome__next dp-insecure__text" data-testid="insecure-text"></p>
+      <button type="button" class="dp-btn dp-btn--primary" data-action="insecure-continue" data-i18n="insecureContinue"></button>
+      <button type="button" class="dp-btn dp-btn--ghost dp-disclosure__back" data-action="screen-back" data-i18n="popupBack"></button>
+    </section>
+
     <section data-state="probing" hidden>
       <p class="dp-popup__status" role="status" data-i18n="popupProbing"></p>
     </section>
@@ -179,6 +206,7 @@
         <label class="dp-check"><input type="checkbox" data-notify="completed"> <span data-i18n="optionsNotifyCompleted"></span></label>
         <label class="dp-check"><input type="checkbox" data-notify="failed"> <span data-i18n="optionsNotifyFailed"></span></label>
         <label class="dp-check"><input type="checkbox" data-notify="attention"> <span data-i18n="optionsNotifyAttention"></span></label>
+        <a class="dp-disclosure__policy" data-testid="settings-privacy-policy" target="_blank" rel="noopener" data-i18n="privacyPolicy"></a>
       </section>
     </section>
   </main>

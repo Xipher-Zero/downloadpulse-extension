@@ -414,5 +414,53 @@
   },
   "popupConnectAgain": {
     "message": "Hubungkan lagi"
+  },
+  "discloseLead": {
+    "message": "Sebelum Anda menghubungkan, berikut yang diterima DownloadPulse dari peramban ini."
+  },
+  "discloseLinks": {
+    "message": "Tautan yang Anda kirim. Untuk tautan .torrent, .nzb, atau pengindeks, peramban ini mengambil berkas dengan sesi masuk Anda di situs itu lalu mengirim berkasnya; cookie situs itu tidak pernah dikirim."
+  },
+  "discloseVideo": {
+    "message": "Untuk video, alamat halamannya."
+  },
+  "disclosePolling": {
+    "message": "Selama unduhan berjalan, peramban ini memeriksa progresnya pada DownloadPulse Anda."
+  },
+  "discloseStays": {
+    "message": "DownloadPulse mencatat setiap unduhan sebagai dikirim dari peramban ini. Kunci sambungan dan pengaturan Anda tetap berada di peramban ini. Tidak ada yang dikirim ke tempat lain."
+  },
+  "discloseDeviceName": {
+    "message": "Namai sambungan ini sesuai peramban dan sistem ini (mis. “Brave di Linux”)"
+  },
+  "privacyPolicy": {
+    "message": "Kebijakan privasi"
+  },
+  "discloseAgree": {
+    "message": "Setuju dan lanjutkan"
+  },
+  "pairingClientGeneric": {
+    "message": "Peramban"
+  },
+  "insecureTitle": {
+    "message": "Hubungkan tanpa enkripsi?"
+  },
+  "insecureText": {
+    "message": "$ADDRESS$ tidak memakai HTTPS. Kunci sambungan peramban ini dan unduhan yang Anda kirim akan melintasi jaringan Anda tanpa enkripsi. Lanjutkan hanya di jaringan yang Anda percayai.",
+    "placeholders": {
+      "address": {
+        "content": "$1",
+        "example": "http://192.168.1.20:8095"
+      }
+    }
+  },
+  "insecureContinue": {
+    "message": "Hubungkan tanpa enkripsi"
+  },
+  "failureHttpsOnly": {
+    "message": "Server itu tidak dapat dijangkau melalui HTTPS. Jika server itu tidak memakai HTTPS, masukkan alamatnya dengan awalan http:// untuk menghubungkan tanpa enkripsi."
+  },
+  "failureInsecureRefused": {
+    "message": "Server ini harus memakai HTTPS. HTTP tanpa enkripsi hanya diizinkan di jaringan Anda sendiri."
   }
 }

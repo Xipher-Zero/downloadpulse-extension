@@ -393,3 +393,18 @@ The toolbar icon is drawn by the background, no longer only static PNGs (`src/sh
 - **Every failure reason:** shown in the status with its glyph, no form; Connect again leads into connecting.
 - **An older DownloadPulse on this computer:** Connect again, then Remote server, then a named server pairs.
 - **Revoked:** the new message.
+
+## 24. A done download looks done, as in DownloadPulse
+
+**Seen:** a finished download lost its bar and showed a centred, uncoloured "Done".
+
+**Now:**
+- The bar is kept, full, in DownloadPulse's completion green, with "Done" in green where the percent was, right of the bar and on its line.
+- The slot grows to the word ("Abgeschlossen"), so the bar matches the running rows' length in English. A finished row never changes after that.
+- Failed and removed keep their centred status line.
+
+**Proof:**
+- the bar's value is 100 and its fill is full width, in green;
+- "Done" is green, right of the bar and on its line;
+- the row has no status line;
+- a failed status is still centred.
