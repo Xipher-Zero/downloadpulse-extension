@@ -1,6 +1,6 @@
 # DownloadPulse browser extension: privacy policy
 
-_Last updated: 2026-11-18. Applies to the DownloadPulse extension for Firefox and Chromium-based browsers._
+_Last updated: 2026-11-20. Applies to the DownloadPulse extension for Firefox and Chromium-based browsers._
 
 The extension sends downloads you choose from your browser to **your own DownloadPulse**, a server or desktop application that you, or whoever runs it for you, operate. It has no servers of its own, no analytics and no telemetry, and sends nothing to its authors.
 
@@ -71,6 +71,8 @@ The extension does not run in private or incognito windows.
 - **Context menus:** the "Download with DownloadPulse" item.
 - **Notifications:** download finished, failed or needs attention, each switchable in Settings.
 - **Alarms:** to keep checking downloads in progress.
+- **Cookies:** to send your sign-in on a video's site with a video you send, as described above. Read only: the extension never sets or removes a cookie, never reads one for a link, file or selection, and never keeps one. On by default, switchable in Settings ("Send my sign-in on the site with videos").
+- **DNS (Firefox only):** to check whether a server or file-link name resolves only to private addresses (split DNS, such as `nas.home.example.com`), so it can be treated as part of your own network. The lookup is your system's own name resolution; nothing extra is sent anywhere.
 
 ## Contact
 
