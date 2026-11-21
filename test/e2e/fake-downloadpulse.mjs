@@ -37,7 +37,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       const userCode = `ABCD-${String(state.pairings.size + 1).padStart(4, "0")}`;
       const deviceCode = `device-${userCode}`;
       state.pairings.set(deviceCode, {userCode, status: "pending"});
-      return send(200, {protocol: "debridpulse.browser/1", device_code: deviceCode, user_code: userCode,
+      return send(200, {protocol: state.mode === "previous-name" ? "debridpulse.browser/1" : "downloadpulse.browser/1", device_code: deviceCode, user_code: userCode,
         verification_path: `/?connect-browser=${userCode}`, expires_in: 600, interval: 2});
     }
     if (url.pathname === "/api/browser/v1/pairings/poll" && req.method === "POST") {
@@ -68,7 +68,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
     if (url.pathname === "/api/browser/v1/session") {
       state.sessionAuth.push({authorization: req.headers.authorization, cookie: req.headers.cookie ?? null});
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
-      return send(200, {protocol: state.mode === "wrong-protocol" ? "debridpulse.browser/0" : "debridpulse.browser/1",
+      return send(200, {protocol: state.mode === "wrong-protocol" ? "downloadpulse.browser/0"
+        : state.mode === "previous-name" ? "debridpulse.browser/1" : "downloadpulse.browser/1",
         token: {id: "tok-1", label: "Laptop-Chrome"}, account: {display_name: "Una"},
         ...(state.appearance ? {appearance: state.appearance} : {}),
         // A DownloadPulse that takes a video's cookies says so (``videoCookies``; an older one says nothing).

@@ -301,6 +301,26 @@ test("nothing on this computer: Check again, then a named server", async () => {
   }
 });
 
+// A DownloadPulse from before the rename (1.0.14) names the same protocol
+// debridpulse.browser/1: it connects exactly as a current one does.
+test("a server that names the protocol by its previous name connects", async () => {
+  const fake = await fakeDownloadPulse({mode: "previous-name"});
+  const {popup, close} = await launch();
+  try {
+    await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+    await popup.getByRole("button", {name: "Agree and continue"}).click();
+    await popup.getByLabel("Server address").filter({visible: true}).fill(`http://localhost:${fake.port}`);
+    await popup.getByRole("button", {name: "Connect to this server"}).click();
+    await expect(popup.getByTestId("code")).toBeVisible();
+    fake.answer("approved");
+    await expect(popup.getByTestId("server")).toHaveText("Locally installed instance", {timeout: 15_000});
+    expect(fake.state.sessionAuth.length).toBeGreaterThan(0);
+  } finally {
+    await close();
+    await fake.close();
+  }
+});
+
 for (const [mode, answer, text] of [
   ["current", "denied", "The connection was denied in DownloadPulse."],
   ["current", "expired", "The connection request expired."],

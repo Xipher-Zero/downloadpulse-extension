@@ -3,7 +3,11 @@
 // credentials (a session cookie must never ride along with the browser
 // token; DebridPulse BROWSER_CLIENT.md §4), has a timeout, and fails typed.
 
-export const PROTOCOL = "debridpulse.browser/1";
+// The pairing protocol, by the name the server gives it: DownloadPulse 1.0.0
+// names it downloadpulse.browser/1; the same protocol was debridpulse.browser/1
+// before the rename (1.0.14). Either is this extension's protocol.
+export const PROTOCOLS: readonly string[] = ["downloadpulse.browser/1", "debridpulse.browser/1"];
+const speaks = (protocol: unknown): boolean => typeof protocol === "string" && PROTOCOLS.includes(protocol);
 export const LOCAL_ORIGINS = ["http://127.0.0.1:8095", "http://localhost:8095"] as const;
 
 /** DownloadPulse on this computer: a loopback origin (the desktop application, or a local install). */
@@ -190,7 +194,7 @@ export async function startPairing(origin: string, clientName: string): Promise<
   if ([401, 403, 404, 405].includes(response.status)) throw new ServerError("too_old");
   if (!response.ok) throw new ServerError("failed");
   const body = await json(response);
-  if (body["protocol"] !== PROTOCOL || typeof body["device_code"] !== "string" || typeof body["user_code"] !== "string"
+  if (!speaks(body["protocol"]) || typeof body["device_code"] !== "string" || typeof body["user_code"] !== "string"
       || typeof body["verification_path"] !== "string") {
     throw new ServerError("too_old");
   }
@@ -236,7 +240,7 @@ export async function readSession(origin: string, token: string): Promise<Sessio
   const body = await json(response);
   const token_ = body["token"] as Record<string, unknown> | undefined;
   const account = body["account"] as Record<string, unknown> | undefined;
-  if (body["protocol"] !== PROTOCOL || !token_ || !account) throw new ServerError("too_old");
+  if (!speaks(body["protocol"]) || !token_ || !account) throw new ServerError("too_old");
   const capabilities = (body["capabilities"] ?? {}) as Record<string, unknown>;
   return {token: {id: String(token_["id"] ?? ""), label: String(token_["label"] ?? "")},
     account: {display_name: String(account["display_name"] ?? "")}, appearance: body["appearance"],

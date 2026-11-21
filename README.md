@@ -6,7 +6,7 @@ browsers (Chrome, Edge, Brave and others), built from one codebase.
 It sends the downloads you choose (links, files, video pages, selected links)
 to your own DownloadPulse server or desktop application, and shows and
 manages them from the toolbar. It connects with DownloadPulse's browser
-pairing (`debridpulse.browser/1`); DownloadPulse decides everything after that.
+pairing (`downloadpulse.browser/1`; `debridpulse.browser/1` before the rename); DownloadPulse decides everything after that.
 
 - Privacy: [`PRIVACY.md`](PRIVACY.md).
 - Building from source: [`BUILDING.md`](BUILDING.md).
