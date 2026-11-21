@@ -345,6 +345,9 @@
   "listClear": {
     "message": "끝난 다운로드 지우기"
   },
+  "listRemove": {
+    "message": "목록에서 제거"
+  },
   "selectionSend": {
     "message": "선택한 링크를 DownloadPulse로 다운로드"
   },

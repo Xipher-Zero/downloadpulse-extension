@@ -345,6 +345,9 @@
   "listClear": {
     "message": "清除已结束的下载"
   },
+  "listRemove": {
+    "message": "从列表中移除"
+  },
   "selectionSend": {
     "message": "使用DownloadPulse下载所选链接"
   },

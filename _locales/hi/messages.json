@@ -345,6 +345,9 @@
   "listClear": {
     "message": "समाप्त डाउनलोड साफ़ करें"
   },
+  "listRemove": {
+    "message": "सूची से हटाएँ"
+  },
   "selectionSend": {
     "message": "चुने गए लिंक DownloadPulse से डाउनलोड करें"
   },

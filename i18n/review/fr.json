@@ -1179,6 +1179,14 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "listRemove": {
+      "source": "82963c76530673a2",
+      "translation": "f6c1e861d51c310f",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

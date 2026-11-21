@@ -447,6 +447,10 @@
     "message": "Clear finished downloads",
     "description": "Popup footer: name and tooltip of the trash button that removes finished downloads (done, failed, removed) from this list only. DownloadPulse keeps them; active downloads stay."
   },
+  "listRemove": {
+    "message": "Remove from list",
+    "description": "Button on a finished download (done, failed, removed), shown on hover: take this one entry off this browser's list only, as the footer's Clear does for all finished entries. DownloadPulse keeps it."
+  },
   "selectionSend": {
     "message": "Download the selected links with DownloadPulse",
     "description": "Name and tooltip of the button shown at the end of selected text that contains links; it sends them all as one batch. The number of links is shown on the button itself."

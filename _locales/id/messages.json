@@ -345,6 +345,9 @@
   "listClear": {
     "message": "Bersihkan unduhan selesai"
   },
+  "listRemove": {
+    "message": "Keluarkan dari daftar"
+  },
   "selectionSend": {
     "message": "Unduh tautan yang dipilih dengan DownloadPulse"
   },

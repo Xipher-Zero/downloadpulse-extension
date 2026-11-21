@@ -345,6 +345,9 @@
   "listClear": {
     "message": "終了したダウンロードをクリア"
   },
+  "listRemove": {
+    "message": "一覧から除去"
+  },
   "selectionSend": {
     "message": "選択したリンクを DownloadPulse でダウンロード"
   },

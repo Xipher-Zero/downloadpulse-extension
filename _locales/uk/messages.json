@@ -345,6 +345,9 @@
   "listClear": {
     "message": "Очистити завершені завантаження"
   },
+  "listRemove": {
+    "message": "Прибрати зі списку"
+  },
   "selectionSend": {
     "message": "Завантажити виділені посилання через DownloadPulse"
   },

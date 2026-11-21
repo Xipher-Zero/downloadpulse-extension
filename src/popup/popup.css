@@ -332,7 +332,7 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 /* ── Sent Downloads ── */
 .dp-popup__heading { margin: 2px 0 0; font-size: 13px; font-weight: 650; }
 .dp-jobs { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; max-height: 340px; overflow-y: auto; }
-.dp-job { display: grid; gap: 6px; padding: 8px 10px; border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1); min-width: 0; }
+.dp-job { position: relative; display: grid; gap: 6px; padding: 8px 10px; border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1); min-width: 0; }
 .dp-job--focus { border-color: var(--dp-accent-purple-bright); box-shadow: 0 0 0 1px var(--dp-accent-purple-bright); }
 .dp-job__name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .dp-job__line { display: flex; align-items: center; gap: 8px; min-height: 26px; min-width: 0; }
@@ -347,6 +347,25 @@ input[type="text"]:focus-visible { outline: none; box-shadow: var(--dp-focus-rin
 .dp-job__controls { display: flex; gap: 6px; flex: 0 0 auto; }
 /* A finished download (done, failed, removed): its terminal status alone on its line, centred. */
 .dp-job:is([data-phase="completed"], [data-phase="failed"], [data-phase="withdrawn"]) .dp-job__state { text-align: center; }
+/* No controls on a finished line, so no room kept for them: a failed or removed entry is no
+   taller than a done one (its bar line). */
+.dp-job:is([data-phase="failed"], [data-phase="withdrawn"]) .dp-job__line { min-height: 0; }
+/* Remove from list: on a finished entry's title line, at its end, while the row is hovered or
+   has the focus; the title fades out before it. */
+.dp-job__forget {
+  position: absolute; inset-block-start: 4px; inset-inline-end: 6px;
+  opacity: 0; pointer-events: none; transition: opacity .12s ease;
+}
+.dp-job:is(:hover, :focus-within) .dp-job__forget { opacity: 1; pointer-events: auto; }
+.dp-job:is(:hover, :focus-within):has(.dp-job__forget) .dp-job__name {
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent calc(100% - 26px));
+  mask-image: linear-gradient(to right, #000 calc(100% - 44px), transparent calc(100% - 26px));
+}
+.dp-job:is(:hover, :focus-within):has(.dp-job__forget) .dp-job__name:dir(rtl) {
+  -webkit-mask-image: linear-gradient(to left, #000 calc(100% - 44px), transparent calc(100% - 26px));
+  mask-image: linear-gradient(to left, #000 calc(100% - 44px), transparent calc(100% - 26px));
+}
+@media (prefers-reduced-motion: reduce) { .dp-job__forget { transition: none; } }
 /* The bar, and its percent in a slot reserved at full width ("100%"), so the bar never changes length. */
 .dp-job__progress { display: flex; align-items: center; gap: 8px; }
 .dp-job__bar { flex: 1 1 auto; block-size: 4px; border-radius: 999px; background: var(--dp-progress-track); overflow: hidden; }

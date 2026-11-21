@@ -209,6 +209,13 @@ function renderJobs(jobs: Job[]): void {
       progress.append(bar, pct);
       row.append(progress);
     }
+    if (!unsettled(job)) {
+      // A finished download leaves this list alone (as Clear does for all of them): the
+      // footer's trash, on the title line, shown while the row is hovered or focused.
+      const forget = glyphButton("trash2", "listRemove", "danger", {job: job.id, jobAction: "forget"});
+      forget.classList.add("dp-job__forget");
+      row.append(forget);
+    }
     const note = notes.get(job.id);
     if (note) {
       const said = document.createElement("p");
@@ -223,6 +230,7 @@ function renderJobs(jobs: Job[]): void {
 
 async function act(id: string, action: string): Promise<void> {
   notes.delete(id);
+  if (action === "forget") return forget(id);
   const request = action === "remove" ? {type: "dp-withdraw", id} : {type: "dp-control", id, kind: action};
   const answer = await chrome.runtime.sendMessage(request) as {ok: boolean; reason?: string} | undefined;
   if (answer && !answer.ok) notes.set(id, message(DECLINED[answer.reason ?? ""] ?? "controlFailed"));
@@ -258,6 +266,23 @@ async function clearFinished(): Promise<void> {
   const cleared = ((await chrome.storage.session.get(keys.cleared))[keys.cleared] ?? {}) as Record<string, number>;
   for (const job of (await listed()).filter(finished)) cleared[job.id] = job.cursor;
   await chrome.storage.session.set({[keys.cleared]: cleared});
+}
+
+/** One finished entry leaves this browser's list, as Clear does for all of them. */
+async function forget(id: string): Promise<void> {
+  const keys = await listKeys();
+  if (!keys) return;
+  const job = (await listed()).find((item) => item.id === id);
+  if (!job || !finished(job)) return;
+  const cleared = ((await chrome.storage.session.get(keys.cleared))[keys.cleared] ?? {}) as Record<string, number>;
+  cleared[id] = job.cursor;
+  await chrome.storage.session.set({[keys.cleared]: cleared});
+  // The focus moves on to the list's next entry, or to the footer's Clear.
+  const rows = [...document.querySelectorAll<HTMLElement>("li[data-job-id]")];
+  const next = rows[rows.findIndex((item) => item.dataset["jobId"] === id) + 1]?.dataset["jobId"];
+  await renderList();
+  const target = next ? document.querySelector<HTMLElement>(`li[data-job-id="${CSS.escape(next)}"] button`) : null;
+  (target ?? $<HTMLElement>('[data-testid="clear-list"]')).focus();
 }
 
 async function renderList(): Promise<void> {

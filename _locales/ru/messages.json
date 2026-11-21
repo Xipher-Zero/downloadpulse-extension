@@ -345,6 +345,9 @@
   "listClear": {
     "message": "Очистить завершённые загрузки"
   },
+  "listRemove": {
+    "message": "Убрать из списка"
+  },
   "selectionSend": {
     "message": "Загрузить выделенные ссылки через DownloadPulse"
   },

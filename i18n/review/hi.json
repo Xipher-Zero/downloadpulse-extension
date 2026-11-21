@@ -1178,6 +1178,14 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "listRemove": {
+      "source": "82963c76530673a2",
+      "translation": "03f9a2ef115ef0e4",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

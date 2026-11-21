@@ -114,7 +114,9 @@ test("a sent download: its name on one line, its status in DownloadPulse's colou
   dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});
   await expect(row(id)).toHaveAttribute("data-tone", "failed");
   expect(await colour(row(id).locator(".dp-job__status"))).toBe("rgb(255, 82, 100)");
-  await expect(row(id).getByRole("button")).toHaveCount(0);
+  // No controls once it failed: only Remove from list (this browser's list).
+  await expect(row(id).getByRole("button")).toHaveCount(1);
+  await expect(row(id).getByRole("button", {name: "Remove from list"})).toHaveCount(1);
   await expect(row(id).getByRole("progressbar")).toHaveCount(0);
   dp.setJob(id, {phase: "completed", reason: "completed", actionability: "none"});
   await expect(row(id)).toHaveAttribute("data-tone", "none");
@@ -311,7 +313,45 @@ test("Remove withdraws this browser's request", async () => {
   const id = await sendArchive();
   await row(id).getByRole("button", {name: "Remove"}).click();
   await expect.poll(() => stateOf(id)).toBe("Removed");
-  await expect(row(id).getByRole("button")).toHaveCount(0);
+  // Settled: no controls, only Remove from list (this browser's list).
+  await expect(row(id).getByRole("button")).toHaveCount(1);
+  await expect(row(id).getByRole("button", {name: "Remove from list"})).toHaveCount(1);
+});
+
+test("Remove from list: a finished entry's trash, on its title line while hovered or focused, takes that one off this list only", async () => {
+  const first = await sendArchive();
+  dp.setJob(first, {phase: "completed", reason: "completed", actionability: "none"});
+  await expect(row(first)).toBeVisible();
+  const forget = row(first).getByRole("button", {name: "Remove from list"});
+  const shown = () => forget.evaluate((el) => getComputedStyle(el).opacity);
+  await popup.mouse.move(0, 0);
+  await expect.poll(shown).toBe("0");                                 // hidden until the row is hovered
+  await row(first).hover();
+  await expect.poll(shown).toBe("1");
+  // On the title line, at its end.
+  const place = await row(first).evaluate((li) => {
+    const b = li.querySelector(".dp-job__forget").getBoundingClientRect();
+    const n = li.querySelector(".dp-job__name").getBoundingClientRect();
+    const r = li.getBoundingClientRect();
+    return {line: b.top < n.bottom && b.bottom > n.top, end: r.right - b.right <= 12};
+  });
+  expect(place).toEqual({line: true, end: true});
+  await forget.click();
+  await expect(row(first)).toHaveCount(0);
+  expect(dp.state.views.has(first)).toBe(true);                       // DownloadPulse keeps it
+  dp.setJob(first, {name: "renamed in DownloadPulse.zip"});            // changed afterwards: listed again
+  await expect(row(first)).toBeVisible();
+});
+
+test("a failed entry takes no more room than a done one; neither keeps a controls line", async () => {
+  const id = await sendArchive();
+  dp.setJob(id, {phase: "completed", reason: "completed", actionability: "none"});
+  await expect(row(id)).toHaveAttribute("data-phase", "completed");
+  const height = () => row(id).evaluate((li) => li.getBoundingClientRect().height);
+  const done = await height();
+  dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});
+  await expect(row(id)).toHaveAttribute("data-phase", "failed");
+  expect(await height()).toBeLessThanOrEqual(done);
 });
 
 test("completion and failure each raise one notification", async () => {

@@ -345,6 +345,9 @@
   "listClear": {
     "message": "مسح التنزيلات المنتهية"
   },
+  "listRemove": {
+    "message": "إزالة من القائمة"
+  },
   "selectionSend": {
     "message": "تنزيل الروابط المحددة باستخدام DownloadPulse"
   },

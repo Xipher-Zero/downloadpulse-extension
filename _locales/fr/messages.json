@@ -345,6 +345,9 @@
   "listClear": {
     "message": "Effacer les téléchargements terminés"
   },
+  "listRemove": {
+    "message": "Retirer de la liste"
+  },
   "selectionSend": {
     "message": "Télécharger les liens sélectionnés avec DownloadPulse"
   },

@@ -345,6 +345,9 @@
   "listClear": {
     "message": "Biten indirmeleri temizle"
   },
+  "listRemove": {
+    "message": "Listeden kaldır"
+  },
   "selectionSend": {
     "message": "Seçilen bağlantıları DownloadPulse ile indir"
   },

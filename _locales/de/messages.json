@@ -345,6 +345,9 @@
   "listClear": {
     "message": "Liste beendeter Downloads leeren"
   },
+  "listRemove": {
+    "message": "Aus der Liste entfernen"
+  },
   "selectionSend": {
     "message": "Die ausgewählten Links mit DownloadPulse herunterladen"
   },

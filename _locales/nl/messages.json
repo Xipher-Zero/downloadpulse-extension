@@ -345,6 +345,9 @@
   "listClear": {
     "message": "Afgeronde downloads wissen"
   },
+  "listRemove": {
+    "message": "Uit de lijst weghalen"
+  },
   "selectionSend": {
     "message": "De geselecteerde links downloaden met DownloadPulse"
   },
