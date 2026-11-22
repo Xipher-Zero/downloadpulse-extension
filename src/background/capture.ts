@@ -83,7 +83,14 @@ export function listen(): void {
 }
 
 chrome.permissions?.onAdded?.addListener((granted) => {
-  if (granted.permissions?.includes("downloads")) listen();
+  if (!granted.permissions?.includes("downloads")) return;
+  listen();
+  // Granted by the person (the setup offer, the switch, or the browser's own add-on settings):
+  // it is turned on HERE, not by the dropdown that asked. The browser's permission prompt closes
+  // the dropdown, so its own answer may never arrive; then the setup offer stayed and had to be
+  // answered a second time (operator, 2026-11-22). An open dropdown redraws from this change.
+  void saveSettings({capture: true, captureAsked: true})
+    .then(() => chrome.storage.local.remove("captureOffer"));
 });
 chrome.permissions?.onRemoved?.addListener((removed) => {
   // The permission taken back in the browser's own settings: the setting follows it.
