@@ -108,7 +108,10 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       const after = Number(url.searchParams.get("after") ?? 0);
       state.listPolls.push(Date.now());
       const jobs = [...state.views.values()].filter((view) => view.cursor > after).sort((a, b) => a.cursor - b.cursor);
-      return send(200, {jobs, next_cursor: jobs.length ? jobs.at(-1).cursor : after, more: false});
+      const answer = {jobs, next_cursor: jobs.length ? jobs.at(-1).cursor : after, more: false};
+      // ``listDelay``: the listing is read now and answered later (a slow server, a slow link).
+      if (state.listDelay) return setTimeout(() => send(200, answer), state.listDelay);
+      return send(200, answer);
     }
     const control = /^\/api\/browser\/v1\/jobs\/([^/]+)\/(controls|withdraw)$/.exec(url.pathname);
     if (control && req.method === "POST") {

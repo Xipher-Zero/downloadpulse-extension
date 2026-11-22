@@ -99,6 +99,43 @@ test("Disconnect in the dropdown's settings goes back to the screen that connect
   expect(dp.state.disconnects).toBe(1);
 });
 
+test("a listing in flight when this browser disconnects never brings the old identity's downloads back (operator, 2026-11-22)", async () => {
+  dp.setJob("job_old", {id: "job_old", submitted_at: new Date().toISOString(), display_name: "old.bin", name: "old.bin",
+    source: {kind: "links"}, phase: "processing", reason: "paused", actionability: "wait", paused_by: "client",
+    progress: null, estimate: null});
+  await expect(popup.getByText("old.bin")).toBeVisible({timeout: 15_000});
+  // The next listing is read, then answered only after Disconnect.
+  dp.state.listDelay = 4000;
+  const polls = dp.state.listPolls.length;
+  await expect.poll(() => dp.state.listPolls.length, {timeout: 10_000}).toBeGreaterThan(polls);
+  await popup.getByRole("button", {name: "Settings"}).click();
+  await popup.getByRole("button", {name: "Disconnect"}).click();
+  await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
+  await popup.waitForTimeout(5000);                                   // the late answer has arrived
+  const cached = () => popup.evaluate(async () => Object.entries(await chrome.storage.session.get(null))
+    .filter(([key]) => key.startsWith("jobs@")).flatMap(([, jobs]) => Object.keys(jobs ?? {})));
+  expect(await cached()).toEqual([]);
+  // Connected again, as a new identity: DownloadPulse lists none of the old one's downloads, nor does this list.
+  dp.state.listDelay = 0;
+  dp.state.revoked = false;
+  dp.state.views.clear();
+  await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+  const agree = popup.getByRole("button", {name: "Agree and continue"});
+  if (await agree.isVisible().catch(() => false)) await agree.click();
+  await popup.getByRole("button", {name: "Connect", exact: true}).click();
+  await expect(popup.getByTestId("code")).toBeVisible();
+  dp.answer("approved");
+  const notNow = popup.getByRole("button", {name: "Not now"});
+  const empty = popup.getByText("Nothing sent from this browser yet.");
+  await expect(empty.or(notNow)).toBeVisible({timeout: 15_000});
+  if (await notNow.isVisible()) await notNow.click();
+  await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
+  await popup.waitForTimeout(3000);
+  await expect(empty).toBeVisible();
+  await expect(popup.getByText("old.bin")).toHaveCount(0);
+  expect(await cached()).toEqual([]);
+});
+
 /** A secret slot in the extension's IndexedDB: read (value undefined) or written (null deletes). */
 const slot = (page, name, value) => page.evaluate(([key, v, write]) => new Promise((done) => {
   const open = indexedDB.open("downloadpulse");

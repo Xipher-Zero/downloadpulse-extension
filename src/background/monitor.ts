@@ -6,7 +6,7 @@
 // a notification when a job completes, fails or needs attention. It runs
 // only while a job is unsettled or the popup is open.
 
-import {connections, forgetConnection, token} from "../shared/connection";
+import {connections, forgetConnection, token, whileConnectedWith} from "../shared/connection";
 import {stateKey} from "../shared/server-state";
 import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
@@ -153,13 +153,15 @@ async function pollServer(server: string): Promise<boolean> {
       await forgetConnection(true, server);
       return false;
     }
-    await chrome.storage.session.set({[REACH]: {ok: false, at: Date.now()}});
-    return true;   // unreachable for now: try again next time
+    // Unreachable for now: try again next time -- while still connected with this token.
+    return whileConnectedWith(server, browserToken, () => chrome.storage.session.set({[REACH]: {ok: false, at: Date.now()}}));
   }
   const kept = Object.values(jobs).sort((a, b) => b.cursor - a.cursor).slice(0, KEEP);
-  await chrome.storage.session.set({[JOBS]: Object.fromEntries(kept.map((job) => [job.id, job])), [CURSOR]: cursor,
-    [REACH]: {ok: true, at: Date.now()}});
-  return true;
+  // Disconnected (or reconnected as another identity) while this was read: its list went with
+  // that connection, and is never written back (operator, 2026-11-22).
+  return whileConnectedWith(server, browserToken, () => chrome.storage.session.set({
+    [JOBS]: Object.fromEntries(kept.map((job) => [job.id, job])), [CURSOR]: cursor,
+    [REACH]: {ok: true, at: Date.now()}}));
 }
 
 async function loop(): Promise<void> {
