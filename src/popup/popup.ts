@@ -183,10 +183,12 @@ function renderJobs(jobs: Job[]): void {
     if (unsettled(job)) {
       const controls = document.createElement("span");
       controls.className = "dp-job__controls";
-      const pausedHere = job.reason === "paused" && job.paused_by === "client";
+      // The person may resume any paused download of theirs, whoever paused it, as they can
+      // in DownloadPulse -- not everything paused at once (operator, 2026-11-22).
+      const resumable = job.reason === "paused" && job.paused_by !== "administrator";
       controls.append(
-        glyphButton(pausedHere ? "play" : "pause", pausedHere ? "jobResume" : "jobPause", "blue",
-          {job: job.id, jobAction: pausedHere ? "resume" : "pause"}),
+        glyphButton(resumable ? "play" : "pause", resumable ? "jobResume" : "jobPause", "blue",
+          {job: job.id, jobAction: resumable ? "resume" : "pause"}),
         glyphButton("trash2", "jobRemove", "danger", {job: job.id, jobAction: "remove"}));
       line.append(controls);
       const value = percent(job);
@@ -660,8 +662,15 @@ document.addEventListener("click", (event) => {
       });
     }
   } else if (action === "disconnect") {
-    void chrome.runtime.sendMessage({type: "dp-disconnect"}).then((answer: {revoked?: boolean} | undefined) =>
-      note(answer?.revoked ? "optionsDisconnected" : "optionsDisconnectedLocally"));
+    void chrome.runtime.sendMessage({type: "dp-disconnect"}).then(async (answer: {revoked?: boolean} | undefined) => {
+      note(answer?.revoked ? "optionsDisconnected" : "optionsDisconnectedLocally");
+      // In the dropdown, nothing is left to set without a connection: back to the screen that
+      // connects (operator, 2026-11-22). The standalone settings page stays, saying so.
+      if (!standalone) {
+        view = "main";
+        await render();
+      }
+    });
   } else if (action === "connect-local") {
     void startConnecting();
   } else if (action === "agree") {

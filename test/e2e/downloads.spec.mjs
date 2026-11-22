@@ -184,13 +184,26 @@ test("sent again while paused here, the one download resumes; paused in Download
   await expect.poll(() => dp.state.controls.map((c) => c.kind)).toEqual(["pause", "resume"]);
   await expect.poll(() => stateOf(id)).toBe("Downloading");
   expect(dp.state.views.size).toBe(1);                       // the one download, never a second
-  // Paused by someone in DownloadPulse: this browser cannot lift that; the send goes as a new
-  // request, which DownloadPulse joins to the one download and resumes.
+  // Paused by someone in DownloadPulse (another person sharing it included): the person may
+  // resume it from here, as in DownloadPulse -- the Resume button, and a send, resume it.
   dp.setJob(id, {phase: "processing", reason: "paused", paused_by: "operator"});
-  await expect.poll(() => stateOf(id)).not.toBe("Downloading");
+  await expect.poll(() => stateOf(id)).toBe("Paused in DownloadPulse");
+  await row(id).locator(".dp-job__line").getByRole("button", {name: "Resume"}).click();
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
+  dp.setJob(id, {phase: "processing", reason: "paused", paused_by: "operator"});
+  await expect.poll(() => stateOf(id)).toBe("Paused in DownloadPulse");
+  await hoverSend();
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
+  expect(dp.state.controls.map((c) => c.kind)).toEqual(["pause", "resume", "resume", "resume"]);
+  expect(dp.state.views.size).toBe(1);
+  // Everything paused at once is not this browser's to lift: no Resume, and a send goes as a new
+  // request, which DownloadPulse joins to the one download.
+  dp.setJob(id, {phase: "processing", reason: "paused", paused_by: "administrator"});
+  await expect.poll(() => stateOf(id)).toBe("Paused in DownloadPulse");
+  await expect(row(id).locator(".dp-job__line").getByRole("button", {name: "Resume"})).toHaveCount(0);
   await hoverSend();
   await expect.poll(() => dp.state.views.size).toBe(2);
-  expect(dp.state.controls).toHaveLength(2);
+  expect(dp.state.controls).toHaveLength(4);
 });
 
 test("the connection's status: green while DownloadPulse answers, yellow while it can't be reached", async () => {

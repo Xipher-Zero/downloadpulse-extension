@@ -147,12 +147,12 @@ async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Prom
   const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
   let {digest, key, job} = await keyFor(connected.server, source, cookies);
-  // Sent again while its download is paused (operator, 2026-11-22): the person wants it now. A
-  // pause this browser made is released here; any other pause is DownloadPulse's to settle, so
-  // the send goes as a new request -- DownloadPulse joins it to the one download and resumes it.
+  // Sent again while its download is paused (operator, 2026-11-22): the person wants it now, and
+  // may resume it whoever paused it. Only everything paused at once is left alone; then (or if
+  // the resume is not honored) the send goes as a new request, joined to the one download.
   const known = job ? (await cachedJobs(connected.server))[job] : undefined;
   if (known && known.reason === "paused") {
-    if (known.paused_by === "client") {
+    if (known.paused_by !== "administrator") {
       try {
         const decision = await controlJob(connected.server, browserToken, known.id, "resume");
         if (decision.disposition === "honored") {

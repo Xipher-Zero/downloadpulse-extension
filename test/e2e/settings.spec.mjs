@@ -91,6 +91,14 @@ test("Disconnect revokes this browser on the server and forgets it here", async 
   expect(secret).toBeNull();
 });
 
+test("Disconnect in the dropdown's settings goes back to the screen that connects (operator, 2026-11-22)", async () => {
+  await popup.getByRole("button", {name: "Settings"}).click();
+  await popup.getByRole("button", {name: "Disconnect"}).click();
+  await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
+  await expect(popup.locator("[data-view='settings']")).toBeHidden();
+  expect(dp.state.disconnects).toBe(1);
+});
+
 /** A secret slot in the extension's IndexedDB: read (value undefined) or written (null deletes). */
 const slot = (page, name, value) => page.evaluate(([key, v, write]) => new Promise((done) => {
   const open = indexedDB.open("downloadpulse");

@@ -392,6 +392,10 @@ input[type="text"]:focus-visible, input[type="number"]:focus-visible { outline: 
 .dp-settings__group[aria-labelledby="downloads-title"] { padding-top: 16px; }
 /* Notifications: its own separator, with the same room under it as On web pages. */
 .dp-settings__group[aria-labelledby="notify-title"] { padding-top: 16px; }
+/* More room ABOVE the Browser downloads and Notifications separators, whatever ends the
+   section before them -- a field, or its switch alone (operator, 2026-11-22). */
+.dp-settings__group[aria-labelledby="downloads-title"],
+.dp-settings__group[aria-labelledby="notify-title"] { margin-block-start: 8px; }
 .dp-settings__group { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--dp-border-default); }
 /* Section titles centred; a subsection's smaller, in the secondary colour, a blank row either side. */
 .dp-settings h3 { margin: 0; font-size: 13px; font-weight: 650; text-align: center; }
