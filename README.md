@@ -8,6 +8,7 @@ to your own DownloadPulse server or desktop application, and shows and
 manages them from the toolbar. It connects with DownloadPulse's browser
 pairing (`downloadpulse.browser/1`; `debridpulse.browser/1` before the rename); DownloadPulse decides everything after that.
 
+- Website: [downloadpulse.net/extension](https://downloadpulse.net/extension).
 - Privacy: [`PRIVACY.md`](PRIVACY.md).
 - Building from source: [`BUILDING.md`](BUILDING.md).
 - Store notes: [`docs/store/`](docs/store/).
