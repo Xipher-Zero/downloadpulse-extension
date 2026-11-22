@@ -39,6 +39,8 @@ test.beforeEach(async () => {
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
+  // Newly connected: browser downloads are offered once (1.0.2); these tests send by hand.
+  await popup.getByRole("button", {name: "Not now"}).click({timeout: 15_000});
   await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
 });
 
@@ -179,12 +181,13 @@ test("the gear opens the settings inside the dropdown, and Back returns", async 
         buttonToSeparator: box("section[aria-labelledby='page-title']").top - box("[data-action='disconnect']").bottom},
     };
   });
-  expect(layout).toMatchObject({backAtEnd: true, titles: ["center", "center", "center"], connection: "Connection:",
+  expect(layout).toMatchObject({backAtEnd: true, titles: ["center", "center", "center", "center"], connection: "Connection:",
     hintCentred: "center", disconnectCentred: true});
   for (const gap of Object.values(layout.rows)) expect(gap).toBeGreaterThanOrEqual(17);
-  // No separator above Notifications, a blank row instead; the subsection title sits on its hint.
+  // No separator above the group after On web pages (Browser downloads, 1.0.2), a blank row
+  // instead; the subsection title sits on its hint.
   const tail = await popup.evaluate(() => {
-    const notify = document.querySelector("section[aria-labelledby='notify-title']");
+    const notify = document.querySelector("section[aria-labelledby='downloads-title']");
     const h4 = document.querySelector(".dp-settings h4").getBoundingClientRect();
     const hint = document.querySelector(".dp-settings h4 + .dp-settings__centred").getBoundingClientRect();
     return {separator: getComputedStyle(notify).borderTopStyle, room: parseFloat(getComputedStyle(notify).paddingTop),
@@ -213,8 +216,9 @@ test("the master switch governs every in-page button; off, what it governs is no
   expect(add.x).toBeGreaterThan(field.x + field.width / 2);
   expect(Math.abs((add.y + add.height / 2) - (field.y + field.height / 2))).toBeLessThanOrEqual(1);
   await popup.getByLabel("Show a download button on video players").uncheck();
-  const separator = () => popup.locator("section[aria-labelledby='notify-title']").evaluate((el) => getComputedStyle(el).borderTopStyle);
-  expect(await separator()).toBe("none");                 // on: Notifications follows without a separator
+  // The group after On web pages (Browser downloads, 1.0.2; Notifications before it).
+  const separator = () => popup.locator("section[aria-labelledby='downloads-title']").evaluate((el) => getComputedStyle(el).borderTopStyle);
+  expect(await separator()).toBe("none");                 // on: the next group follows without a separator
   await master.uncheck();
   await expect(popup.getByTestId("in-page-options")).toBeHidden();
   await expect.poll(separator).toBe("solid");             // off: the separator returns

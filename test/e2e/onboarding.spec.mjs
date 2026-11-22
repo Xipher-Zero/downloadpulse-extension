@@ -90,7 +90,7 @@ test("the disclosure comes before anything is sent: Back returns, agreeing is re
   try {
     await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
     await expect(popup.getByText("Before you connect, here is what DownloadPulse receives from this browser.")).toBeVisible();
-    await expect(popup.locator('section[data-state="disclosure"] li')).toHaveCount(3);
+    await expect(popup.locator('section[data-state="disclosure"] li')).toHaveCount(4);   // + browser downloads (1.0.2)
     await expect(popup.getByTestId("privacy-policy")).toHaveAttribute("href",
       "https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md");
     await expect(popup.getByTestId("device-name")).not.toBeChecked();             // off by default
@@ -167,6 +167,9 @@ test("found on this computer: offered first, then paired on approval, verified, 
     await expect.poll(() => context.pages().map((page) => page.url())).toContain("http://127.0.0.1:8095/?connect-browser=ABCD-0001");
     expect(fake.state.lastClientName).toBe("Browser");   // no device name without the person's optional consent
     fake.answer("approved");
+    // Newly connected (1.0.2): browser downloads are offered once, never assumed.
+    await expect(popup.getByText("Send downloads to DownloadPulse?")).toBeVisible({timeout: 15_000});
+    await popup.getByRole("button", {name: "Not now"}).click();
     await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
     // The details are behind the chevron; DownloadPulse on this computer is named, never its loopback address.
     await expect(popup.getByTestId("server")).toBeHidden();
@@ -268,6 +271,7 @@ test("found on this computer, a different DownloadPulse can be chosen instead", 
     await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     remote.answer("approved");
+    await popup.getByRole("button", {name: "Not now"}).click({timeout: 15_000});
     // localhost, on any port, is this computer: named so; the connection is that server's own.
     await expect(popup.getByTestId("server")).toHaveText("Locally installed instance", {timeout: 15_000});
     expect(remote.state.sessionAuth.length).toBeGreaterThan(0);
@@ -292,6 +296,7 @@ test("nothing on this computer: Check again, then a named server", async () => {
     await popup.getByRole("button", {name: "Connect to this server"}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     fake.answer("approved");
+    await popup.getByRole("button", {name: "Not now"}).click({timeout: 15_000});
     // localhost, on any port, is this computer: named so; the connection is that server's own.
     await expect(popup.getByTestId("server")).toHaveText("Locally installed instance", {timeout: 15_000});
     expect(fake.state.sessionAuth.length).toBeGreaterThan(0);
@@ -313,6 +318,7 @@ test("a server that names the protocol by its previous name connects", async () 
     await popup.getByRole("button", {name: "Connect to this server"}).click();
     await expect(popup.getByTestId("code")).toBeVisible();
     fake.answer("approved");
+    await popup.getByRole("button", {name: "Not now"}).click({timeout: 15_000});
     await expect(popup.getByTestId("server")).toHaveText("Locally installed instance", {timeout: 15_000});
     expect(fake.state.sessionAuth.length).toBeGreaterThan(0);
   } finally {
@@ -370,6 +376,7 @@ test("an older DownloadPulse on this computer says so; Connect again offers a re
     await popup.getByRole("button", {name: "Connect", exact: true}).click();
     await expect(popup.getByTestId("code")).toHaveText("ABCD-0001");
     current.answer("approved");
+    await popup.getByRole("button", {name: "Not now"}).click({timeout: 15_000});
     // localhost, on any port, is this computer: named so; the connection is that server's own.
     await expect(popup.getByTestId("server")).toHaveText("Locally installed instance", {timeout: 15_000});
     expect(current.state.sessionAuth.length).toBeGreaterThan(0);

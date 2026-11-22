@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Отправлять вместе с видео мой вход на сайте (его файлы cookie), чтобы можно было загружать видео только для участников и с возрастными ограничениями"
+  },
+  "discloseDownloads": {
+    "message": "Если вы включите отправку загрузок браузера: адрес каждой загрузки, страница, с которой она началась, и ваш вход на этом сайте (его файлы cookie для этого адреса), чтобы DownloadPulse мог загрузить её так же, как этот браузер. DownloadPulse хранит их только в памяти, пока эта загрузка не завершится."
+  },
+  "captureOfferTitle": {
+    "message": "Отправлять загрузки в DownloadPulse?"
+  },
+  "captureOfferText": {
+    "message": "Файлы, которые начинает загружать этот браузер, могут вместо этого отправляться в DownloadPulse вместе с вашим входом на их сайте. Если DownloadPulse не сможет принять какой-либо из них, браузер продолжит его загрузку. Это можно изменить в любой момент в разделе «Настройки»."
+  },
+  "captureOfferYes": {
+    "message": "Отправлять в DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "Не сейчас"
+  },
+  "captureToggle": {
+    "message": "Отправлять загрузки браузера в DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "Загрузки браузера"
+  },
+  "optionsDownloadsHint": {
+    "message": "Если DownloadPulse не сможет принять загрузку, браузер продолжит её. Отправка ссылок вручную работает в любом случае."
+  },
+  "optionsDownloadsDenied": {
+    "message": "Браузер не разрешил это, поэтому загрузки остаются в браузере."
+  },
+  "optionsMinSize": {
+    "message": "Оставлять браузеру файлы меньше этого размера (МБ)"
+  },
+  "optionsSkipTypes": {
+    "message": "Всегда оставлять браузеру эти типы файлов"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Загрузка отправлена в DownloadPulse."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Загрузка отправлена в DownloadPulse без вашего входа на этом сайте."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse не смог принять эту загрузку, поэтому она осталась в браузере."
   }
 }

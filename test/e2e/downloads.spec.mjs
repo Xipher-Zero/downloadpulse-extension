@@ -38,6 +38,8 @@ test.beforeEach(async () => {
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
+  // Newly connected: browser downloads are offered once (1.0.2); these tests send by hand.
+  await popup.getByRole("button", {name: "Not now"}).click({timeout: 15_000});
   await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
 });
 

@@ -97,6 +97,35 @@ https://send.now/ijn6gxxf9bj8</textarea>
       res.writeHead(200, {"Content-Type": "text/html"});
       return res.end("<html><body>Please sign in</body></html>");
     }
+    // Browser downloads (1.0.2): a page of attachment links, and the attachments themselves.
+    if (url.pathname === "/downloads") {
+      res.writeHead(200, {"Content-Type": "text/html; charset=utf-8"});
+      return res.end(`<!doctype html><html><body>
+        <p><a id="big" href="/dl/big.bin">big.bin</a></p>
+        <p><a id="small" href="/dl/small.bin">small.bin</a></p>
+        <p><a id="pdf" href="/dl/manual.pdf">manual.pdf</a></p></body></html>`);
+    }
+    if (url.pathname.startsWith("/dl/")) {
+      const name = url.pathname.slice(4);
+      // big: 8 MiB, trickled so it is still downloading when the extension acts on it.
+      const size = name === "small.bin" ? 64 * 1024 : name === "manual.pdf" ? 4 * 1024 * 1024 : 8 * 1024 * 1024;
+      res.writeHead(200, {"Content-Type": name.endsWith(".pdf") ? "application/pdf" : "application/octet-stream",
+        "Content-Length": String(size), "Content-Disposition": `attachment; filename="${name}"`});
+      if (name === "small.bin") return res.end(Buffer.alloc(size, 1));
+      let sent = 0;
+      const chunk = Buffer.alloc(64 * 1024, 2);
+      const tick = setInterval(() => {
+        if (res.destroyed || sent >= size) {
+          clearInterval(tick);
+          if (!res.destroyed) res.end();
+          return;
+        }
+        res.write(chunk);
+        sent += chunk.length;
+      }, name === "big.bin" ? 40 : 5);
+      res.on("close", () => clearInterval(tick));
+      return undefined;
+    }
     res.writeHead(200, {"Content-Type": "text/html"});
     res.end("<html><body>other</body></html>");
   });

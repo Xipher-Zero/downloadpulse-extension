@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "회원 전용 및 연령 제한 동영상을 다운로드할 수 있도록 동영상과 함께 사이트의 로그인 상태(사이트의 쿠키) 보내기"
+  },
+  "discloseDownloads": {
+    "message": "브라우저 다운로드 보내기를 켜는 경우 각 다운로드의 주소, 다운로드를 시작한 페이지, 해당 사이트의 로그인 상태(그 주소에 대한 사이트의 쿠키). 이를 통해 DownloadPulse가 이 브라우저와 같은 방식으로 다운로드할 수 있습니다. DownloadPulse는 해당 다운로드가 끝날 때까지 이를 메모리에만 보관합니다."
+  },
+  "captureOfferTitle": {
+    "message": "다운로드를 DownloadPulse로 보낼까요?"
+  },
+  "captureOfferText": {
+    "message": "이 브라우저에서 다운로드를 시작하는 파일을 대신 DownloadPulse로 보낼 수 있으며, 해당 사이트의 로그인 상태도 함께 보냅니다. DownloadPulse가 받을 수 없는 파일은 브라우저가 계속 다운로드합니다. 언제든지 설정에서 변경할 수 있습니다."
+  },
+  "captureOfferYes": {
+    "message": "DownloadPulse로 보내기"
+  },
+  "captureOfferNo": {
+    "message": "나중에"
+  },
+  "captureToggle": {
+    "message": "브라우저 다운로드를 DownloadPulse로 보내기"
+  },
+  "optionsDownloads": {
+    "message": "브라우저 다운로드"
+  },
+  "optionsDownloadsHint": {
+    "message": "DownloadPulse가 다운로드를 받을 수 없으면 브라우저가 계속 다운로드합니다. 링크를 직접 보내는 기능은 어느 경우에나 작동합니다."
+  },
+  "optionsDownloadsDenied": {
+    "message": "브라우저가 허용하지 않았으므로 다운로드는 브라우저에서 진행됩니다."
+  },
+  "optionsMinSize": {
+    "message": "이 크기(MB)보다 작은 파일은 브라우저에 맡기기"
+  },
+  "optionsSkipTypes": {
+    "message": "다음 파일 형식은 항상 브라우저에 맡기기"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "다운로드를 DownloadPulse로 보냈습니다."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "해당 사이트의 로그인 상태 없이 다운로드를 DownloadPulse로 보냈습니다."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse가 해당 다운로드를 받을 수 없어 브라우저에서 계속 다운로드합니다."
   }
 }

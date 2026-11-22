@@ -10,16 +10,38 @@ export interface Settings {
   videoCookies: boolean;          // a video goes with the person's sign-in on its site (its cookies); on unless switched off
   offSites: string[];             // sites (host names) where neither is offered
   notify: {completed: boolean; failed: boolean; attention: boolean};
+  // Browser downloads sent to DownloadPulse instead of the browser (1.0.2, operator 2026-11-22):
+  // off until the person turns it on (it needs the optional "downloads" permission).
+  capture: boolean;
+  captureMinMB: number;           // a download known to be smaller than this stays in the browser (0: none)
+  captureSkipTypes: string[];     // file extensions (lower case, no dot) that always stay in the browser
+  captureAsked: boolean;          // the setup offer was answered once (either way): never offered again
 }
 
 const KEY = "settings";
 export const DEFAULTS: Settings = {inPage: true, hover: true, video: true, videoCookies: true, offSites: [],
-  notify: {completed: true, failed: true, attention: true}};
+  notify: {completed: true, failed: true, attention: true},
+  capture: false, captureMinMB: 1, captureSkipTypes: [], captureAsked: false};
+
+/** A typed list of file types: "pdf, .JPG  zip" -> ["jpg", "pdf", "zip"]. */
+export function fileTypes(value: string | string[]): string[] {
+  const items = Array.isArray(value) ? value : value.split(/[\s,;]+/);
+  return [...new Set(items.map((item) => String(item).trim().toLowerCase().replace(/^\.+/, ""))
+    .filter((item) => /^[a-z0-9][a-z0-9+_-]{0,15}$/.test(item)))].sort();
+}
+
+/** A size limit in whole megabytes, 0 to 100 000. */
+export function megabytes(value: unknown): number {
+  const number = Math.floor(Number(value));
+  return Number.isFinite(number) ? Math.min(100_000, Math.max(0, number)) : DEFAULTS.captureMinMB;
+}
 
 export async function settings(): Promise<Settings> {
   const stored = (await chrome.storage.local.get(KEY))[KEY] as Partial<Settings> | undefined;
   return {...DEFAULTS, ...stored, notify: {...DEFAULTS.notify, ...(stored?.notify ?? {})},
-    offSites: Array.isArray(stored?.offSites) ? stored!.offSites.filter((site) => typeof site === "string") : []};
+    offSites: Array.isArray(stored?.offSites) ? stored!.offSites.filter((site) => typeof site === "string") : [],
+    captureMinMB: megabytes(stored?.captureMinMB ?? DEFAULTS.captureMinMB),
+    captureSkipTypes: fileTypes(Array.isArray(stored?.captureSkipTypes) ? stored!.captureSkipTypes : [])};
 }
 
 let saving: Promise<unknown> = Promise.resolve();
@@ -32,6 +54,8 @@ export function saveSettings(change: Partial<Settings> | ((current: Settings) =>
     const current = await settings();
     const merged = {...current, ...(typeof change === "function" ? change(current) : change)};
     merged.offSites = [...new Set(merged.offSites.map(siteOf).filter(Boolean))].sort();
+    merged.captureMinMB = megabytes(merged.captureMinMB);
+    merged.captureSkipTypes = fileTypes(merged.captureSkipTypes);
     await chrome.storage.local.set({[KEY]: merged});
     return merged;
   });

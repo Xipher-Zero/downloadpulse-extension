@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Invia con i video il mio accesso al sito (i suoi cookie), per poter scaricare video riservati agli iscritti e con limiti di età"
+  },
+  "discloseDownloads": {
+    "message": "Se si attiva l'invio dei download del browser: l'indirizzo di ogni download, la pagina da cui è stato avviato e l'accesso effettuato su quel sito (i suoi cookie per quell'indirizzo), così DownloadPulse può scaricarlo come farebbe questo browser. DownloadPulse li conserva solo in memoria, fino al termine di quel download."
+  },
+  "captureOfferTitle": {
+    "message": "Inviare i download a DownloadPulse?"
+  },
+  "captureOfferText": {
+    "message": "I file che questo browser inizia a scaricare possono andare invece a DownloadPulse, con l'accesso effettuato sul loro sito. Se DownloadPulse non può prenderne uno, il browser continua a scaricarlo. È possibile cambiare questa scelta in qualsiasi momento in Opzioni."
+  },
+  "captureOfferYes": {
+    "message": "Invia a DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "Non ora"
+  },
+  "captureToggle": {
+    "message": "Invia i download del browser a DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "Download del browser"
+  },
+  "optionsDownloadsHint": {
+    "message": "Se DownloadPulse non può prendere un download, il browser continua a scaricarlo. L'invio manuale dei link funziona comunque."
+  },
+  "optionsDownloadsDenied": {
+    "message": "Il browser non l'ha consentito, quindi i download restano nel browser."
+  },
+  "optionsMinSize": {
+    "message": "Lascia al browser i file più piccoli di questa dimensione (MB)"
+  },
+  "optionsSkipTypes": {
+    "message": "Lascia sempre al browser questi tipi di file"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Download inviato a DownloadPulse."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Download inviato a DownloadPulse, senza l'accesso effettuato su quel sito."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse non ha potuto prendere quel download, quindi è rimasto nel browser."
   }
 }

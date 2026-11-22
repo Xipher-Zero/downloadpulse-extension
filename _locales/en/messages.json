@@ -648,5 +648,65 @@
   "optionsVideoCookies": {
     "message": "Send my sign-in on the site with videos (its cookies), so members-only and age-restricted videos can be downloaded",
     "description": "Settings switch, on by default: a video sent to DownloadPulse carries the site's cookies for the video's address. DownloadPulse keeps them in memory only, until that download ends."
+  },
+  "discloseDownloads": {
+    "message": "If you turn on sending browser downloads: each download's address, the page it was started from and your sign-in on that site (its cookies for that address), so DownloadPulse can download it as this browser would. DownloadPulse keeps them only in memory, until that download ends.",
+    "description": "Disclosure before connecting: what is sent when download capture is on."
+  },
+  "captureOfferTitle": {
+    "message": "Send downloads to DownloadPulse?",
+    "description": "Setup step after connecting: title of the offer to send browser downloads to DownloadPulse."
+  },
+  "captureOfferText": {
+    "message": "Files this browser starts downloading can go to DownloadPulse instead, with your sign-in on their site. If DownloadPulse can't take one, the browser keeps downloading it. You can change this at any time in Settings.",
+    "description": "Setup step after connecting: what sending browser downloads to DownloadPulse does."
+  },
+  "captureOfferYes": {
+    "message": "Send them to DownloadPulse",
+    "description": "Setup step button: turn on sending browser downloads to DownloadPulse."
+  },
+  "captureOfferNo": {
+    "message": "Not now",
+    "description": "Setup step button: leave downloads in the browser."
+  },
+  "captureToggle": {
+    "message": "Send browser downloads to DownloadPulse",
+    "description": "Switch in the popup's main view and in Settings."
+  },
+  "optionsDownloads": {
+    "message": "Browser downloads",
+    "description": "Settings group title for sending browser downloads to DownloadPulse."
+  },
+  "optionsDownloadsHint": {
+    "message": "If DownloadPulse can't take a download, the browser keeps downloading it. Sending links yourself works either way.",
+    "description": "Settings hint under the browser downloads switch."
+  },
+  "optionsDownloadsDenied": {
+    "message": "The browser didn't allow it, so downloads stay in the browser.",
+    "description": "Settings note when the browser refused the downloads permission."
+  },
+  "optionsMinSize": {
+    "message": "Leave files smaller than this (MB) to the browser",
+    "description": "Settings: minimum size in megabytes for a download to be sent to DownloadPulse."
+  },
+  "optionsSkipTypes": {
+    "message": "Always leave these file types to the browser",
+    "description": "Settings: file extensions that are never sent to DownloadPulse."
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png",
+    "description": "Placeholder: example file extensions, separated by commas."
+  },
+  "captureDone": {
+    "message": "Download sent to DownloadPulse.",
+    "description": "Toast: a browser download was sent to DownloadPulse instead."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Download sent to DownloadPulse, without your sign-in on that site.",
+    "description": "Toast: sent, but the site's cookies could not go with it."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse couldn't take that download, so the browser kept it.",
+    "description": "Toast: sending failed, the browser download continues."
   }
 }

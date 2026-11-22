@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Mit Videos meine Anmeldung auf der Website senden (deren Cookies), damit Videos nur für Mitglieder und Videos mit Altersbeschränkung heruntergeladen werden können"
+  },
+  "discloseDownloads": {
+    "message": "Wenn Sie das Senden von Browser-Downloads einschalten: die Adresse jedes Downloads, die Seite, auf der er gestartet wurde, und Ihre Anmeldung auf dieser Website (deren Cookies für diese Adresse), damit DownloadPulse ihn so herunterladen kann, wie dieser Browser es würde. DownloadPulse behält sie nur im Arbeitsspeicher, bis dieser Download endet."
+  },
+  "captureOfferTitle": {
+    "message": "Downloads an DownloadPulse senden?"
+  },
+  "captureOfferText": {
+    "message": "Dateien, die dieser Browser herunterzuladen beginnt, können stattdessen an DownloadPulse gesendet werden, mit Ihrer Anmeldung auf deren Website. Kann DownloadPulse eine Datei nicht übernehmen, lädt der Browser sie weiter herunter. Sie können dies jederzeit in den Optionen ändern."
+  },
+  "captureOfferYes": {
+    "message": "An DownloadPulse senden"
+  },
+  "captureOfferNo": {
+    "message": "Nicht jetzt"
+  },
+  "captureToggle": {
+    "message": "Browser-Downloads an DownloadPulse senden"
+  },
+  "optionsDownloads": {
+    "message": "Browser-Downloads"
+  },
+  "optionsDownloadsHint": {
+    "message": "Kann DownloadPulse einen Download nicht übernehmen, lädt der Browser ihn weiter herunter. Links, die Sie selbst senden, funktionieren in jedem Fall."
+  },
+  "optionsDownloadsDenied": {
+    "message": "Der Browser hat es nicht erlaubt, daher bleiben Downloads im Browser."
+  },
+  "optionsMinSize": {
+    "message": "Dateien unter dieser Größe (MB) dem Browser überlassen"
+  },
+  "optionsSkipTypes": {
+    "message": "Diese Dateitypen immer dem Browser überlassen"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Download an DownloadPulse gesendet."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Download an DownloadPulse gesendet, ohne Ihre Anmeldung auf dieser Website."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse konnte diesen Download nicht übernehmen, daher hat ihn der Browser behalten."
   }
 }

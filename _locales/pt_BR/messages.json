@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Enviar meu login no site junto com os vídeos (os cookies dele), para que vídeos exclusivos para membros e com restrição de idade possam ser baixados"
+  },
+  "discloseDownloads": {
+    "message": "Se você ativar o envio dos downloads do navegador: o endereço de cada download, a página em que ele foi iniciado e o seu login nesse site (os cookies dele para esse endereço), para que o DownloadPulse possa baixá-lo como este navegador faria. O DownloadPulse os mantém apenas na memória, até que esse download termine."
+  },
+  "captureOfferTitle": {
+    "message": "Enviar downloads ao DownloadPulse?"
+  },
+  "captureOfferText": {
+    "message": "Os arquivos que este navegador começar a baixar podem ir para o DownloadPulse em vez disso, com o seu login no site deles. Se o DownloadPulse não puder aceitar algum, o navegador continua baixando. Você pode mudar isso a qualquer momento em Ajustes."
+  },
+  "captureOfferYes": {
+    "message": "Enviar ao DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "Agora não"
+  },
+  "captureToggle": {
+    "message": "Enviar downloads do navegador ao DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "Downloads do navegador"
+  },
+  "optionsDownloadsHint": {
+    "message": "Se o DownloadPulse não puder aceitar um download, o navegador continua baixando. Enviar links você mesmo funciona de qualquer forma."
+  },
+  "optionsDownloadsDenied": {
+    "message": "O navegador não permitiu, então os downloads ficam no navegador."
+  },
+  "optionsMinSize": {
+    "message": "Deixar com o navegador arquivos menores que isto (MB)"
+  },
+  "optionsSkipTypes": {
+    "message": "Sempre deixar com o navegador estes tipos de arquivo"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Download enviado ao DownloadPulse."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Download enviado ao DownloadPulse, sem o seu login nesse site."
+  },
+  "captureKeptInBrowser": {
+    "message": "O DownloadPulse não pôde aceitar esse download, então o navegador ficou com ele."
   }
 }

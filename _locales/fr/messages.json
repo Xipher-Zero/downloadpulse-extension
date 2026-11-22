@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Envoyer ma connexion au site avec les vidéos (ses cookies), afin que les vidéos réservées aux membres et soumises à une limite d’âge puissent être téléchargées"
+  },
+  "discloseDownloads": {
+    "message": "Si vous activez l’envoi des téléchargements du navigateur : l’adresse de chaque téléchargement, la page d’où il a été lancé et votre connexion à ce site (ses cookies pour cette adresse), afin que DownloadPulse puisse le télécharger comme le ferait ce navigateur. DownloadPulse les conserve uniquement en mémoire, jusqu’à la fin de ce téléchargement."
+  },
+  "captureOfferTitle": {
+    "message": "Envoyer les téléchargements à DownloadPulse ?"
+  },
+  "captureOfferText": {
+    "message": "Les fichiers que ce navigateur commence à télécharger peuvent être envoyés à DownloadPulse à la place, avec votre connexion à leur site. Si DownloadPulse ne peut pas en prendre un en charge, le navigateur continue de le télécharger. Vous pouvez modifier ce choix à tout moment dans Paramètres."
+  },
+  "captureOfferYes": {
+    "message": "Les envoyer à DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "Pas maintenant"
+  },
+  "captureToggle": {
+    "message": "Envoyer les téléchargements du navigateur à DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "Téléchargements du navigateur"
+  },
+  "optionsDownloadsHint": {
+    "message": "Si DownloadPulse ne peut pas prendre en charge un téléchargement, le navigateur continue de le télécharger. Les liens que vous envoyez vous-même fonctionnent dans tous les cas."
+  },
+  "optionsDownloadsDenied": {
+    "message": "Le navigateur ne l’a pas autorisé, les téléchargements restent donc dans le navigateur."
+  },
+  "optionsMinSize": {
+    "message": "Laisser au navigateur les fichiers plus petits que cette taille (Mo)"
+  },
+  "optionsSkipTypes": {
+    "message": "Toujours laisser ces types de fichiers au navigateur"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Téléchargement envoyé à DownloadPulse."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Téléchargement envoyé à DownloadPulse, sans votre connexion à ce site."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse n’a pas pu prendre en charge ce téléchargement, le navigateur l’a donc conservé."
   }
 }

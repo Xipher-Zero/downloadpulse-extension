@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Videolarla birlikte sitedeki oturumumu (sitenin çerezlerini) gönder; böylece yalnızca üyelere açık ve yaş sınırlamalı videolar indirilebilir"
+  },
+  "discloseDownloads": {
+    "message": "Tarayıcı indirmelerini göndermeyi açarsanız: her indirmenin adresi, başlatıldığı sayfa ve o sitedeki oturumunuz (sitenin o adres için çerezleri); böylece DownloadPulse onu bu tarayıcının yapacağı gibi indirebilir. DownloadPulse bunları yalnızca bellekte, o indirme bitene kadar tutar."
+  },
+  "captureOfferTitle": {
+    "message": "İndirmeler DownloadPulse'a gönderilsin mi?"
+  },
+  "captureOfferText": {
+    "message": "Bu tarayıcının indirmeye başladığı dosyalar, sitelerindeki oturumunuzla birlikte bunun yerine DownloadPulse'a gidebilir. DownloadPulse birini alamazsa tarayıcı onu indirmeye devam eder. Bunu istediğiniz zaman Ayarlar'dan değiştirebilirsiniz."
+  },
+  "captureOfferYes": {
+    "message": "DownloadPulse'a gönder"
+  },
+  "captureOfferNo": {
+    "message": "Şimdi değil"
+  },
+  "captureToggle": {
+    "message": "Tarayıcı indirmelerini DownloadPulse'a gönder"
+  },
+  "optionsDownloads": {
+    "message": "Tarayıcı indirmeleri"
+  },
+  "optionsDownloadsHint": {
+    "message": "DownloadPulse bir indirmeyi alamazsa tarayıcı onu indirmeye devam eder. Bağlantıları kendiniz göndermek her durumda çalışır."
+  },
+  "optionsDownloadsDenied": {
+    "message": "Tarayıcı buna izin vermedi; bu nedenle indirmeler tarayıcıda kalır."
+  },
+  "optionsMinSize": {
+    "message": "Bu boyuttan (MB) küçük dosyaları tarayıcıya bırak"
+  },
+  "optionsSkipTypes": {
+    "message": "Bu dosya türlerini her zaman tarayıcıya bırak"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "İndirme DownloadPulse'a gönderildi."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "İndirme, o sitedeki oturumunuz olmadan DownloadPulse'a gönderildi."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse bu indirmeyi alamadı; bu nedenle tarayıcı onu indirmeye devam etti."
   }
 }

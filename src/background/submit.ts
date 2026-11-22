@@ -141,7 +141,7 @@ function displayName(source: Source): string {
   return source.filename;
 }
 
-async function send(source: Source, cookies: Cookie[] = []): Promise<void> {
+async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Promise<void> {
   const connected = await connection();
   const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
@@ -151,7 +151,7 @@ async function send(source: Source, cookies: Cookie[] = []): Promise<void> {
   // once with the same key, so DownloadPulse answers the same job (review, 2026-11-19).
   const attempt = async (): Promise<Awaited<ReturnType<typeof submitJob>>> => {
     try {
-      return await submitJob(connected.server, browserToken, key, source, name, cookies);
+      return await submitJob(connected.server, browserToken, key, source, name, cookies, referrer);
     } catch (error) {
       if (error instanceof ServerError && (error.failure === "unreachable" || error.failure === "certificate")) {
         return {ok: false, code: "unreachable", retryable: true};
@@ -179,7 +179,7 @@ async function sourceFor(href: string): Promise<Source> {
   return kind ? capture(href, kind) : {kind: "links", links: [href]};
 }
 
-async function feedback(origin: Origin, key: string, ok: boolean): Promise<void> {
+export async function feedback(origin: Origin, key: string, ok: boolean): Promise<void> {
   const text = message(key);
   if (origin.tabId !== undefined && origin.tabId >= 0) {
     try {
@@ -256,6 +256,42 @@ export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | u
     await send({kind: "links", links: [href]}, cookies);
     return withoutSignIn ? "sendDoneWithoutSignIn" : undefined;
   });
+}
+
+/**
+ * A browser download sent to DownloadPulse instead (1.0.2, background/capture.ts): its final
+ * address, with the person's sign-in on that site and the page it was started from -- each only
+ * when this DownloadPulse says it takes it, and the sign-in only over HTTPS or to this computer
+ * (as a video's). Settles to whether DownloadPulse accepted it; never a toast in a page.
+ */
+export async function sendDownload(href: string, referrer: string, store: {cookieStoreId?: string | undefined}):
+    Promise<{ok: boolean; said: string}> {
+  try {
+    if (!/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
+    await mayUseConnection();
+    const connected = await connection();
+    const browserToken = connected ? await token(connected.server) : null;
+    if (!connected || !browserToken) throw new Refused("sendNotConnected");
+    let capabilities = {videoCookies: false, referrer: false};
+    try {
+      capabilities = await readSession(connected.server, browserToken);
+    } catch {
+      // Its capabilities unknown: the link goes alone, as any link would.
+    }
+    // Exactly the cookies this browser would send to that address, from the download's own
+    // cookie store (a Firefox container's); the page it started from names the partition.
+    const found = await cookiesFor(href, {...(store.cookieStoreId ? {cookieStoreId: store.cookieStoreId} : {}),
+      url: /^https?:\/\//i.test(referrer) ? referrer : undefined} as chrome.tabs.Tab);
+    const travels = capabilities.videoCookies && signInMayTravel(connected.server);
+    const cookies = travels ? found.cookies : [];
+    // Said only when there was a sign-in that could not go with it: a public file needs none.
+    const withoutSignIn = found.dropped || (!travels && found.cookies.length > 0);
+    const page = capabilities.referrer && /^https?:\/\//i.test(referrer) && referrer.length <= 2048 ? referrer : "";
+    await send({kind: "links", links: [href]}, cookies, page);
+    return {ok: true, said: withoutSignIn ? "captureDoneWithoutSignIn" : "captureDone"};
+  } catch (error) {
+    return {ok: false, said: error instanceof Refused ? error.key : "sendFailed"};
+  }
 }
 
 /** A selection: its http(s) URLs as one batch, each magnet on its own (B2). */

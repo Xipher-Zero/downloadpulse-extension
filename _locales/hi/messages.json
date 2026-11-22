@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "वीडियो के साथ साइट पर मेरा साइन इन (उसकी कुकी) भेजें, ताकि केवल सदस्यों के लिए और आयु-प्रतिबंधित वीडियो डाउनलोड किए जा सकें"
+  },
+  "discloseDownloads": {
+    "message": "अगर आप ब्राउज़र डाउनलोड भेजना चालू करते हैं: हर डाउनलोड का पता, वह पेज जिससे वह शुरू हुआ, और उस साइट पर आपका साइन इन (उस पते के लिए उसकी कुकी), ताकि DownloadPulse उसे वैसे ही डाउनलोड कर सके जैसे यह ब्राउज़र करता। DownloadPulse इन्हें केवल मेमोरी में रखता है, जब तक वह डाउनलोड समाप्त न हो जाए।"
+  },
+  "captureOfferTitle": {
+    "message": "डाउनलोड DownloadPulse को भेजें?"
+  },
+  "captureOfferText": {
+    "message": "यह ब्राउज़र जो फ़ाइलें डाउनलोड करना शुरू करता है, वे इसके बजाय उनकी साइट पर आपके साइन इन के साथ DownloadPulse को जा सकती हैं। अगर DownloadPulse कोई फ़ाइल नहीं ले पाता, तो ब्राउज़र उसे डाउनलोड करता रहता है। आप इसे कभी भी सेटिंग्स में बदल सकते हैं।"
+  },
+  "captureOfferYes": {
+    "message": "इन्हें DownloadPulse को भेजें"
+  },
+  "captureOfferNo": {
+    "message": "अभी नहीं"
+  },
+  "captureToggle": {
+    "message": "ब्राउज़र डाउनलोड DownloadPulse को भेजें"
+  },
+  "optionsDownloads": {
+    "message": "ब्राउज़र डाउनलोड"
+  },
+  "optionsDownloadsHint": {
+    "message": "अगर DownloadPulse कोई डाउनलोड नहीं ले पाता, तो ब्राउज़र उसे डाउनलोड करता रहता है। लिंक खुद भेजना हर हाल में काम करता है।"
+  },
+  "optionsDownloadsDenied": {
+    "message": "ब्राउज़र ने इसकी अनुमति नहीं दी, इसलिए डाउनलोड ब्राउज़र में ही रहते हैं।"
+  },
+  "optionsMinSize": {
+    "message": "इस आकार (MB) से छोटी फ़ाइलें ब्राउज़र पर छोड़ें"
+  },
+  "optionsSkipTypes": {
+    "message": "इन फ़ाइल प्रकारों को हमेशा ब्राउज़र पर छोड़ें"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "डाउनलोड DownloadPulse को भेजा गया।"
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "उस साइट पर आपके साइन इन के बिना डाउनलोड DownloadPulse को भेजा गया।"
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse वह डाउनलोड नहीं ले सका, इसलिए ब्राउज़र ने उसे रखा।"
   }
 }
