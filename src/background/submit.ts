@@ -10,11 +10,12 @@ import {connection, forgetConnection, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {capturedName, isIndexerRefusal} from "../shared/capture";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
-import {isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Source} from "../shared/server";
+import {controlJob, isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Source} from "../shared/server";
+import {stateKey} from "../shared/server-state";
 import {settings} from "../shared/settings";
 import {cookiesFor} from "./cookies";
-import {wake} from "./monitor";
-import {keyAnswered, keyFor} from "./sent-keys";
+import {cachedJobs, wake} from "./monitor";
+import {forgetDigest, keyAnswered, keyFor} from "./sent-keys";
 
 const LIMITS: Record<CaptureKind, number> = {torrent: 16 * 1024 * 1024, nzb: 8 * 1024 * 1024, metalink: 16 * 1024 * 1024};
 const CAPTURE_TIMEOUT_MS = 30_000;
@@ -145,7 +146,29 @@ async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Prom
   const connected = await connection();
   const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
-  const {digest, key} = await keyFor(connected.server, source, cookies);
+  let {digest, key, job} = await keyFor(connected.server, source, cookies);
+  // Sent again while its download is paused (operator, 2026-11-22): the person wants it now. A
+  // pause this browser made is released here; any other pause is DownloadPulse's to settle, so
+  // the send goes as a new request -- DownloadPulse joins it to the one download and resumes it.
+  const known = job ? (await cachedJobs(connected.server))[job] : undefined;
+  if (known && known.reason === "paused") {
+    if (known.paused_by === "client") {
+      try {
+        const decision = await controlJob(connected.server, browserToken, known.id, "resume");
+        if (decision.disposition === "honored") {
+          await reshow(connected.server, known.id);
+          wake();
+          return;
+        }
+      } catch {
+        // not answered: sent as a new request below
+      }
+    }
+    await forgetDigest(digest);
+    ({digest, key} = await keyFor(connected.server, source, cookies));
+  } else if (known) {
+    await reshow(connected.server, known.id);
+  }
   const name = displayName(source);
   // A request that timed out or lost its connection may still have arrived: it is retried
   // once with the same key, so DownloadPulse answers the same job (review, 2026-11-19).
@@ -171,6 +194,15 @@ async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Prom
   if (!answer.ok && answer.code === "unauthorized") await forgetConnection(true, connected.server);
   if (!answer.ok) throw new Refused(REFUSALS[answer.code] ?? "sendFailed");
   wake();
+}
+
+/** ``id`` back in the list if the person had cleared it there: they just sent it again. */
+async function reshow(server: string, id: string): Promise<void> {
+  const key = stateKey(server, "jobsCleared");
+  const cleared = ((await chrome.storage.session.get(key))[key] ?? {}) as Record<string, number>;
+  if (!(id in cleared)) return;
+  delete cleared[id];
+  await chrome.storage.session.set({[key]: cleared});
 }
 
 async function sourceFor(href: string): Promise<Source> {

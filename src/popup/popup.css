@@ -386,12 +386,10 @@ input[type="text"]:focus-visible, input[type="number"]:focus-visible { outline: 
 .dp-settings__group[aria-labelledby="connection-title"] { padding-top: 16px; }
 /* On web pages: a little more room under its separator. */
 .dp-settings__group[aria-labelledby="page-title"] { padding-top: 16px; }
-/* The group after On web pages -- Browser downloads (1.0.2) -- follows it with room and no
-   separator (operator, 2026-11-18, for what followed it then: Notifications). */
-.dp-settings__group[aria-labelledby="downloads-title"] { border-top: 0; padding-top: var(--dp-row); }
-/* ...except with the in-page buttons switched off: On web pages is then one line, and the separator returns. */
-.dp-settings__group[aria-labelledby="page-title"]:has([data-testid="in-page-options"][hidden])
-  + .dp-settings__group[aria-labelledby="downloads-title"] { border-top: 1px solid var(--dp-border-default); padding-top: 16px; }
+/* Browser downloads (1.0.2): always its own separator, with the same room under it as On web
+   pages -- also below the in-page buttons' options (operator, 2026-11-22; a separate section,
+   no longer the run-on it was for Notifications, 2026-11-18). */
+.dp-settings__group[aria-labelledby="downloads-title"] { padding-top: 16px; }
 /* Notifications: its own separator, with the same room under it as On web pages. */
 .dp-settings__group[aria-labelledby="notify-title"] { padding-top: 16px; }
 .dp-settings__group { display: grid; gap: 8px; padding-top: 10px; border-top: 1px solid var(--dp-border-default); }
@@ -414,7 +412,8 @@ input[type="text"]:focus-visible, input[type="number"]:focus-visible { outline: 
 /* Browser downloads (1.0.2): a labelled field above its input; the main view's switch centred above the list. */
 .dp-settings__field { display: grid; gap: 4px; font-size: 12px; color: var(--dp-text-secondary); }
 .dp-settings__field input[type="number"] { inline-size: 9ch; }
-.dp-capture-switch { justify-content: center; font-size: 12px; color: var(--dp-text-secondary); margin-block: var(--dp-row) 0; }
+/* Close under Quick Add (only the view's own gap), a little room before the list (operator, 2026-11-22). */
+.dp-capture-switch { justify-content: center; font-size: 12px; color: var(--dp-text-secondary); margin-block: -2px 6px; }
 .dp-check input { accent-color: var(--dp-accent-purple); margin: 0; }
 .dp-sites { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .dp-sites li { display: flex; gap: 8px; align-items: center; justify-content: space-between; }

@@ -184,8 +184,8 @@ test("the gear opens the settings inside the dropdown, and Back returns", async 
   expect(layout).toMatchObject({backAtEnd: true, titles: ["center", "center", "center", "center"], connection: "Connection:",
     hintCentred: "center", disconnectCentred: true});
   for (const gap of Object.values(layout.rows)) expect(gap).toBeGreaterThanOrEqual(17);
-  // No separator above the group after On web pages (Browser downloads, 1.0.2), a blank row
-  // instead; the subsection title sits on its hint.
+  // Browser downloads (1.0.2) has its own separator, with room under it (operator, 2026-11-22);
+  // the subsection title sits on its hint.
   const tail = await popup.evaluate(() => {
     const notify = document.querySelector("section[aria-labelledby='downloads-title']");
     const h4 = document.querySelector(".dp-settings h4").getBoundingClientRect();
@@ -193,8 +193,8 @@ test("the gear opens the settings inside the dropdown, and Back returns", async 
     return {separator: getComputedStyle(notify).borderTopStyle, room: parseFloat(getComputedStyle(notify).paddingTop),
       titleToHint: hint.top - h4.bottom};
   });
-  expect(tail.separator).toBe("none");
-  expect(tail.room).toBeGreaterThanOrEqual(18);
+  expect(tail.separator).toBe("solid");
+  expect(tail.room).toBeGreaterThanOrEqual(16);
   expect(tail.titleToHint).toBeLessThan(12);
   await popup.getByRole("button", {name: "Back"}).click();
   await expect(popup.getByRole("button", {name: "Open DownloadPulse"})).toBeVisible();
@@ -218,15 +218,15 @@ test("the master switch governs every in-page button; off, what it governs is no
   await popup.getByLabel("Show a download button on video players").uncheck();
   // The group after On web pages (Browser downloads, 1.0.2; Notifications before it).
   const separator = () => popup.locator("section[aria-labelledby='downloads-title']").evaluate((el) => getComputedStyle(el).borderTopStyle);
-  expect(await separator()).toBe("none");                 // on: the next group follows without a separator
+  expect(await separator()).toBe("solid");                // its own section, whatever On web pages shows
   await master.uncheck();
   await expect(popup.getByTestId("in-page-options")).toBeHidden();
-  await expect.poll(separator).toBe("solid");             // off: the separator returns
+  expect(await separator()).toBe("solid");
   await expect(popup.getByLabel("Show a download button beside download links")).toBeHidden();
   await page.waitForTimeout(5500);                         // a frame's answer is kept for up to 5 s
   expect(await hoverOffered(page, "#zip")).toBe(0);        // off: nothing offered
   await master.check();
-  await expect.poll(separator).toBe("none");
+  expect(await separator()).toBe("solid");
   await expect(popup.getByLabel("Show a download button on video players")).not.toBeChecked();   // kept
   await expect(popup.getByLabel("Show a download button beside download links")).toBeChecked();
   await page.waitForTimeout(5500);
