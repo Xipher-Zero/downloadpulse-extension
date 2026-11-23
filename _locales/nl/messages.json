@@ -515,7 +515,7 @@
     "message": "Downloads naar DownloadPulse sturen?"
   },
   "captureOfferText": {
-    "message": "Bestanden die deze browser begint te downloaden, kunnen in plaats daarvan naar DownloadPulse gaan, met de pagina waar ze vandaan komen en uw aanmelding op hun site. Als DownloadPulse er een niet kan overnemen of niet kan voltooien, blijft de browser het downloaden. U kunt dit altijd wijzigen in Instellingen."
+    "message": "Bestanden die deze browser begint te downloaden, kunnen in plaats daarvan naar DownloadPulse gaan, met de pagina waar ze vandaan komen en uw aanmelding op hun site. De browser pauzeert elke download en hervat die als DownloadPulse hem niet kan overnemen of niet kan voltooien; een download die de browser niet kan pauzeren, wordt geannuleerd zodra DownloadPulse hem overneemt. U kunt dit altijd wijzigen in Instellingen."
   },
   "captureOfferYes": {
     "message": "Naar DownloadPulse sturen"

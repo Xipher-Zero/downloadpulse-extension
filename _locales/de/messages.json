@@ -515,7 +515,7 @@
     "message": "Downloads an DownloadPulse senden?"
   },
   "captureOfferText": {
-    "message": "Dateien, die dieser Browser herunterzuladen beginnt, können stattdessen an DownloadPulse gesendet werden, mit der Seite, von der sie stammen, und Ihrer Anmeldung auf deren Website. Kann DownloadPulse eine Datei nicht übernehmen oder nicht fertig herunterladen, lädt der Browser sie weiter herunter. Sie können dies jederzeit in den Optionen ändern."
+    "message": "Dateien, die dieser Browser herunterzuladen beginnt, können stattdessen an DownloadPulse gesendet werden, mit der Seite, von der sie stammen, und Ihrer Anmeldung auf deren Website. Der Browser hält jeden Download an und setzt ihn fort, wenn DownloadPulse ihn nicht übernehmen oder nicht fertig herunterladen kann; einen Download, den der Browser nicht anhalten kann, bricht er ab, sobald DownloadPulse ihn übernimmt. Sie können dies jederzeit in den Optionen ändern."
   },
   "captureOfferYes": {
     "message": "An DownloadPulse senden"

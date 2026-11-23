@@ -515,7 +515,7 @@
     "message": "Envoyer les téléchargements à DownloadPulse ?"
   },
   "captureOfferText": {
-    "message": "Les fichiers que ce navigateur commence à télécharger peuvent être envoyés à DownloadPulse à la place, avec la page d’où ils viennent et votre connexion à leur site. Si DownloadPulse ne peut pas en prendre un en charge ou le terminer, le navigateur continue de le télécharger. Vous pouvez modifier ce choix à tout moment dans Paramètres."
+    "message": "Les fichiers que ce navigateur commence à télécharger peuvent être envoyés à DownloadPulse à la place, avec la page d’où ils viennent et votre connexion à leur site. Le navigateur met chaque téléchargement en pause et le reprend si DownloadPulse ne peut pas le prendre en charge ou le terminer ; un téléchargement que le navigateur ne peut pas mettre en pause est annulé dès que DownloadPulse le prend en charge. Vous pouvez modifier ce choix à tout moment dans Paramètres."
   },
   "captureOfferYes": {
     "message": "Les envoyer à DownloadPulse"

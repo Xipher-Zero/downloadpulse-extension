@@ -515,7 +515,7 @@
     "message": "¿Enviar las descargas a DownloadPulse?"
   },
   "captureOfferText": {
-    "message": "Los archivos que este navegador empiece a descargar pueden ir a DownloadPulse en su lugar, con la página de la que proceden y su sesión iniciada en el sitio de cada uno. Si DownloadPulse no puede aceptar o terminar alguno, el navegador sigue descargándolo. Puede cambiarlo en cualquier momento en Ajustes."
+    "message": "Los archivos que este navegador empiece a descargar pueden ir a DownloadPulse en su lugar, con la página de la que proceden y su sesión iniciada en el sitio de cada uno. El navegador pausa cada descarga y la reanuda si DownloadPulse no puede aceptarla o terminarla; una descarga que el navegador no puede pausar se cancela en cuanto DownloadPulse la acepta. Puede cambiarlo en cualquier momento en Ajustes."
   },
   "captureOfferYes": {
     "message": "Enviarlas a DownloadPulse"

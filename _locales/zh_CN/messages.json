@@ -515,7 +515,7 @@
     "message": "要将下载发送到DownloadPulse吗？"
   },
   "captureOfferText": {
-    "message": "此浏览器开始下载的文件可以改为发送到DownloadPulse，并附带其来源页面和您在其网站的登录状态。如果DownloadPulse无法接收或完成某个文件，浏览器会继续下载它。您可以随时在“设置”中更改此项。"
+    "message": "此浏览器开始下载的文件可以改为发送到DownloadPulse，并附带其来源页面和您在其网站的登录状态。浏览器会暂停每个下载；如果DownloadPulse无法接收或完成，浏览器会继续下载。浏览器无法暂停的下载会在DownloadPulse接收后立即取消。您可以随时在“设置”中更改此项。"
   },
   "captureOfferYes": {
     "message": "发送到DownloadPulse"

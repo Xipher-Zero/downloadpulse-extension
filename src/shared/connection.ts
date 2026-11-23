@@ -8,7 +8,7 @@
 // WS-E2 B10).
 
 import {consent} from "./consent";
-import {effectiveAddress, type Failure} from "./server";
+import {effectiveAddress, readSession, type Failure, type Session} from "./server";
 import {secret, setSecret} from "./secrets";
 import {SERVER_STATE, stateKey} from "./server-state";
 
@@ -154,6 +154,42 @@ export function saveConnection(value: Connection, browserToken: string): Promise
     const all = await connections();
     await chrome.storage.local.set({[CONNECTIONS]: {...all, [value.server]: value}, [ACTIVE]: value.server});
   });
+}
+
+/** What a DownloadPulse takes with a link: its session's capabilities. */
+export type Capabilities = Pick<Session, "videoCookies" | "referrer">;
+
+/**
+ * ``server``'s capabilities as its session last said, kept with its other state for this
+ * browser session (server-state.ts) and cleared with the connection. Every read of the session
+ * keeps them (pairing, the appearance refresh), so sending -- a browser download held paused
+ * while it is sent -- never asks again (1.0.3); they are read here only when none are kept yet
+ * (the browser restarted since). Written only while still connected with ``browserToken``, and
+ * only when changed (an open popup redraws on every change).
+ */
+export function keepCapabilities(server: string, browserToken: string, session: Capabilities): Promise<boolean> {
+  const value: Capabilities = {videoCookies: session.videoCookies, referrer: session.referrer};
+  const key = stateKey(server, "capabilities");
+  return whileConnectedWith(server, browserToken, async () => {
+    const kept = (await chrome.storage.session.get(key))[key] as Capabilities | undefined;
+    if (kept?.videoCookies !== value.videoCookies || kept?.referrer !== value.referrer) {
+      await chrome.storage.session.set({[key]: value});
+    }
+  });
+}
+
+/** ``server``'s kept capabilities dropped (a send carrying them was refused): read again when next needed. */
+export function forgetCapabilities(server: string, browserToken: string): Promise<boolean> {
+  return whileConnectedWith(server, browserToken, () => chrome.storage.session.remove(stateKey(server, "capabilities")));
+}
+
+export async function capabilities(server: string, browserToken: string): Promise<Capabilities> {
+  const key = stateKey(server, "capabilities");
+  const kept = (await chrome.storage.session.get(key))[key] as Capabilities | undefined;
+  if (kept) return kept;
+  const session = await readSession(server, browserToken);
+  await keepCapabilities(server, browserToken, session);
+  return {videoCookies: session.videoCookies, referrer: session.referrer};
 }
 
 export async function pairing(): Promise<Pairing | null> {

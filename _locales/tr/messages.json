@@ -515,7 +515,7 @@
     "message": "İndirmeler DownloadPulse'a gönderilsin mi?"
   },
   "captureOfferText": {
-    "message": "Bu tarayıcının indirmeye başladığı dosyalar, geldikleri sayfa ve sitelerindeki oturumunuzla birlikte bunun yerine DownloadPulse'a gidebilir. DownloadPulse birini alamaz veya tamamlayamazsa tarayıcı onu indirmeye devam eder. Bunu istediğiniz zaman Ayarlar'dan değiştirebilirsiniz."
+    "message": "Bu tarayıcının indirmeye başladığı dosyalar, geldikleri sayfa ve sitelerindeki oturumunuzla birlikte bunun yerine DownloadPulse'a gidebilir. Tarayıcı her indirmeyi duraklatır ve DownloadPulse onu alamaz veya tamamlayamazsa sürdürür; tarayıcının duraklatamadığı bir indirme, DownloadPulse onu alır almaz iptal edilir. Bunu istediğiniz zaman Ayarlar'dan değiştirebilirsiniz."
   },
   "captureOfferYes": {
     "message": "DownloadPulse'a gönder"

@@ -139,7 +139,7 @@ Produce the empty, buildable, testable extension that every later workstream add
 
 **Firefox minimum version:** `strict_min_version` is **140.0** (the current ESR), because `data_collection_permissions` is supported from Firefox 140.
 
-**The one remaining lint warning:** Firefox for **Android** supports that key only from 142. Android is not a target (PLAN §4), and declaring `gecko_android` would advertise Android support, so the warning is recorded rather than suppressed.
+**Firefox for Android (superseded in 1.0.3):** Firefox for **Android** supports that key only from 142. At this scaffold Android was not a target (PLAN §4), so the lint warning was recorded rather than suppressed. The operator has since put Android in scope (1.0.3, Ext 10): `src/manifest.mjs` declares `gecko_android` with `strict_min_version` **142.0**, which also clears that warning.
 
 **Gate 8 (2026-11-17):** self-review against this document.
 - Three corrections were made to the document: the manifest file name, the scope of the API-namespace proof, and the exact wording of B7's Firefox proof.

@@ -515,7 +515,7 @@
     "message": "Enviar downloads ao DownloadPulse?"
   },
   "captureOfferText": {
-    "message": "Os arquivos que este navegador começar a baixar podem ir para o DownloadPulse em vez disso, com a página de onde vieram e o seu login no site deles. Se o DownloadPulse não puder aceitar ou concluir algum, o navegador continua baixando. Você pode mudar isso a qualquer momento em Ajustes."
+    "message": "Os arquivos que este navegador começar a baixar podem ir para o DownloadPulse em vez disso, com a página de onde vieram e o seu login no site deles. O navegador pausa cada download e o retoma se o DownloadPulse não puder aceitá-lo ou concluí-lo; um download que o navegador não consegue pausar é cancelado assim que o DownloadPulse o aceita. Você pode mudar isso a qualquer momento em Ajustes."
   },
   "captureOfferYes": {
     "message": "Enviar ao DownloadPulse"

@@ -515,7 +515,7 @@
     "message": "다운로드를 DownloadPulse로 보낼까요?"
   },
   "captureOfferText": {
-    "message": "이 브라우저에서 다운로드를 시작하는 파일을 대신 DownloadPulse로 보낼 수 있으며, 파일이 나온 페이지와 해당 사이트의 로그인 상태도 함께 보냅니다. DownloadPulse가 받을 수 없거나 완료할 수 없는 파일은 브라우저가 계속 다운로드합니다. 언제든지 설정에서 변경할 수 있습니다."
+    "message": "이 브라우저에서 다운로드를 시작하는 파일을 대신 DownloadPulse로 보낼 수 있으며, 파일이 나온 페이지와 해당 사이트의 로그인 상태도 함께 보냅니다. 브라우저는 각 다운로드를 일시 중지하고, DownloadPulse가 받을 수 없거나 완료할 수 없으면 다시 시작합니다. 브라우저가 일시 중지할 수 없는 다운로드는 DownloadPulse가 받는 즉시 취소됩니다. 언제든지 설정에서 변경할 수 있습니다."
   },
   "captureOfferYes": {
     "message": "DownloadPulse로 보내기"

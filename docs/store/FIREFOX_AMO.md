@@ -5,7 +5,7 @@
   - **Support email:** `dpsupport@xipherzero.com` (shown publicly on the listing; the same address as PRIVACY.md's Contact section). Send it a test message before submitting: reviewers sometimes write to it.
   - **Homepage:** <https://github.com/Xipher-Zero/downloadpulse-extension> until downloadpulse.net has a site. The listing's URLs can be changed later without a new version.
   - **Privacy policy:** <https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md>.
-- **Platforms:** desktop only (Firefox 140+). Do not list for Android.
+- **Platforms:** desktop (Firefox 140+) and Android (Firefox for Android 142+, `gecko_android.strict_min_version` in `src/manifest.mjs`: the first version that reads `data_collection_permissions`; operator, 1.0.3 Ext 10). List for both.
 - **Data collection** (`browser_specific_settings.gecko.data_collection_permissions`):
   - **Required:**
     - `authenticationInfo`:

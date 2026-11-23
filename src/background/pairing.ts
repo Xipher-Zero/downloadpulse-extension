@@ -9,7 +9,7 @@
 
 import {saveAppearance} from "../shared/appearance";
 import {consented, deviceNameAllowed} from "../shared/consent";
-import {deviceCode, saveConnection, setPairing} from "../shared/connection";
+import {deviceCode, keepCapabilities, saveConnection, setPairing} from "../shared/connection";
 import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
 import {
@@ -149,6 +149,7 @@ async function waitForApproval(origin: string, interval: number, expiresAt: numb
     if (generation !== active) return;
     await saveConnection({server: origin, tokenId: session.token.id, label: session.token.label,
       account: session.account.display_name, ...(plainHttp ? {plainHttp: true} : {})}, answer.token);
+    await keepCapabilities(origin, answer.token, session);
     await saveAppearance(session.appearance);
     // Newly connected: browser downloads to DownloadPulse are offered once (popup capture-offer),
     // unless the person already chose either way.

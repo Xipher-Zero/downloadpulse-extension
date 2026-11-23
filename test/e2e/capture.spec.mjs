@@ -164,6 +164,25 @@ test("refused by DownloadPulse, the browser keeps downloading it", async () => {
   expect(dp.state.jobs).toHaveLength(0);
 });
 
+test("refused with its sign-in and page: what DownloadPulse takes is read again with the next send", async () => {
+  await connect("Send them to DownloadPulse");
+  // Closed, so no appearance refresh reads the session meanwhile: only sends do.
+  await popup.close();
+  const kept = () => worker.evaluate(async () => Object.entries(await chrome.storage.session.get(null))
+    .find(([key]) => key.startsWith("capabilities@"))?.[1] ?? null);
+  expect(await kept()).toEqual({videoCookies: true, referrer: true});
+  dp.state.refuse = "source_refused";
+  await download("big");
+  await expect.poll(kept, {timeout: 15_000}).toBe(null);
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+  dp.state.refuse = null;
+  const reads = dp.state.sessionAuth.length;
+  await download("pdf");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  expect(dp.state.sessionAuth.length).toBe(reads + 1);
+  expect(await kept()).toEqual({videoCookies: true, referrer: true});
+});
+
 test("'Not now' leaves downloads in the browser; the switch turns it on later", async () => {
   await connect("Not now");
   await expect(popup.getByTestId("capture-main")).not.toBeChecked();

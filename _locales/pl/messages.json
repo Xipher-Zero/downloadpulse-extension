@@ -515,7 +515,7 @@
     "message": "Wysyłać pobrania do DownloadPulse?"
   },
   "captureOfferText": {
-    "message": "Pliki, których pobieranie rozpoczyna ta przeglądarka, mogą zamiast tego trafiać do DownloadPulse, razem ze stroną, z której pochodzą, i sesją logowania w ich witrynie. Jeśli DownloadPulse nie może przyjąć lub ukończyć któregoś z nich, przeglądarka nadal go pobiera. Można to zmienić w dowolnym momencie w Ustawieniach."
+    "message": "Pliki, których pobieranie rozpoczyna ta przeglądarka, mogą zamiast tego trafiać do DownloadPulse, razem ze stroną, z której pochodzą, i sesją logowania w ich witrynie. Przeglądarka wstrzymuje każde pobieranie i wznawia je, jeśli DownloadPulse nie może go przyjąć lub ukończyć; pobieranie, którego przeglądarka nie może wstrzymać, jest anulowane, gdy tylko DownloadPulse je przyjmie. Można to zmienić w dowolnym momencie w Ustawieniach."
   },
   "captureOfferYes": {
     "message": "Wysyłaj do DownloadPulse"

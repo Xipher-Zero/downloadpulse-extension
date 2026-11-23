@@ -600,6 +600,9 @@ test("a single-page site's video is sent at its current address, not the one the
 });
 
 test("no cookies when switched off, nor to a DownloadPulse that doesn't say it takes them, nor with a link", async () => {
+  // An older DownloadPulse (no capability), as its session says when this browser connects:
+  // what it takes is kept from that answer (connection.ts), not read again for each send.
+  dp.state.videoCookies = false;
   const popup = await connect();
   await context.addCookies([{name: "site_session", value: "signed-in", url: site.base}]);
   const page = await sitePage();
@@ -612,13 +615,15 @@ test("no cookies when switched off, nor to a DownloadPulse that doesn't say it t
     const [layer] = await openLayers(page);
     await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   };
-  // An older DownloadPulse (no capability): the video goes, without them.
-  dp.state.videoCookies = false;
+  // The video goes, without them.
   await sendVideo();
   await expect.poll(() => dp.state.submits).toBe(1);
   expect(dp.state.jobs[0].body.cookies).toBeUndefined();
-  // Switched off in the settings.
+  // Switched off in the settings (whatever DownloadPulse takes): first DownloadPulse takes them
+  // again, and the open popup's appearance refresh keeps that, so the setting alone withholds them.
   dp.state.videoCookies = true;
+  await expect.poll(() => popup.evaluate(async () => Object.entries(await chrome.storage.session.get(null))
+    .find(([key]) => key.startsWith("capabilities@"))?.[1]?.videoCookies), {timeout: 15_000}).toBe(true);
   await popup.evaluate(async () => {
     const {settings} = await chrome.storage.local.get("settings");
     await chrome.storage.local.set({settings: {...(settings ?? {}), videoCookies: false}});

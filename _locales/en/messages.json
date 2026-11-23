@@ -666,8 +666,8 @@
     "description": "Setup step after connecting: title of the offer to send browser downloads to DownloadPulse."
   },
   "captureOfferText": {
-    "message": "Files this browser starts downloading can go to DownloadPulse instead, with the page they came from and your sign-in on their site. If DownloadPulse can't take one or can't finish it, the browser keeps downloading it. You can change this at any time in Settings.",
-    "description": "Opt-in prompt for sending browser downloads: says what is sent (the page the download came from, the sign-in) and that nothing is lost."
+    "message": "Files this browser starts downloading can go to DownloadPulse instead, with the page they came from and your sign-in on their site. The browser pauses each one and resumes it if DownloadPulse can't take it or can't finish it; one the browser can't pause is cancelled as soon as DownloadPulse takes it. You can change this at any time in Settings.",
+    "description": "Opt-in prompt for sending browser downloads: says what is sent (the page the download came from, the sign-in), that a paused download is resumed in the browser if DownloadPulse refuses or fails it, and that one the browser cannot pause is cancelled once DownloadPulse accepts it."
   },
   "captureOfferYes": {
     "message": "Send them to DownloadPulse",

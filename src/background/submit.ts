@@ -6,11 +6,11 @@
 // is never sent, stored or logged. Feedback goes to the frame the gesture
 // came from, else to the toolbar badge (B6).
 
-import {connection, forgetConnection, token} from "../shared/connection";
+import {capabilities, connection, forgetConnection, forgetCapabilities, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {capturedName, isIndexerRefusal} from "../shared/capture";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
-import {controlJob, isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Session, type Source} from "../shared/server";
+import {controlJob, isLocal, isPrivateHost, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Source} from "../shared/server";
 import {stateKey} from "../shared/server-state";
 import {settings} from "../shared/settings";
 import {cookiesFor} from "./cookies";
@@ -195,25 +195,14 @@ async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Prom
   }
   if (answer.ok && answer.id) await keyAnswered(digest, answer.id);
   if (!answer.ok && answer.code === "unauthorized") await forgetConnection(true, connected.server);
+  // Refused with a sign-in or page: this DownloadPulse may no longer take them (a downgrade), so
+  // what it takes is read again with the next send rather than kept until the popup opens.
+  if (!answer.ok && answer.code !== "unauthorized" && answer.code !== "unreachable" && (cookies.length || referrer)) {
+    await forgetCapabilities(connected.server, browserToken);
+  }
   if (!answer.ok) throw new Refused(REFUSALS[answer.code] ?? "sendFailed");
   wake();
   return {server: connected.server, browserToken, job: answer.id ?? ""};
-}
-
-// What a DownloadPulse takes with a link (its session's capabilities), read once a minute per
-// token rather than on every send (1.0.3): a browser download is held paused while it is sent,
-// and a sign-in or page sent to a DownloadPulse that no longer takes it is refused, not lost --
-// the browser then keeps the download. A failed read is not kept.
-const CAPABILITIES_MS = 60_000;
-const capabilityReads = new Map<string, {at: number; read: Promise<Session>}>();
-
-function capabilities(server: string, browserToken: string): Promise<Session> {
-  const kept = capabilityReads.get(browserToken);
-  if (kept && Date.now() - kept.at < CAPABILITIES_MS) return kept.read;
-  const read = readSession(server, browserToken);
-  capabilityReads.set(browserToken, {at: Date.now(), read});
-  read.catch(() => { if (capabilityReads.get(browserToken)?.read === read) capabilityReads.delete(browserToken); });
-  return read;
 }
 
 /** ``id`` back in the list if the person had cleared it there: they just sent it again. */

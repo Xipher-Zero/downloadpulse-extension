@@ -515,7 +515,7 @@
     "message": "Kirim unduhan ke DownloadPulse?"
   },
   "captureOfferText": {
-    "message": "Berkas yang mulai diunduh peramban ini dapat dikirim ke DownloadPulse sebagai gantinya, beserta halaman asalnya dan sesi masuk Anda di situsnya. Jika DownloadPulse tidak dapat menerima atau menyelesaikannya, peramban tetap mengunduhnya. Anda dapat mengubah ini kapan saja di Pengaturan."
+    "message": "Berkas yang mulai diunduh peramban ini dapat dikirim ke DownloadPulse sebagai gantinya, beserta halaman asalnya dan sesi masuk Anda di situsnya. Peramban menjeda setiap unduhan dan melanjutkannya jika DownloadPulse tidak dapat menerima atau menyelesaikannya; unduhan yang tidak dapat dijeda peramban dibatalkan begitu DownloadPulse menerimanya. Anda dapat mengubah ini kapan saja di Pengaturan."
   },
   "captureOfferYes": {
     "message": "Kirim ke DownloadPulse"
