@@ -32,10 +32,22 @@ export async function cachedJobs(server: string): Promise<Record<string, Job>> {
   return ((await chrome.storage.session.get(key))[key] as Record<string, Job> | undefined) ?? {};
 }
 
-/** Every saved server's downloads, together (what the icon and the wake-up alarm follow). */
+/** Every saved server's downloads, together (what the wake-up alarm follows). */
 async function everyJob(): Promise<Job[]> {
   const servers = Object.keys(await connections());
   return (await Promise.all(servers.map(cachedJobs))).flatMap((jobs) => Object.values(jobs));
+}
+
+/**
+ * The downloads of the servers that answered their last listing (what the icon follows): a
+ * server that cannot be reached is not known to be downloading anything, so the icon does not
+ * breathe for it -- and its redraws do not keep the background awake (1.0.3, review 2026-11-22).
+ */
+async function answeringJobs(): Promise<Job[]> {
+  const servers = Object.keys(await connections());
+  const reach = await chrome.storage.session.get(servers.map((server) => stateKey(server, "reach")));
+  const answering = servers.filter((server) => (reach[stateKey(server, "reach")] as {ok?: boolean} | undefined)?.ok);
+  return (await Promise.all(answering.map(cachedJobs))).flatMap((jobs) => Object.values(jobs));
 }
 
 /** The popup is open: keep the list fresh while it is. */
@@ -188,7 +200,7 @@ async function loop(): Promise<void> {
         else await chrome.alarms.clear(ALARM);
       }
       if (!anyUnsettled && Date.now() - popupSeenAt > POPUP_GRACE_MS) break;
-      if (jobs.some(active)) {
+      if ((await answeringJobs()).some(active)) {
         ringing = true;
         await drawRing(frame++);
       } else if (ringing) {

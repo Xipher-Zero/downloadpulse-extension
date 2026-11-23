@@ -220,6 +220,29 @@ test("the connection's status: green while DownloadPulse answers, yellow while i
   await expect(reach).toHaveAttribute("data-reach", "ok", {timeout: 15_000});
 });
 
+test("the icon breathes while a download is active, and stops while DownloadPulse can't be reached (1.0.3)", async () => {
+  const worker = context.serviceWorkers()[0];
+  // Count the toolbar icon's redraws (the breath is one every 125 ms).
+  await worker.evaluate(() => {
+    globalThis.__iconDraws = 0;
+    const setIcon = chrome.action.setIcon.bind(chrome.action);
+    chrome.action.setIcon = (details) => { globalThis.__iconDraws += 1; return setIcon(details); };
+  });
+  const draws = () => worker.evaluate(() => globalThis.__iconDraws);
+  const id = await sendArchive();
+  dp.setJob(id, {phase: "processing", reason: null, actionability: "wait"});
+  await expect.poll(draws, {timeout: 15_000}).toBeGreaterThan(5);
+  dp.state.down = true;
+  await expect(popup.getByTestId("reach")).toHaveAttribute("data-reach", "unreachable", {timeout: 15_000});
+  await popup.waitForTimeout(500);   // the frame in flight, then the icon at rest
+  const resting = await draws();
+  await popup.waitForTimeout(3000);
+  expect(await draws()).toBe(resting);
+  // Answering again: it breathes again.
+  dp.state.down = false;
+  await expect.poll(async () => (await draws()) - resting, {timeout: 15_000}).toBeGreaterThan(5);
+});
+
 test("Open DownloadPulse: a server opens in a tab; the desktop application comes forward instead", async () => {
   const open = popup.getByRole("button", {name: "Open DownloadPulse"});
   await expect(open).toHaveClass(/dp-btn--ghost/);
