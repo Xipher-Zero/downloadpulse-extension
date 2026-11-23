@@ -367,6 +367,20 @@ test("a browser disconnected in DownloadPulse is told so and forgets its token",
     {timeout: 15_000});
 });
 
+test("a 401 from a sign-in proxy in front of DownloadPulse keeps the connection (1.0.3)", async () => {
+  dp.state.proxy401 = true;           // Authelia and the like: its own 401, not DownloadPulse's
+  await popup.reload();               // the open popup polls the list
+  await expect.poll(() => dp.state.proxied, {timeout: 15_000}).toBeGreaterThan(1);
+  await popup.waitForTimeout(3000);
+  await expect(popup.getByText("This browser was disconnected in DownloadPulse.")).toHaveCount(0);
+  const kept = await popup.evaluate(async () => Object.keys((await chrome.storage.local.get("connections")).connections ?? {}));
+  expect(kept).toEqual(["http://127.0.0.1:8095"]);
+  // Signed in at the proxy again: the same token goes on working, nothing to reconnect.
+  dp.state.proxy401 = false;
+  await popup.reload();
+  await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
+});
+
 test("the in-page buttons follow the settings, globally and per site", async () => {
   const page = await context.newPage();
   await page.goto(`${site.base}/page`);

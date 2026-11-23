@@ -145,6 +145,22 @@ async function request(origin: string, path: string, init: RequestInit = {}, tim
   return response;
 }
 
+/**
+ * A refusal of the token by DownloadPulse itself -- its 401 names its own code -- as opposed to
+ * a 401 from something in front of it (an Authelia or other sign-in proxy), which says nothing
+ * about the token (1.0.3, review 2026-11-22: such a 401 forgot a token the server still held).
+ * Only DownloadPulse's own refusal disconnects; anything else is "blocked", as a redirect is.
+ */
+async function tokenRefused(response: Response): Promise<ServerError> {
+  try {
+    const body: unknown = await response.json();
+    if ((body as {code?: unknown} | null)?.code === "auth.unauthorized") return new ServerError("unauthorized");
+  } catch {
+    // not DownloadPulse's JSON
+  }
+  return new ServerError("blocked");
+}
+
 async function json(response: Response): Promise<Record<string, unknown>> {
   try {
     const value: unknown = await response.json();
@@ -236,7 +252,7 @@ export interface Session {
 /** The server's own account of this token: how a pairing is verified (L19). */
 export async function readSession(origin: string, token: string): Promise<Session> {
   const response = await request(origin, "/api/browser/v1/session", {headers: {Authorization: `Bearer ${token}`}});
-  if (response.status === 401) throw new ServerError("unauthorized");
+  if (response.status === 401) throw await tokenRefused(response);
   if (response.status === 404) throw new ServerError("too_old");
   if (!response.ok) throw new ServerError("failed");
   const body = await json(response);
@@ -293,7 +309,11 @@ export async function submitJob(origin: string, browserToken: string, key: strin
     }
     return {ok: true, id};
   }
-  if (response.status === 401) return {ok: false, code: "unauthorized", retryable: false};
+  if (response.status === 401) {
+    const refused = await tokenRefused(response);
+    if (refused.failure !== "unauthorized") throw refused;
+    return {ok: false, code: "unauthorized", retryable: false};
+  }
   let detail: Record<string, unknown> = {};
   try {
     detail = ((await response.json()) as {detail?: Record<string, unknown>}).detail ?? {};
@@ -331,7 +351,7 @@ function authorized(browserToken: string): Record<string, string> {
 export async function listJobs(origin: string, browserToken: string, after: number): Promise<Listing> {
   const response = await request(origin, `/api/browser/v1/jobs?after=${Math.max(0, Math.floor(after))}&limit=100`,
     {headers: authorized(browserToken)});
-  if (response.status === 401) throw new ServerError("unauthorized");
+  if (response.status === 401) throw await tokenRefused(response);
   if (!response.ok) throw new ServerError("failed");
   const body = await json(response);
   return {jobs: Array.isArray(body["jobs"]) ? body["jobs"] as Job[] : [],
@@ -345,7 +365,7 @@ export async function controlJob(origin: string, browserToken: string, id: strin
     method: "POST", headers: {...authorized(browserToken), "Content-Type": "application/json"},
     body: JSON.stringify({kind, request_key: crypto.randomUUID()}),
   });
-  if (response.status === 401) throw new ServerError("unauthorized");
+  if (response.status === 401) throw await tokenRefused(response);
   if (!response.ok) throw new ServerError("failed");
   const body = await json(response);
   return {disposition: String(body["disposition"] ?? ""), reason: String(body["reason"] ?? "")};
@@ -356,7 +376,7 @@ export async function withdrawJob(origin: string, browserToken: string, id: stri
   const response = await request(origin, `/api/browser/v1/jobs/${encodeURIComponent(id)}/withdraw`, {
     method: "POST", headers: authorized(browserToken),
   });
-  if (response.status === 401) throw new ServerError("unauthorized");
+  if (response.status === 401) throw await tokenRefused(response);
   if (!response.ok) throw new ServerError("failed");
 }
 

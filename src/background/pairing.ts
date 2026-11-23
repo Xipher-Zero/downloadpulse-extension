@@ -115,17 +115,31 @@ async function pair(origin: string, generation: number, plainHttp = false): Prom
   }
 }
 
+/** Failed polls in a row that end a pairing (the others are asked again at the polling pace). */
+const POLL_TRIES = 3;
+
 async function waitForApproval(origin: string, interval: number, expiresAt: number, generation: number,
                                plainHttp: boolean): Promise<void> {
   let pace = interval;
   let tick = 0;
+  let failures = 0;
   while (generation === active && Date.now() < expiresAt) {
     await badge(["·", "··", "···"][tick++ % 3]!);
     await new Promise((resolve) => setTimeout(resolve, pace * 1000));
     if (generation !== active) return;
     const code = await deviceCode();
     if (!code) return fail("expired", generation);
-    const answer = await pollPairing(origin, code);
+    // One poll that fails -- a dropped connection, a restarting server or proxy -- is not the
+    // pairing failing (1.0.3, review 2026-11-22): it is asked again, and only POLL_TRIES failures
+    // in a row end it.
+    let answer: Awaited<ReturnType<typeof pollPairing>>;
+    try {
+      answer = await pollPairing(origin, code);
+      failures = 0;
+    } catch (error) {
+      if (++failures >= POLL_TRIES) throw error;
+      continue;
+    }
     if (answer.status !== "approved") {
       if (answer.status === "denied" || answer.status === "expired") return fail(answer.status, generation);
       if (answer.status === "slow_down") pace += 1;

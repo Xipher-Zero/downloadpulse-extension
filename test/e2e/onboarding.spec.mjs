@@ -166,6 +166,9 @@ test("found on this computer: offered first, then paired on approval, verified, 
     // The approval page opened on that server, at its own path.
     await expect.poll(() => context.pages().map((page) => page.url())).toContain("http://127.0.0.1:8095/?connect-browser=ABCD-0001");
     expect(fake.state.lastClientName).toBe("Browser");   // no device name without the person's optional consent
+    // A poll lost in transit (a restarting proxy) is asked again, not the pairing's end (1.0.3).
+    fake.state.failPolls = 2;
+    await expect.poll(() => fake.state.failPolls, {timeout: 20_000}).toBe(0);
     fake.answer("approved");
     // Newly connected (1.0.2): browser downloads are offered once, never assumed.
     await expect(popup.getByText("Send downloads to DownloadPulse?")).toBeVisible({timeout: 15_000});
