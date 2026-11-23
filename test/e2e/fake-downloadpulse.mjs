@@ -8,6 +8,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
   const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
     views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null,
     desktop: false, shows: 0, down: false, keys: new Map(), dropNext: false, submits: 0, videoCookies: true, referrer: true,
+    settleAs: null,
     appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"}};
   // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
   const touch = (view) => { view.cursor = ++state.seq; state.views.set(view.id, view); return view; };
@@ -101,7 +102,9 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
         name: body.display_name || "placeholder",
         source: {kind: body.source?.kind}, phase: "accepted", reason: "awaiting_resolution", actionability: "wait",
         paused_by: null, progress: null, estimate: null});
-      return send(201, state.views.get(id));
+      // ``settleAs``: the job settles at once, before the answer (a fast failure), as DownloadPulse may.
+      if (state.settleAs) touch({...state.views.get(id), ...state.settleAs});
+      return send(201, {...state.views.get(id), phase: "accepted", reason: "awaiting_resolution"});
     }
     if (url.pathname === "/api/browser/v1/jobs" && req.method === "GET") {
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});

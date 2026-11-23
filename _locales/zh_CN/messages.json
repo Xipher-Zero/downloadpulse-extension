@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse无法接收该下载，因此已由浏览器继续下载。"
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse无法完成该下载，因此浏览器继续下载。"
   }
 }

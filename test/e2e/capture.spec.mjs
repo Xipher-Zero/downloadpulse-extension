@@ -50,7 +50,10 @@ async function connect(answer) {
 
 /** The browser's own list of downloads, as the extension sees it. */
 const browserDownloads = () => worker.evaluate(() => chrome.downloads.search({}).then((items) =>
-  items.map(({url, state}) => ({url, state}))));
+  items.map(({url, state, paused}) => ({url, state, paused}))));
+
+/** The browser's own copy of big.bin, if it is still in its list. */
+const bigInBrowser = async () => (await browserDownloads()).find((item) => item.url.endsWith("/dl/big.bin"));
 
 /** Start a download the way a person does: a click on an attachment link on a page. */
 async function download(id) {
@@ -91,9 +94,52 @@ test("turned on during setup, a download goes to DownloadPulse with its sign-in 
   expect(body.referrer).toBe(`${site.base}/downloads`);
   // This DownloadPulse is on this computer (plain HTTP allowed there): the sign-in goes with it.
   expect(body.cookies.map((cookie) => [cookie.name, cookie.value])).toEqual([["SESSION", "signed-in-as-una"]]);
-  // The browser's own copy is cancelled and off its list.
-  await expect.poll(async () => (await browserDownloads()).filter((item) => item.url.endsWith("/dl/big.bin")).length,
-    {timeout: 10_000}).toBe(0);
+  // Accepted is not yet downloaded (1.0.3): the browser's copy is held, paused, in its list ...
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 10_000}).toBe(true);
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  expect((await bigInBrowser())?.paused).toBe(true);
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  // ... until DownloadPulse has it: then it is cancelled and off the browser's list.
+  dp.setJob("job_1", {phase: "completed", reason: null, actionability: "none"});
+  await expect.poll(async () => (await bigInBrowser()) === undefined, {timeout: 15_000}).toBe(true);
+});
+
+test("accepted, then failed in DownloadPulse: the browser carries on with its own copy", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  dp.setJob("job_1", {phase: "failed", reason: "source_failed", actionability: "operator"});
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+});
+
+test("failed before its answer arrived: the browser still carries on with its own copy", async () => {
+  await connect("Send them to DownloadPulse");
+  dp.state.settleAs = {phase: "failed", reason: "source_failed", actionability: "operator"};
+  await download("big");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+});
+
+test("removed here, the browser's held copy goes too", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  dp.setJob("job_1", {phase: "withdrawn", reason: "withdrawn_by_client", actionability: "none"});
+  await expect.poll(async () => (await bigInBrowser()) === undefined, {timeout: 15_000}).toBe(true);
+});
+
+test("the disclosure no longer agreed to while held: the browser carries on", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  await worker.evaluate(() => chrome.storage.local.remove("consent"));
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+  // The job was never settled in DownloadPulse: nothing more happens to the browser's copy.
+  dp.setJob("job_1", {phase: "completed", reason: null, actionability: "none"});
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  expect((await bigInBrowser())?.state).toBe("complete");
 });
 
 test("small files and listed file types stay in the browser", async () => {
@@ -130,4 +176,25 @@ test("'Not now' leaves downloads in the browser; the switch turns it on later", 
   await expect(popup.getByTestId("capture-main")).toBeChecked();
   await download("big");
   await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+});
+
+test("disconnected while held: the browser carries on with its own copy, never erased", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  await popup.getByRole("button", {name: "Settings"}).click();
+  await popup.getByRole("button", {name: "Disconnect"}).click();
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+});
+
+test("what DownloadPulse takes is read once, not on every download held while it is sent", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  const reads = dp.state.sessionAuth.length;
+  await download("pdf");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(2);
+  // The second download's sign-in and page still go: the capabilities were read once, and kept.
+  expect(dp.state.jobs[1].body.referrer).toBe(`${site.base}/downloads`);
+  expect(dp.state.sessionAuth.length).toBe(reads);
 });

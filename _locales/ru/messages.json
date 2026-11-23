@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse не смог принять эту загрузку, поэтому она осталась в браузере."
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse не удалось завершить эту загрузку, поэтому браузер продолжил её."
   }
 }

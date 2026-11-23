@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse n’a pas pu prendre en charge ce téléchargement, le navigateur l’a donc conservé."
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse n’a pas pu terminer ce téléchargement, le navigateur l’a donc poursuivi."
   }
 }

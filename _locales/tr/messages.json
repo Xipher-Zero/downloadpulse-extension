@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse bu indirmeyi alamadı; bu nedenle tarayıcı onu indirmeye devam etti."
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse bu indirmeyi tamamlayamadı; bu nedenle tarayıcı indirmeye devam etti."
   }
 }

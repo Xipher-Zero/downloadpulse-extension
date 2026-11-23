@@ -708,5 +708,9 @@
   "captureKeptInBrowser": {
     "message": "DownloadPulse couldn't take that download, so the browser kept it.",
     "description": "Toast: sending failed, the browser download continues."
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse couldn't finish that download, so the browser carried on with it.",
+    "description": "Toast: a browser download handed to DownloadPulse failed there after it was accepted; the browser's own paused copy resumes."
   }
 }

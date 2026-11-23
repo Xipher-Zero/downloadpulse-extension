@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse kon die download niet overnemen, dus is die in de browser gebleven."
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse kon die download niet voltooien, dus de browser heeft hem voortgezet."
   }
 }

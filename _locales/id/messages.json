@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse tidak dapat menerima unduhan itu, jadi unduhan itu tetap di peramban."
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse tidak dapat menyelesaikan unduhan itu, jadi peramban melanjutkannya."
   }
 }

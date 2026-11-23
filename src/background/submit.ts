@@ -10,7 +10,7 @@ import {connection, forgetConnection, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {capturedName, isIndexerRefusal} from "../shared/capture";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
-import {controlJob, isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Source} from "../shared/server";
+import {controlJob, isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Session, type Source} from "../shared/server";
 import {stateKey} from "../shared/server-state";
 import {settings} from "../shared/settings";
 import {cookiesFor} from "./cookies";
@@ -142,7 +142,10 @@ function displayName(source: Source): string {
   return source.filename;
 }
 
-async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Promise<void> {
+/** Where a send went: the connection it used (its server and token) and DownloadPulse's job. */
+export interface Sent { server: string; browserToken: string; job: string }
+
+async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Promise<Sent> {
   const connected = await connection();
   const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
@@ -158,7 +161,7 @@ async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Prom
         if (decision.disposition === "honored") {
           await reshow(connected.server, known.id);
           wake();
-          return;
+          return {server: connected.server, browserToken, job: known.id};
         }
       } catch {
         // not answered: sent as a new request below
@@ -194,6 +197,23 @@ async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Prom
   if (!answer.ok && answer.code === "unauthorized") await forgetConnection(true, connected.server);
   if (!answer.ok) throw new Refused(REFUSALS[answer.code] ?? "sendFailed");
   wake();
+  return {server: connected.server, browserToken, job: answer.id ?? ""};
+}
+
+// What a DownloadPulse takes with a link (its session's capabilities), read once a minute per
+// token rather than on every send (1.0.3): a browser download is held paused while it is sent,
+// and a sign-in or page sent to a DownloadPulse that no longer takes it is refused, not lost --
+// the browser then keeps the download. A failed read is not kept.
+const CAPABILITIES_MS = 60_000;
+const capabilityReads = new Map<string, {at: number; read: Promise<Session>}>();
+
+function capabilities(server: string, browserToken: string): Promise<Session> {
+  const kept = capabilityReads.get(browserToken);
+  if (kept && Date.now() - kept.at < CAPABILITIES_MS) return kept.read;
+  const read = readSession(server, browserToken);
+  capabilityReads.set(browserToken, {at: Date.now(), read});
+  read.catch(() => { if (capabilityReads.get(browserToken)?.read === read) capabilityReads.delete(browserToken); });
+  return read;
 }
 
 /** ``id`` back in the list if the person had cleared it there: they just sent it again. */
@@ -274,7 +294,7 @@ export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | u
       // server on the person's network chosen on the plain-HTTP warning (review, 2026-11-19).
       try {
         if (!connected || !browserToken || !signInMayTravel(connected.server)
-            || !(await readSession(connected.server, browserToken)).videoCookies) {
+            || !(await capabilities(connected.server, browserToken)).videoCookies) {
           withoutSignIn = true;
         } else {
           const found = await cookiesFor(href, tab);
@@ -297,16 +317,17 @@ export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | u
  * (as a video's). Settles to whether DownloadPulse accepted it; never a toast in a page.
  */
 export async function sendDownload(href: string, referrer: string, store: {cookieStoreId?: string | undefined}):
-    Promise<{ok: boolean; said: string}> {
+    Promise<{ok: true; said: string; sent: Sent} | {ok: false; said: string}> {
   try {
     if (!/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
     await mayUseConnection();
     const connected = await connection();
     const browserToken = connected ? await token(connected.server) : null;
     if (!connected || !browserToken) throw new Refused("sendNotConnected");
-    let capabilities = {videoCookies: false, referrer: false};
+    let taken = {videoCookies: false, referrer: false};
     try {
-      capabilities = await readSession(connected.server, browserToken);
+      const session = await capabilities(connected.server, browserToken);
+      taken = {videoCookies: session.videoCookies, referrer: session.referrer};
     } catch {
       // Its capabilities unknown: the link goes alone, as any link would.
     }
@@ -314,13 +335,13 @@ export async function sendDownload(href: string, referrer: string, store: {cooki
     // cookie store (a Firefox container's); the page it started from names the partition.
     const found = await cookiesFor(href, {...(store.cookieStoreId ? {cookieStoreId: store.cookieStoreId} : {}),
       url: /^https?:\/\//i.test(referrer) ? referrer : undefined} as chrome.tabs.Tab);
-    const travels = capabilities.videoCookies && signInMayTravel(connected.server);
+    const travels = taken.videoCookies && signInMayTravel(connected.server);
     const cookies = travels ? found.cookies : [];
     // Said only when there was a sign-in that could not go with it: a public file needs none.
     const withoutSignIn = found.dropped || (!travels && found.cookies.length > 0);
-    const page = capabilities.referrer && /^https?:\/\//i.test(referrer) && referrer.length <= 2048 ? referrer : "";
-    await send({kind: "links", links: [href]}, cookies, page);
-    return {ok: true, said: withoutSignIn ? "captureDoneWithoutSignIn" : "captureDone"};
+    const page = taken.referrer && /^https?:\/\//i.test(referrer) && referrer.length <= 2048 ? referrer : "";
+    const sent = await send({kind: "links", links: [href]}, cookies, page);
+    return {ok: true, said: withoutSignIn ? "captureDoneWithoutSignIn" : "captureDone", sent};
   } catch (error) {
     return {ok: false, said: error instanceof Refused ? error.key : "sendFailed"};
   }

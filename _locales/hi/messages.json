@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse वह डाउनलोड नहीं ले सका, इसलिए ब्राउज़र ने उसे रखा।"
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse वह डाउनलोड पूरा नहीं कर सका, इसलिए ब्राउज़र ने उसे जारी रखा।"
   }
 }

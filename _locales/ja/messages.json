@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse がそのダウンロードを受け取れなかったため、ブラウザーでダウンロードを続けています。"
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse がそのダウンロードを完了できなかったため、ブラウザーでダウンロードを続けました。"
   }
 }

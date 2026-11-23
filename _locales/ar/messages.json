@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "تعذّر على DownloadPulse استلام ذلك التنزيل، لذا احتفظ به المتصفح."
+  },
+  "captureResumedInBrowser": {
+    "message": "تعذّر على DownloadPulse إكمال هذا التنزيل، لذا تابعه المتصفح."
   }
 }

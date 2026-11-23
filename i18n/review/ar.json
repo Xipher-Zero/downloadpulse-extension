@@ -1307,6 +1307,14 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "captureResumedInBrowser": {
+      "source": "ddca9b18ee13a910",
+      "translation": "22d2505790a1e0aa",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

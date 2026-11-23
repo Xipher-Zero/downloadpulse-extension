@@ -546,5 +546,8 @@
   },
   "captureKeptInBrowser": {
     "message": "O DownloadPulse não conseguiu aceitar esse download, por isso o navegador ficou com ele."
+  },
+  "captureResumedInBrowser": {
+    "message": "O DownloadPulse não conseguiu concluir esse download, por isso o navegador continuou-o."
   }
 }
