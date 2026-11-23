@@ -72,6 +72,16 @@ export function isPrivateHost(hostname: string): boolean {
   return !host.includes(".") || /\.(local|lan|home\.arpa|internal|localdomain|ts\.net)$/.test(host);
 }
 
+/**
+ * 100.64.0.0/10: Tailscale's addresses, which count as the person's network (isPrivateHost) -- but
+ * carrier-grade NAT uses the same range for networks an internet provider shares among its
+ * customers, so plain HTTP there is warned about separately (1.0.3, review 2026-11-22).
+ */
+export function isSharedAddressRange(hostname: string): boolean {
+  const v4 = /^(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}$/.exec(hostname.replace(/^\[|\]$/g, ""));
+  return Boolean(v4 && Number(v4[1]) === 100 && Number(v4[2]) >= 64 && Number(v4[2]) <= 127);
+}
+
 /** An address (as DNS answers it) on this computer or the private network. */
 function privateAddress(address: string): boolean {
   const host = address.toLowerCase();

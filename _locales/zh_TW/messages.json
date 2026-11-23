@@ -428,7 +428,7 @@
     "message": "連線之前，請了解DownloadPulse會從此瀏覽器接收哪些內容。"
   },
   "discloseLinks": {
-    "message": "您傳送的連結。對於.torrent、.nzb或索引器連結，此瀏覽器會使用您在該網站的登入狀態取得檔案，並傳送該檔案；絕不會傳送該網站的Cookie。"
+    "message": "您傳送的連結。如果連結指向一個告訴DownloadPulse要下載什麼的檔案（例如.torrent、.nzb或Metalink檔案），此瀏覽器會使用您在其網站的登入狀態取得該檔案，並傳送檔案本身；絕不會傳送該網站的Cookie。"
   },
   "discloseVideo": {
     "message": "對於影片：其播放器的位址；除非您在「設定」中關閉此項，還包括您在該網站的登入狀態（該網站針對該位址的Cookie），讓DownloadPulse能夠下載您可以觀看的內容。DownloadPulse僅將其保存在記憶體中，直到該下載結束。"
@@ -462,6 +462,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale使用100.64到100.127的位址，但部分網際網路服務供應商也將其用於與其他客戶共用的網路。僅當這是您自己的Tailscale網路時才繼續。"
   },
   "insecureContinue": {
     "message": "不加密連線"
@@ -509,7 +512,7 @@
     "message": "要將下載傳送到DownloadPulse嗎？"
   },
   "captureOfferText": {
-    "message": "此瀏覽器開始下載的檔案可以改為傳送到DownloadPulse，並附帶您在其網站的登入狀態。如果DownloadPulse無法接收某個檔案，瀏覽器會繼續下載。您可以隨時在「設定」中變更此項。"
+    "message": "此瀏覽器開始下載的檔案可以改為傳送到DownloadPulse，並附帶其來源頁面和您在其網站的登入狀態。如果DownloadPulse無法接收或完成某個檔案，瀏覽器會繼續下載。您可以隨時在「設定」中變更此項。"
   },
   "captureOfferYes": {
     "message": "傳送到DownloadPulse"

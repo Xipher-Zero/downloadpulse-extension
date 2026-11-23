@@ -996,8 +996,8 @@
       ]
     },
     "discloseLinks": {
-      "source": "0f470bc52e1c9ec4",
-      "translation": "c64c24b1f87205b8",
+      "source": "932f5703e73adfe1",
+      "translation": "8a4c9fc168499601",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -1204,8 +1204,8 @@
       ]
     },
     "captureOfferText": {
-      "source": "9d669dbabfdc6e65",
-      "translation": "c703042d93c559f4",
+      "source": "79add883cd9949d2",
+      "translation": "58b90560e01267dc",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -1311,6 +1311,14 @@
     "captureResumedInBrowser": {
       "source": "ddca9b18ee13a910",
       "translation": "699ec64409e64cf0",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "insecureSharedRange": {
+      "source": "ceb5b0f6be50690e",
+      "translation": "8f75dd65c8b86080",
       "provenance": [
         "ai-generated",
         "ai-review"

@@ -428,7 +428,7 @@
     "message": "Bağlanmadan önce, DownloadPulse'un bu tarayıcıdan neler aldığını burada görebilirsiniz."
   },
   "discloseLinks": {
-    "message": "Gönderdiğiniz bağlantılar. Bir .torrent, .nzb veya dizinleyici bağlantısı için bu tarayıcı, dosyayı o sitedeki oturumunuzla alır ve dosyayı gönderir; sitenin çerezleri asla gönderilmez."
+    "message": "Gönderdiğiniz bağlantılar. Bir bağlantı, DownloadPulse'a neyi indireceğini söyleyen bir dosyayı (örneğin bir .torrent, .nzb veya Metalink dosyası) gösteriyorsa bu tarayıcı o dosyayı sitesindeki oturumunuzla alır ve dosyanın kendisini gönderir; sitenin çerezleri asla gönderilmez."
   },
   "discloseVideo": {
     "message": "Bir video için, oynatıcısının adresi ve Ayarlar'da kapatmadığınız sürece o sitedeki oturumunuz (sitenin o adres için çerezleri); böylece DownloadPulse izleyebildiğiniz içeriği indirebilir. DownloadPulse bunları yalnızca bellekte, o indirme bitene kadar tutar."
@@ -462,6 +462,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale 100.64 ile 100.127 arasındaki adresleri kullanır, ancak bazı internet sağlayıcıları da bunları diğer müşterileriyle paylaşılan ağlar için kullanır. Yalnızca bu sizin kendi Tailscale ağınızsa devam edin."
   },
   "insecureContinue": {
     "message": "Şifreleme olmadan bağlan"
@@ -509,7 +512,7 @@
     "message": "İndirmeler DownloadPulse'a gönderilsin mi?"
   },
   "captureOfferText": {
-    "message": "Bu tarayıcının indirmeye başladığı dosyalar, sitelerindeki oturumunuzla birlikte bunun yerine DownloadPulse'a gidebilir. DownloadPulse birini alamazsa tarayıcı onu indirmeye devam eder. Bunu istediğiniz zaman Ayarlar'dan değiştirebilirsiniz."
+    "message": "Bu tarayıcının indirmeye başladığı dosyalar, geldikleri sayfa ve sitelerindeki oturumunuzla birlikte bunun yerine DownloadPulse'a gidebilir. DownloadPulse birini alamaz veya tamamlayamazsa tarayıcı onu indirmeye devam eder. Bunu istediğiniz zaman Ayarlar'dan değiştirebilirsiniz."
   },
   "captureOfferYes": {
     "message": "DownloadPulse'a gönder"

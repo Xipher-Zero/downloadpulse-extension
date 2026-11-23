@@ -428,7 +428,7 @@
     "message": "连接之前，请了解DownloadPulse会从此浏览器接收哪些内容。"
   },
   "discloseLinks": {
-    "message": "您发送的链接。对于.torrent、.nzb或索引器链接，此浏览器会使用您在该网站的登录状态获取文件，并发送该文件；绝不会发送该网站的Cookie。"
+    "message": "您发送的链接。如果链接指向一个告诉DownloadPulse要下载什么的文件（例如.torrent、.nzb或Metalink文件），此浏览器会使用您在其网站的登录状态获取该文件，并发送文件本身；绝不会发送该网站的Cookie。"
   },
   "discloseVideo": {
     "message": "对于视频：其播放器的地址；除非您在“设置”中关闭此项，还包括您在该网站的登录状态（该网站针对该地址的Cookie），以便DownloadPulse能够下载您可以观看的内容。DownloadPulse仅将其保存在内存中，直到该下载结束。"
@@ -462,6 +462,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale使用100.64到100.127的地址，但一些互联网服务提供商也将其用于与其他客户共享的网络。仅当这是您自己的Tailscale网络时才继续。"
   },
   "insecureContinue": {
     "message": "不加密连接"
@@ -509,7 +512,7 @@
     "message": "要将下载发送到DownloadPulse吗？"
   },
   "captureOfferText": {
-    "message": "此浏览器开始下载的文件可以改为发送到DownloadPulse，并附带您在其网站的登录状态。如果DownloadPulse无法接收某个文件，浏览器会继续下载它。您可以随时在“设置”中更改此项。"
+    "message": "此浏览器开始下载的文件可以改为发送到DownloadPulse，并附带其来源页面和您在其网站的登录状态。如果DownloadPulse无法接收或完成某个文件，浏览器会继续下载它。您可以随时在“设置”中更改此项。"
   },
   "captureOfferYes": {
     "message": "发送到DownloadPulse"

@@ -428,7 +428,7 @@
     "message": "Sebelum Anda menghubungkan, berikut yang diterima DownloadPulse dari peramban ini."
   },
   "discloseLinks": {
-    "message": "Tautan yang Anda kirim. Untuk tautan .torrent, .nzb, atau pengindeks, peramban ini mengambil berkas dengan sesi masuk Anda di situs itu lalu mengirim berkasnya; cookie situs itu tidak pernah dikirim."
+    "message": "Tautan yang Anda kirim. Jika sebuah tautan mengarah ke berkas yang memberi tahu DownloadPulse apa yang harus diunduh (seperti berkas .torrent, .nzb, atau Metalink), peramban ini mengambil berkas itu dengan sesi masuk Anda di situsnya lalu mengirim berkas itu sendiri; cookie situs itu tidak pernah dikirim."
   },
   "discloseVideo": {
     "message": "Untuk video, alamat pemutarnya dan, kecuali Anda menonaktifkannya di Pengaturan, sesi masuk Anda di situs itu (cookie situs itu untuk alamat tersebut), agar DownloadPulse dapat mengunduh apa yang dapat Anda tonton. DownloadPulse hanya menyimpannya di memori, sampai unduhan itu selesai."
@@ -462,6 +462,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale memakai alamat dari 100.64 hingga 100.127, tetapi beberapa penyedia internet juga memakainya untuk jaringan yang dibagi dengan pelanggan mereka yang lain. Lanjutkan hanya jika ini jaringan Tailscale Anda sendiri."
   },
   "insecureContinue": {
     "message": "Hubungkan tanpa enkripsi"
@@ -509,7 +512,7 @@
     "message": "Kirim unduhan ke DownloadPulse?"
   },
   "captureOfferText": {
-    "message": "Berkas yang mulai diunduh peramban ini dapat dikirim ke DownloadPulse sebagai gantinya, dengan sesi masuk Anda di situsnya. Jika DownloadPulse tidak dapat menerimanya, peramban tetap mengunduhnya. Anda dapat mengubah ini kapan saja di Pengaturan."
+    "message": "Berkas yang mulai diunduh peramban ini dapat dikirim ke DownloadPulse sebagai gantinya, beserta halaman asalnya dan sesi masuk Anda di situsnya. Jika DownloadPulse tidak dapat menerima atau menyelesaikannya, peramban tetap mengunduhnya. Anda dapat mengubah ini kapan saja di Pengaturan."
   },
   "captureOfferYes": {
     "message": "Kirim ke DownloadPulse"

@@ -327,6 +327,21 @@ test("the dropdown and the settings page are drawn in the person's DownloadPulse
   expect(await background(popup)).toBe("rgb(5, 8, 20)");
 });
 
+test("an agreement to an earlier disclosure is asked again, once (1.0.3)", async () => {
+  // Agreed under the disclosure before browser downloads were in it (version 2).
+  await popup.evaluate(async () => {
+    const {consent} = await chrome.storage.local.get("consent");
+    await chrome.storage.local.set({consent: {...consent, version: 2}});
+  });
+  await popup.reload();
+  await expect(popup.getByText("Before you connect, here is what DownloadPulse receives from this browser.")).toBeVisible();
+  await popup.getByRole("button", {name: "Agree and continue"}).click();
+  await expect(popup.getByTestId("account")).toHaveText("Una");
+  await popup.reload();
+  await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
+  await expect(popup.getByText("Before you connect, here is what DownloadPulse receives from this browser.")).toBeHidden();
+});
+
 test("a saved connection without the agreement sends nothing until agreed; one over internet HTTP is forgotten", async () => {
   const before = await popup.evaluate(async () => (await chrome.storage.local.get("consent")).consent);
   expect(before).toBeTruthy();

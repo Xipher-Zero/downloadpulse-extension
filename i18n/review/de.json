@@ -996,11 +996,12 @@
       ]
     },
     "discloseLinks": {
-      "source": "0f470bc52e1c9ec4",
-      "translation": "b1bfabeb090dc7ba",
+      "source": "932f5703e73adfe1",
+      "translation": "77e9a8d5fd420574",
       "provenance": [
         "ai-generated",
-        "ai-review"
+        "ai-review",
+        "ai-review-corrected"
       ]
     },
     "discloseVideo": {
@@ -1206,8 +1207,8 @@
       ]
     },
     "captureOfferText": {
-      "source": "9d669dbabfdc6e65",
-      "translation": "c4c24328ecb45e00",
+      "source": "79add883cd9949d2",
+      "translation": "9072993309644477",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -1316,6 +1317,15 @@
       "provenance": [
         "ai-generated",
         "ai-review"
+      ]
+    },
+    "insecureSharedRange": {
+      "source": "ceb5b0f6be50690e",
+      "translation": "74df8429fe01e987",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "ai-review-corrected"
       ]
     }
   }

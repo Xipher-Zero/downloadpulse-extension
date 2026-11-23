@@ -428,7 +428,7 @@
     "message": "Przed połączeniem: oto, co DownloadPulse otrzymuje z tej przeglądarki."
   },
   "discloseLinks": {
-    "message": "Wysyłane linki. W przypadku linku .torrent, .nzb lub linku indeksera ta przeglądarka pobiera plik, korzystając z sesji logowania w tej witrynie, i wysyła ten plik; pliki cookie witryny nigdy nie są wysyłane."
+    "message": "Wysyłane linki. Gdy link wskazuje plik, który mówi DownloadPulse, co pobrać (na przykład plik .torrent, .nzb lub Metalink), ta przeglądarka pobiera ten plik, korzystając z sesji logowania w jego witrynie, i wysyła sam plik; pliki cookie witryny nigdy nie są wysyłane."
   },
   "discloseVideo": {
     "message": "W przypadku filmu — adres jego odtwarzacza oraz, o ile nie zostanie to wyłączone w Ustawieniach, sesja logowania w tej witrynie (jej pliki cookie dla tego adresu), aby DownloadPulse mógł pobrać to, co można obejrzeć. DownloadPulse przechowuje je tylko w pamięci, do zakończenia tego pobierania."
@@ -462,6 +462,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale używa adresów od 100.64 do 100.127, ale niektórzy dostawcy internetu też ich używają w sieciach współdzielonych z innymi klientami. Należy kontynuować tylko wtedy, gdy jest to własna sieć Tailscale."
   },
   "insecureContinue": {
     "message": "Połącz bez szyfrowania"
@@ -509,7 +512,7 @@
     "message": "Wysyłać pobrania do DownloadPulse?"
   },
   "captureOfferText": {
-    "message": "Pliki, których pobieranie rozpoczyna ta przeglądarka, mogą zamiast tego trafiać do DownloadPulse, razem z sesją logowania w ich witrynie. Jeśli DownloadPulse nie może przyjąć któregoś z nich, przeglądarka nadal go pobiera. Można to zmienić w dowolnym momencie w Ustawieniach."
+    "message": "Pliki, których pobieranie rozpoczyna ta przeglądarka, mogą zamiast tego trafiać do DownloadPulse, razem ze stroną, z której pochodzą, i sesją logowania w ich witrynie. Jeśli DownloadPulse nie może przyjąć lub ukończyć któregoś z nich, przeglądarka nadal go pobiera. Można to zmienić w dowolnym momencie w Ustawieniach."
   },
   "captureOfferYes": {
     "message": "Wysyłaj do DownloadPulse"

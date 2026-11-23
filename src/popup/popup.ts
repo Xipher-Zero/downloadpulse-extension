@@ -13,7 +13,7 @@ import {isStateKey, stateKey} from "../shared/server-state";
 import {glyph, placeGlyphs, type GlyphName} from "../shared/glyphs";
 import {localize, message} from "../shared/i18n";
 import {consented, recordConsent} from "../shared/consent";
-import {effectiveAddress, isLocal, type Failure, type Job} from "../shared/server";
+import {effectiveAddress, isLocal, isSharedAddressRange, type Failure, type Job} from "../shared/server";
 import {fileTypes, isOffSite, saveSettings, settings, siteOf, type Settings} from "../shared/settings";
 
 const FAILURE_KEYS: Record<Failure, string> = {
@@ -499,6 +499,8 @@ function showInsecure(origin: string): void {
   const hint = $('[data-testid="insecure-text"]');
   const parts = message("insecureText", ["\u0001"]).split("\u0001");
   hint.replaceChildren(document.createTextNode(parts[0] ?? ""), span("dp-literal", origin), document.createTextNode(parts[1] ?? ""));
+  // Tailscale's range is also carrier-grade NAT's: said, so the person knows which one this is.
+  $('[data-testid="insecure-shared-range"]').hidden = !isSharedAddressRange(new URL(origin).hostname);
 }
 
 /** Connecting begins with the disclosure until the person has agreed to it. */

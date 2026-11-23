@@ -129,6 +129,15 @@ test("no silent downgrade: plain HTTP is explained on a private network, refused
     await expect(popup.getByText("Connect without encryption?")).toBeVisible();
     await expect(popup.getByTestId("insecure-text").locator(".dp-literal")).toHaveText("http://192.168.1.20:8095");
     await expect(popup.getByRole("button", {name: "Connect without encryption"})).toBeVisible();
+    await expect(popup.getByTestId("insecure-shared-range")).toBeHidden();
+    await popup.getByRole("button", {name: "Back"}).click();
+    await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();
+    // Tailscale's range is also carrier-grade NAT's: allowed, and said (1.0.3).
+    await field().fill("http://100.101.2.3:8095");
+    await popup.getByRole("button", {name: "Connect to this server"}).click();
+    await expect(popup.getByText("Connect without encryption?")).toBeVisible();
+    await expect(popup.getByTestId("insecure-shared-range")).toHaveText(
+      "Tailscale uses addresses from 100.64 to 100.127, but some internet providers use them too, for networks shared with their other customers. Continue only if this is your own Tailscale network.");
     await popup.getByRole("button", {name: "Back"}).click();
     await expect(popup.getByRole("button", {name: "Check again"})).toBeVisible();
     // An internet http:// address: refused.
@@ -172,6 +181,8 @@ test("found on this computer: offered first, then paired on approval, verified, 
     fake.answer("approved");
     // Newly connected (1.0.2): browser downloads are offered once, never assumed.
     await expect(popup.getByText("Send downloads to DownloadPulse?")).toBeVisible({timeout: 15_000});
+    // What goes with them is said before the person chooses: the page each came from, and the sign-in (1.0.3).
+    await expect(popup.getByText(/with the page they came from and your sign-in on their site/)).toBeVisible();
     await popup.getByRole("button", {name: "Not now"}).click();
     await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
     // The details are behind the chevron; DownloadPulse on this computer is named, never its loopback address.

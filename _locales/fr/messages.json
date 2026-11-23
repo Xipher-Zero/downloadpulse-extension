@@ -428,7 +428,7 @@
     "message": "Avant de vous connecter, voici ce que DownloadPulse reçoit de ce navigateur."
   },
   "discloseLinks": {
-    "message": "Les liens que vous envoyez. Pour un lien .torrent, .nzb ou d’indexeur, ce navigateur récupère le fichier avec votre connexion à ce site et envoie le fichier ; les cookies du site ne sont jamais envoyés."
+    "message": "Les liens que vous envoyez. Lorsqu’un lien pointe vers un fichier qui indique à DownloadPulse quoi télécharger (comme un fichier .torrent, .nzb ou Metalink), ce navigateur récupère ce fichier avec votre connexion à son site et envoie le fichier lui-même ; les cookies du site ne sont jamais envoyés."
   },
   "discloseVideo": {
     "message": "Pour une vidéo, l’adresse de son lecteur et, sauf si vous le désactivez dans Paramètres, votre connexion à ce site (ses cookies pour cette adresse), afin que DownloadPulse puisse télécharger ce que vous pouvez regarder. DownloadPulse les conserve uniquement en mémoire, jusqu’à la fin de ce téléchargement."
@@ -462,6 +462,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale utilise les adresses de 100.64 à 100.127, mais certains fournisseurs d’accès les utilisent aussi pour des réseaux partagés avec leurs autres clients. Ne continuez que s’il s’agit de votre propre réseau Tailscale."
   },
   "insecureContinue": {
     "message": "Se connecter sans chiffrement"
@@ -509,7 +512,7 @@
     "message": "Envoyer les téléchargements à DownloadPulse ?"
   },
   "captureOfferText": {
-    "message": "Les fichiers que ce navigateur commence à télécharger peuvent être envoyés à DownloadPulse à la place, avec votre connexion à leur site. Si DownloadPulse ne peut pas en prendre un en charge, le navigateur continue de le télécharger. Vous pouvez modifier ce choix à tout moment dans Paramètres."
+    "message": "Les fichiers que ce navigateur commence à télécharger peuvent être envoyés à DownloadPulse à la place, avec la page d’où ils viennent et votre connexion à leur site. Si DownloadPulse ne peut pas en prendre un en charge ou le terminer, le navigateur continue de le télécharger. Vous pouvez modifier ce choix à tout moment dans Paramètres."
   },
   "captureOfferYes": {
     "message": "Les envoyer à DownloadPulse"

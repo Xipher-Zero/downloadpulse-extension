@@ -428,7 +428,7 @@
     "message": "Bevor Sie sich verbinden, sehen Sie hier, was DownloadPulse von diesem Browser erhält."
   },
   "discloseLinks": {
-    "message": "Die Links, die Sie senden. Bei einem .torrent-, .nzb- oder Indexer-Link ruft dieser Browser die Datei mit Ihrer Anmeldung auf dieser Website ab und sendet die Datei; die Cookies der Website werden nie gesendet."
+    "message": "Die Links, die Sie senden. Verweist ein Link auf eine Datei, die DownloadPulse mitteilt, was heruntergeladen werden soll (etwa eine .torrent-, .nzb- oder Metalink-Datei), ruft dieser Browser diese Datei mit Ihrer Anmeldung auf deren Website ab und sendet die Datei selbst; die Cookies der Website werden nie gesendet."
   },
   "discloseVideo": {
     "message": "Bei einem Video die Adresse seines Players und, sofern Sie dies nicht in den Optionen ausschalten, Ihre Anmeldung auf dieser Website (deren Cookies für diese Adresse), damit DownloadPulse herunterladen kann, was Sie ansehen können. DownloadPulse behält sie nur im Arbeitsspeicher, bis dieser Download endet."
@@ -462,6 +462,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale verwendet Adressen von 100.64 bis 100.127, aber manche Internetanbieter nutzen sie auch für Netzwerke, die sie mit ihren anderen Kunden teilen. Fahren Sie nur fort, wenn dies Ihr eigenes Tailscale-Netzwerk ist."
   },
   "insecureContinue": {
     "message": "Ohne Verschlüsselung verbinden"
@@ -509,7 +512,7 @@
     "message": "Downloads an DownloadPulse senden?"
   },
   "captureOfferText": {
-    "message": "Dateien, die dieser Browser herunterzuladen beginnt, können stattdessen an DownloadPulse gesendet werden, mit Ihrer Anmeldung auf deren Website. Kann DownloadPulse eine Datei nicht übernehmen, lädt der Browser sie weiter herunter. Sie können dies jederzeit in den Optionen ändern."
+    "message": "Dateien, die dieser Browser herunterzuladen beginnt, können stattdessen an DownloadPulse gesendet werden, mit der Seite, von der sie stammen, und Ihrer Anmeldung auf deren Website. Kann DownloadPulse eine Datei nicht übernehmen oder nicht fertig herunterladen, lädt der Browser sie weiter herunter. Sie können dies jederzeit in den Optionen ändern."
   },
   "captureOfferYes": {
     "message": "An DownloadPulse senden"

@@ -552,8 +552,8 @@
     "description": "Disclosure page (before connecting; required by the browser stores): centred lead line."
   },
   "discloseLinks": {
-    "message": "The links you send. For a .torrent, .nzb or indexer link, this browser fetches the file with your sign-in on that site and sends the file; the site's cookies are never sent.",
-    "description": "Disclosure page, bullet: what is sent for a link."
+    "message": "The links you send. When a link points to a file that tells DownloadPulse what to download (such as a .torrent, .nzb or Metalink file), this browser fetches that file with your sign-in on its site and sends the file itself; the site's cookies are never sent.",
+    "description": "Disclosure item: what DownloadPulse receives for links the person sends. Leads with links in general; the torrent/NZB/Metalink case is one example, not the headline (operator, 2026-11-22)."
   },
   "discloseVideo": {
     "message": "For a video, the address of its player and, unless you turn it off in Settings, your sign-in on that site (its cookies for that address), so DownloadPulse can download what you can watch. DownloadPulse keeps them only in memory, until that download ends.",
@@ -596,6 +596,10 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale uses addresses from 100.64 to 100.127, but some internet providers use them too, for networks shared with their other customers. Continue only if this is your own Tailscale network.",
+    "description": "Extra warning on the plain-HTTP screen when the server's address is in 100.64.0.0/10 (Tailscale, but also carrier-grade NAT)."
   },
   "insecureContinue": {
     "message": "Connect without encryption",
@@ -658,8 +662,8 @@
     "description": "Setup step after connecting: title of the offer to send browser downloads to DownloadPulse."
   },
   "captureOfferText": {
-    "message": "Files this browser starts downloading can go to DownloadPulse instead, with your sign-in on their site. If DownloadPulse can't take one, the browser keeps downloading it. You can change this at any time in Settings.",
-    "description": "Setup step after connecting: what sending browser downloads to DownloadPulse does."
+    "message": "Files this browser starts downloading can go to DownloadPulse instead, with the page they came from and your sign-in on their site. If DownloadPulse can't take one or can't finish it, the browser keeps downloading it. You can change this at any time in Settings.",
+    "description": "Opt-in prompt for sending browser downloads: says what is sent (the page the download came from, the sign-in) and that nothing is lost."
   },
   "captureOfferYes": {
     "message": "Send them to DownloadPulse",

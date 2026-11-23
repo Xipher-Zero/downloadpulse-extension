@@ -428,7 +428,7 @@
     "message": "Prima di connettersi, ecco cosa riceve DownloadPulse da questo browser."
   },
   "discloseLinks": {
-    "message": "I link inviati. Per un link .torrent, .nzb o di un indexer, questo browser recupera il file usando l'accesso già effettuato su quel sito e invia il file; i cookie del sito non vengono mai inviati."
+    "message": "I link inviati. Quando un link rimanda a un file che indica a DownloadPulse cosa scaricare (ad esempio un file .torrent, .nzb o Metalink), questo browser recupera quel file usando l'accesso già effettuato sul suo sito e invia il file stesso; i cookie del sito non vengono mai inviati."
   },
   "discloseVideo": {
     "message": "Per un video, l'indirizzo del suo lettore e, se non lo si disattiva in Opzioni, l'accesso effettuato su quel sito (i suoi cookie per quell'indirizzo), così DownloadPulse può scaricare ciò che si può guardare. DownloadPulse li conserva solo in memoria, fino al termine di quel download."
@@ -462,6 +462,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale usa gli indirizzi da 100.64 a 100.127, ma anche alcuni provider internet li usano per reti condivise con altri loro clienti. Continuare solo se questa è la propria rete Tailscale."
   },
   "insecureContinue": {
     "message": "Connetti senza crittografia"
@@ -509,7 +512,7 @@
     "message": "Inviare i download a DownloadPulse?"
   },
   "captureOfferText": {
-    "message": "I file che questo browser inizia a scaricare possono andare invece a DownloadPulse, con l'accesso effettuato sul loro sito. Se DownloadPulse non può prenderne uno, il browser continua a scaricarlo. È possibile cambiare questa scelta in qualsiasi momento in Opzioni."
+    "message": "I file che questo browser inizia a scaricare possono andare invece a DownloadPulse, con la pagina da cui provengono e l'accesso effettuato sul loro sito. Se DownloadPulse non può prenderne in carico uno o completarlo, il browser continua a scaricarlo. È possibile cambiare questa scelta in qualsiasi momento in Opzioni."
   },
   "captureOfferYes": {
     "message": "Invia a DownloadPulse"
