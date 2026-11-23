@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "接続中に問題が発生しました。"
   },
+  "failureSetupIncomplete": {
+    "message": "先に DownloadPulse のセットアップを完了してから、もう一度接続してください。"
+  },
   "pairingClientName": {
     "message": "$BROWSER$（$SYSTEM$）",
     "placeholders": {

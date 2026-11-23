@@ -39,7 +39,7 @@ export const UPLOAD_TIMEOUT_MS = 120_000;
 
 export type Failure =
   | "unreachable" | "certificate" | "not_downloadpulse" | "too_old" | "denied" | "expired"
-  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused" | "blocked";
+  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused" | "blocked" | "setup_incomplete";
 
 export class ServerError extends Error {
   constructor(public readonly failure: Failure, message = failure) {
@@ -218,7 +218,15 @@ export async function startPairing(origin: string, clientName: string): Promise<
   // credential. An older one refuses it before any route: Forbidden origin
   // (403), sign-in required (401), or no such route (404/405).
   if ([401, 403, 404, 405].includes(response.status)) throw new ServerError("too_old");
-  if (!response.ok) throw new ServerError("failed");
+  if (!response.ok) {
+    // A new DownloadPulse whose setup is not finished yet says so by its refusal's code.
+    const refusal: unknown = await response.json().catch(() => null);
+    if (refusal && typeof refusal === "object"
+        && (refusal as Record<string, unknown>)["code"] === "browser.pairing.setup_incomplete") {
+      throw new ServerError("setup_incomplete");
+    }
+    throw new ServerError("failed");
+  }
   const body = await json(response);
   if (!speaks(body["protocol"]) || typeof body["device_code"] !== "string" || typeof body["user_code"] !== "string"
       || typeof body["verification_path"] !== "string") {

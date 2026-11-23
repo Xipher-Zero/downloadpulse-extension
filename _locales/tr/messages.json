@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "Bağlanırken bir sorun oluştu."
   },
+  "failureSetupIncomplete": {
+    "message": "Önce DownloadPulse kurulumunu tamamlayın, ardından yeniden bağlanın."
+  },
   "pairingClientName": {
     "message": "$SYSTEM$ üzerinde $BROWSER$",
     "placeholders": {

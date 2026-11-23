@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "Ocorreu um erro durante a ligação."
   },
+  "failureSetupIncomplete": {
+    "message": "Conclua primeiro a configuração do DownloadPulse e ligue novamente."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ em $SYSTEM$",
     "placeholders": {

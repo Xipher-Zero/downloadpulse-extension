@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "Terjadi kesalahan saat menghubungkan."
   },
+  "failureSetupIncomplete": {
+    "message": "Selesaikan penyiapan DownloadPulse terlebih dahulu, lalu hubungkan lagi."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ di $SYSTEM$",
     "placeholders": {

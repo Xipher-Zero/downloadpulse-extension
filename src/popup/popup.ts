@@ -21,6 +21,7 @@ const FAILURE_KEYS: Record<Failure, string> = {
   too_old: "failureTooOld", denied: "failureDenied", expired: "failureExpired", permission: "failurePermission",
   unauthorized: "failureUnauthorized", failed: "failureFailed",
   https_only: "failureHttpsOnly", insecure_refused: "failureInsecureRefused", blocked: "failureBlocked",
+  setup_incomplete: "failureSetupIncomplete",
 };
 const PRIVACY_URL = "https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md";
 

@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "कनेक्ट करते समय कुछ गलत हो गया।"
   },
+  "failureSetupIncomplete": {
+    "message": "पहले DownloadPulse का सेटअप पूरा करें, फिर दोबारा कनेक्ट करें।"
+  },
   "pairingClientName": {
     "message": "$SYSTEM$ पर $BROWSER$",
     "placeholders": {

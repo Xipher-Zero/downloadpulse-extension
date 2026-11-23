@@ -48,6 +48,11 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       if (state.mode === "too-old") return send(404, {detail: "Not Found"});
       // An older DownloadPulse refuses an extension origin before routing.
       if (state.mode === "forbidden-origin") return send(403, "Forbidden origin", "text/plain");
+      // ``setup-incomplete``: a new DownloadPulse whose setup is not finished (api/browser_routes.py).
+      if (state.mode === "setup-incomplete") {
+        return send(409, {detail: "Finish setting up DownloadPulse first, then connect again.",
+          code: "browser.pairing.setup_incomplete", params: {}});
+      }
       state.lastClientName = body.client_name;
       const userCode = `ABCD-${String(state.pairings.size + 1).padStart(4, "0")}`;
       const deviceCode = `device-${userCode}`;

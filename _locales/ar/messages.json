@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "حدث خطأ أثناء الربط."
   },
+  "failureSetupIncomplete": {
+    "message": "أكمِل إعداد DownloadPulse أولًا، ثم اربط المتصفح مرة أخرى."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ على $SYSTEM$",
     "placeholders": {

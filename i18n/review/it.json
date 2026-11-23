@@ -1327,6 +1327,14 @@
         "ai-review",
         "ai-review-corrected"
       ]
+    },
+    "failureSetupIncomplete": {
+      "source": "dad5833ebf90a9bd",
+      "translation": "2921af2829ef7db5",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

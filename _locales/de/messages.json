@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "Beim Verbinden ist ein Fehler aufgetreten."
   },
+  "failureSetupIncomplete": {
+    "message": "Schließen Sie zuerst die Einrichtung von DownloadPulse ab und verbinden Sie sich dann erneut."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ unter $SYSTEM$",
     "placeholders": {

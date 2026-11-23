@@ -1323,6 +1323,14 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "failureSetupIncomplete": {
+      "source": "dad5833ebf90a9bd",
+      "translation": "4c2b4b954bc73d10",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

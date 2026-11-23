@@ -348,6 +348,7 @@ for (const [mode, answer, text] of [
   ["forbidden-origin", null, "This DownloadPulse is too old to connect browsers. Update it, then connect again."],
   ["wrong-protocol", "approved", "This DownloadPulse is too old to connect browsers. Update it, then connect again."],
   ["not-downloadpulse", null, "Something answered at that address, but it isn't DownloadPulse."],
+  ["setup-incomplete", null, "Finish setting up DownloadPulse first, then connect again."],
   ["proxy", null, "Something in front of DownloadPulse, such as a sign-in page or a proxy, answered instead of it. Let the extension reach DownloadPulse directly, then connect again."],
 ]) {
   test(`a server that is ${mode}${answer ? `, answered ${answer}` : ""}: said plainly, with a way back`, async () => {

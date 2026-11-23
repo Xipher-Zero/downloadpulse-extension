@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "Під час підключення щось пішло не так."
   },
+  "failureSetupIncomplete": {
+    "message": "Спершу завершіть налаштування DownloadPulse, потім підключіться знову."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ на $SYSTEM$",
     "placeholders": {

@@ -115,6 +115,10 @@
     "message": "Something went wrong while connecting.",
     "description": "Popup failure status: an unexpected error while connecting. A \"Connect again\" button follows."
   },
+  "failureSetupIncomplete": {
+    "message": "Finish setting up DownloadPulse first, then connect again.",
+    "description": "Popup failure status: DownloadPulse is a new installation whose setup is not finished yet, so it cannot connect browsers yet. A \"Connect again\" button follows."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ on $SYSTEM$",
     "description": "The name a browser connection is given by default, for example 'Firefox on Linux'. The person can change it when approving.",

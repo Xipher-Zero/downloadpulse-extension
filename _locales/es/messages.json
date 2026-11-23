@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "Algo salió mal al conectar."
   },
+  "failureSetupIncomplete": {
+    "message": "Primero termine de configurar DownloadPulse y luego vuelva a conectarse."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ en $SYSTEM$",
     "placeholders": {

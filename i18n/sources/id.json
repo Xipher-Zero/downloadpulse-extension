@@ -162,5 +162,6 @@
   "captureDoneWithoutSignIn": "7b07f4db6dcfe489",
   "captureKeptInBrowser": "7b828471642a1b2c",
   "captureResumedInBrowser": "ddca9b18ee13a910",
-  "insecureSharedRange": "ceb5b0f6be50690e"
+  "insecureSharedRange": "ceb5b0f6be50690e",
+  "failureSetupIncomplete": "dad5833ebf90a9bd"
 }
