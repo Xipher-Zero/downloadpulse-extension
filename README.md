@@ -5,7 +5,9 @@ browsers (Chrome, Edge, Brave and others), built from one codebase.
 
 It sends the downloads you choose (links, files, video pages, selected links)
 to your own DownloadPulse server or desktop application, and shows and
-manages them from the toolbar. It connects with DownloadPulse's browser
+manages them from the toolbar. Turned on (1.0.2), the downloads the browser
+itself starts go to DownloadPulse instead, with your sign-in on their site;
+anything DownloadPulse can't take stays in the browser. It connects with DownloadPulse's browser
 pairing (`downloadpulse.browser/1`; `debridpulse.browser/1` before the rename); DownloadPulse decides everything after that.
 
 - Website: [downloadpulse.net/extension](https://downloadpulse.net/extension).

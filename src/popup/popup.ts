@@ -14,7 +14,7 @@ import {glyph, placeGlyphs, type GlyphName} from "../shared/glyphs";
 import {localize, message} from "../shared/i18n";
 import {consented, recordConsent} from "../shared/consent";
 import {effectiveAddress, isLocal, type Failure, type Job} from "../shared/server";
-import {isOffSite, saveSettings, settings, siteOf, type Settings} from "../shared/settings";
+import {fileTypes, isOffSite, saveSettings, settings, siteOf, type Settings} from "../shared/settings";
 
 const FAILURE_KEYS: Record<Failure, string> = {
   unreachable: "failureUnreachable", certificate: "failureCertificate", not_downloadpulse: "failureNotDownloadPulse",
@@ -183,10 +183,12 @@ function renderJobs(jobs: Job[]): void {
     if (unsettled(job)) {
       const controls = document.createElement("span");
       controls.className = "dp-job__controls";
-      const pausedHere = job.reason === "paused" && job.paused_by === "client";
+      // The person may resume any paused download of theirs, whoever paused it, as they can
+      // in DownloadPulse -- not everything paused at once (operator, 2026-11-22).
+      const resumable = job.reason === "paused" && job.paused_by !== "administrator";
       controls.append(
-        glyphButton(pausedHere ? "play" : "pause", pausedHere ? "jobResume" : "jobPause", "blue",
-          {job: job.id, jobAction: pausedHere ? "resume" : "pause"}),
+        glyphButton(resumable ? "play" : "pause", resumable ? "jobResume" : "jobPause", "blue",
+          {job: job.id, jobAction: resumable ? "resume" : "pause"}),
         glyphButton("trash2", "jobRemove", "danger", {job: job.id, jobAction: "remove"}));
       line.append(controls);
       const value = percent(job);
@@ -305,6 +307,53 @@ async function focusNotified(): Promise<void> {
   row.scrollIntoView({block: "nearest"});
 }
 
+// ── browser downloads (1.0.2) ───────────────────────────────────────────
+
+const CAPTURE_OFFER = "captureOffer";
+const DOWNLOADS: chrome.permissions.Permissions = {permissions: ["downloads"]};
+
+/** Whether the setup offer is waiting (set by pairing.ts when a connection is first made). */
+async function captureOffered(): Promise<boolean> {
+  return Boolean((await chrome.storage.local.get(CAPTURE_OFFER))[CAPTURE_OFFER]);
+}
+
+/** Every switch for it shows what is stored (and whether the browser still allows it). */
+async function renderCapture(chosen?: Settings): Promise<void> {
+  const current = chosen ?? await settings();
+  const allowed = await chrome.permissions.contains(DOWNLOADS).catch(() => false);
+  for (const input of document.querySelectorAll<HTMLInputElement>("[data-capture-switch]")) {
+    input.checked = current.capture && allowed;
+    input.disabled = false;
+  }
+  const min = $<HTMLInputElement>("[data-capture-min]");
+  const types = $<HTMLInputElement>("[data-capture-types]");
+  if (document.activeElement !== min) min.value = String(current.captureMinMB);
+  if (document.activeElement !== types) types.value = current.captureSkipTypes.join(", ");
+  min.disabled = types.disabled = false;
+  $('[data-testid="capture-options"]').hidden = !(current.capture && allowed);
+}
+
+/**
+ * Turn it on or off from a click (the browser asks for the "downloads" permission only from the
+ * person's own gesture, so the request is the first thing done). Off gives the permission back.
+ * Answers whether it is now on.
+ */
+function setCapture(on: boolean, note: HTMLElement | null): Promise<boolean> {
+  const asked = on ? chrome.permissions.request(DOWNLOADS) : chrome.permissions.remove(DOWNLOADS).then(() => false);
+  settingsEdits += 1;
+  return asked.catch(() => false).then(async (granted) => {
+    const now = on && granted;
+    if (note) {
+      note.hidden = !(on && !granted);
+      if (on && !granted) note.textContent = message("optionsDownloadsDenied");
+    }
+    await saveSettings({capture: now, captureAsked: true});
+    await chrome.storage.local.remove(CAPTURE_OFFER);
+    await renderCapture();
+    return now;
+  });
+}
+
 // ── settings (WS-E4), a view of the dropdown ────────────────────────────
 
 /** This tab's site, with the download buttons on or off there. */
@@ -360,6 +409,7 @@ async function renderSettings(): Promise<void> {
     return item;
   }));
   await renderSiteSwitch(chosen.offSites);
+  await renderCapture(chosen);
 }
 
 function note(key: string): void {
@@ -403,8 +453,12 @@ async function render(): Promise<void> {
     const state = await connectionState(connected);
     if (state === "plain-http") showInsecure(connected.server);
     show(state === "consent" ? "disclosure" : "insecure");
+  } else if (connected && await captureOffered()) {
+    // Just connected: whether browser downloads go to DownloadPulse, asked once.
+    show("capture-offer");
   } else if (connected) {
     show("connected");
+    await renderCapture();
     text('[data-testid="server"]', serverName(connected.server));
     text('[data-testid="account"]', connected.account);
     text('[data-testid="label"]', connected.label);
@@ -527,6 +581,24 @@ for (const element of document.querySelectorAll<HTMLElement>("[data-i18n-label]"
 }
 document.addEventListener("change", (event) => {
   const input = event.target as HTMLInputElement;
+  if (input.dataset["captureSwitch"] !== undefined) {
+    // First, in the gesture itself: the permission request (setCapture).
+    void setCapture(input.checked, input.dataset["testid"] === "capture-setting"
+      ? $('[data-testid="capture-note"]') : null);
+    return;
+  }
+  if (input.dataset["captureMin"] !== undefined) {
+    settingsEdits += 1;
+    void saveSettings({captureMinMB: Number(input.value)});
+    return;
+  }
+  if (input.dataset["captureTypes"] !== undefined) {
+    settingsEdits += 1;
+    const typed = fileTypes(input.value);
+    input.value = typed.join(", ");
+    void saveSettings({captureSkipTypes: typed});
+    return;
+  }
   if (input.dataset["testid"] === "device-name" && input.checked) {
     // Firefox: the browser and system are technical data, sent only with its optional consent.
     const firefox = (globalThis as unknown as {browser?: {permissions?: {request(r: {data_collection: string[]}): Promise<boolean>}}}).browser;
@@ -590,8 +662,15 @@ document.addEventListener("click", (event) => {
       });
     }
   } else if (action === "disconnect") {
-    void chrome.runtime.sendMessage({type: "dp-disconnect"}).then((answer: {revoked?: boolean} | undefined) =>
-      note(answer?.revoked ? "optionsDisconnected" : "optionsDisconnectedLocally"));
+    void chrome.runtime.sendMessage({type: "dp-disconnect"}).then(async (answer: {revoked?: boolean} | undefined) => {
+      note(answer?.revoked ? "optionsDisconnected" : "optionsDisconnectedLocally");
+      // In the dropdown, nothing is left to set without a connection: back to the screen that
+      // connects (operator, 2026-11-22). The standalone settings page stays, saying so.
+      if (!standalone) {
+        view = "main";
+        await render();
+      }
+    });
   } else if (action === "connect-local") {
     void startConnecting();
   } else if (action === "agree") {
@@ -610,6 +689,10 @@ document.addEventListener("click", (event) => {
       : connectTo(insecureTarget, insecureTarget, true));
   } else if (action === "cancel") {
     void chrome.runtime.sendMessage({type: action});
+  } else if (action === "capture-yes") {
+    void setCapture(true, $('[data-testid="capture-offer-note"]')).then((on) => { if (on) void render(); });
+  } else if (action === "capture-no") {
+    void setCapture(false, null).then(() => render());
   }
 });
 // Every server form: after something or nothing was found here, and after any failure.

@@ -39,6 +39,8 @@ test.beforeEach(async () => {
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
+  // Newly connected: browser downloads are offered once (1.0.2); these tests send by hand.
+  await popup.getByRole("button", {name: "Not now"}).click({timeout: 15_000});
   await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
 });
 
@@ -87,6 +89,51 @@ test("Disconnect revokes this browser on the server and forgets it here", async 
     };
   }));
   expect(secret).toBeNull();
+});
+
+test("Disconnect in the dropdown's settings goes back to the screen that connects (operator, 2026-11-22)", async () => {
+  await popup.getByRole("button", {name: "Settings"}).click();
+  await popup.getByRole("button", {name: "Disconnect"}).click();
+  await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
+  await expect(popup.locator("[data-view='settings']")).toBeHidden();
+  expect(dp.state.disconnects).toBe(1);
+});
+
+test("a listing in flight when this browser disconnects never brings the old identity's downloads back (operator, 2026-11-22)", async () => {
+  dp.setJob("job_old", {id: "job_old", submitted_at: new Date().toISOString(), display_name: "old.bin", name: "old.bin",
+    source: {kind: "links"}, phase: "processing", reason: "paused", actionability: "wait", paused_by: "client",
+    progress: null, estimate: null});
+  await expect(popup.getByText("old.bin")).toBeVisible({timeout: 15_000});
+  // The next listing is read, then answered only after Disconnect.
+  dp.state.listDelay = 4000;
+  const polls = dp.state.listPolls.length;
+  await expect.poll(() => dp.state.listPolls.length, {timeout: 10_000}).toBeGreaterThan(polls);
+  await popup.getByRole("button", {name: "Settings"}).click();
+  await popup.getByRole("button", {name: "Disconnect"}).click();
+  await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
+  await popup.waitForTimeout(5000);                                   // the late answer has arrived
+  const cached = () => popup.evaluate(async () => Object.entries(await chrome.storage.session.get(null))
+    .filter(([key]) => key.startsWith("jobs@")).flatMap(([, jobs]) => Object.keys(jobs ?? {})));
+  expect(await cached()).toEqual([]);
+  // Connected again, as a new identity: DownloadPulse lists none of the old one's downloads, nor does this list.
+  dp.state.listDelay = 0;
+  dp.state.revoked = false;
+  dp.state.views.clear();
+  await popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true}).click();
+  const agree = popup.getByRole("button", {name: "Agree and continue"});
+  if (await agree.isVisible().catch(() => false)) await agree.click();
+  await popup.getByRole("button", {name: "Connect", exact: true}).click();
+  await expect(popup.getByTestId("code")).toBeVisible();
+  dp.answer("approved");
+  const notNow = popup.getByRole("button", {name: "Not now"});
+  const empty = popup.getByText("Nothing sent from this browser yet.");
+  await expect(empty.or(notNow)).toBeVisible({timeout: 15_000});
+  if (await notNow.isVisible()) await notNow.click();
+  await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
+  await popup.waitForTimeout(3000);
+  await expect(empty).toBeVisible();
+  await expect(popup.getByText("old.bin")).toHaveCount(0);
+  expect(await cached()).toEqual([]);
 });
 
 /** A secret slot in the extension's IndexedDB: read (value undefined) or written (null deletes). */
@@ -179,19 +226,20 @@ test("the gear opens the settings inside the dropdown, and Back returns", async 
         buttonToSeparator: box("section[aria-labelledby='page-title']").top - box("[data-action='disconnect']").bottom},
     };
   });
-  expect(layout).toMatchObject({backAtEnd: true, titles: ["center", "center", "center"], connection: "Connection:",
+  expect(layout).toMatchObject({backAtEnd: true, titles: ["center", "center", "center", "center"], connection: "Connection:",
     hintCentred: "center", disconnectCentred: true});
   for (const gap of Object.values(layout.rows)) expect(gap).toBeGreaterThanOrEqual(17);
-  // No separator above Notifications, a blank row instead; the subsection title sits on its hint.
+  // Browser downloads (1.0.2) has its own separator, with room under it (operator, 2026-11-22);
+  // the subsection title sits on its hint.
   const tail = await popup.evaluate(() => {
-    const notify = document.querySelector("section[aria-labelledby='notify-title']");
+    const notify = document.querySelector("section[aria-labelledby='downloads-title']");
     const h4 = document.querySelector(".dp-settings h4").getBoundingClientRect();
     const hint = document.querySelector(".dp-settings h4 + .dp-settings__centred").getBoundingClientRect();
     return {separator: getComputedStyle(notify).borderTopStyle, room: parseFloat(getComputedStyle(notify).paddingTop),
       titleToHint: hint.top - h4.bottom};
   });
-  expect(tail.separator).toBe("none");
-  expect(tail.room).toBeGreaterThanOrEqual(18);
+  expect(tail.separator).toBe("solid");
+  expect(tail.room).toBeGreaterThanOrEqual(16);
   expect(tail.titleToHint).toBeLessThan(12);
   await popup.getByRole("button", {name: "Back"}).click();
   await expect(popup.getByRole("button", {name: "Open DownloadPulse"})).toBeVisible();
@@ -213,16 +261,17 @@ test("the master switch governs every in-page button; off, what it governs is no
   expect(add.x).toBeGreaterThan(field.x + field.width / 2);
   expect(Math.abs((add.y + add.height / 2) - (field.y + field.height / 2))).toBeLessThanOrEqual(1);
   await popup.getByLabel("Show a download button on video players").uncheck();
-  const separator = () => popup.locator("section[aria-labelledby='notify-title']").evaluate((el) => getComputedStyle(el).borderTopStyle);
-  expect(await separator()).toBe("none");                 // on: Notifications follows without a separator
+  // The group after On web pages (Browser downloads, 1.0.2; Notifications before it).
+  const separator = () => popup.locator("section[aria-labelledby='downloads-title']").evaluate((el) => getComputedStyle(el).borderTopStyle);
+  expect(await separator()).toBe("solid");                // its own section, whatever On web pages shows
   await master.uncheck();
   await expect(popup.getByTestId("in-page-options")).toBeHidden();
-  await expect.poll(separator).toBe("solid");             // off: the separator returns
+  expect(await separator()).toBe("solid");
   await expect(popup.getByLabel("Show a download button beside download links")).toBeHidden();
   await page.waitForTimeout(5500);                         // a frame's answer is kept for up to 5 s
   expect(await hoverOffered(page, "#zip")).toBe(0);        // off: nothing offered
   await master.check();
-  await expect.poll(separator).toBe("none");
+  expect(await separator()).toBe("solid");
   await expect(popup.getByLabel("Show a download button on video players")).not.toBeChecked();   // kept
   await expect(popup.getByLabel("Show a download button beside download links")).toBeChecked();
   await page.waitForTimeout(5500);

@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "動画と一緒にサイトでのサインイン（サイトの Cookie）を送信し、メンバー限定や年齢制限のある動画をダウンロードできるようにする"
+  },
+  "discloseDownloads": {
+    "message": "ブラウザーのダウンロードの送信をオンにした場合は、各ダウンロードのアドレス、そのダウンロードを開始したページ、そのサイトでのあなたのサインイン（そのアドレスに対するサイトの Cookie）。これにより DownloadPulse は、このブラウザーと同じようにダウンロードできます。DownloadPulse はそれらを、そのダウンロードが終わるまでメモリ内にのみ保持します。"
+  },
+  "captureOfferTitle": {
+    "message": "ダウンロードを DownloadPulse に送信しますか？"
+  },
+  "captureOfferText": {
+    "message": "このブラウザーがダウンロードを開始したファイルを、代わりにそのサイトでのサインインと一緒に DownloadPulse に送信できます。DownloadPulse が受け取れない場合は、ブラウザーがそのままダウンロードを続けます。これは設定からいつでも変更できます。"
+  },
+  "captureOfferYes": {
+    "message": "DownloadPulse に送信する"
+  },
+  "captureOfferNo": {
+    "message": "今はしない"
+  },
+  "captureToggle": {
+    "message": "ブラウザーのダウンロードを DownloadPulse に送信する"
+  },
+  "optionsDownloads": {
+    "message": "ブラウザーのダウンロード"
+  },
+  "optionsDownloadsHint": {
+    "message": "DownloadPulse がダウンロードを受け取れない場合は、ブラウザーがそのままダウンロードを続けます。リンクを自分で送信する機能は、どちらの場合も使えます。"
+  },
+  "optionsDownloadsDenied": {
+    "message": "ブラウザーが許可しなかったため、ダウンロードはブラウザーで行われます。"
+  },
+  "optionsMinSize": {
+    "message": "このサイズ（MB）より小さいファイルはブラウザーに任せる"
+  },
+  "optionsSkipTypes": {
+    "message": "これらのファイルの種類は常にブラウザーに任せる"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "ダウンロードを DownloadPulse に送信しました。"
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "そのサイトでのサインインなしでダウンロードを DownloadPulse に送信しました。"
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse がそのダウンロードを受け取れなかったため、ブラウザーでダウンロードを続けています。"
   }
 }

@@ -227,8 +227,10 @@ export interface Session {
   account: {display_name: string};
   /** The person's appearance, by palette ID (a current DownloadPulse; absent from an older one). */
   appearance?: unknown;
-  /** Whether this DownloadPulse takes a video's cookies (its session's capabilities.cookies, for links). */
+  /** Whether this DownloadPulse takes the links' cookies (its session's capabilities.cookies, for links). */
   videoCookies: boolean;
+  /** Whether this DownloadPulse takes the page a link came from (capabilities.referrer, for links; 1.0.2). */
+  referrer: boolean;
 }
 
 /** The server's own account of this token: how a pairing is verified (L19). */
@@ -244,9 +246,14 @@ export async function readSession(origin: string, token: string): Promise<Sessio
   const capabilities = (body["capabilities"] ?? {}) as Record<string, unknown>;
   return {token: {id: String(token_["id"] ?? ""), label: String(token_["label"] ?? "")},
     account: {display_name: String(account["display_name"] ?? "")}, appearance: body["appearance"],
-    // Only a DownloadPulse that says it takes a video's cookies (with links) is ever sent them.
-    videoCookies: Array.isArray((capabilities["cookies"] as {sources?: unknown} | undefined)?.sources)
-      && ((capabilities["cookies"] as {sources: unknown[]}).sources).includes("links")};
+    // Only a DownloadPulse that says it takes the links' cookies (or referrer) is ever sent them:
+    // an older one refuses a field it does not know.
+    videoCookies: takesForLinks(capabilities["cookies"]), referrer: takesForLinks(capabilities["referrer"])};
+}
+
+function takesForLinks(capability: unknown): boolean {
+  const sources = (capability as {sources?: unknown} | undefined)?.sources;
+  return Array.isArray(sources) && sources.includes("links");
 }
 
 /** One cookie as DownloadPulse takes it for a video (DebridPulse BROWSER_CLIENT.md, video sign-in). */
@@ -269,12 +276,12 @@ export type Submitted = {ok: true; id: string} | {ok: false; code: string; retry
 
 /** One submission under one idempotency key (DebridPulse BROWSER_CLIENT.md §2a). */
 export async function submitJob(origin: string, browserToken: string, key: string, source: Source,
-                                displayName = "", cookies: Cookie[] = []): Promise<Submitted> {
+                                displayName = "", cookies: Cookie[] = [], referrer = ""): Promise<Submitted> {
   const response = await request(origin, "/api/browser/v1/jobs", {
     method: "POST",
     headers: {"Content-Type": "application/json", Authorization: `Bearer ${browserToken}`},
     body: JSON.stringify({idempotency_key: key, source, ...(displayName ? {display_name: displayName.slice(0, 256)} : {}),
-      ...(cookies.length ? {cookies} : {})}),
+      ...(cookies.length ? {cookies} : {}), ...(referrer ? {referrer} : {})}),
   }, source.kind === "links" || source.kind === "magnet" ? TIMEOUT_MS : UPLOAD_TIMEOUT_MS);
   if (response.ok) {
     let id = "";

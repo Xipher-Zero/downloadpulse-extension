@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Enviar a minha sessão iniciada no site com os vídeos (os cookies do site), para que seja possível fazer o download de vídeos exclusivos para membros e com restrição de idade"
+  },
+  "discloseDownloads": {
+    "message": "Se ativar o envio dos downloads do navegador: o endereço de cada download, a página a partir da qual foi iniciado e a sua sessão iniciada nesse site (os cookies do site para esse endereço), para que o DownloadPulse possa fazer o download tal como este navegador faria. O DownloadPulse guarda-os apenas na memória, até esse download terminar."
+  },
+  "captureOfferTitle": {
+    "message": "Enviar os downloads para o DownloadPulse?"
+  },
+  "captureOfferText": {
+    "message": "Os ficheiros cujo download este navegador iniciar podem ir para o DownloadPulse em vez disso, com a sua sessão iniciada no respetivo site. Se o DownloadPulse não conseguir aceitar algum, o navegador continua a fazer o download. Pode alterar isto a qualquer momento nas Definições."
+  },
+  "captureOfferYes": {
+    "message": "Enviar para o DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "Agora não"
+  },
+  "captureToggle": {
+    "message": "Enviar os downloads do navegador para o DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "Downloads do navegador"
+  },
+  "optionsDownloadsHint": {
+    "message": "Se o DownloadPulse não conseguir aceitar um download, o navegador continua a fazê-lo. Enviar ligações manualmente funciona sempre."
+  },
+  "optionsDownloadsDenied": {
+    "message": "O navegador não o permitiu, por isso os downloads ficam no navegador."
+  },
+  "optionsMinSize": {
+    "message": "Deixar ao navegador ficheiros mais pequenos do que isto (MB)"
+  },
+  "optionsSkipTypes": {
+    "message": "Deixar sempre ao navegador estes tipos de ficheiro"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Download enviado para o DownloadPulse."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Download enviado para o DownloadPulse, sem a sua sessão iniciada nesse site."
+  },
+  "captureKeptInBrowser": {
+    "message": "O DownloadPulse não conseguiu aceitar esse download, por isso o navegador ficou com ele."
   }
 }

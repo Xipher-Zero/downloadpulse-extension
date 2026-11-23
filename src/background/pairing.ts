@@ -10,6 +10,7 @@
 import {saveAppearance} from "../shared/appearance";
 import {consented, deviceNameAllowed} from "../shared/consent";
 import {deviceCode, saveConnection, setPairing} from "../shared/connection";
+import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
 import {
   LOCAL_ORIGINS, ServerError, effectiveAddress, pollPairing, probe, readSession, startPairing,
@@ -135,6 +136,10 @@ async function waitForApproval(origin: string, interval: number, expiresAt: numb
     await saveConnection({server: origin, tokenId: session.token.id, label: session.token.label,
       account: session.account.display_name, ...(plainHttp ? {plainHttp: true} : {})}, answer.token);
     await saveAppearance(session.appearance);
+    // Newly connected: browser downloads to DownloadPulse are offered once (popup capture-offer),
+    // unless the person already chose either way.
+    const chosen = await settings();
+    if (!chosen.capture && !chosen.captureAsked) await chrome.storage.local.set({captureOffer: true});
     await setPairing(null);
     await badge("");
     return;

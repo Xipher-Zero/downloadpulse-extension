@@ -133,6 +133,20 @@ export async function token(server?: string): Promise<string | null> {
   return secret(tokenSlot(value.server));
 }
 
+/**
+ * ``write`` -- what was read with ``browserToken`` -- only while ``server`` is still connected
+ * with that very token, in turn with every connection change: a read that was in flight when
+ * this browser disconnected (or reconnected as another identity) never writes the old
+ * identity's state back (operator, 2026-11-22). Answers whether it was written.
+ */
+export function whileConnectedWith(server: string, browserToken: string, write: () => Promise<void>): Promise<boolean> {
+  return serialized(async () => {
+    if ((await token(server)) !== browserToken) return false;
+    await write();
+    return true;
+  });
+}
+
 /** A new or renewed connection to ``value.server``, which becomes the one in use. */
 export function saveConnection(value: Connection, browserToken: string): Promise<void> {
   return serialized(async () => {

@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Kirim sesi masuk saya di situs bersama video (cookie situs itu), agar video khusus anggota dan video dengan batasan usia dapat diunduh"
+  },
+  "discloseDownloads": {
+    "message": "Jika Anda mengaktifkan pengiriman unduhan peramban: alamat setiap unduhan, halaman tempat unduhan itu dimulai, dan sesi masuk Anda di situs itu (cookie situs itu untuk alamat tersebut), agar DownloadPulse dapat mengunduhnya seperti yang dilakukan peramban ini. DownloadPulse hanya menyimpannya di memori, sampai unduhan itu selesai."
+  },
+  "captureOfferTitle": {
+    "message": "Kirim unduhan ke DownloadPulse?"
+  },
+  "captureOfferText": {
+    "message": "Berkas yang mulai diunduh peramban ini dapat dikirim ke DownloadPulse sebagai gantinya, dengan sesi masuk Anda di situsnya. Jika DownloadPulse tidak dapat menerimanya, peramban tetap mengunduhnya. Anda dapat mengubah ini kapan saja di Pengaturan."
+  },
+  "captureOfferYes": {
+    "message": "Kirim ke DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "Nanti saja"
+  },
+  "captureToggle": {
+    "message": "Kirim unduhan peramban ke DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "Unduhan peramban"
+  },
+  "optionsDownloadsHint": {
+    "message": "Jika DownloadPulse tidak dapat menerima suatu unduhan, peramban tetap mengunduhnya. Mengirim tautan sendiri tetap berfungsi."
+  },
+  "optionsDownloadsDenied": {
+    "message": "Peramban tidak mengizinkannya, jadi unduhan tetap di peramban."
+  },
+  "optionsMinSize": {
+    "message": "Serahkan berkas yang lebih kecil dari ukuran ini (MB) ke peramban"
+  },
+  "optionsSkipTypes": {
+    "message": "Selalu serahkan jenis berkas ini ke peramban"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Unduhan terkirim ke DownloadPulse."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Unduhan terkirim ke DownloadPulse, tanpa sesi masuk Anda di situs itu."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse tidak dapat menerima unduhan itu, jadi unduhan itu tetap di peramban."
   }
 }

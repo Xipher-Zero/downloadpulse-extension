@@ -10,11 +10,12 @@ import {connection, forgetConnection, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {capturedName, isIndexerRefusal} from "../shared/capture";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
-import {isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Source} from "../shared/server";
+import {controlJob, isLocal, isPrivateHost, readSession, resolvesPrivate, ServerError, signInMayTravel, submitJob, type Cookie, type Source} from "../shared/server";
+import {stateKey} from "../shared/server-state";
 import {settings} from "../shared/settings";
 import {cookiesFor} from "./cookies";
-import {wake} from "./monitor";
-import {keyAnswered, keyFor} from "./sent-keys";
+import {cachedJobs, wake} from "./monitor";
+import {forgetDigest, keyAnswered, keyFor} from "./sent-keys";
 
 const LIMITS: Record<CaptureKind, number> = {torrent: 16 * 1024 * 1024, nzb: 8 * 1024 * 1024, metalink: 16 * 1024 * 1024};
 const CAPTURE_TIMEOUT_MS = 30_000;
@@ -141,17 +142,39 @@ function displayName(source: Source): string {
   return source.filename;
 }
 
-async function send(source: Source, cookies: Cookie[] = []): Promise<void> {
+async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Promise<void> {
   const connected = await connection();
   const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
-  const {digest, key} = await keyFor(connected.server, source, cookies);
+  let {digest, key, job} = await keyFor(connected.server, source, cookies);
+  // Sent again while its download is paused (operator, 2026-11-22): the person wants it now, and
+  // may resume it whoever paused it. Only everything paused at once is left alone; then (or if
+  // the resume is not honored) the send goes as a new request, joined to the one download.
+  const known = job ? (await cachedJobs(connected.server))[job] : undefined;
+  if (known && known.reason === "paused") {
+    if (known.paused_by !== "administrator") {
+      try {
+        const decision = await controlJob(connected.server, browserToken, known.id, "resume");
+        if (decision.disposition === "honored") {
+          await reshow(connected.server, known.id);
+          wake();
+          return;
+        }
+      } catch {
+        // not answered: sent as a new request below
+      }
+    }
+    await forgetDigest(digest);
+    ({digest, key} = await keyFor(connected.server, source, cookies));
+  } else if (known) {
+    await reshow(connected.server, known.id);
+  }
   const name = displayName(source);
   // A request that timed out or lost its connection may still have arrived: it is retried
   // once with the same key, so DownloadPulse answers the same job (review, 2026-11-19).
   const attempt = async (): Promise<Awaited<ReturnType<typeof submitJob>>> => {
     try {
-      return await submitJob(connected.server, browserToken, key, source, name, cookies);
+      return await submitJob(connected.server, browserToken, key, source, name, cookies, referrer);
     } catch (error) {
       if (error instanceof ServerError && (error.failure === "unreachable" || error.failure === "certificate")) {
         return {ok: false, code: "unreachable", retryable: true};
@@ -173,13 +196,22 @@ async function send(source: Source, cookies: Cookie[] = []): Promise<void> {
   wake();
 }
 
+/** ``id`` back in the list if the person had cleared it there: they just sent it again. */
+async function reshow(server: string, id: string): Promise<void> {
+  const key = stateKey(server, "jobsCleared");
+  const cleared = ((await chrome.storage.session.get(key))[key] ?? {}) as Record<string, number>;
+  if (!(id in cleared)) return;
+  delete cleared[id];
+  await chrome.storage.session.set({[key]: cleared});
+}
+
 async function sourceFor(href: string): Promise<Source> {
   if (/^magnet:\?/i.test(href)) return {kind: "magnet", magnet: href};
   const kind = captureKind(href);
   return kind ? capture(href, kind) : {kind: "links", links: [href]};
 }
 
-async function feedback(origin: Origin, key: string, ok: boolean): Promise<void> {
+export async function feedback(origin: Origin, key: string, ok: boolean): Promise<void> {
   const text = message(key);
   if (origin.tabId !== undefined && origin.tabId >= 0) {
     try {
@@ -256,6 +288,42 @@ export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | u
     await send({kind: "links", links: [href]}, cookies);
     return withoutSignIn ? "sendDoneWithoutSignIn" : undefined;
   });
+}
+
+/**
+ * A browser download sent to DownloadPulse instead (1.0.2, background/capture.ts): its final
+ * address, with the person's sign-in on that site and the page it was started from -- each only
+ * when this DownloadPulse says it takes it, and the sign-in only over HTTPS or to this computer
+ * (as a video's). Settles to whether DownloadPulse accepted it; never a toast in a page.
+ */
+export async function sendDownload(href: string, referrer: string, store: {cookieStoreId?: string | undefined}):
+    Promise<{ok: boolean; said: string}> {
+  try {
+    if (!/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
+    await mayUseConnection();
+    const connected = await connection();
+    const browserToken = connected ? await token(connected.server) : null;
+    if (!connected || !browserToken) throw new Refused("sendNotConnected");
+    let capabilities = {videoCookies: false, referrer: false};
+    try {
+      capabilities = await readSession(connected.server, browserToken);
+    } catch {
+      // Its capabilities unknown: the link goes alone, as any link would.
+    }
+    // Exactly the cookies this browser would send to that address, from the download's own
+    // cookie store (a Firefox container's); the page it started from names the partition.
+    const found = await cookiesFor(href, {...(store.cookieStoreId ? {cookieStoreId: store.cookieStoreId} : {}),
+      url: /^https?:\/\//i.test(referrer) ? referrer : undefined} as chrome.tabs.Tab);
+    const travels = capabilities.videoCookies && signInMayTravel(connected.server);
+    const cookies = travels ? found.cookies : [];
+    // Said only when there was a sign-in that could not go with it: a public file needs none.
+    const withoutSignIn = found.dropped || (!travels && found.cookies.length > 0);
+    const page = capabilities.referrer && /^https?:\/\//i.test(referrer) && referrer.length <= 2048 ? referrer : "";
+    await send({kind: "links", links: [href]}, cookies, page);
+    return {ok: true, said: withoutSignIn ? "captureDoneWithoutSignIn" : "captureDone"};
+  } catch (error) {
+    return {ok: false, said: error instanceof Refused ? error.key : "sendFailed"};
+  }
 }
 
 /** A selection: its http(s) URLs as one batch, each magnet on its own (B2). */

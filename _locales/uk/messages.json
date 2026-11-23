@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Надсилати разом із відео мій вхід на сайті (його файли cookie), щоб можна було завантажувати відео лише для учасників і з віковими обмеженнями"
+  },
+  "discloseDownloads": {
+    "message": "Якщо ви ввімкнете надсилання завантажень браузера: адреса кожного завантаження, сторінка, з якої його розпочато, і ваш вхід на цьому сайті (його файли cookie для цієї адреси), щоб DownloadPulse міг завантажити його так само, як цей браузер. DownloadPulse зберігає їх лише в пам’яті, доки це завантаження не завершиться."
+  },
+  "captureOfferTitle": {
+    "message": "Надсилати завантаження в DownloadPulse?"
+  },
+  "captureOfferText": {
+    "message": "Файли, які починає завантажувати цей браузер, можуть натомість надходити в DownloadPulse разом із вашим входом на їхньому сайті. Якщо DownloadPulse не зможе прийняти якийсь із них, браузер продовжить його завантаження. Це можна будь-коли змінити в розділі «Параметри»."
+  },
+  "captureOfferYes": {
+    "message": "Надсилати в DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "Не зараз"
+  },
+  "captureToggle": {
+    "message": "Надсилати завантаження браузера в DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "Завантаження браузера"
+  },
+  "optionsDownloadsHint": {
+    "message": "Якщо DownloadPulse не зможе прийняти завантаження, браузер продовжить його. Надсилання посилань вручну працює в будь-якому разі."
+  },
+  "optionsDownloadsDenied": {
+    "message": "Браузер цього не дозволив, тому завантаження залишаються в браузері."
+  },
+  "optionsMinSize": {
+    "message": "Залишати браузеру файли, менші за цей розмір (МБ)"
+  },
+  "optionsSkipTypes": {
+    "message": "Завжди залишати браузеру ці типи файлів"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Завантаження надіслано в DownloadPulse."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Завантаження надіслано в DownloadPulse без вашого входу на цьому сайті."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse не зміг прийняти це завантаження, тому воно залишилося в браузері."
   }
 }

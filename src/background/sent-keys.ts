@@ -27,7 +27,8 @@ async function digestOf(text: string): Promise<string> {
  * one replayed without it (DownloadPulse answers a known key with its job, whatever else
  * the request carries).
  */
-export async function keyFor(server: string, source: Source, cookies: Cookie[] = []): Promise<{digest: string; key: string}> {
+export async function keyFor(server: string, source: Source, cookies: Cookie[] = []):
+    Promise<{digest: string; key: string; job?: string}> {
   const signIn = cookies.length
     ? await digestOf(JSON.stringify(cookies.map((c) => [c.domain, c.path, c.name, c.value]).sort()))
     : "";
@@ -38,7 +39,15 @@ export async function keyFor(server: string, source: Source, cookies: Cookie[] =
   const entry = kept[digest] ?? {key: crypto.randomUUID(), at: now};
   kept[digest] = entry;
   await chrome.storage.session.set({[KEYS]: kept});
-  return {digest, key: entry.key};
+  return {digest, key: entry.key, ...(entry.job ? {job: entry.job} : {})};
+}
+
+/** Sending ``digest`` again is a new request (its job paused elsewhere: operator, 2026-11-22). */
+export async function forgetDigest(digest: string): Promise<void> {
+  const kept = ((await chrome.storage.session.get(KEYS))[KEYS] ?? {}) as Record<string, SentKey>;
+  if (!kept[digest]) return;
+  delete kept[digest];
+  await chrome.storage.session.set({[KEYS]: kept});
 }
 
 export async function keyAnswered(digest: string, job: string): Promise<void> {

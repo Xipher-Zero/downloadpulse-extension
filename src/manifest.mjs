@@ -24,6 +24,9 @@ export function manifest(browser, version) {
     // cookies: a video's sign-in on its site, for DownloadPulse's video downloader (operator,
     // 2026-11-19; docs/store/PERMISSIONS.md), only for a video send, switchable in the settings.
     permissions: ["storage", "contextMenus", "notifications", "alarms", "cookies"],
+    // downloads: browser downloads sent to DownloadPulse instead (1.0.2; docs/store/PERMISSIONS.md),
+    // asked for only when the person turns that on -- never on install or update.
+    optional_permissions: ["downloads"],
     // Web pages only, http and https (store review, 2026-11-18; docs/store/PERMISSIONS.md):
     // the in-page buttons run on whatever page the person browses, in its frames too
     // (a video player is often embedded in one); a .torrent/.nzb/indexer link is

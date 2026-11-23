@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "隨影片傳送我在該網站的登入狀態（其Cookie），以便下載僅限會員及有年齡限制的影片"
+  },
+  "discloseDownloads": {
+    "message": "如果您開啟傳送瀏覽器下載：每個下載的位址、啟動該下載的頁面，以及您在該網站的登入狀態（該網站針對該位址的Cookie），讓DownloadPulse能夠像此瀏覽器一樣下載。DownloadPulse僅將其保存在記憶體中，直到該下載結束。"
+  },
+  "captureOfferTitle": {
+    "message": "要將下載傳送到DownloadPulse嗎？"
+  },
+  "captureOfferText": {
+    "message": "此瀏覽器開始下載的檔案可以改為傳送到DownloadPulse，並附帶您在其網站的登入狀態。如果DownloadPulse無法接收某個檔案，瀏覽器會繼續下載。您可以隨時在「設定」中變更此項。"
+  },
+  "captureOfferYes": {
+    "message": "傳送到DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "稍後再說"
+  },
+  "captureToggle": {
+    "message": "將瀏覽器下載傳送到DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "瀏覽器下載"
+  },
+  "optionsDownloadsHint": {
+    "message": "如果DownloadPulse無法接收某個下載，瀏覽器會繼續下載。您自行傳送連結的功能不受影響。"
+  },
+  "optionsDownloadsDenied": {
+    "message": "瀏覽器未允許此操作，因此下載仍保留在瀏覽器中。"
+  },
+  "optionsMinSize": {
+    "message": "小於此大小（MB）的檔案交給瀏覽器"
+  },
+  "optionsSkipTypes": {
+    "message": "一律將這些檔案類型交給瀏覽器"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "下載已傳送到DownloadPulse。"
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "下載已傳送到DownloadPulse，但未包含您在該網站的登入狀態。"
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse無法接收該下載，因此由瀏覽器繼續下載。"
   }
 }

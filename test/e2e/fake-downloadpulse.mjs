@@ -7,7 +7,7 @@ import http from "node:http";
 export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
   const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
     views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null,
-    desktop: false, shows: 0, down: false, keys: new Map(), dropNext: false, submits: 0, videoCookies: true,
+    desktop: false, shows: 0, down: false, keys: new Map(), dropNext: false, submits: 0, videoCookies: true, referrer: true,
     appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"}};
   // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
   const touch = (view) => { view.cursor = ++state.seq; state.views.set(view.id, view); return view; };
@@ -72,8 +72,11 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
         : state.mode === "previous-name" ? "debridpulse.browser/1" : "downloadpulse.browser/1",
         token: {id: "tok-1", label: "Laptop-Chrome"}, account: {display_name: "Una"},
         ...(state.appearance ? {appearance: state.appearance} : {}),
-        // A DownloadPulse that takes a video's cookies says so (``videoCookies``; an older one says nothing).
-        ...(state.videoCookies ? {capabilities: {cookies: {max_count: 300, max_bytes: 32768, sources: ["links"]}}} : {})});
+        // A DownloadPulse that takes the links' cookies says so (``videoCookies``; an older one says
+        // nothing); 1.0.2 also takes the page they came from (``referrer``).
+        ...(state.videoCookies || state.referrer ? {capabilities: {
+          ...(state.videoCookies ? {cookies: {max_count: 300, max_bytes: 32768, sources: ["links"]}} : {}),
+          ...(state.referrer ? {referrer: {max_length: 2048, sources: ["links"]}} : {})}} : {})});
     }
     if (url.pathname === "/api/browser/v1/jobs" && req.method === "POST") {
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
@@ -105,7 +108,10 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       const after = Number(url.searchParams.get("after") ?? 0);
       state.listPolls.push(Date.now());
       const jobs = [...state.views.values()].filter((view) => view.cursor > after).sort((a, b) => a.cursor - b.cursor);
-      return send(200, {jobs, next_cursor: jobs.length ? jobs.at(-1).cursor : after, more: false});
+      const answer = {jobs, next_cursor: jobs.length ? jobs.at(-1).cursor : after, more: false};
+      // ``listDelay``: the listing is read now and answered later (a slow server, a slow link).
+      if (state.listDelay) return setTimeout(() => send(200, answer), state.listDelay);
+      return send(200, answer);
     }
     const control = /^\/api\/browser\/v1\/jobs\/([^/]+)\/(controls|withdraw)$/.exec(url.pathname);
     if (control && req.method === "POST") {

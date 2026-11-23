@@ -501,5 +501,50 @@
   },
   "optionsVideoCookies": {
     "message": "Wysyłaj z filmami sesję logowania w witrynie (jej pliki cookie), aby można było pobierać filmy tylko dla członków i z ograniczeniem wiekowym"
+  },
+  "discloseDownloads": {
+    "message": "Jeśli zostanie włączone wysyłanie pobrań z przeglądarki — adres każdego pobrania, strona, z której je rozpoczęto, oraz sesja logowania w tej witrynie (jej pliki cookie dla tego adresu), aby DownloadPulse mógł je pobrać tak, jak zrobiłaby to ta przeglądarka. DownloadPulse przechowuje je tylko w pamięci, do zakończenia tego pobierania."
+  },
+  "captureOfferTitle": {
+    "message": "Wysyłać pobrania do DownloadPulse?"
+  },
+  "captureOfferText": {
+    "message": "Pliki, których pobieranie rozpoczyna ta przeglądarka, mogą zamiast tego trafiać do DownloadPulse, razem z sesją logowania w ich witrynie. Jeśli DownloadPulse nie może przyjąć któregoś z nich, przeglądarka nadal go pobiera. Można to zmienić w dowolnym momencie w Ustawieniach."
+  },
+  "captureOfferYes": {
+    "message": "Wysyłaj do DownloadPulse"
+  },
+  "captureOfferNo": {
+    "message": "Nie teraz"
+  },
+  "captureToggle": {
+    "message": "Wysyłaj pobrania z przeglądarki do DownloadPulse"
+  },
+  "optionsDownloads": {
+    "message": "Pobrania z przeglądarki"
+  },
+  "optionsDownloadsHint": {
+    "message": "Jeśli DownloadPulse nie może przyjąć pobrania, przeglądarka nadal je pobiera. Samodzielne wysyłanie linków działa w obu przypadkach."
+  },
+  "optionsDownloadsDenied": {
+    "message": "Przeglądarka na to nie zezwoliła, więc pobrania pozostają w przeglądarce."
+  },
+  "optionsMinSize": {
+    "message": "Pliki mniejsze niż ten rozmiar (MB) zostawiaj przeglądarce"
+  },
+  "optionsSkipTypes": {
+    "message": "Te typy plików zawsze zostawiaj przeglądarce"
+  },
+  "optionsSkipTypesPlaceholder": {
+    "message": "pdf, jpg, png"
+  },
+  "captureDone": {
+    "message": "Wysłano pobranie do DownloadPulse."
+  },
+  "captureDoneWithoutSignIn": {
+    "message": "Wysłano pobranie do DownloadPulse bez sesji logowania w tej witrynie."
+  },
+  "captureKeptInBrowser": {
+    "message": "DownloadPulse nie mógł przyjąć tego pobrania, więc pozostało ono w przeglądarce."
   }
 }

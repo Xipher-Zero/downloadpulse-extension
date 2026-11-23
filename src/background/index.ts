@@ -16,6 +16,10 @@ import {message} from "../shared/i18n";
 import {cancel, connectLocal, connectRemote, pairLocal} from "./pairing";
 import {sendSelection, sendUrl, quickAdd, sendVideo} from "./submit";
 import {forgetSentKey} from "./sent-keys";
+import {listen as listenForDownloads} from "./capture";
+
+// Browser downloads (1.0.2): listened to only while the optional "downloads" permission is granted.
+listenForDownloads();
 
 type Request =
   | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string; insecure?: boolean}

@@ -38,6 +38,8 @@ test.beforeEach(async () => {
   await popup.getByRole("button", {name: "Connect", exact: true}).click();
   await expect(popup.getByTestId("code")).toBeVisible();
   dp.answer("approved");
+  // Newly connected: browser downloads are offered once (1.0.2); these tests send by hand.
+  await popup.getByRole("button", {name: "Not now"}).click({timeout: 15_000});
   await expect(popup.getByTestId("account")).toHaveText("Una", {timeout: 15_000});
 });
 
@@ -50,6 +52,13 @@ test.afterEach(async () => {
 
 /** Send the site's archive.zip through the hover icon (WS-E2), as a person would. */
 async function sendArchive() {
+  await hoverSend();
+  await expect.poll(() => dp.state.views.size).toBe(1);
+  return [...dp.state.views.keys()][0];
+}
+
+/** The hover-icon send itself (sendArchive, or the same send again). */
+async function hoverSend() {
   const page = await context.newPage();
   await page.goto(`${site.base}/page`);
   const box = await page.locator("#zip").boundingBox();
@@ -61,9 +70,8 @@ async function sendArchive() {
   });
   await page.mouse.move(at.x, at.y, {steps: 3});
   await page.mouse.click(at.x, at.y);
-  await expect.poll(() => dp.state.views.size).toBe(1);
+  await page.waitForTimeout(500);
   await page.close();
-  return [...dp.state.views.keys()][0];
 }
 
 const row = (id) => popup.locator(`li[data-job-id="${id}"]`);
@@ -163,6 +171,39 @@ test("pause and resume are this browser's own glyph buttons, on the status line;
   dp.state.declineControl = "shared_interest";
   await row(id).getByRole("button", {name: "Pause"}).click();
   await expect(row(id).locator(".dp-job__note")).toHaveText("Other requests need this download, so it can't be paused from here.");
+});
+
+test("sent again while paused here, the one download resumes; paused in DownloadPulse, it goes as a new request", async () => {
+  // Operator, 2026-11-22: the same send repeated within 10 minutes was a silent replay of a paused job.
+  const id = await sendArchive();
+  dp.setJob(id, {phase: "processing", reason: "downloading"});
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
+  await row(id).locator(".dp-job__line").getByRole("button", {name: "Pause"}).click();
+  await expect.poll(() => stateOf(id)).toBe("Paused from this browser");
+  await hoverSend();
+  await expect.poll(() => dp.state.controls.map((c) => c.kind)).toEqual(["pause", "resume"]);
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
+  expect(dp.state.views.size).toBe(1);                       // the one download, never a second
+  // Paused by someone in DownloadPulse (another person sharing it included): the person may
+  // resume it from here, as in DownloadPulse -- the Resume button, and a send, resume it.
+  dp.setJob(id, {phase: "processing", reason: "paused", paused_by: "operator"});
+  await expect.poll(() => stateOf(id)).toBe("Paused in DownloadPulse");
+  await row(id).locator(".dp-job__line").getByRole("button", {name: "Resume"}).click();
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
+  dp.setJob(id, {phase: "processing", reason: "paused", paused_by: "operator"});
+  await expect.poll(() => stateOf(id)).toBe("Paused in DownloadPulse");
+  await hoverSend();
+  await expect.poll(() => stateOf(id)).toBe("Downloading");
+  expect(dp.state.controls.map((c) => c.kind)).toEqual(["pause", "resume", "resume", "resume"]);
+  expect(dp.state.views.size).toBe(1);
+  // Everything paused at once is not this browser's to lift: no Resume, and a send goes as a new
+  // request, which DownloadPulse joins to the one download.
+  dp.setJob(id, {phase: "processing", reason: "paused", paused_by: "administrator"});
+  await expect.poll(() => stateOf(id)).toBe("Paused in DownloadPulse");
+  await expect(row(id).locator(".dp-job__line").getByRole("button", {name: "Resume"})).toHaveCount(0);
+  await hoverSend();
+  await expect.poll(() => dp.state.views.size).toBe(2);
+  expect(dp.state.controls).toHaveLength(4);
 });
 
 test("the connection's status: green while DownloadPulse answers, yellow while it can't be reached", async () => {
