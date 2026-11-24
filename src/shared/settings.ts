@@ -13,7 +13,7 @@ export interface Settings {
   // Browser downloads sent to DownloadPulse instead of the browser (1.0.2, operator 2026-11-22):
   // off until the person turns it on (it needs the optional "downloads" permission).
   capture: boolean;
-  captureMinMB: number;           // a download known to be smaller than this stays in the browser (0: none)
+  captureMinMB: number;           // a download smaller than this, or of a size not known yet, stays in the browser (0: none)
   captureSkipTypes: string[];     // file extensions (lower case, no dot) that always stay in the browser
   captureAsked: boolean;          // the setup offer was answered once (either way): never offered again
 }

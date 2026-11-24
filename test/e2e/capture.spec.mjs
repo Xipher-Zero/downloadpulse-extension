@@ -310,3 +310,118 @@ test("a held job while the cache is empty (as after a restart) is waited for, no
   expect((await bigInBrowser())?.paused).toBe(true);
   expect(Object.keys(await held())).toHaveLength(1);
 });
+
+test("1.0.4: a download of a size the browser does not know stays in the browser, unless every size goes", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("unsized");   // sent without its length: it may be a small file
+  await expect.poll(async () => (await browserDownloads()).find((item) => item.url.endsWith("/dl/unsized.bin"))?.state,
+    {timeout: 30_000}).toBe("complete");
+  expect(dp.state.jobs).toHaveLength(0);
+  // A minimum of 0 (stored as the popup's field stores it): every size goes, a size not known too.
+  await worker.evaluate(async () => {
+    const {settings} = await chrome.storage.local.get("settings");
+    await chrome.storage.local.set({settings: {...settings, captureMinMB: 0}});
+  });
+  await download("unsized");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  expect(dp.state.jobs[0].body.source.links).toEqual([`${site.base}/dl/unsized.bin`]);
+});
+
+/** The toasts the background says, recorded as it sends them to a tab. */
+const recordToasts = () => worker.evaluate(() => {
+  globalThis.toasts = [];
+  const send = chrome.tabs.sendMessage.bind(chrome.tabs);
+  chrome.tabs.sendMessage = (tab, value, options) => {
+    if (value?.type === "dp-toast") globalThis.toasts.push(value.text);
+    return send(tab, value, options);
+  };
+});
+const toasts = () => worker.evaluate(() => globalThis.toasts);
+const NO_PROGRESS = "DownloadPulse made no progress with that download for a while, so the browser carried on with it.";
+
+/**
+ * The held downloads' 10-minute limit, passed: their clocks set 11 minutes back (as a held
+ * download waiting that long would have them), and the background woken as its alarm would.
+ */
+const pastTheLimit = () => worker.evaluate(async () => {
+  const {heldDownloads} = await chrome.storage.local.get("heldDownloads");
+  for (const entry of Object.values(heldDownloads)) entry.progressAt -= 11 * 60_000;
+  await chrome.storage.local.set({heldDownloads});
+  await chrome.alarms.create("dp-held", {when: Date.now()});
+});
+
+test("1.0.4: a held job never listed by DownloadPulse: after the limit the browser carries on, and says so", async () => {
+  await connect("Send them to DownloadPulse");
+  await recordToasts();
+  dp.state.unlisted = true;
+  await download("big");
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  await expect.poll(async () => Object.keys(await held()).length, {timeout: 15_000}).toBe(1);
+  // Within the limit it waits.
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  expect((await bigInBrowser())?.paused).toBe(true);
+  await pastTheLimit();
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+  expect(await held()).toEqual({});
+  expect(await toasts()).toContain(NO_PROGRESS);
+});
+
+test("1.0.4: a held job still queued in DownloadPulse after the limit: the browser carries on, and says so", async () => {
+  await connect("Send them to DownloadPulse");
+  await recordToasts();
+  await download("big");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  dp.setJob("job_1", {phase: "queued", reason: "queued", actionability: "wait"});
+  await expect.poll(async () => Object.values(await held())[0]?.seen, {timeout: 15_000}).toBeGreaterThan(0);
+  expect((await bigInBrowser())?.paused).toBe(true);
+  await pastTheLimit();
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+  expect(await held()).toEqual({});
+  expect(await toasts()).toContain(NO_PROGRESS);
+});
+
+test("1.0.4: a held job DownloadPulse is downloading is never cut off by the limit", async () => {
+  await connect("Send them to DownloadPulse");
+  await recordToasts();
+  await download("big");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  dp.setJob("job_1", {phase: "processing", reason: "downloading", actionability: "wait"});
+  await expect.poll(async () => Object.values(await held())[0]?.seen, {timeout: 15_000}).toBeGreaterThan(0);
+  await pastTheLimit();
+  // Its clock starts again (seen downloading), and it stays held.
+  await expect.poll(async () => Date.now() - Object.values(await held())[0]?.progressAt, {timeout: 15_000})
+    .toBeLessThan(60_000);
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  expect((await bigInBrowser())?.paused).toBe(true);
+  expect(Object.keys(await held())).toHaveLength(1);
+  expect(await toasts()).not.toContain(NO_PROGRESS);
+  // And still settled as before once DownloadPulse has it.
+  dp.setJob("job_1", {phase: "completed", reason: "completed", actionability: "none"});
+  await expect.poll(async () => (await bigInBrowser()) === undefined, {timeout: 15_000}).toBe(true);
+});
+
+test("1.0.4: after a restart longer than the limit, a held download's clock starts again, not resumed", async () => {
+  await connect("Send them to DownloadPulse");
+  await recordToasts();
+  await download("big");
+  await expect.poll(async () => Object.keys(await held()).length, {timeout: 15_000}).toBe(1);
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  // As after a restart longer than the limit: the held clock is old, and the session's state is
+  // gone (its job cache, reach, and that this session started the held clocks). Back to back, so
+  // no settling pass runs between the two; the cache's removal itself wakes one, as does the alarm.
+  await worker.evaluate(async () => {
+    const {heldDownloads} = await chrome.storage.local.get("heldDownloads");
+    for (const entry of Object.values(heldDownloads)) entry.progressAt -= 11 * 60_000;
+    await chrome.storage.local.set({heldDownloads});
+    await chrome.storage.session.remove(Object.keys(await chrome.storage.session.get(null))
+      .filter((key) => key.startsWith("jobs@") || key.startsWith("reach@") || key === "heldClocksStarted"));
+    await chrome.alarms.create("dp-held", {when: Date.now()});
+  });
+  // Its clock starts again instead (nothing is known yet of the job in this session).
+  await expect.poll(async () => Date.now() - Object.values(await held())[0]?.progressAt, {timeout: 15_000})
+    .toBeLessThan(60_000);
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  expect((await bigInBrowser())?.paused).toBe(true);
+  expect(Object.keys(await held())).toHaveLength(1);
+  expect(await toasts()).not.toContain(NO_PROGRESS);
+});

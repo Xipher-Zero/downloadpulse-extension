@@ -12,7 +12,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
   const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
     views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null,
     desktop: false, shows: 0, down: false, keys: new Map(), dropNext: false, submits: 0, videoCookies: true, referrer: true,
-    settleAs: null, proxy401: false, proxied: 0, failPolls: 0,
+    settleAs: null, proxy401: false, proxied: 0, failPolls: 0, unlisted: false, hidden: new Set(),
     appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"}};
   // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
   const touch = (view) => { view.cursor = ++state.seq; state.views.set(view.id, view); return view; };
@@ -117,6 +117,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
           paused_by: null, progress: null, estimate: null});
         return setTimeout(() => req.socket.destroy(), 9500);
       }
+      // ``unlisted``: the job is made, but never appears in this browser's listing.
+      if (state.unlisted) state.hidden.add(id);
       touch({id, submitted_at: new Date().toISOString(), display_name: body.display_name ?? "",
         name: body.display_name || "placeholder",
         source: {kind: body.source?.kind}, phase: "accepted", reason: "awaiting_resolution", actionability: "wait",
@@ -129,7 +131,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, DP_UNAUTHORIZED);
       const after = Number(url.searchParams.get("after") ?? 0);
       state.listPolls.push(Date.now());
-      const jobs = [...state.views.values()].filter((view) => view.cursor > after).sort((a, b) => a.cursor - b.cursor);
+      const jobs = [...state.views.values()].filter((view) => view.cursor > after && !state.hidden.has(view.id))
+        .sort((a, b) => a.cursor - b.cursor);
       const answer = {jobs, next_cursor: jobs.length ? jobs.at(-1).cursor : after, more: false};
       // ``listDelay``: the listing is read now and answered later (a slow server, a slow link).
       if (state.listDelay) return setTimeout(() => send(200, answer), state.listDelay);

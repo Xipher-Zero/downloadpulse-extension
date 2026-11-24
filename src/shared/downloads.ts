@@ -50,8 +50,10 @@ export function decide(item: DownloadFacts, chosen: Pick<Settings, "capture" | "
   if (!/^https?:\/\//i.test(href)) return "scheme";
   const type = fileType(item);
   if (CONTENTS.has(type) || captureKind(href)) return "contents";
+  // A size the browser does not know yet (0) may be a small file's: it stays, as one under the
+  // minimum does (operator, 2026-11-24). Only a minimum of 0 (every size) takes it.
   const size = Math.max(Number(item.totalBytes ?? 0), Number(item.fileSize ?? 0));
-  if (size > 0 && chosen.captureMinMB > 0 && size < chosen.captureMinMB * MB) return "small";
+  if (chosen.captureMinMB > 0 && size < chosen.captureMinMB * MB) return "small";
   if (type && chosen.captureSkipTypes.includes(type)) return "type";
   return "capture";
 }

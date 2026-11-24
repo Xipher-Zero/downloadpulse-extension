@@ -11,9 +11,17 @@ const big = {url: "https://files.example.test/pub/archive.zip", totalBytes: 50 *
 
 test("an ordinary large download goes to DownloadPulse", () => {
   assert.equal(decide(big, ON), "capture");
-  // Its size not known yet: it goes (the browser often knows only later).
-  assert.equal(decide({...big, totalBytes: 0}, ON), "capture");
-  assert.equal(decide({...big, totalBytes: -1}, ON), "capture");
+  // Known from the file the browser has so far, though its total is not.
+  assert.equal(decide({...big, totalBytes: 0, fileSize: 50 * MB}, ON), "capture");
+});
+
+test("1.0.4: a download whose size is not known yet stays in the browser, as a small one does", () => {
+  for (const unknown of [{totalBytes: 0}, {totalBytes: -1}, {totalBytes: undefined}, {totalBytes: 0, fileSize: 0}]) {
+    assert.equal(decide({...big, ...unknown}, ON), "small", JSON.stringify(unknown));
+    assert.equal(decide({...big, ...unknown}, {...DEFAULTS, capture: true}), "small", JSON.stringify(unknown));
+    // Only a minimum of 0 (every size) takes it.
+    assert.equal(decide({...big, ...unknown}, {...ON, captureMinMB: 0}), "capture", JSON.stringify(unknown));
+  }
 });
 
 test("off, or not a fresh http(s) download of this browser's own: it stays", () => {

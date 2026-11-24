@@ -558,5 +558,8 @@
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse वह डाउनलोड पूरा नहीं कर सका, इसलिए ब्राउज़र ने उसे जारी रखा।"
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse ने कुछ समय तक उस डाउनलोड में कोई प्रगति नहीं की, इसलिए ब्राउज़र ने उसे जारी रखा।"
   }
 }

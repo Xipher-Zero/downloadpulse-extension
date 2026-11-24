@@ -558,5 +558,8 @@
   },
   "captureResumedInBrowser": {
     "message": "تعذّر على DownloadPulse إكمال هذا التنزيل، لذا تابعه المتصفح."
+  },
+  "captureResumedNoProgress": {
+    "message": "لم يُحرز DownloadPulse أي تقدّم في هذا التنزيل منذ مدة، لذا تابعه المتصفح."
   }
 }

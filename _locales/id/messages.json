@@ -558,5 +558,8 @@
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse tidak dapat menyelesaikan unduhan itu, jadi peramban melanjutkannya."
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse tidak membuat kemajuan pada unduhan itu selama beberapa waktu, jadi peramban melanjutkannya."
   }
 }

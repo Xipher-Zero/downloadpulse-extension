@@ -558,5 +558,8 @@
   },
   "captureResumedInBrowser": {
     "message": "O DownloadPulse não conseguiu concluir esse download, por isso o navegador continuou-o."
+  },
+  "captureResumedNoProgress": {
+    "message": "O DownloadPulse esteve algum tempo sem avançar nesse download, por isso o navegador continuou-o."
   }
 }

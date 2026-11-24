@@ -558,5 +558,8 @@
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse не вдалося завершити це завантаження, тому браузер продовжив його."
+  },
+  "captureResumedNoProgress": {
+    "message": "Завантаження в DownloadPulse деякий час не просувалося, тому браузер продовжив його."
   }
 }

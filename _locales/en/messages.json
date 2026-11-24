@@ -724,5 +724,9 @@
   "captureResumedInBrowser": {
     "message": "DownloadPulse couldn't finish that download, so the browser carried on with it.",
     "description": "Toast: a browser download handed to DownloadPulse failed there after it was accepted; the browser's own paused copy resumes."
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse made no progress with that download for a while, so the browser carried on with it.",
+    "description": "Toast: a browser download handed to DownloadPulse was kept paused in the browser, but DownloadPulse did not start or continue downloading it for 10 minutes (still queued, paused, or not answering), so the browser's own paused copy resumes. 'for a while' means that time limit."
   }
 }

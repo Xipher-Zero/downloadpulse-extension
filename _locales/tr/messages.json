@@ -558,5 +558,8 @@
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse bu indirmeyi tamamlayamadı; bu nedenle tarayıcı indirmeye devam etti."
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse bir süre boyunca bu indirmede ilerleme kaydetmedi; bu nedenle tarayıcı indirmeye devam etti."
   }
 }

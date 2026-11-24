@@ -558,5 +558,8 @@
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse無法完成該下載，因此瀏覽器繼續下載。"
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse一段時間內未能推進該下載，因此瀏覽器繼續下載。"
   }
 }

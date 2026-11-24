@@ -103,14 +103,17 @@ https://send.now/ijn6gxxf9bj8</textarea>
       return res.end(`<!doctype html><html><body>
         <p><a id="big" href="/dl/big.bin">big.bin</a></p>
         <p><a id="small" href="/dl/small.bin">small.bin</a></p>
-        <p><a id="pdf" href="/dl/manual.pdf">manual.pdf</a></p></body></html>`);
+        <p><a id="pdf" href="/dl/manual.pdf">manual.pdf</a></p>
+        <p><a id="unsized" href="/dl/unsized.bin">unsized.bin</a></p></body></html>`);
     }
     if (url.pathname.startsWith("/dl/")) {
       const name = url.pathname.slice(4);
       // big and manual.pdf: 12 MiB (over the 10 MB default); big trickled so it is still downloading when the extension acts on it.
+      // unsized.bin: as big, but sent without its length (1.0.4), so the browser does not know its size.
       const size = name === "small.bin" ? 64 * 1024 : 12 * 1024 * 1024;
       res.writeHead(200, {"Content-Type": name.endsWith(".pdf") ? "application/pdf" : "application/octet-stream",
-        "Content-Length": String(size), "Content-Disposition": `attachment; filename="${name}"`});
+        ...(name === "unsized.bin" ? {} : {"Content-Length": String(size)}),
+        "Content-Disposition": `attachment; filename="${name}"`});
       if (name === "small.bin") return res.end(Buffer.alloc(size, 1));
       let sent = 0;
       const chunk = Buffer.alloc(64 * 1024, 2);
@@ -122,7 +125,7 @@ https://send.now/ijn6gxxf9bj8</textarea>
         }
         res.write(chunk);
         sent += chunk.length;
-      }, name === "big.bin" ? 26 : 5);   // big: about 5 s in all, as the 8 MiB file took at 40 ms
+      }, name === "manual.pdf" ? 5 : 26);   // big: about 5 s in all, as the 8 MiB file took at 40 ms
       res.on("close", () => clearInterval(tick));
       return undefined;
     }
