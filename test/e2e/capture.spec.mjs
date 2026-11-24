@@ -148,7 +148,7 @@ test("small files and listed file types stay in the browser", async () => {
   await popup.locator("[data-capture-types]").fill("PDF, .exe");
   await popup.locator("[data-capture-types]").press("Tab");
   await expect(popup.locator("[data-capture-types]")).toHaveValue("exe, pdf");
-  await download("small");   // 64 KiB, under the 1 MB default
+  await download("small");   // 64 KiB, under the 10 MB default
   await download("pdf");
   await expect.poll(async () => (await browserDownloads()).filter((item) => item.state === "complete").length,
     {timeout: 15_000}).toBe(2);

@@ -21,7 +21,7 @@ export interface Settings {
 const KEY = "settings";
 export const DEFAULTS: Settings = {inPage: true, hover: true, video: true, videoCookies: true, offSites: [],
   notify: {completed: true, failed: true, attention: true},
-  capture: false, captureMinMB: 1, captureSkipTypes: [], captureAsked: false};
+  capture: false, captureMinMB: 10, captureSkipTypes: [], captureAsked: false};
 
 /** A typed list of file types: "pdf, .JPG  zip" -> ["jpg", "pdf", "zip"]. */
 export function fileTypes(value: string | string[]): string[] {

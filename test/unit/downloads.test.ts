@@ -3,6 +3,7 @@
 import assert from "node:assert/strict";
 import {test} from "node:test";
 import {decide, downloadsUsable, fileType} from "../../src/shared/downloads";
+import {DEFAULTS} from "../../src/shared/settings";
 
 const ON = {capture: true, captureMinMB: 1, captureSkipTypes: ["pdf", "jpg"]};
 const MB = 1024 * 1024;
@@ -60,4 +61,11 @@ test("a download is held only where the browser's downloads API has all of it (n
   // Only starting a download (no list to pause or take back): nothing could be held.
   assert.equal(downloadsUsable({download: fn} as never), false);
   assert.equal(downloadsUsable({...(full as object), pause: undefined} as never), false);
+});
+
+test("1.0.3: by default a file under 10 MB stays in the browser (the break-even with DownloadPulse's setup time)", () => {
+  const chosen = {...DEFAULTS, capture: true};
+  assert.equal(DEFAULTS.captureMinMB, 10);
+  assert.equal(decide({...big, totalBytes: 9 * MB}, chosen), "small");
+  assert.equal(decide({...big, totalBytes: 11 * MB}, chosen), "capture");
 });
