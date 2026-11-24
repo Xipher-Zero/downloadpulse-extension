@@ -122,7 +122,7 @@ https://send.now/ijn6gxxf9bj8</textarea>
         }
         res.write(chunk);
         sent += chunk.length;
-      }, name === "big.bin" ? 40 : 5);
+      }, name === "big.bin" ? 26 : 5);   // big: about 5 s in all, as the 8 MiB file took at 40 ms
       res.on("close", () => clearInterval(tick));
       return undefined;
     }
