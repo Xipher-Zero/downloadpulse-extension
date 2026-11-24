@@ -506,7 +506,7 @@
     "message": "Bağlantı veya magnet bulunamadı"
   },
   "optionsVideoCookies": {
-    "message": "Videolarla birlikte sitedeki oturumumu (sitenin çerezlerini) gönder; böylece yalnızca üyelere açık ve yaş sınırlamalı videolar indirilebilir"
+    "message": "Videolar ve tarayıcı indirmeleriyle birlikte sitedeki oturumumu (sitenin çerezlerini) gönder; böylece yalnızca üyelere açık ve yaş sınırlamalı videolar ile oturum gerektiren dosyalar indirilebilir"
   },
   "discloseDownloads": {
     "message": "Tarayıcı indirmelerini göndermeyi açarsanız: her indirmenin adresi, başlatıldığı sayfa ve o sitedeki oturumunuz (sitenin o adres için çerezleri); böylece DownloadPulse onu bu tarayıcının yapacağı gibi indirebilir. DownloadPulse bunları yalnızca bellekte, o indirme bitene kadar tutar."
@@ -551,12 +551,15 @@
     "message": "İndirme DownloadPulse'a gönderildi."
   },
   "captureDoneWithoutSignIn": {
-    "message": "İndirme, o sitedeki oturumunuz olmadan DownloadPulse'a gönderildi."
+    "message": "İndirme, o sitedeki oturumunuz olmadan DownloadPulse'a gönderildi; bu yüzden tarayıcınız da indiriyor."
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse bu indirmeyi alamadı; bu nedenle tarayıcı onu indirmeye devam etti."
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse bu indirmeyi tamamlayamadı; bu nedenle tarayıcı indirmeye devam etti."
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse bir süre boyunca bu indirmede ilerleme kaydetmedi; bu nedenle tarayıcı indirmeye devam etti."
   }
 }

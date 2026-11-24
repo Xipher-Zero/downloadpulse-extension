@@ -12,7 +12,7 @@
     - `authenticationInfo`:
       - the DownloadPulse connection key the extension receives, stores and sends back to the user's DownloadPulse;
       - a video's sign-in cookies for its own address, sent with that video to the user's DownloadPulse, only over HTTPS or to DownloadPulse on the same computer (on by default, switchable in Settings; never stored by the extension);
-      - a browser download's sign-in cookies for the file's address, sent with that download to the user's DownloadPulse when sending browser downloads is turned on (off by default), under the same transport rule; never stored by the extension.
+      - a browser download's sign-in cookies for the file's address, sent with that download to the user's DownloadPulse when sending browser downloads is turned on (off by default), under the same transport rule and the same Settings switch as a video's (1.0.4); never stored by the extension.
     - `browsingActivity`:
       - the link and page addresses the user sends;
       - for a browser download sent to DownloadPulse (only when turned on): the file's address and the address of the page the download was started from. While the browser's copy is held, the file's address is also kept in the extension's local storage until that download is settled (PRIVACY.md, "What stays in your browser").

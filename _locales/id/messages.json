@@ -506,7 +506,7 @@
     "message": "Tautan atau magnet tidak ditemukan"
   },
   "optionsVideoCookies": {
-    "message": "Kirim sesi masuk saya di situs bersama video (cookie situs itu), agar video khusus anggota dan video dengan batasan usia dapat diunduh"
+    "message": "Kirim sesi masuk saya di situs bersama video dan unduhan browser (cookie situs itu), agar video khusus anggota dan video dengan batasan usia, serta file yang memerlukan masuk, dapat diunduh"
   },
   "discloseDownloads": {
     "message": "Jika Anda mengaktifkan pengiriman unduhan peramban: alamat setiap unduhan, halaman tempat unduhan itu dimulai, dan sesi masuk Anda di situs itu (cookie situs itu untuk alamat tersebut), agar DownloadPulse dapat mengunduhnya seperti yang dilakukan peramban ini. DownloadPulse hanya menyimpannya di memori, sampai unduhan itu selesai."
@@ -551,12 +551,15 @@
     "message": "Unduhan terkirim ke DownloadPulse."
   },
   "captureDoneWithoutSignIn": {
-    "message": "Unduhan terkirim ke DownloadPulse, tanpa sesi masuk Anda di situs itu."
+    "message": "Unduhan terkirim ke DownloadPulse tanpa sesi masuk Anda di situs itu, jadi browser Anda juga mengunduhnya."
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse tidak dapat menerima unduhan itu, jadi unduhan itu tetap di peramban."
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse tidak dapat menyelesaikan unduhan itu, jadi peramban melanjutkannya."
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse tidak membuat kemajuan pada unduhan itu selama beberapa waktu, jadi peramban melanjutkannya."
   }
 }

@@ -21,16 +21,31 @@
 // the permission taken back in the browser's own settings leaves nothing this extension may
 // resume with, so a download held then stays paused in the browser's list for the person, and
 // the held list is cleared. A browser without a downloads list an extension can pause (Firefox
-// for Android) holds nothing: browser downloads stay with it there.
+// for Android) holds nothing: browser downloads stay with it there. A download sent without
+// the person's sign-in on its site (1.0.4, review 2026-11-24) is never held or cancelled: the
+// browser's copy carries on beside DownloadPulse's, which may be a sign-in page.
+//
+// Held, not forever (1.0.4, review 2026-11-24): a held download whose job DownloadPulse has not
+// been seen downloading or paused for HELD_LIMIT_MS -- never listed, still accepted or queued,
+// resolving, waiting on the person there, or its DownloadPulse not answering -- resumes in the
+// browser and leaves the held list, and the person is told. The clock starts when it is held and
+// starts again whenever its job is seen downloading (or verifying, finishing), so a transfer that
+// is moving is never cut off however long it takes; or seen paused, by whoever paused it (here,
+// in DownloadPulse, or DownloadPulse itself), so a paused download stays paused in DownloadPulse
+// and is never handed back to the browser (operator, 2026-11-24); and once when each browser
+// session begins, so the time the browser was closed is never judged as time without progress.
+// Both may then finish it.
 //
 // Left to the browser, always: what is not an http(s) file (a page's own data -- blob:,
 // data: -- and file:), a download another extension started, a .torrent/.nzb/.meta4 (the
-// in-page and right-click sends take those as contents), one known to be under the person's
-// minimum size, and a file type they listed.
+// in-page and right-click sends take those as contents), one under the person's minimum size or
+// of a size the browser does not know yet (unless the minimum is 0: decide()), and a file type
+// they listed.
 
 import {connections, token, whileConnectedWith} from "../shared/connection";
 import {decide, downloadsUsable} from "../shared/downloads";
-import {isStateKey} from "../shared/server-state";
+import type {Job} from "../shared/server";
+import {isStateKey, stateKey} from "../shared/server-state";
 import {saveSettings, settings} from "../shared/settings";
 import {cachedJobs} from "./monitor";
 import {feedback, sendDownload, type Sent} from "./submit";
@@ -59,7 +74,12 @@ async function onCreated(item: chrome.downloads.DownloadItem): Promise<void> {
     const href = item.finalUrl || item.url;
     const sent = await sendDownload(href, item.referrer ?? "",
       {cookieStoreId: (item as chrome.downloads.DownloadItem & {cookieStoreId?: string}).cookieStoreId});
-    if (sent.ok && paused && sent.sent.job) {
+    if (sent.ok && sent.withoutSignIn) {
+      // A sign-in on that site did not go with it (switched off, a plain-HTTP DownloadPulse, or
+      // one that does not take it): DownloadPulse may be given a sign-in page and call it done,
+      // so the browser's copy is never cancelled for it -- it carries on now (review, 2026-11-24).
+      if (paused) await resume(item.id);
+    } else if (sent.ok && paused && sent.sent.job) {
       await hold(item, sent.sent);
     } else if (sent.ok && paused) {
       // Accepted without a job to follow (a DownloadPulse that named none): nothing could ever
@@ -83,11 +103,45 @@ async function onCreated(item: chrome.downloads.DownloadItem): Promise<void> {
 // still settled after the browser restarts; with its address and start, so a download id the
 // browser gave out again (Firefox numbers them per session) is never mistaken for it; and with
 // the job's change cursor when the cache first listed it (``seen``), so a job that has since
-// fallen out of the cache is told from one not listed yet. PRIVACY.md says what is kept.
+// fallen out of the cache is told from one not listed yet; and with when its job was last seen
+// moving or paused (``progressAt``), for the time limit. PRIVACY.md says what is kept.
 
 const HELD = "heldDownloads";
 
-interface Held { server: string; tokenId: string; job: string; url: string; startTime: string; seen?: number }
+interface Held {
+  server: string; tokenId: string; job: string; url: string; startTime: string; seen?: number;
+  /** When it was held, its job last seen moving or paused, or this browser session began (ms); none on one held by 1.0.3 (counted from now). */
+  progressAt?: number;
+}
+
+/**
+ * How long a held download waits for its job to be seen moving (or paused): 10 minutes. A real
+ * transfer is past its queue and resolving well within that (DownloadPulse resolves a file link
+ * in seconds, and its queue moves on as downloads finish); one that has not moved for that long
+ * is stuck or its DownloadPulse unreachable, and the person is better served by the browser's
+ * own copy than by a download held for good. Long enough that a busy queue or a short outage
+ * does not hand every held download back. A paused job is not stuck: it waits on whoever paused
+ * it, for as long as it stays paused.
+ */
+const HELD_LIMIT_MS = 10 * 60_000;
+/** A moving (or paused) job's clock is written down at most this often (each listing would otherwise write it). */
+const PROGRESS_WRITE_MS = 60_000;
+/** Wakes the background when the next held download's limit is up (nothing else may change then). */
+const HELD_ALARM = "dp-held";
+/**
+ * Set (session storage) once this browser session's first settling pass has started every held
+ * clock again. The job cache and each server's reach are the session's, empty after a restart,
+ * while the held list is kept: until this session hears from a held download's DownloadPulse
+ * nothing is known of its job, so the time the browser was closed is never judged as time
+ * without progress (review of 1fe2913d). Once per session, not per answer: the first pass may
+ * run before or after the monitor's first listing.
+ */
+const CLOCKS_STARTED = "heldClocksStarted";
+/**
+ * The job reasons (BROWSER_CLIENT.md §2a, phase "processing") that start its clock again: its
+ * transfer moving, or paused (DownloadPulse's "paused" status, whoever ``paused_by`` names).
+ */
+const NOT_STUCK = new Set(["downloading", "verifying", "finalizing", "paused"]);
 
 // Every change of the held list runs one after another, each reading what the one before wrote.
 let changing: Promise<unknown> = Promise.resolve();
@@ -110,7 +164,8 @@ async function hold(item: chrome.downloads.DownloadItem, sent: Sent): Promise<vo
   const held = await whileConnectedWith(sent.server, sent.browserToken, async () => {
     const tokenId = (await connections())[sent.server]?.tokenId ?? "";
     await changeHeld((all) => {
-      all[String(item.id)] = {server: sent.server, tokenId, job: sent.job, url: item.url, startTime: item.startTime};
+      all[String(item.id)] = {server: sent.server, tokenId, job: sent.job, url: item.url, startTime: item.startTime,
+        progressAt: Date.now()};
     });
   });
   // Disconnected while it was being sent: the browser carries on with it.
@@ -163,6 +218,21 @@ function fellOut(entry: Held, jobs: Record<string, {cursor: number}>): boolean {
 }
 
 /**
+ * Whether ``job`` is paused, or being downloaded now. Downloading only while its DownloadPulse
+ * answered its last listing: a transfer last seen moving by a DownloadPulse that no longer
+ * answers may have stopped, and the browser's copy carries on after the limit. Paused, whatever
+ * the reach: a paused download stays paused (operator, 2026-11-24), and nothing but the person
+ * or DownloadPulse resumes it. That last listing is this browser session's (the cache is session
+ * storage, empty after a restart), so a pause seen in an earlier session is never relied on.
+ */
+async function notStuck(server: string, job: Job): Promise<boolean> {
+  if (job.phase !== "processing" || !NOT_STUCK.has(job.reason ?? "")) return false;
+  if (job.reason === "paused") return true;
+  const reach = stateKey(server, "reach");
+  return Boolean(((await chrome.storage.session.get(reach))[reach] as {ok?: boolean} | undefined)?.ok);
+}
+
+/**
  * Settle every held download whose job has settled, or whose connection is gone: reads the
  * current state each time, so it may run as often as anything changes (and does).
  */
@@ -178,6 +248,10 @@ async function settleOnce(): Promise<void> {
   if (!Object.keys(held).length) return;
   const settled: string[] = [];
   const seen: Record<string, number> = {};
+  const progress: Record<string, number> = {};
+  const now = Date.now();
+  const restarted = !(await chrome.storage.session.get(CLOCKS_STARTED))[CLOCKS_STARTED];
+  let wakeAt = Infinity;
   // The permission taken back (or no usable downloads API): nothing here may resume them any
   // more, so the browser keeps them as they are, and the list goes.
   const allowed = downloadsUsable(chrome.downloads)
@@ -205,28 +279,49 @@ async function settleOnce(): Promise<void> {
       if (fellOut(entry, jobs)) {
         await resume(id);
         settled.push(key);
+        continue;
       }
-      continue;
+    } else {
+      if (entry.seen === undefined) seen[key] = job.cursor;
+      if (job.phase === "completed" || (job.phase === "withdrawn" && job.reason === "withdrawn_by_client")) {
+        await drop(id);
+        settled.push(key);
+        continue;
+      }
+      if (job.phase === "failed" || job.phase === "withdrawn") {
+        await resume(id);
+        settled.push(key);
+        await feedback(await activeTab(), "captureResumedInBrowser", false);
+        continue;
+      }
     }
-    if (entry.seen === undefined) seen[key] = job.cursor;
-    if (job.phase === "completed" || (job.phase === "withdrawn" && job.reason === "withdrawn_by_client")) {
-      await drop(id);
-      settled.push(key);
-    } else if (job.phase === "failed" || job.phase === "withdrawn") {
+    // Still waiting: on its time limit, from when it was held, its job last seen moving or paused,
+    // or this browser session began (CLOCKS_STARTED).
+    const since = restarted || (job && await notStuck(entry.server, job)) ? now : entry.progressAt ?? now;
+    if (since - (entry.progressAt ?? -Infinity) >= PROGRESS_WRITE_MS) progress[key] = since;
+    const kept = progress[key] ?? entry.progressAt ?? now;
+    if (now - kept >= HELD_LIMIT_MS) {
       await resume(id);
       settled.push(key);
-      await feedback(await activeTab(), "captureResumedInBrowser", false);
+      await feedback(await activeTab(), "captureResumedNoProgress", false);
+      continue;
     }
+    wakeAt = Math.min(wakeAt, kept + HELD_LIMIT_MS);
   }
+  // Nothing else may happen when a limit is up (a job never listed changes nothing): woken then.
+  if (wakeAt < Infinity) await chrome.alarms.create(HELD_ALARM, {when: wakeAt});
+  else await chrome.alarms.clear(HELD_ALARM);
   // Only the entries settled (or first listed) here: one the browser gave the same id meanwhile
   // is another download.
-  if (settled.length || Object.keys(seen).length) {
+  if (settled.length || Object.keys(seen).length || Object.keys(progress).length) {
     await changeHeld((all) => {
       const same = (key: string) => all[key]?.url === held[key]?.url && all[key]?.startTime === held[key]?.startTime;
       for (const key of settled) if (same(key)) delete all[key];
       for (const [key, cursor] of Object.entries(seen)) if (same(key) && !settled.includes(key)) all[key]!.seen = cursor;
+      for (const [key, at] of Object.entries(progress)) if (same(key) && !settled.includes(key)) all[key]!.progressAt = at;
     });
   }
+  if (restarted) await chrome.storage.session.set({[CLOCKS_STARTED]: true});
 }
 
 /** Where the person is looking: the toast goes to that tab, or to the toolbar badge. */
@@ -272,6 +367,8 @@ chrome.storage.onChanged.addListener((changes, area) => {
     void settleHeld();
   }
 });
+// A held download's time limit is up.
+chrome.alarms.onAlarm.addListener((alarm) => { if (alarm.name === HELD_ALARM) void settleHeld(); });
 // Started (or woken) with downloads still held from before.
 void settleHeld();
 

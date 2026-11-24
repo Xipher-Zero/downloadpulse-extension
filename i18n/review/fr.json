@@ -1173,8 +1173,8 @@
       ]
     },
     "optionsVideoCookies": {
-      "source": "8421908309eb1940",
-      "translation": "c20d9c71ecb592f4",
+      "source": "6f3cce7b45af679a",
+      "translation": "7e533e4fb26d6f2d",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -1294,8 +1294,8 @@
       ]
     },
     "captureDoneWithoutSignIn": {
-      "source": "7b07f4db6dcfe489",
-      "translation": "f070bb4f6732480a",
+      "source": "790116e3d7d9a073",
+      "translation": "9bd6d0b26bd392fa",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -1312,6 +1312,14 @@
     "captureResumedInBrowser": {
       "source": "ddca9b18ee13a910",
       "translation": "8e14f6465f51b48a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "captureResumedNoProgress": {
+      "source": "8cb73227e76daa65",
+      "translation": "40a8818dcede248a",
       "provenance": [
         "ai-generated",
         "ai-review"

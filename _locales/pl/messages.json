@@ -506,7 +506,7 @@
     "message": "Nie znaleziono linku ani linku magnet"
   },
   "optionsVideoCookies": {
-    "message": "Wysyłaj z filmami sesję logowania w witrynie (jej pliki cookie), aby można było pobierać filmy tylko dla członków i z ograniczeniem wiekowym"
+    "message": "Wysyłaj z filmami i pobraniami przeglądarki sesję logowania w witrynie (jej pliki cookie), aby można było pobierać filmy tylko dla członków i z ograniczeniem wiekowym oraz pliki wymagające zalogowania"
   },
   "discloseDownloads": {
     "message": "Jeśli zostanie włączone wysyłanie pobrań z przeglądarki — adres każdego pobrania, strona, z której je rozpoczęto, oraz sesja logowania w tej witrynie (jej pliki cookie dla tego adresu), aby DownloadPulse mógł je pobrać tak, jak zrobiłaby to ta przeglądarka. DownloadPulse przechowuje je tylko w pamięci, do zakończenia tego pobierania."
@@ -551,12 +551,15 @@
     "message": "Wysłano pobranie do DownloadPulse."
   },
   "captureDoneWithoutSignIn": {
-    "message": "Wysłano pobranie do DownloadPulse bez sesji logowania w tej witrynie."
+    "message": "Wysłano pobranie do DownloadPulse bez sesji logowania w tej witrynie, więc przeglądarka również je pobiera."
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse nie mógł przyjąć tego pobrania, więc pozostało ono w przeglądarce."
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse nie mógł ukończyć tego pobrania, więc przeglądarka je kontynuowała."
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse przez dłuższy czas nie robił postępów w tym pobraniu, więc przeglądarka je kontynuowała."
   }
 }

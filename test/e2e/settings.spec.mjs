@@ -266,6 +266,9 @@ test("the master switch governs every in-page button; off, what it governs is no
   expect(await separator()).toBe("solid");                // its own section, whatever On web pages shows
   await master.uncheck();
   await expect(popup.getByTestId("in-page-options")).toBeHidden();
+  // The sign-in switch also governs browser downloads (1.0.4): it stays, whatever this is.
+  await expect(popup.locator('[data-setting="videoCookies"]')).toBeVisible();
+  await expect(popup.locator('[data-setting="videoCookies"]')).toBeEnabled();
   expect(await separator()).toBe("solid");
   await expect(popup.getByLabel("Show a download button beside download links")).toBeHidden();
   await page.waitForTimeout(5500);                         // a frame's answer is kept for up to 5 s

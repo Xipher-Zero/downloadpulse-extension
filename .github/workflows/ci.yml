@@ -12,7 +12,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # The browsers' download alone has taken 11-15 minutes on hosted runners (1.0.3).
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -21,8 +22,13 @@ jobs:
           cache: npm
       - run: npm ci --ignore-scripts
       - run: npm run check
-      # Pinned browsers: Playwright's Chromium and Firefox builds for @playwright/test 1.62.1.
+      # Pinned browsers: Playwright's Chromium and Firefox builds for @playwright/test 1.62.1,
+      # kept between runs (keyed by the lockfile, so a Playwright change downloads afresh).
       # The Firefox smoke test finds Playwright's Firefox itself.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
       - run: npx playwright install --with-deps chromium firefox
       - name: Smoke tests (Chromium, then Firefox)
         run: npm test

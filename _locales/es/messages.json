@@ -506,7 +506,7 @@
     "message": "No se encontró ningún enlace ni magnet"
   },
   "optionsVideoCookies": {
-    "message": "Enviar mi sesión iniciada en el sitio junto con los vídeos (las cookies del sitio), para que se puedan descargar vídeos solo para miembros y con restricción de edad"
+    "message": "Enviar mi sesión iniciada en el sitio junto con los vídeos y las descargas del navegador (las cookies del sitio), para que se puedan descargar vídeos solo para miembros y con restricción de edad, y archivos que requieren iniciar sesión"
   },
   "discloseDownloads": {
     "message": "Si activa el envío de las descargas del navegador: la dirección de cada descarga, la página desde la que se inició y su sesión iniciada en ese sitio (las cookies del sitio para esa dirección), para que DownloadPulse pueda descargarla como lo haría este navegador. DownloadPulse las guarda solo en memoria, hasta que termine esa descarga."
@@ -551,12 +551,15 @@
     "message": "Descarga enviada a DownloadPulse."
   },
   "captureDoneWithoutSignIn": {
-    "message": "Descarga enviada a DownloadPulse, sin su sesión iniciada en ese sitio."
+    "message": "Descarga enviada a DownloadPulse sin su sesión iniciada en ese sitio, así que su navegador también la está descargando."
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse no pudo aceptar esa descarga, así que el navegador la conservó."
   },
   "captureResumedInBrowser": {
     "message": "DownloadPulse no pudo terminar esa descarga, así que el navegador la continuó."
+  },
+  "captureResumedNoProgress": {
+    "message": "DownloadPulse no avanzó con esa descarga durante un rato, así que el navegador la continuó."
   }
 }

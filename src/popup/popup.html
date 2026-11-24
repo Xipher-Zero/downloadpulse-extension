@@ -212,7 +212,6 @@
         <div class="dp-settings__dependent" data-testid="in-page-options">
           <label class="dp-check"><input type="checkbox" disabled data-setting="hover"> <span data-i18n="optionsHover"></span></label>
           <label class="dp-check"><input type="checkbox" disabled data-setting="video"> <span data-i18n="optionsVideo"></span></label>
-          <label class="dp-check"><input type="checkbox" disabled data-setting="videoCookies"> <span data-i18n="optionsVideoCookies"></span></label>
           <label class="dp-check" data-testid="site-switch" hidden>
             <input type="checkbox" disabled data-testid="site-on"> <span data-testid="site-text"></span>
           </label>
@@ -225,6 +224,10 @@
             <button type="submit" class="dp-btn dp-btn--sm" data-i18n="optionsAddSite"></button>
           </form>
         </div>
+        <!-- The sign-in switch governs videos AND browser downloads (1.0.4): shown
+             whatever the in-page master switch is, since browser downloads do not
+             depend on it. -->
+        <label class="dp-check"><input type="checkbox" disabled data-setting="videoCookies"> <span data-i18n="optionsVideoCookies"></span></label>
       </section>
 
       <section class="dp-settings__group" aria-labelledby="downloads-title">
