@@ -26,13 +26,15 @@
 // browser's copy carries on beside DownloadPulse's, which may be a sign-in page.
 //
 // Held, not forever (1.0.4, review 2026-11-24): a held download whose job DownloadPulse has not
-// been seen downloading for HELD_LIMIT_MS -- never listed, still accepted or queued, paused,
-// waiting on the person there, or its DownloadPulse not answering -- resumes in the browser and
-// leaves the held list, and the person is told. The clock starts when it is held and starts
-// again whenever its job is seen downloading (or verifying, finishing), so a transfer that is
-// moving is never cut off however long it takes; and once when each browser session begins, so
-// the time the browser was closed is never judged as time without progress. Both may then
-// finish it.
+// been seen downloading or paused for HELD_LIMIT_MS -- never listed, still accepted or queued,
+// resolving, waiting on the person there, or its DownloadPulse not answering -- resumes in the
+// browser and leaves the held list, and the person is told. The clock starts when it is held and
+// starts again whenever its job is seen downloading (or verifying, finishing), so a transfer that
+// is moving is never cut off however long it takes; or seen paused, by whoever paused it (here,
+// in DownloadPulse, or DownloadPulse itself), so a paused download stays paused in DownloadPulse
+// and is never handed back to the browser (operator, 2026-11-24); and once when each browser
+// session begins, so the time the browser was closed is never judged as time without progress.
+// Both may then finish it.
 //
 // Left to the browser, always: what is not an http(s) file (a page's own data -- blob:,
 // data: -- and file:), a download another extension started, a .torrent/.nzb/.meta4 (the
@@ -102,26 +104,27 @@ async function onCreated(item: chrome.downloads.DownloadItem): Promise<void> {
 // browser gave out again (Firefox numbers them per session) is never mistaken for it; and with
 // the job's change cursor when the cache first listed it (``seen``), so a job that has since
 // fallen out of the cache is told from one not listed yet; and with when its job was last seen
-// moving (``progressAt``), for the time limit. PRIVACY.md says what is kept.
+// moving or paused (``progressAt``), for the time limit. PRIVACY.md says what is kept.
 
 const HELD = "heldDownloads";
 
 interface Held {
   server: string; tokenId: string; job: string; url: string; startTime: string; seen?: number;
-  /** When it was held, its job last seen moving, or this browser session began (ms); none on one held by 1.0.3 (counted from now). */
+  /** When it was held, its job last seen moving or paused, or this browser session began (ms); none on one held by 1.0.3 (counted from now). */
   progressAt?: number;
 }
 
 /**
- * How long a held download waits for its job to be seen moving: 10 minutes. A real transfer is
- * past its queue and resolving well within that (DownloadPulse resolves a file link in seconds,
- * and its queue moves on as downloads finish); one that has not moved for that long is stuck,
- * paused, or its DownloadPulse unreachable, and the person is better served by the browser's
- * own copy than by a download paused for good. Long enough that a busy queue or a short outage
- * does not hand every held download back.
+ * How long a held download waits for its job to be seen moving (or paused): 10 minutes. A real
+ * transfer is past its queue and resolving well within that (DownloadPulse resolves a file link
+ * in seconds, and its queue moves on as downloads finish); one that has not moved for that long
+ * is stuck or its DownloadPulse unreachable, and the person is better served by the browser's
+ * own copy than by a download held for good. Long enough that a busy queue or a short outage
+ * does not hand every held download back. A paused job is not stuck: it waits on whoever paused
+ * it, for as long as it stays paused.
  */
 const HELD_LIMIT_MS = 10 * 60_000;
-/** A moving job's clock is written down at most this often (each listing would otherwise write it). */
+/** A moving (or paused) job's clock is written down at most this often (each listing would otherwise write it). */
 const PROGRESS_WRITE_MS = 60_000;
 /** Wakes the background when the next held download's limit is up (nothing else may change then). */
 const HELD_ALARM = "dp-held";
@@ -134,8 +137,11 @@ const HELD_ALARM = "dp-held";
  * run before or after the monitor's first listing.
  */
 const CLOCKS_STARTED = "heldClocksStarted";
-/** The job reasons (BROWSER_CLIENT.md §2a, phase "processing") that are its transfer moving. */
-const MOVING = new Set(["downloading", "verifying", "finalizing"]);
+/**
+ * The job reasons (BROWSER_CLIENT.md §2a, phase "processing") that start its clock again: its
+ * transfer moving, or paused (DownloadPulse's "paused" status, whoever ``paused_by`` names).
+ */
+const NOT_STUCK = new Set(["downloading", "verifying", "finalizing", "paused"]);
 
 // Every change of the held list runs one after another, each reading what the one before wrote.
 let changing: Promise<unknown> = Promise.resolve();
@@ -211,9 +217,17 @@ function fellOut(entry: Held, jobs: Record<string, {cursor: number}>): boolean {
   return entry.seen !== undefined && cursors.length > 0 && Math.min(...cursors) > entry.seen;
 }
 
-/** Whether ``job`` is being downloaded now: in that state, and its DownloadPulse answered its last listing. */
-async function moving(server: string, job: Job): Promise<boolean> {
-  if (job.phase !== "processing" || !MOVING.has(job.reason ?? "")) return false;
+/**
+ * Whether ``job`` is paused, or being downloaded now. Downloading only while its DownloadPulse
+ * answered its last listing: a transfer last seen moving by a DownloadPulse that no longer
+ * answers may have stopped, and the browser's copy carries on after the limit. Paused, whatever
+ * the reach: a paused download stays paused (operator, 2026-11-24), and nothing but the person
+ * or DownloadPulse resumes it. That last listing is this browser session's (the cache is session
+ * storage, empty after a restart), so a pause seen in an earlier session is never relied on.
+ */
+async function notStuck(server: string, job: Job): Promise<boolean> {
+  if (job.phase !== "processing" || !NOT_STUCK.has(job.reason ?? "")) return false;
+  if (job.reason === "paused") return true;
   const reach = stateKey(server, "reach");
   return Boolean(((await chrome.storage.session.get(reach))[reach] as {ok?: boolean} | undefined)?.ok);
 }
@@ -281,9 +295,9 @@ async function settleOnce(): Promise<void> {
         continue;
       }
     }
-    // Still waiting: on its time limit, from when it was held, its job last seen moving, or this
-    // browser session began (CLOCKS_STARTED).
-    const since = restarted || (job && await moving(entry.server, job)) ? now : entry.progressAt ?? now;
+    // Still waiting: on its time limit, from when it was held, its job last seen moving or paused,
+    // or this browser session began (CLOCKS_STARTED).
+    const since = restarted || (job && await notStuck(entry.server, job)) ? now : entry.progressAt ?? now;
     if (since - (entry.progressAt ?? -Infinity) >= PROGRESS_WRITE_MS) progress[key] = since;
     const kept = progress[key] ?? entry.progressAt ?? now;
     if (now - kept >= HELD_LIMIT_MS) {

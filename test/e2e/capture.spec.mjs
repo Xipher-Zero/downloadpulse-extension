@@ -380,6 +380,47 @@ test("1.0.4: a held job still queued in DownloadPulse after the limit: the brows
   expect(await toasts()).toContain(NO_PROGRESS);
 });
 
+test("1.0.4: a held job paused in DownloadPulse stays held past the limit, and is still dropped once completed", async () => {
+  await connect("Send them to DownloadPulse");
+  await recordToasts();
+  await download("big");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  // Paused (as DownloadPulse projects it: phase "processing", reason "paused"), by the person here.
+  dp.setJob("job_1", {phase: "processing", reason: "paused", actionability: "wait", paused_by: "client"});
+  await expect.poll(async () => Object.values(await held())[0]?.seen, {timeout: 15_000}).toBeGreaterThan(0);
+  await pastTheLimit();
+  // Its clock starts again (seen paused): it stays paused in DownloadPulse, never handed back.
+  await expect.poll(async () => Date.now() - Object.values(await held())[0]?.progressAt, {timeout: 15_000})
+    .toBeLessThan(60_000);
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  expect((await bigInBrowser())?.paused).toBe(true);
+  expect(Object.keys(await held())).toHaveLength(1);
+  expect(await toasts()).not.toContain(NO_PROGRESS);
+  dp.setJob("job_1", {phase: "completed", reason: "completed", actionability: "none", paused_by: null});
+  await expect.poll(async () => (await bigInBrowser()) === undefined, {timeout: 15_000}).toBe(true);
+});
+
+test("1.0.4: a held job paused in DownloadPulse stays held past the limit while DownloadPulse cannot be reached", async () => {
+  await connect("Send them to DownloadPulse");
+  await recordToasts();
+  await download("big");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  dp.setJob("job_1", {phase: "processing", reason: "paused", actionability: "wait", paused_by: "client"});
+  await expect.poll(async () => Object.values(await held())[0]?.seen, {timeout: 15_000}).toBeGreaterThan(0);
+  // DownloadPulse down: the monitor's next listing fails, and says so.
+  dp.state.down = true;
+  await expect.poll(() => worker.evaluate(async () => Object.entries(await chrome.storage.session.get(null))
+    .find(([key]) => key.startsWith("reach@"))?.[1]?.ok), {timeout: 15_000}).toBe(false);
+  await pastTheLimit();
+  // Last seen paused in this session: its clock starts again, and it stays paused, held.
+  await expect.poll(async () => Date.now() - Object.values(await held())[0]?.progressAt, {timeout: 15_000})
+    .toBeLessThan(60_000);
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  expect((await bigInBrowser())?.paused).toBe(true);
+  expect(Object.keys(await held())).toHaveLength(1);
+  expect(await toasts()).not.toContain(NO_PROGRESS);
+});
+
 test("1.0.4: a held job DownloadPulse is downloading is never cut off by the limit", async () => {
   await connect("Send them to DownloadPulse");
   await recordToasts();
