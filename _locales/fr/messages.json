@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "Le navigateur ne l’a pas autorisé, les téléchargements restent donc dans le navigateur."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Ce navigateur ne permet pas aux extensions de prendre en charge ses téléchargements, ils restent donc dans le navigateur. L’envoi de liens vous-même fonctionne toujours."
+  },
   "optionsMinSize": {
     "message": "Laisser au navigateur les fichiers plus petits que cette taille (Mo)"
   },

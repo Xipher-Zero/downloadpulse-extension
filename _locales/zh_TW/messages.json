@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "瀏覽器未允許此操作，因此下載仍保留在瀏覽器中。"
   },
+  "optionsDownloadsUnavailable": {
+    "message": "此瀏覽器不允許擴充功能接手其下載，因此下載會留在瀏覽器中。自行傳送連結仍可使用。"
+  },
   "optionsMinSize": {
     "message": "小於此大小（MB）的檔案交給瀏覽器"
   },

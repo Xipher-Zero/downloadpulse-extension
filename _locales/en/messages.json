@@ -693,6 +693,10 @@
     "message": "The browser didn't allow it, so downloads stay in the browser.",
     "description": "Settings note when the browser refused the downloads permission."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "This browser doesn't let extensions take over its downloads, so they stay in the browser. Sending links yourself still works.",
+    "description": "Settings note in a browser (such as Firefox for Android) where browser downloads cannot be sent to DownloadPulse."
+  },
   "optionsMinSize": {
     "message": "Leave files smaller than this (MB) to the browser",
     "description": "Settings: minimum size in megabytes for a download to be sent to DownloadPulse."

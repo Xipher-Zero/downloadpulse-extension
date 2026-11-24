@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "브라우저가 허용하지 않았으므로 다운로드는 브라우저에서 진행됩니다."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "이 브라우저는 확장 프로그램이 다운로드를 넘겨받도록 허용하지 않으므로 다운로드는 브라우저에 남습니다. 링크를 직접 보내는 기능은 계속 사용할 수 있습니다."
+  },
   "optionsMinSize": {
     "message": "이 크기(MB)보다 작은 파일은 브라우저에 맡기기"
   },

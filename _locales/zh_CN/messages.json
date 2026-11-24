@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "浏览器未允许此操作，因此下载仍保留在浏览器中。"
   },
+  "optionsDownloadsUnavailable": {
+    "message": "此浏览器不允许扩展接管其下载，因此下载会保留在浏览器中。自行发送链接仍然可用。"
+  },
   "optionsMinSize": {
     "message": "小于此大小（MB）的文件交给浏览器"
   },

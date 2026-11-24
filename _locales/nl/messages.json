@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "De browser stond het niet toe, dus downloads blijven in de browser."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Deze browser laat extensies zijn downloads niet overnemen, dus downloads blijven in de browser. Zelf links versturen werkt nog steeds."
+  },
   "optionsMinSize": {
     "message": "Bestanden kleiner dan dit (MB) aan de browser overlaten"
   },

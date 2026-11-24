@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "Tarayıcı buna izin vermedi; bu nedenle indirmeler tarayıcıda kalır."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Bu tarayıcı, uzantıların indirmelerini devralmasına izin vermiyor; bu yüzden indirmeler tarayıcıda kalır. Bağlantıları kendiniz göndermek yine çalışır."
+  },
   "optionsMinSize": {
     "message": "Bu boyuttan (MB) küçük dosyaları tarayıcıya bırak"
   },

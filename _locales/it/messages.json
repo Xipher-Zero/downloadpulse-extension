@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "Il browser non l'ha consentito, quindi i download restano nel browser."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Questo browser non consente alle estensioni di gestire i suoi download, quindi restano nel browser. Inviare i link manualmente funziona comunque."
+  },
   "optionsMinSize": {
     "message": "Lascia al browser i file più piccoli di questa dimensione (MB)"
   },

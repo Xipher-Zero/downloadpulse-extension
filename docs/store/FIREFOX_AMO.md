@@ -3,15 +3,19 @@
 - **Add-on ID:** `downloadpulse@downloadpulse.net` (`FIREFOX_ADDON_ID` in `src/manifest.mjs`; operator, 2026-11-19). Permanent: AMO ties the listing and every update to it.
 - **Listing fields:**
   - **Support email:** `dpsupport@xipherzero.com` (shown publicly on the listing; the same address as PRIVACY.md's Contact section). Send it a test message before submitting: reviewers sometimes write to it.
-  - **Homepage:** <https://github.com/Xipher-Zero/downloadpulse-extension> until downloadpulse.net has a site. The listing's URLs can be changed later without a new version.
+  - **Homepage:** <https://downloadpulse.net>. The listing's URLs can be changed later without a new version.
   - **Privacy policy:** <https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md>.
 - **Platforms:** desktop (Firefox 140+) and Android (Firefox for Android 142+, `gecko_android.strict_min_version` in `src/manifest.mjs`: the first version that reads `data_collection_permissions`; operator, 1.0.3 Ext 10). List for both.
+  - **What works on Android:** the dropdown (connect, Quick Add, Sent Downloads with pause, resume and remove), the settings page, the in-page buttons beside links, videos and selected links, and notifications. Not on Android, because Firefox for Android has no such API: the right-click item (no `menus`/`contextMenus`) and sending browser downloads to DownloadPulse (no downloads list an extension can pause); the settings say the latter stays in the browser there. The extension looks for each of these APIs before using it and never reads the user agent.
 - **Data collection** (`browser_specific_settings.gecko.data_collection_permissions`):
   - **Required:**
     - `authenticationInfo`:
       - the DownloadPulse connection key the extension receives, stores and sends back to the user's DownloadPulse;
-      - a video's sign-in cookies for its own address, sent with that video to the user's DownloadPulse, only over HTTPS or to DownloadPulse on the same computer (on by default, switchable in Settings; never stored by the extension).
-    - `browsingActivity`: the link and page addresses the user sends.
+      - a video's sign-in cookies for its own address, sent with that video to the user's DownloadPulse, only over HTTPS or to DownloadPulse on the same computer (on by default, switchable in Settings; never stored by the extension);
+      - a browser download's sign-in cookies for the file's address, sent with that download to the user's DownloadPulse when sending browser downloads is turned on (off by default), under the same transport rule; never stored by the extension.
+    - `browsingActivity`:
+      - the link and page addresses the user sends;
+      - for a browser download sent to DownloadPulse (only when turned on): the file's address and the address of the page the download was started from. While the browser's copy is held, the file's address is also kept in the extension's local storage until that download is settled (PRIVACY.md, "What stays in your browser").
     - `websiteContent`: a captured `.torrent`, `.nzb` or `.meta4` file.
   - **Optional:** `technicalAndInteraction` (the browser and operating-system names that name the connection, asked only when the user ticks that option on the disclosure page).
   - Firefox shows its built-in consent at install, and for the optional item when it's chosen.

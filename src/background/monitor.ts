@@ -95,6 +95,7 @@ export async function activityFrame(frame: number, size: number): Promise<ImageD
 }
 
 async function drawRing(frame: number): Promise<void> {
+  if (!chrome.action?.setIcon) return;   // a browser that cannot redraw the toolbar icon
   await chrome.action.setIcon({imageData: {16: await activityFrame(frame, 16), 32: await activityFrame(frame, 32)}});
 }
 
@@ -119,7 +120,8 @@ function notice(job: Job, before: Job | undefined): string | null {
 }
 
 async function notify(server: string, job: Job, kind: string): Promise<void> {
-  // Only the notifications the person keeps on (WS-E4).
+  // Only the notifications the person keeps on (WS-E4), where the browser has them.
+  if (!chrome.notifications?.create) return;
   if (!(await settings()).notify[kind as "completed" | "failed" | "attention"]) return;
   const seen = stateKey(server, "jobsNotified");
   const notified = ((await chrome.storage.session.get(seen))[seen] as string[] | undefined) ?? [];
@@ -220,8 +222,9 @@ chrome.alarms.onAlarm.addListener((alarm) => { if (alarm.name === ALARM) wake();
 // A notification about one of this browser's downloads opens the extension's
 // own popup, on that download (operator, 2026-11-18). Where the browser does
 // not let an extension open its toolbar popup from code (Firefox may require
-// a user action), the same popup page opens in a window of its own size.
-chrome.notifications.onClicked.addListener((id) => {
+// a user action), the same popup page opens in a window of its own size, or, in a browser
+// without windows (Firefox for Android), in a tab.
+chrome.notifications?.onClicked.addListener((id) => {
   if (!id.startsWith("dp:")) return;
   const job = id.split(":")[1] ?? "";
   void (async () => {
@@ -230,8 +233,9 @@ chrome.notifications.onClicked.addListener((id) => {
     try {
       await chrome.action.openPopup();
     } catch {
-      await chrome.windows.create({url: chrome.runtime.getURL(`popup/popup.html?job=${encodeURIComponent(job)}`),
-        type: "popup", width: 380, height: 600, focused: true});
+      const url = chrome.runtime.getURL(`popup/popup.html?job=${encodeURIComponent(job)}`);
+      if (chrome.windows?.create) await chrome.windows.create({url, type: "popup", width: 380, height: 600, focused: true});
+      else await chrome.tabs.create({url});
     }
   })();
 });

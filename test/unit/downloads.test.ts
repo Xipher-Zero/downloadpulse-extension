@@ -2,7 +2,7 @@
 // 1.0.2: which browser downloads go to DownloadPulse (src/shared/downloads.ts).
 import assert from "node:assert/strict";
 import {test} from "node:test";
-import {decide, fileType} from "../../src/shared/downloads";
+import {decide, downloadsUsable, fileType} from "../../src/shared/downloads";
 
 const ON = {capture: true, captureMinMB: 1, captureSkipTypes: ["pdf", "jpg"]};
 const MB = 1024 * 1024;
@@ -50,4 +50,14 @@ test("a file's type comes from its name, else its address", () => {
   assert.equal(fileType({url: "https://a.test/download?id=7"}), "");
   assert.equal(fileType({url: "https://a.test/a%20b.tar.gz"}), "gz");
   assert.equal(fileType({url: "not a url"}), "");
+});
+
+test("a download is held only where the browser's downloads API has all of it (none on Firefox for Android)", () => {
+  const fn = async () => undefined;
+  const full = {onCreated: {}, pause: fn, resume: fn, search: fn, cancel: fn, erase: fn} as never;
+  assert.equal(downloadsUsable(full), true);
+  assert.equal(downloadsUsable(undefined), false);
+  // Only starting a download (no list to pause or take back): nothing could be held.
+  assert.equal(downloadsUsable({download: fn} as never), false);
+  assert.equal(downloadsUsable({...(full as object), pause: undefined} as never), false);
 });

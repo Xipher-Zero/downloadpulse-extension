@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "ブラウザーが許可しなかったため、ダウンロードはブラウザーで行われます。"
   },
+  "optionsDownloadsUnavailable": {
+    "message": "このブラウザーでは拡張機能がダウンロードを引き継げないため、ダウンロードはブラウザーで行われます。リンクを自分で送ることは引き続きできます。"
+  },
   "optionsMinSize": {
     "message": "このサイズ（MB）より小さいファイルはブラウザーに任せる"
   },

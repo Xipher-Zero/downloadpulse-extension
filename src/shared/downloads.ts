@@ -55,3 +55,15 @@ export function decide(item: DownloadFacts, chosen: Pick<Settings, "capture" | "
   if (type && chosen.captureSkipTypes.includes(type)) return "type";
   return "capture";
 }
+
+/** What holding a browser download needs of the browser's downloads API (chrome.downloads). */
+type DownloadsApi = Partial<Pick<typeof chrome.downloads, "onCreated" | "pause" | "resume" | "search" | "cancel" | "erase">>;
+
+/**
+ * Whether this browser's downloads API can hold a download: all of it, or none of it is used
+ * (Firefox for Android has no downloads list an extension can pause). Feature detection only;
+ * the API is there only while the optional "downloads" permission is granted.
+ */
+export function downloadsUsable(api: DownloadsApi | undefined): boolean {
+  return Boolean(api?.onCreated && api.pause && api.resume && api.search && api.cancel && api.erase);
+}

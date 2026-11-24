@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "Przeglądarka na to nie zezwoliła, więc pobrania pozostają w przeglądarce."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Ta przeglądarka nie pozwala rozszerzeniom przejmować swoich pobrań, więc pobrania zostają w przeglądarce. Samodzielne wysyłanie linków nadal działa."
+  },
   "optionsMinSize": {
     "message": "Pliki mniejsze niż ten rozmiar (MB) zostawiaj przeglądarce"
   },

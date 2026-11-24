@@ -318,14 +318,33 @@ async function captureOffered(): Promise<boolean> {
   return Boolean((await chrome.storage.local.get(CAPTURE_OFFER))[CAPTURE_OFFER]);
 }
 
+/**
+ * Whether this browser has no downloads an extension may take (Firefox for Android): it does
+ * not know the "downloads" permission at all, so asking whether it is granted fails.
+ */
+function captureUnavailable(): Promise<boolean> {
+  return chrome.permissions.contains(DOWNLOADS).then(() => false, () => true);
+}
+
+/** Said where the switch would be: this browser keeps its downloads. */
+function sayUnavailable(): void {
+  const note = $('[data-testid="capture-note"]');
+  note.textContent = message("optionsDownloadsUnavailable");
+  note.hidden = false;
+}
+
 /** Every switch for it shows what is stored (and whether the browser still allows it). */
 async function renderCapture(chosen?: Settings): Promise<void> {
   const current = chosen ?? await settings();
-  const allowed = await chrome.permissions.contains(DOWNLOADS).catch(() => false);
+  const unavailable = await captureUnavailable();
+  const allowed = !unavailable && await chrome.permissions.contains(DOWNLOADS).catch(() => false);
   for (const input of document.querySelectorAll<HTMLInputElement>("[data-capture-switch]")) {
     input.checked = current.capture && allowed;
     input.disabled = false;
+    input.closest("label")!.hidden = unavailable;
   }
+  $('[data-testid="capture-hint"]').hidden = unavailable;
+  if (unavailable) sayUnavailable();
   const min = $<HTMLInputElement>("[data-capture-min]");
   const types = $<HTMLInputElement>("[data-capture-types]");
   if (document.activeElement !== min) min.value = String(current.captureMinMB);
@@ -340,13 +359,22 @@ async function renderCapture(chosen?: Settings): Promise<void> {
  * Answers whether it is now on.
  */
 function setCapture(on: boolean, note: HTMLElement | null): Promise<boolean> {
-  const asked = on ? chrome.permissions.request(DOWNLOADS) : chrome.permissions.remove(DOWNLOADS).then(() => false);
+  // Off: saved first, so the downloads held for DownloadPulse resume (capture.ts) while the
+  // permission to resume them is still there; then it is given back.
+  const asked = on ? chrome.permissions.request(DOWNLOADS)
+    : saveSettings({capture: false}).then(() => chrome.runtime.sendMessage({type: "dp-settle-held"}))
+      .then(() => chrome.permissions.remove(DOWNLOADS)).then(() => false);
   settingsEdits += 1;
-  return asked.catch(() => false).then(async (granted) => {
+  return asked.catch(() => false).then(async (answer) => {
+    // Granted where the browser has no downloads list an extension can pause: the background,
+    // which would hold them, says so (and gives the permission back, capture.ts).
+    const unusable = on && answer && !(await chrome.runtime.sendMessage({type: "dp-capture-usable"})
+      .then((usable: unknown) => usable === true, () => false));
+    const granted = answer && !unusable;
     const now = on && granted;
     if (note) {
       note.hidden = !(on && !granted);
-      if (on && !granted) note.textContent = message("optionsDownloadsDenied");
+      if (on && !granted) note.textContent = message(unusable ? "optionsDownloadsUnavailable" : "optionsDownloadsDenied");
     }
     await saveSettings({capture: now, captureAsked: true});
     await chrome.storage.local.remove(CAPTURE_OFFER);
@@ -454,7 +482,7 @@ async function render(): Promise<void> {
     const state = await connectionState(connected);
     if (state === "plain-http") showInsecure(connected.server);
     show(state === "consent" ? "disclosure" : "insecure");
-  } else if (connected && await captureOffered()) {
+  } else if (connected && await captureOffered() && !(await captureUnavailable())) {
     // Just connected: whether browser downloads go to DownloadPulse, asked once.
     show("capture-offer");
   } else if (connected) {

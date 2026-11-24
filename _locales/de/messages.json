@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "Der Browser hat es nicht erlaubt, daher bleiben Downloads im Browser."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Dieser Browser lässt Erweiterungen seine Downloads nicht übernehmen, daher bleiben Downloads im Browser. Links selbst zu senden funktioniert weiterhin."
+  },
   "optionsMinSize": {
     "message": "Dateien unter dieser Größe (MB) dem Browser überlassen"
   },

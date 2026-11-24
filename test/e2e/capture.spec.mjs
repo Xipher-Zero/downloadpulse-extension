@@ -217,3 +217,77 @@ test("what DownloadPulse takes is read once, not on every download held while it
   expect(dp.state.jobs[1].body.referrer).toBe(`${site.base}/downloads`);
   expect(dp.state.sessionAuth.length).toBe(reads);
 });
+
+/** What this browser keeps about its held downloads (PRIVACY.md), keyed by the browser's download id. */
+const held = () => worker.evaluate(async () => (await chrome.storage.local.get("heldDownloads")).heldDownloads ?? {});
+
+test("disconnected while held: the held list is cleared too", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(async () => Object.keys(await held()).length, {timeout: 15_000}).toBe(1);
+  await popup.getByRole("button", {name: "Settings"}).click();
+  await popup.getByRole("button", {name: "Disconnect"}).click();
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+  expect(await held()).toEqual({});
+});
+
+test("turned off while held: the browser carries on with its own copy, and the held list is cleared", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  await expect.poll(async () => Object.keys(await held()).length, {timeout: 15_000}).toBe(1);
+  await popup.getByTestId("capture-main").uncheck();
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+  expect(await held()).toEqual({});
+});
+
+test("the permission taken back while held: nothing can resume it here, so the held list is cleared", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  await expect.poll(async () => Object.keys(await held()).length, {timeout: 15_000}).toBe(1);
+  // This copy holds "downloads" as a required permission (see the header), which cannot be
+  // taken back: the background is told it is gone the way the browser would say so.
+  await worker.evaluate(async () => {
+    chrome.permissions.contains = async () => false;
+    const {settings} = await chrome.storage.local.get("settings");
+    await chrome.storage.local.set({settings: {...settings, capture: false}});
+  });
+  await expect.poll(held, {timeout: 15_000}).toEqual({});
+  // Left as it was in the browser's list (never erased), for the person to resume.
+  expect((await bigInBrowser())?.paused).toBe(true);
+});
+
+test("a held job fallen out of the monitor's newest 100: its outcome unknown, the browser carries on", async () => {
+  await connect("Send them to DownloadPulse");
+  await download("big");
+  await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
+  // Listed once in the cache, at its cursor.
+  await expect.poll(async () => Object.values(await held())[0]?.seen, {timeout: 15_000}).toBeGreaterThan(0);
+  // A hundred later changes push it out of the cache (it keeps the newest 100).
+  await worker.evaluate(async () => {
+    const [entry] = Object.values((await chrome.storage.local.get("heldDownloads")).heldDownloads);
+    const key = `jobs@${entry.server}`;
+    const jobs = Object.fromEntries(Array.from({length: 100}, (_, i) => [`other_${i}`, {
+      id: `other_${i}`, cursor: entry.seen + 1000 + i, submitted_at: null, display_name: `other ${i}`, source: {},
+      phase: "completed", reason: null, actionability: "none", paused_by: null, progress: null, estimate: null}]));
+    await chrome.storage.session.set({[key]: jobs});
+  });
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+  expect(await held()).toEqual({});
+});
+
+test("a held job while the cache is empty (as after a restart) is waited for, not resumed", async () => {
+  await connect("Send them to DownloadPulse");
+  // Closed: no popup keeps the monitor polling, and the cache is emptied as after a restart.
+  await popup.close();
+  await download("big");
+  await expect.poll(async () => Object.keys(await held()).length, {timeout: 15_000}).toBe(1);
+  await worker.evaluate(async () => {
+    const keys = Object.keys(await chrome.storage.session.get(null)).filter((key) => key.startsWith("jobs@"));
+    await chrome.storage.session.remove(keys);
+  });
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+  expect((await bigInBrowser())?.paused).toBe(true);
+  expect(Object.keys(await held())).toHaveLength(1);
+});

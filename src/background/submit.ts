@@ -230,7 +230,8 @@ export async function feedback(origin: Origin, key: string, ok: boolean): Promis
       // no content script there (a restricted page): the badge says it instead
     }
   }
-  await chrome.action.setBadgeBackgroundColor({color: ok ? "#16a34a" : "#dc2626"});
+  if (!chrome.action?.setBadgeText) return;   // a browser without a toolbar badge
+  await chrome.action.setBadgeBackgroundColor?.({color: ok ? "#16a34a" : "#dc2626"});
   await chrome.action.setBadgeText({text: ok ? "✓" : "!"});
   setTimeout(() => void chrome.action.setBadgeText({text: ""}), 4000);
 }

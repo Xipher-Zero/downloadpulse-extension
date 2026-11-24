@@ -1,6 +1,6 @@
 # DownloadPulse browser extension: privacy policy
 
-_Last updated: 2026-11-20. Applies to the DownloadPulse extension for Firefox and Chromium-based browsers._
+_Last updated: 2026-11-23. Applies to the DownloadPulse extension for Firefox and Chromium-based browsers._
 
 The extension sends downloads you choose from your browser to **your own DownloadPulse**, a server or desktop application that you, or whoever runs it for you, operate. It has no servers of its own, no analytics and no telemetry, and sends nothing to its authors.
 
@@ -26,9 +26,10 @@ Nothing is sent before you agree to the disclosure shown when you first connect.
     - **Why:** so DownloadPulse's video downloader can fetch what you can watch (members-only or age-restricted videos).
     - **Only:** for a video you send, and only to a DownloadPulse that says it accepts them, reached over HTTPS or on this computer: **never over plain HTTP**, even to a server on your network. Never another site's cookies, and never for a link, file or selection. When the setting is on but a video goes without them (plain HTTP, too many cookies, or a DownloadPulse that doesn't accept them), the confirmation says so.
     - **In DownloadPulse:** they're kept only in memory, for that download, and deleted when it ends, fails or is removed, or when DownloadPulse restarts. They're never written to disk, a log, or the download's record.
-- **Browser downloads, only if you turn this on** (offered once when you connect, and in Settings; off until you do): when this browser starts downloading a file, the extension sends DownloadPulse **the file's address**, **the page the download was started from**, and **your sign-in on that site** (the cookies your browser would send to that address, from the download's own cookie store), so DownloadPulse can download it as your browser would. The browser's own download is paused, and cancelled only once DownloadPulse has finished downloading the file; if DownloadPulse can't take it or can't finish it, the browser carries on downloading it. A download the browser can't pause is cancelled in the browser as soon as DownloadPulse accepts it; if DownloadPulse then can't finish it, download it again.
+- **Browser downloads, only if you turn this on** (offered once when you connect, and in Settings; off until you do): when this browser starts downloading a file, the extension sends DownloadPulse **the file's address**, **the page the download was started from**, and **your sign-in on that site** (the cookies your browser would send to that address, from the download's own cookie store), so DownloadPulse can download it as your browser would. The browser's own download is paused, and cancelled only once DownloadPulse has finished downloading the file, or when you remove that download in the extension's menu; if DownloadPulse can't take it or can't finish it, or the extension can no longer tell how it went, the browser carries on downloading it (DownloadPulse may also still finish it, so you may get it twice). A download the browser can't pause is cancelled in the browser as soon as DownloadPulse accepts it; if DownloadPulse then can't finish it, download it again.
     - **Only:** to a DownloadPulse that says it accepts them; the sign-in only over HTTPS or to DownloadPulse on this computer, **never over plain HTTP**. Never another site's cookies. Files smaller than the size you set, the file types you list, `.torrent`/`.nzb`/`.meta4` files, and downloads made from a page's own data or by another extension always stay in the browser.
     - **In DownloadPulse:** kept only in memory, for that download, as for a video's sign-in above.
+    - **Not in Firefox for Android:** it doesn't let extensions take over its downloads, so they always stay in the browser there, and the setting says so.
 - **While downloads run, or the extension's menu is open,** it asks your DownloadPulse for the status of the downloads sent from this browser, and for your DownloadPulse colour theme, so its pages match it.
 - **When you choose to:** pausing, resuming or removing a download sent from this browser; bringing the DownloadPulse desktop application's window forward; disconnecting.
 
@@ -43,7 +44,8 @@ Stored by the extension in your browser profile only:
 - the server's address, your DownloadPulse account's display name (which may be your name or user name) and the connection's name;
 - your settings;
 - your agreement to the disclosure;
-- your DownloadPulse theme's palette names.
+- your DownloadPulse theme's palette names;
+- while a browser download is held for DownloadPulse (see above): **its full address**, when it started, which DownloadPulse it was sent to and that download's number there. It is kept across browser restarts so the browser's copy can still be cancelled or resumed, and deleted as soon as that happens: when DownloadPulse finishes or can't finish it, when you remove it, when you resume or cancel it in the browser, when you disconnect from that DownloadPulse, when you turn sending browser downloads off, or when the downloads permission is taken back. If you take the downloads permission back in the browser's own settings, a download still held stays paused in the browser's list; resume it there.
 
 The list of sent downloads is kept only until the browser closes. So is, for 10 minutes after each send, a fingerprint of it (a one-way digest of the server and what was sent, not the link) with its request key, so sending the same thing again doesn't queue it twice. Disconnecting deletes the key and the connection details. Removing the extension deletes everything.
 
@@ -72,11 +74,11 @@ The extension does not run in private or incognito windows.
   - to fetch a `.torrent`, `.nzb` or indexer file with your sign-in on the site serving it;
   - to reach your DownloadPulse.
 - **Storage:** to keep the items listed above.
-- **Context menus:** the "Download with DownloadPulse" item.
+- **Context menus:** the "Download with DownloadPulse" item (not in Firefox for Android, which has no such menu).
 - **Notifications:** download finished, failed or needs attention, each switchable in Settings.
 - **Alarms:** to keep checking downloads in progress.
 - **Cookies:** to send your sign-in on a video's site with a video you send, and on a download's site with a browser download sent to DownloadPulse, as described above. Read only: the extension never sets or removes a cookie, never reads one for a link, file or selection you send by hand, and never keeps one. On by default, switchable in Settings ("Send my sign-in on the site with videos").
-- **Downloads (optional, asked for only when you turn on sending browser downloads):** to see the downloads this browser starts, hold one while DownloadPulse answers, and cancel the browser's copy once DownloadPulse has it. Turning the setting off gives the permission back.
+- **Downloads (optional, asked for only when you turn on sending browser downloads):** to see the downloads this browser starts, hold one while DownloadPulse answers, and cancel the browser's copy once DownloadPulse has it. Turning the setting off resumes any download still held and gives the permission back.
 - **DNS (Firefox only):** to check whether a server or file-link name resolves only to private addresses (split DNS, such as `nas.home.example.com`), so it can be treated as part of your own network. The lookup is your system's own name resolution; nothing extra is sent anywhere.
 
 ## Contact

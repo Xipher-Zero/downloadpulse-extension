@@ -20,7 +20,7 @@ import {
 let active = 0;   // the generation of the pairing in progress; a newer one or Cancel ends an older loop
 
 async function badge(text: string): Promise<void> {
-  await chrome.action.setBadgeText({text});
+  await chrome.action?.setBadgeText?.({text});
 }
 
 async function fail(failure: Failure, generation: number): Promise<void> {

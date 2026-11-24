@@ -1332,6 +1332,14 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "optionsDownloadsUnavailable": {
+      "source": "b3817b02796926b2",
+      "translation": "ef8f47928de5043a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
     }
   }
 }

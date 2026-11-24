@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "O navegador não permitiu, então os downloads ficam no navegador."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Este navegador não permite que extensões assumam seus downloads, então eles ficam no navegador. Enviar links você mesmo continua funcionando."
+  },
   "optionsMinSize": {
     "message": "Deixar com o navegador arquivos menores que isto (MB)"
   },

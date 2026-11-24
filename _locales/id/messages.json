@@ -535,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "Peramban tidak mengizinkannya, jadi unduhan tetap di peramban."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Browser ini tidak mengizinkan ekstensi mengambil alih unduhannya, jadi unduhan tetap di browser. Mengirim tautan sendiri tetap berfungsi."
+  },
   "optionsMinSize": {
     "message": "Serahkan berkas yang lebih kecil dari ukuran ini (MB) ke peramban"
   },
