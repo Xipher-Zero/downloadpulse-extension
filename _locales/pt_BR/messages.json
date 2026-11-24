@@ -506,7 +506,7 @@
     "message": "Nenhum link ou magnet encontrado"
   },
   "optionsVideoCookies": {
-    "message": "Enviar meu login no site junto com os vídeos (os cookies dele), para que vídeos exclusivos para membros e com restrição de idade possam ser baixados"
+    "message": "Enviar meu login no site junto com os vídeos e os downloads do navegador (os cookies dele), para que vídeos exclusivos para membros e com restrição de idade, e arquivos que exigem login, possam ser baixados"
   },
   "discloseDownloads": {
     "message": "Se você ativar o envio dos downloads do navegador: o endereço de cada download, a página em que ele foi iniciado e o seu login nesse site (os cookies dele para esse endereço), para que o DownloadPulse possa baixá-lo como este navegador faria. O DownloadPulse os mantém apenas na memória, até que esse download termine."
@@ -551,7 +551,7 @@
     "message": "Download enviado ao DownloadPulse."
   },
   "captureDoneWithoutSignIn": {
-    "message": "Download enviado ao DownloadPulse, sem o seu login nesse site."
+    "message": "Download enviado ao DownloadPulse sem o seu login nesse site, então o seu navegador também está baixando."
   },
   "captureKeptInBrowser": {
     "message": "O DownloadPulse não pôde aceitar esse download, então o navegador ficou com ele."

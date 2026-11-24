@@ -303,11 +303,14 @@ export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | u
 /**
  * A browser download sent to DownloadPulse instead (1.0.2, background/capture.ts): its final
  * address, with the person's sign-in on that site and the page it was started from -- each only
- * when this DownloadPulse says it takes it, and the sign-in only over HTTPS or to this computer
- * (as a video's). Settles to whether DownloadPulse accepted it; never a toast in a page.
+ * when this DownloadPulse says it takes it, the sign-in only while "Send my sign-in" is on and
+ * only over HTTPS or to this computer (as a video's; 1.0.4, review 2026-11-24). Settles to
+ * whether DownloadPulse accepted it, and whether a sign-in on that site did not go with it
+ * (``withoutSignIn``: DownloadPulse may then be given a sign-in page, not the file, so the
+ * browser keeps its own copy); never a toast in a page.
  */
 export async function sendDownload(href: string, referrer: string, store: {cookieStoreId?: string | undefined}):
-    Promise<{ok: true; said: string; sent: Sent} | {ok: false; said: string}> {
+    Promise<{ok: true; said: string; sent: Sent; withoutSignIn: boolean} | {ok: false; said: string}> {
   try {
     if (!/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
     await mayUseConnection();
@@ -325,13 +328,15 @@ export async function sendDownload(href: string, referrer: string, store: {cooki
     // cookie store (a Firefox container's); the page it started from names the partition.
     const found = await cookiesFor(href, {...(store.cookieStoreId ? {cookieStoreId: store.cookieStoreId} : {}),
       url: /^https?:\/\//i.test(referrer) ? referrer : undefined} as chrome.tabs.Tab);
-    const travels = taken.videoCookies && signInMayTravel(connected.server);
+    // The person's "Send my sign-in" switch covers browser downloads as it does videos.
+    const travels = (await settings()).videoCookies && taken.videoCookies && signInMayTravel(connected.server);
     const cookies = travels ? found.cookies : [];
-    // Said only when there was a sign-in that could not go with it: a public file needs none.
+    // Only when there was a sign-in that could not go with it: a public file needs none. The
+    // cookies are only looked at here, to know it; none of them leaves the browser.
     const withoutSignIn = found.dropped || (!travels && found.cookies.length > 0);
     const page = taken.referrer && /^https?:\/\//i.test(referrer) && referrer.length <= 2048 ? referrer : "";
     const sent = await send({kind: "links", links: [href]}, cookies, page);
-    return {ok: true, said: withoutSignIn ? "captureDoneWithoutSignIn" : "captureDone", sent};
+    return {ok: true, said: withoutSignIn ? "captureDoneWithoutSignIn" : "captureDone", sent, withoutSignIn};
   } catch (error) {
     return {ok: false, said: error instanceof Refused ? error.key : "sendFailed"};
   }

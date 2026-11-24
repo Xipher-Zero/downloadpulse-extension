@@ -21,7 +21,9 @@
 // the permission taken back in the browser's own settings leaves nothing this extension may
 // resume with, so a download held then stays paused in the browser's list for the person, and
 // the held list is cleared. A browser without a downloads list an extension can pause (Firefox
-// for Android) holds nothing: browser downloads stay with it there.
+// for Android) holds nothing: browser downloads stay with it there. A download sent without
+// the person's sign-in on its site (1.0.4, review 2026-11-24) is never held or cancelled: the
+// browser's copy carries on beside DownloadPulse's, which may be a sign-in page.
 //
 // Left to the browser, always: what is not an http(s) file (a page's own data -- blob:,
 // data: -- and file:), a download another extension started, a .torrent/.nzb/.meta4 (the
@@ -59,7 +61,12 @@ async function onCreated(item: chrome.downloads.DownloadItem): Promise<void> {
     const href = item.finalUrl || item.url;
     const sent = await sendDownload(href, item.referrer ?? "",
       {cookieStoreId: (item as chrome.downloads.DownloadItem & {cookieStoreId?: string}).cookieStoreId});
-    if (sent.ok && paused && sent.sent.job) {
+    if (sent.ok && sent.withoutSignIn) {
+      // A sign-in on that site did not go with it (switched off, a plain-HTTP DownloadPulse, or
+      // one that does not take it): DownloadPulse may be given a sign-in page and call it done,
+      // so the browser's copy is never cancelled for it -- it carries on now (review, 2026-11-24).
+      if (paused) await resume(item.id);
+    } else if (sent.ok && paused && sent.sent.job) {
       await hold(item, sent.sent);
     } else if (sent.ok && paused) {
       // Accepted without a job to follow (a DownloadPulse that named none): nothing could ever

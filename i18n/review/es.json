@@ -1172,11 +1172,11 @@
       ]
     },
     "optionsVideoCookies": {
-      "source": "8421908309eb1940",
-      "translation": "46bbe39138c90e10",
+      "source": "6f3cce7b45af679a",
+      "translation": "e0cc9c5ea3b0a000",
       "provenance": [
         "ai-generated",
-        "ai-review-corrected"
+        "ai-review"
       ]
     },
     "listRemove": {
@@ -1293,8 +1293,8 @@
       ]
     },
     "captureDoneWithoutSignIn": {
-      "source": "7b07f4db6dcfe489",
-      "translation": "469569576c746b3e",
+      "source": "790116e3d7d9a073",
+      "translation": "170b41f852cd80fc",
       "provenance": [
         "ai-generated",
         "ai-review"

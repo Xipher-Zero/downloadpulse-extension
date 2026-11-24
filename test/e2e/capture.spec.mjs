@@ -104,6 +104,25 @@ test("turned on during setup, a download goes to DownloadPulse with its sign-in 
   await expect.poll(async () => (await bigInBrowser()) === undefined, {timeout: 15_000}).toBe(true);
 });
 
+test("\"Send my sign-in\" off: a download goes without it, and the browser's copy is never cancelled (1.0.4)", async () => {
+  await connect("Send them to DownloadPulse");
+  // Switched off in Settings (stored as the popup's switch stores it, as surfaces.spec.mjs does).
+  await worker.evaluate(async () => {
+    const {settings} = await chrome.storage.local.get("settings");
+    await chrome.storage.local.set({settings: {...(settings ?? {}), videoCookies: false}});
+  });
+  await context.addCookies([{name: "SESSION", value: "signed-in-as-una", domain: "127.0.0.1", path: "/"}]);
+  await download("big");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  // The switch covers browser downloads as it does videos: no cookie goes.
+  expect(dp.state.jobs[0].body.cookies ?? []).toEqual([]);
+  // A sign-in existed but did not go: DownloadPulse may get a sign-in page, so the browser's own
+  // copy is neither held nor cancelled -- not even when DownloadPulse says it is done.
+  expect(Object.keys(await held())).toHaveLength(0);
+  dp.setJob("job_1", {phase: "completed", reason: null, actionability: "none"});
+  await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
+});
+
 test("accepted, then failed in DownloadPulse: the browser carries on with its own copy", async () => {
   await connect("Send them to DownloadPulse");
   await download("big");

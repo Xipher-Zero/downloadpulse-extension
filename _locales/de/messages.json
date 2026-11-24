@@ -506,7 +506,7 @@
     "message": "Kein Link oder Magnet-Link gefunden"
   },
   "optionsVideoCookies": {
-    "message": "Mit Videos meine Anmeldung auf der Website senden (deren Cookies), damit Videos nur für Mitglieder und Videos mit Altersbeschränkung heruntergeladen werden können"
+    "message": "Mit Videos und Browser-Downloads meine Anmeldung auf der Website senden (deren Cookies), damit Videos nur für Mitglieder, Videos mit Altersbeschränkung und Dateien hinter einer Anmeldung heruntergeladen werden können"
   },
   "discloseDownloads": {
     "message": "Wenn Sie das Senden von Browser-Downloads einschalten: die Adresse jedes Downloads, die Seite, auf der er gestartet wurde, und Ihre Anmeldung auf dieser Website (deren Cookies für diese Adresse), damit DownloadPulse ihn so herunterladen kann, wie dieser Browser es würde. DownloadPulse behält sie nur im Arbeitsspeicher, bis dieser Download endet."
@@ -551,7 +551,7 @@
     "message": "Download an DownloadPulse gesendet."
   },
   "captureDoneWithoutSignIn": {
-    "message": "Download an DownloadPulse gesendet, ohne Ihre Anmeldung auf dieser Website."
+    "message": "Download ohne Ihre Anmeldung auf dieser Website an DownloadPulse gesendet, daher lädt Ihr Browser ihn ebenfalls herunter."
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse konnte diesen Download nicht übernehmen, daher hat ihn der Browser behalten."

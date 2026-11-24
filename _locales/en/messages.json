@@ -654,8 +654,8 @@
     "description": "Popup: shown on the Quick Add title row when the text has no http(s) link or magnet. No final period; short."
   },
   "optionsVideoCookies": {
-    "message": "Send my sign-in on the site with videos (its cookies), so members-only and age-restricted videos can be downloaded",
-    "description": "Settings switch, on by default: a video sent to DownloadPulse carries the site's cookies for the video's address. DownloadPulse keeps them in memory only, until that download ends."
+    "message": "Send my sign-in on the site with videos and browser downloads (its cookies), so members-only and age-restricted videos, and files behind a sign-in, can be downloaded",
+    "description": "Settings switch, on by default: a video, or a browser download, sent to DownloadPulse carries the site's cookies for its address. DownloadPulse keeps them in memory only, until that download ends."
   },
   "discloseDownloads": {
     "message": "If you turn on sending browser downloads: each download's address, the page it was started from and your sign-in on that site (its cookies for that address), so DownloadPulse can download it as this browser would. DownloadPulse keeps them only in memory, until that download ends.",
@@ -714,8 +714,8 @@
     "description": "Toast: a browser download was sent to DownloadPulse instead."
   },
   "captureDoneWithoutSignIn": {
-    "message": "Download sent to DownloadPulse, without your sign-in on that site.",
-    "description": "Toast: sent, but the site's cookies could not go with it."
+    "message": "Download sent to DownloadPulse without your sign-in on that site, so your browser is downloading it too.",
+    "description": "Toast: a browser download was sent, but the site's cookies could not go with it, so the browser keeps downloading its own copy."
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse couldn't take that download, so the browser kept it.",

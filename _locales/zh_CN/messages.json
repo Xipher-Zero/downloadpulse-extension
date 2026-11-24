@@ -506,7 +506,7 @@
     "message": "未找到链接或磁力链接"
   },
   "optionsVideoCookies": {
-    "message": "随视频发送我在该网站的登录状态（其Cookie），以便下载仅限会员和有年龄限制的视频"
+    "message": "随视频和浏览器下载发送我在该网站的登录状态（其Cookie），以便下载仅限会员和有年龄限制的视频，以及需要登录的文件"
   },
   "discloseDownloads": {
     "message": "如果您开启发送浏览器下载：每个下载的地址、启动该下载的页面，以及您在该网站的登录状态（该网站针对该地址的Cookie），以便DownloadPulse能够像此浏览器一样下载它。DownloadPulse仅将其保存在内存中，直到该下载结束。"
@@ -551,7 +551,7 @@
     "message": "下载已发送到DownloadPulse。"
   },
   "captureDoneWithoutSignIn": {
-    "message": "下载已发送到DownloadPulse，但未包含您在该网站的登录状态。"
+    "message": "下载已发送到DownloadPulse，但未包含您在该网站的登录状态，因此您的浏览器也在下载。"
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse无法接收该下载，因此已由浏览器继续下载。"

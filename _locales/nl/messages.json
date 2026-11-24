@@ -506,7 +506,7 @@
     "message": "Geen link of magnet gevonden"
   },
   "optionsVideoCookies": {
-    "message": "Mijn aanmelding op de site met video's meesturen (de cookies van de site), zodat video's die alleen voor leden zijn of een leeftijdsgrens hebben, kunnen worden gedownload"
+    "message": "Mijn aanmelding op de site met video's en browserdownloads meesturen (de cookies van de site), zodat video's die alleen voor leden zijn of een leeftijdsgrens hebben, en bestanden achter een aanmelding, kunnen worden gedownload"
   },
   "discloseDownloads": {
     "message": "Als u het sturen van browserdownloads inschakelt: het adres van elke download, de pagina waarop die is gestart en uw aanmelding op die site (de cookies van de site voor dat adres), zodat DownloadPulse die kan downloaden zoals deze browser dat zou doen. DownloadPulse bewaart ze alleen in het geheugen, totdat die download is afgerond."
@@ -551,7 +551,7 @@
     "message": "Download naar DownloadPulse gestuurd."
   },
   "captureDoneWithoutSignIn": {
-    "message": "Download naar DownloadPulse gestuurd, zonder uw aanmelding op die site."
+    "message": "Download zonder uw aanmelding op die site naar DownloadPulse gestuurd, dus uw browser downloadt hem ook."
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse kon die download niet overnemen, dus is die in de browser gebleven."

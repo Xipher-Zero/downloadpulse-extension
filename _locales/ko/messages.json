@@ -506,7 +506,7 @@
     "message": "링크 또는 마그넷 링크를 찾을 수 없습니다"
   },
   "optionsVideoCookies": {
-    "message": "회원 전용 및 연령 제한 동영상을 다운로드할 수 있도록 동영상과 함께 사이트의 로그인 상태(사이트의 쿠키) 보내기"
+    "message": "회원 전용 및 연령 제한 동영상과 로그인이 필요한 파일을 다운로드할 수 있도록 동영상 및 브라우저 다운로드와 함께 사이트의 로그인 상태(사이트의 쿠키) 보내기"
   },
   "discloseDownloads": {
     "message": "브라우저 다운로드 보내기를 켜는 경우 각 다운로드의 주소, 다운로드를 시작한 페이지, 해당 사이트의 로그인 상태(그 주소에 대한 사이트의 쿠키). 이를 통해 DownloadPulse가 이 브라우저와 같은 방식으로 다운로드할 수 있습니다. DownloadPulse는 해당 다운로드가 끝날 때까지 이를 메모리에만 보관합니다."
@@ -551,7 +551,7 @@
     "message": "다운로드를 DownloadPulse로 보냈습니다."
   },
   "captureDoneWithoutSignIn": {
-    "message": "해당 사이트의 로그인 상태 없이 다운로드를 DownloadPulse로 보냈습니다."
+    "message": "해당 사이트의 로그인 상태 없이 다운로드를 DownloadPulse로 보냈으므로 브라우저에서도 다운로드합니다."
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse가 해당 다운로드를 받을 수 없어 브라우저에서 계속 다운로드합니다."
