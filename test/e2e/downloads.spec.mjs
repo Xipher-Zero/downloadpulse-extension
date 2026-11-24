@@ -88,7 +88,7 @@ test("a sent download: its name on one line, its status in DownloadPulse's colou
     estimate: {seconds: 300, held: false, estimated: false, indeterminate: false}});
   await expect.poll(() => stateOf(id)).toBe("Downloading · ETA: 5:00");
   await expect(row(id)).toHaveAttribute("data-tone", "downloading");
-  expect(await colour(row(id).locator(".dp-job__status"))).toBe("rgb(0, 230, 118)");   // DownloadPulse's success green (Dark, as the person chose)
+  await expect.poll(() => colour(row(id).locator(".dp-job__status"))).toBe("rgb(0, 230, 118)");   // DownloadPulse's success green (Dark, as the person chose)
   await expect(row(id).getByTestId("percent")).toHaveText("42%");
   await expect(row(id).getByRole("progressbar")).toHaveAttribute("aria-valuenow", "42");
   for (const [seconds, shown] of [[45, "0:45"], [1992, "33:12"], [3725, "1:02:05"]]) {
@@ -118,10 +118,10 @@ test("a sent download: its name on one line, its status in DownloadPulse's colou
   // Paused: yellow; failed: red; done: no colour.
   dp.setJob(id, {reason: "paused", paused_by: "client"});
   await expect(row(id)).toHaveAttribute("data-tone", "paused");
-  expect(await colour(row(id).locator(".dp-job__status"))).toBe("rgb(255, 193, 61)");
+  await expect.poll(() => colour(row(id).locator(".dp-job__status"))).toBe("rgb(255, 193, 61)");
   dp.setJob(id, {phase: "failed", reason: "acquisition_failed", actionability: "operator"});
   await expect(row(id)).toHaveAttribute("data-tone", "failed");
-  expect(await colour(row(id).locator(".dp-job__status"))).toBe("rgb(255, 82, 100)");
+  await expect.poll(() => colour(row(id).locator(".dp-job__status"))).toBe("rgb(255, 82, 100)");
   // No controls once it failed: only Remove from list (this browser's list).
   await expect(row(id).getByRole("button")).toHaveCount(1);
   await expect(row(id).getByRole("button", {name: "Remove from list"})).toHaveCount(1);
@@ -210,14 +210,37 @@ test("the connection's status: green while DownloadPulse answers, yellow while i
   const reach = popup.getByTestId("reach");
   await expect(reach).toHaveAttribute("data-reach", "ok", {timeout: 15_000});
   await expect(reach).toHaveText("Connected");
-  expect(await colour(reach)).toBe("rgb(0, 230, 118)");
+  await expect.poll(() => colour(reach)).toBe("rgb(0, 230, 118)");
   dp.state.down = true;
   await expect(reach).toHaveAttribute("data-reach", "unreachable", {timeout: 15_000});
   await expect(reach).toHaveText("Can't reach DownloadPulse");
-  expect(await colour(reach)).toBe("rgb(255, 193, 61)");
+  await expect.poll(() => colour(reach)).toBe("rgb(255, 193, 61)");
   await expect(popup.getByTestId("account")).toHaveText("Una");   // still connected: nothing forgotten
   dp.state.down = false;
   await expect(reach).toHaveAttribute("data-reach", "ok", {timeout: 15_000});
+});
+
+test("the icon breathes while a download is active, and stops while DownloadPulse can't be reached (1.0.3)", async () => {
+  const worker = context.serviceWorkers()[0];
+  // Count the toolbar icon's redraws (the breath is one every 125 ms).
+  await worker.evaluate(() => {
+    globalThis.__iconDraws = 0;
+    const setIcon = chrome.action.setIcon.bind(chrome.action);
+    chrome.action.setIcon = (details) => { globalThis.__iconDraws += 1; return setIcon(details); };
+  });
+  const draws = () => worker.evaluate(() => globalThis.__iconDraws);
+  const id = await sendArchive();
+  dp.setJob(id, {phase: "processing", reason: null, actionability: "wait"});
+  await expect.poll(draws, {timeout: 15_000}).toBeGreaterThan(5);
+  dp.state.down = true;
+  await expect(popup.getByTestId("reach")).toHaveAttribute("data-reach", "unreachable", {timeout: 15_000});
+  await popup.waitForTimeout(500);   // the frame in flight, then the icon at rest
+  const resting = await draws();
+  await popup.waitForTimeout(3000);
+  expect(await draws()).toBe(resting);
+  // Answering again: it breathes again.
+  dp.state.down = false;
+  await expect.poll(async () => (await draws()) - resting, {timeout: 15_000}).toBeGreaterThan(5);
 });
 
 test("Open DownloadPulse: a server opens in a tab; the desktop application comes forward instead", async () => {

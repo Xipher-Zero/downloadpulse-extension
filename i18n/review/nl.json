@@ -996,8 +996,8 @@
       ]
     },
     "discloseLinks": {
-      "source": "0f470bc52e1c9ec4",
-      "translation": "6460fcc4dddd0dfa",
+      "source": "932f5703e73adfe1",
+      "translation": "8f2cd60b92fab91b",
       "provenance": [
         "ai-generated",
         "ai-review"
@@ -1206,11 +1206,11 @@
       ]
     },
     "captureOfferText": {
-      "source": "9d669dbabfdc6e65",
-      "translation": "05f7c1e1e9aeac55",
+      "source": "a77009c410df8b85",
+      "translation": "da2106909542d0c6",
       "provenance": [
         "ai-generated",
-        "ai-review"
+        "ai-review-corrected"
       ]
     },
     "captureOfferYes": {
@@ -1305,6 +1305,40 @@
     "captureKeptInBrowser": {
       "source": "7b828471642a1b2c",
       "translation": "c404e4995603debe",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "captureResumedInBrowser": {
+      "source": "ddca9b18ee13a910",
+      "translation": "c0f1ed8e23f0381b",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "insecureSharedRange": {
+      "source": "ceb5b0f6be50690e",
+      "translation": "7e36a11cb60efaec",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "ai-review-corrected"
+      ]
+    },
+    "failureSetupIncomplete": {
+      "source": "dad5833ebf90a9bd",
+      "translation": "83c482f38c812e74",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "ai-review-corrected"
+      ]
+    },
+    "optionsDownloadsUnavailable": {
+      "source": "b3817b02796926b2",
+      "translation": "aed8c8740dad9153",
       "provenance": [
         "ai-generated",
         "ai-review"

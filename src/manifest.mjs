@@ -58,6 +58,8 @@ export function manifest(browser, version) {
         data_collection_permissions: { required: ["authenticationInfo", "browsingActivity", "websiteContent"],
           optional: ["technicalAndInteraction"] },
       },
+      // Firefox for Android reads data_collection_permissions from 142 (desktop: 140).
+      gecko_android: { strict_min_version: "142.0" },
     },
   };
 }

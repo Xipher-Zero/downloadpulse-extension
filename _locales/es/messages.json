@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "Algo salió mal al conectar."
   },
+  "failureSetupIncomplete": {
+    "message": "Primero termine de configurar DownloadPulse y luego vuelva a conectarse."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ en $SYSTEM$",
     "placeholders": {
@@ -428,7 +431,7 @@
     "message": "Antes de conectarse, esto es lo que DownloadPulse recibe de este navegador."
   },
   "discloseLinks": {
-    "message": "Los enlaces que envíe. Para un enlace .torrent, .nzb o de indexador, este navegador obtiene el archivo con su sesión iniciada en ese sitio y envía el archivo; las cookies del sitio nunca se envían."
+    "message": "Los enlaces que envíe. Cuando un enlace apunta a un archivo que le indica a DownloadPulse qué descargar (como un archivo .torrent, .nzb o Metalink), este navegador obtiene ese archivo con su sesión iniciada en su sitio y envía el propio archivo; las cookies del sitio nunca se envían."
   },
   "discloseVideo": {
     "message": "Para un vídeo, la dirección de su reproductor y, salvo que lo desactive en Ajustes, su sesión iniciada en ese sitio (las cookies del sitio para esa dirección), para que DownloadPulse pueda descargar lo que usted puede ver. DownloadPulse las guarda solo en memoria, hasta que termine esa descarga."
@@ -462,6 +465,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale usa direcciones de 100.64 a 100.127, pero algunos proveedores de internet también las usan para redes compartidas con sus otros clientes. Continúe solo si esta es su propia red de Tailscale."
   },
   "insecureContinue": {
     "message": "Conectarse sin cifrado"
@@ -509,7 +515,7 @@
     "message": "¿Enviar las descargas a DownloadPulse?"
   },
   "captureOfferText": {
-    "message": "Los archivos que este navegador empiece a descargar pueden ir a DownloadPulse en su lugar, con su sesión iniciada en el sitio de cada uno. Si DownloadPulse no puede aceptar alguno, el navegador sigue descargándolo. Puede cambiarlo en cualquier momento en Ajustes."
+    "message": "Los archivos que este navegador empiece a descargar pueden ir a DownloadPulse en su lugar, con la página de la que proceden y su sesión iniciada en el sitio de cada uno. El navegador pausa cada descarga y la reanuda si DownloadPulse no puede aceptarla o terminarla; una descarga que el navegador no puede pausar se cancela en cuanto DownloadPulse la acepta. Puede cambiarlo en cualquier momento en Ajustes."
   },
   "captureOfferYes": {
     "message": "Enviarlas a DownloadPulse"
@@ -529,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "El navegador no lo permitió, así que las descargas se quedan en el navegador."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Este navegador no permite que las extensiones se encarguen de sus descargas, así que se quedan en el navegador. Enviar enlaces tú mismo sigue funcionando."
+  },
   "optionsMinSize": {
     "message": "Dejar al navegador los archivos de menos de este tamaño (MB)"
   },
@@ -546,5 +555,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse no pudo aceptar esa descarga, así que el navegador la conservó."
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse no pudo terminar esa descarga, así que el navegador la continuó."
   }
 }

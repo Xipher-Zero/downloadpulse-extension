@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {isLocal, isPrivateHost, readSession, ServerError, serverAddress, signInMayTravel} from "../../src/shared/server";
+import {isLocal, isPrivateHost, readSession, ServerError, serverAddress, signInMayTravel, startPairing} from "../../src/shared/server";
 
 const addr = (input: string) => {
   const found = serverAddress(input);
@@ -71,5 +71,28 @@ test("a video's sign-in travels only over HTTPS or to this computer, never plain
   }
   for (const origin of ["http://192.168.1.20:8095", "http://10.0.0.5", "http://nas.home.example.com", "http://203.0.113.9:8095", "not a url"]) {
     assert.equal(signInMayTravel(origin), false, origin);
+  }
+});
+
+test("starting a pairing: a new DownloadPulse whose setup is unfinished is named so; other refusals stay what they were", async () => {
+  const real = globalThis.fetch;
+  const answering = (status: number, body: unknown) => {
+    globalThis.fetch = async () => new Response(typeof body === "string" ? body : JSON.stringify(body),
+      {status, headers: {"Content-Type": "application/json"}});
+  };
+  const fails = (failure: string) => (error: unknown) => error instanceof ServerError && error.failure === failure;
+  try {
+    answering(409, {detail: "Finish setting up DownloadPulse first, then connect again.", code: "browser.pairing.setup_incomplete", params: {}});
+    await assert.rejects(startPairing("http://127.0.0.1:8095", "Firefox on Linux"), fails("setup_incomplete"));
+    // Another refusal, or one with no readable body, is still the generic failure.
+    answering(409, {detail: "Something else", code: "browser.pairing.other"});
+    await assert.rejects(startPairing("http://127.0.0.1:8095", "Firefox on Linux"), fails("failed"));
+    answering(500, "<html>proxy error</html>");
+    await assert.rejects(startPairing("http://127.0.0.1:8095", "Firefox on Linux"), fails("failed"));
+    // A server too old to pair is still "too old", whatever its body says.
+    answering(404, {code: "browser.pairing.setup_incomplete"});
+    await assert.rejects(startPairing("http://127.0.0.1:8095", "Firefox on Linux"), fails("too_old"));
+  } finally {
+    globalThis.fetch = real;
   }
 });

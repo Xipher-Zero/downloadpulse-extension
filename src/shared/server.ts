@@ -39,7 +39,7 @@ export const UPLOAD_TIMEOUT_MS = 120_000;
 
 export type Failure =
   | "unreachable" | "certificate" | "not_downloadpulse" | "too_old" | "denied" | "expired"
-  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused" | "blocked";
+  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused" | "blocked" | "setup_incomplete";
 
 export class ServerError extends Error {
   constructor(public readonly failure: Failure, message = failure) {
@@ -70,6 +70,16 @@ export function isPrivateHost(hostname: string): boolean {
   }
   if (host.includes(":")) return /^f[cd][0-9a-f]{2}:/.test(host) || /^fe[89ab][0-9a-f]:/.test(host);
   return !host.includes(".") || /\.(local|lan|home\.arpa|internal|localdomain|ts\.net)$/.test(host);
+}
+
+/**
+ * 100.64.0.0/10: Tailscale's addresses, which count as the person's network (isPrivateHost) -- but
+ * carrier-grade NAT uses the same range for networks an internet provider shares among its
+ * customers, so plain HTTP there is warned about separately (1.0.3, review 2026-11-22).
+ */
+export function isSharedAddressRange(hostname: string): boolean {
+  const v4 = /^(\d{1,3})\.(\d{1,3})\.\d{1,3}\.\d{1,3}$/.exec(hostname.replace(/^\[|\]$/g, ""));
+  return Boolean(v4 && Number(v4[1]) === 100 && Number(v4[2]) >= 64 && Number(v4[2]) <= 127);
 }
 
 /** An address (as DNS answers it) on this computer or the private network. */
@@ -145,6 +155,22 @@ async function request(origin: string, path: string, init: RequestInit = {}, tim
   return response;
 }
 
+/**
+ * A refusal of the token by DownloadPulse itself -- its 401 names its own code -- as opposed to
+ * a 401 from something in front of it (an Authelia or other sign-in proxy), which says nothing
+ * about the token (1.0.3, review 2026-11-22: such a 401 forgot a token the server still held).
+ * Only DownloadPulse's own refusal disconnects; anything else is "blocked", as a redirect is.
+ */
+async function tokenRefused(response: Response): Promise<ServerError> {
+  try {
+    const body: unknown = await response.json();
+    if ((body as {code?: unknown} | null)?.code === "auth.unauthorized") return new ServerError("unauthorized");
+  } catch {
+    // not DownloadPulse's JSON
+  }
+  return new ServerError("blocked");
+}
+
 async function json(response: Response): Promise<Record<string, unknown>> {
   try {
     const value: unknown = await response.json();
@@ -192,7 +218,15 @@ export async function startPairing(origin: string, clientName: string): Promise<
   // credential. An older one refuses it before any route: Forbidden origin
   // (403), sign-in required (401), or no such route (404/405).
   if ([401, 403, 404, 405].includes(response.status)) throw new ServerError("too_old");
-  if (!response.ok) throw new ServerError("failed");
+  if (!response.ok) {
+    // A new DownloadPulse whose setup is not finished yet says so by its refusal's code.
+    const refusal: unknown = await response.json().catch(() => null);
+    if (refusal && typeof refusal === "object"
+        && (refusal as Record<string, unknown>)["code"] === "browser.pairing.setup_incomplete") {
+      throw new ServerError("setup_incomplete");
+    }
+    throw new ServerError("failed");
+  }
   const body = await json(response);
   if (!speaks(body["protocol"]) || typeof body["device_code"] !== "string" || typeof body["user_code"] !== "string"
       || typeof body["verification_path"] !== "string") {
@@ -236,7 +270,7 @@ export interface Session {
 /** The server's own account of this token: how a pairing is verified (L19). */
 export async function readSession(origin: string, token: string): Promise<Session> {
   const response = await request(origin, "/api/browser/v1/session", {headers: {Authorization: `Bearer ${token}`}});
-  if (response.status === 401) throw new ServerError("unauthorized");
+  if (response.status === 401) throw await tokenRefused(response);
   if (response.status === 404) throw new ServerError("too_old");
   if (!response.ok) throw new ServerError("failed");
   const body = await json(response);
@@ -293,7 +327,11 @@ export async function submitJob(origin: string, browserToken: string, key: strin
     }
     return {ok: true, id};
   }
-  if (response.status === 401) return {ok: false, code: "unauthorized", retryable: false};
+  if (response.status === 401) {
+    const refused = await tokenRefused(response);
+    if (refused.failure !== "unauthorized") throw refused;
+    return {ok: false, code: "unauthorized", retryable: false};
+  }
   let detail: Record<string, unknown> = {};
   try {
     detail = ((await response.json()) as {detail?: Record<string, unknown>}).detail ?? {};
@@ -331,7 +369,7 @@ function authorized(browserToken: string): Record<string, string> {
 export async function listJobs(origin: string, browserToken: string, after: number): Promise<Listing> {
   const response = await request(origin, `/api/browser/v1/jobs?after=${Math.max(0, Math.floor(after))}&limit=100`,
     {headers: authorized(browserToken)});
-  if (response.status === 401) throw new ServerError("unauthorized");
+  if (response.status === 401) throw await tokenRefused(response);
   if (!response.ok) throw new ServerError("failed");
   const body = await json(response);
   return {jobs: Array.isArray(body["jobs"]) ? body["jobs"] as Job[] : [],
@@ -345,7 +383,7 @@ export async function controlJob(origin: string, browserToken: string, id: strin
     method: "POST", headers: {...authorized(browserToken), "Content-Type": "application/json"},
     body: JSON.stringify({kind, request_key: crypto.randomUUID()}),
   });
-  if (response.status === 401) throw new ServerError("unauthorized");
+  if (response.status === 401) throw await tokenRefused(response);
   if (!response.ok) throw new ServerError("failed");
   const body = await json(response);
   return {disposition: String(body["disposition"] ?? ""), reason: String(body["reason"] ?? "")};
@@ -356,7 +394,7 @@ export async function withdrawJob(origin: string, browserToken: string, id: stri
   const response = await request(origin, `/api/browser/v1/jobs/${encodeURIComponent(id)}/withdraw`, {
     method: "POST", headers: authorized(browserToken),
   });
-  if (response.status === 401) throw new ServerError("unauthorized");
+  if (response.status === 401) throw await tokenRefused(response);
   if (!response.ok) throw new ServerError("failed");
 }
 

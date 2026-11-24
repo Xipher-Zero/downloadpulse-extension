@@ -4,10 +4,15 @@
 // and answers the pending pairing as a person would on the server.
 import http from "node:http";
 
+// DownloadPulse's own refusal of a token (auth/middleware.py _unauthorized): its code is what tells it
+// apart from a sign-in proxy's 401 in front of it.
+const DP_UNAUTHORIZED = {detail: "Unauthorized", code: "auth.unauthorized", params: {}};
+
 export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
   const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
     views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null,
     desktop: false, shows: 0, down: false, keys: new Map(), dropNext: false, submits: 0, videoCookies: true, referrer: true,
+    settleAs: null, proxy401: false, proxied: 0, failPolls: 0,
     appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"}};
   // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
   const touch = (view) => { view.cursor = ++state.seq; state.views.set(view.id, view); return view; };
@@ -27,12 +32,27 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
     if (state.mode === "proxy") { res.writeHead(302, {Location: "/login"}); return res.end(); }
     // ``down``: answering, but not DownloadPulse's API (as a stopped or restarting server's proxy would).
     if (state.down && url.pathname.startsWith("/api/browser/v1/")) return send(503, {detail: "Service Unavailable"});
+    // ``proxy401``: a sign-in proxy (Authelia and the like) in front, answering 401 with its own page.
+    if (state.proxy401 && url.pathname.startsWith("/api/browser/v1/") && !url.pathname.startsWith("/api/browser/v1/pairings")) {
+      state.proxied += 1;
+      return send(401, "<html>Sign in to continue</html>", "text/html");
+    }
+    // ``failPolls``: that many pairing polls fail in transit (a restarting proxy), then they answer again.
+    if (state.failPolls > 0 && url.pathname === "/api/browser/v1/pairings/poll") {
+      state.failPolls -= 1;
+      return send(502, "<html>Bad Gateway</html>", "text/html");
+    }
     if (url.pathname === "/api/health") return send(200, {status: "ok", version: "1.0.14"});
     if (url.pathname === "/") return send(200, "<html><body>approval page</body></html>", "text/html");
     if (url.pathname === "/api/browser/v1/pairings" && req.method === "POST") {
       if (state.mode === "too-old") return send(404, {detail: "Not Found"});
       // An older DownloadPulse refuses an extension origin before routing.
       if (state.mode === "forbidden-origin") return send(403, "Forbidden origin", "text/plain");
+      // ``setup-incomplete``: a new DownloadPulse whose setup is not finished (api/browser_routes.py).
+      if (state.mode === "setup-incomplete") {
+        return send(409, {detail: "Finish setting up DownloadPulse first, then connect again.",
+          code: "browser.pairing.setup_incomplete", params: {}});
+      }
       state.lastClientName = body.client_name;
       const userCode = `ABCD-${String(state.pairings.size + 1).padStart(4, "0")}`;
       const deviceCode = `device-${userCode}`;
@@ -52,12 +72,12 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
     }
     if (url.pathname === "/api/browser/v1/session" && req.method === "DELETE") {
       state.disconnects = (state.disconnects ?? 0) + 1;
-      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
+      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, DP_UNAUTHORIZED);
       state.revoked = true;
       return send(200, {ok: true});
     }
     if (state.revoked && url.pathname.startsWith("/api/browser/v1/") && !url.pathname.startsWith("/api/browser/v1/pairings")) {
-      return send(401, {detail: "Unauthorized"});
+      return send(401, DP_UNAUTHORIZED);
     }
     if (url.pathname === "/api/browser/v1/application/show" && req.method === "POST") {
       // The installed desktop application brings its window forward; a server has none.
@@ -67,7 +87,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
     }
     if (url.pathname === "/api/browser/v1/session") {
       state.sessionAuth.push({authorization: req.headers.authorization, cookie: req.headers.cookie ?? null});
-      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
+      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, DP_UNAUTHORIZED);
       return send(200, {protocol: state.mode === "wrong-protocol" ? "downloadpulse.browser/0"
         : state.mode === "previous-name" ? "debridpulse.browser/1" : "downloadpulse.browser/1",
         token: {id: "tok-1", label: "Laptop-Chrome"}, account: {display_name: "Una"},
@@ -79,7 +99,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
           ...(state.referrer ? {referrer: {max_length: 2048, sources: ["links"]}} : {})}} : {})});
     }
     if (url.pathname === "/api/browser/v1/jobs" && req.method === "POST") {
-      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
+      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, DP_UNAUTHORIZED);
       if (state.refuse) return send(422, {detail: {code: state.refuse, message: "refused", retryable: false}});
       state.submits += 1;
       // DebridPulse's idempotency: the same key answers the same job (200), never a second one.
@@ -101,10 +121,12 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
         name: body.display_name || "placeholder",
         source: {kind: body.source?.kind}, phase: "accepted", reason: "awaiting_resolution", actionability: "wait",
         paused_by: null, progress: null, estimate: null});
-      return send(201, state.views.get(id));
+      // ``settleAs``: the job settles at once, before the answer (a fast failure), as DownloadPulse may.
+      if (state.settleAs) touch({...state.views.get(id), ...state.settleAs});
+      return send(201, {...state.views.get(id), phase: "accepted", reason: "awaiting_resolution"});
     }
     if (url.pathname === "/api/browser/v1/jobs" && req.method === "GET") {
-      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, {detail: "Unauthorized"});
+      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, DP_UNAUTHORIZED);
       const after = Number(url.searchParams.get("after") ?? 0);
       state.listPolls.push(Date.now());
       const jobs = [...state.views.values()].filter((view) => view.cursor > after).sort((a, b) => a.cursor - b.cursor);

@@ -86,6 +86,9 @@
   "failureFailed": {
     "message": "Beim Verbinden ist ein Fehler aufgetreten."
   },
+  "failureSetupIncomplete": {
+    "message": "Schließen Sie zuerst die Einrichtung von DownloadPulse ab und verbinden Sie sich dann erneut."
+  },
   "pairingClientName": {
     "message": "$BROWSER$ unter $SYSTEM$",
     "placeholders": {
@@ -428,7 +431,7 @@
     "message": "Bevor Sie sich verbinden, sehen Sie hier, was DownloadPulse von diesem Browser erhält."
   },
   "discloseLinks": {
-    "message": "Die Links, die Sie senden. Bei einem .torrent-, .nzb- oder Indexer-Link ruft dieser Browser die Datei mit Ihrer Anmeldung auf dieser Website ab und sendet die Datei; die Cookies der Website werden nie gesendet."
+    "message": "Die Links, die Sie senden. Verweist ein Link auf eine Datei, die DownloadPulse mitteilt, was heruntergeladen werden soll (etwa eine .torrent-, .nzb- oder Metalink-Datei), ruft dieser Browser diese Datei mit Ihrer Anmeldung auf deren Website ab und sendet die Datei selbst; die Cookies der Website werden nie gesendet."
   },
   "discloseVideo": {
     "message": "Bei einem Video die Adresse seines Players und, sofern Sie dies nicht in den Optionen ausschalten, Ihre Anmeldung auf dieser Website (deren Cookies für diese Adresse), damit DownloadPulse herunterladen kann, was Sie ansehen können. DownloadPulse behält sie nur im Arbeitsspeicher, bis dieser Download endet."
@@ -462,6 +465,9 @@
         "example": "http://192.168.1.20:8095"
       }
     }
+  },
+  "insecureSharedRange": {
+    "message": "Tailscale verwendet Adressen von 100.64 bis 100.127, aber manche Internetanbieter nutzen sie auch für Netzwerke, die sie mit ihren anderen Kunden teilen. Fahren Sie nur fort, wenn dies Ihr eigenes Tailscale-Netzwerk ist."
   },
   "insecureContinue": {
     "message": "Ohne Verschlüsselung verbinden"
@@ -509,7 +515,7 @@
     "message": "Downloads an DownloadPulse senden?"
   },
   "captureOfferText": {
-    "message": "Dateien, die dieser Browser herunterzuladen beginnt, können stattdessen an DownloadPulse gesendet werden, mit Ihrer Anmeldung auf deren Website. Kann DownloadPulse eine Datei nicht übernehmen, lädt der Browser sie weiter herunter. Sie können dies jederzeit in den Optionen ändern."
+    "message": "Dateien, die dieser Browser herunterzuladen beginnt, können stattdessen an DownloadPulse gesendet werden, mit der Seite, von der sie stammen, und Ihrer Anmeldung auf deren Website. Der Browser hält jeden Download an und setzt ihn fort, wenn DownloadPulse ihn nicht übernehmen oder nicht fertig herunterladen kann; einen Download, den der Browser nicht anhalten kann, bricht er ab, sobald DownloadPulse ihn übernimmt. Sie können dies jederzeit in den Optionen ändern."
   },
   "captureOfferYes": {
     "message": "An DownloadPulse senden"
@@ -529,6 +535,9 @@
   "optionsDownloadsDenied": {
     "message": "Der Browser hat es nicht erlaubt, daher bleiben Downloads im Browser."
   },
+  "optionsDownloadsUnavailable": {
+    "message": "Dieser Browser lässt Erweiterungen seine Downloads nicht übernehmen, daher bleiben Downloads im Browser. Links selbst zu senden funktioniert weiterhin."
+  },
   "optionsMinSize": {
     "message": "Dateien unter dieser Größe (MB) dem Browser überlassen"
   },
@@ -546,5 +555,8 @@
   },
   "captureKeptInBrowser": {
     "message": "DownloadPulse konnte diesen Download nicht übernehmen, daher hat ihn der Browser behalten."
+  },
+  "captureResumedInBrowser": {
+    "message": "DownloadPulse konnte diesen Download nicht abschließen, daher hat der Browser ihn fortgesetzt."
   }
 }

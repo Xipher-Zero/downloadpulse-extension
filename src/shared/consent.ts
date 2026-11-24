@@ -4,7 +4,10 @@
 // asked again whenever the disclosure changes (CONSENT_VERSION). Not a secret.
 
 // 2: a video goes with the person's sign-in on its site (operator, 2026-11-19).
-export const CONSENT_VERSION = 2;
+// 3: browser downloads sent to DownloadPulse, with the page each came from (1.0.2's
+//    discloseDownloads, never asked again until now; review 2026-11-22), and the links
+//    item led by links in general (1.0.3).
+export const CONSENT_VERSION = 3;
 const KEY = "consent";
 
 export interface Consent { version: number; deviceName: boolean; at: number }

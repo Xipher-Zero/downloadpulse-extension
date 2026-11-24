@@ -107,8 +107,8 @@ https://send.now/ijn6gxxf9bj8</textarea>
     }
     if (url.pathname.startsWith("/dl/")) {
       const name = url.pathname.slice(4);
-      // big: 8 MiB, trickled so it is still downloading when the extension acts on it.
-      const size = name === "small.bin" ? 64 * 1024 : name === "manual.pdf" ? 4 * 1024 * 1024 : 8 * 1024 * 1024;
+      // big and manual.pdf: 12 MiB (over the 10 MB default); big trickled so it is still downloading when the extension acts on it.
+      const size = name === "small.bin" ? 64 * 1024 : 12 * 1024 * 1024;
       res.writeHead(200, {"Content-Type": name.endsWith(".pdf") ? "application/pdf" : "application/octet-stream",
         "Content-Length": String(size), "Content-Disposition": `attachment; filename="${name}"`});
       if (name === "small.bin") return res.end(Buffer.alloc(size, 1));
@@ -122,7 +122,7 @@ https://send.now/ijn6gxxf9bj8</textarea>
         }
         res.write(chunk);
         sent += chunk.length;
-      }, name === "big.bin" ? 40 : 5);
+      }, name === "big.bin" ? 26 : 5);   // big: about 5 s in all, as the 8 MiB file took at 40 ms
       res.on("close", () => clearInterval(tick));
       return undefined;
     }

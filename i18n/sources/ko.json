@@ -123,7 +123,7 @@
   "optionsInPage": "e8601dcc2cd4ed38",
   "popupConnectAgain": "7da41f1987b1d0bc",
   "discloseLead": "67c417bc57f3e819",
-  "discloseLinks": "0f470bc52e1c9ec4",
+  "discloseLinks": "932f5703e73adfe1",
   "discloseVideo": "51b72b4ba9588855",
   "disclosePolling": "4b01ccb94737ab8f",
   "discloseStays": "c40be22cd5d05e24",
@@ -148,7 +148,7 @@
   "optionsVideoCookies": "8421908309eb1940",
   "discloseDownloads": "67ebb944b7114dca",
   "captureOfferTitle": "30327b38d1934195",
-  "captureOfferText": "9d669dbabfdc6e65",
+  "captureOfferText": "a77009c410df8b85",
   "captureOfferYes": "b407b50c7960a366",
   "captureOfferNo": "a0e63d7c7125d29a",
   "captureToggle": "77e806257e821291",
@@ -160,5 +160,9 @@
   "optionsSkipTypesPlaceholder": "f17723b8e316a5e1",
   "captureDone": "0ea244057c894869",
   "captureDoneWithoutSignIn": "7b07f4db6dcfe489",
-  "captureKeptInBrowser": "7b828471642a1b2c"
+  "captureKeptInBrowser": "7b828471642a1b2c",
+  "captureResumedInBrowser": "ddca9b18ee13a910",
+  "insecureSharedRange": "ceb5b0f6be50690e",
+  "failureSetupIncomplete": "dad5833ebf90a9bd",
+  "optionsDownloadsUnavailable": "b3817b02796926b2"
 }
