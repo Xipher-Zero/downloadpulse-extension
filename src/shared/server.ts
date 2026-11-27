@@ -332,6 +332,9 @@ export async function submitJob(origin: string, browserToken: string, key: strin
     if (refused.failure !== "unauthorized") throw refused;
     return {ok: false, code: "unauthorized", retryable: false};
   }
+  // Too large for DownloadPulse, or for something in front of it, whatever the body (1.0.8,
+  // WS-A11): a request-size cap answers 413 with no refusal code of DownloadPulse's own.
+  if (response.status === 413) return {ok: false, code: "source_too_large", retryable: false};
   let detail: Record<string, unknown> = {};
   try {
     detail = ((await response.json()) as {detail?: Record<string, unknown>}).detail ?? {};

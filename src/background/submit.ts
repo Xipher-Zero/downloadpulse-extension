@@ -17,7 +17,12 @@ import {cookiesFor} from "./cookies";
 import {cachedJobs, wake} from "./monitor";
 import {forgetDigest, keyAnswered, keyFor} from "./sent-keys";
 
-const LIMITS: Record<CaptureKind, number> = {torrent: 16 * 1024 * 1024, nzb: 8 * 1024 * 1024, metalink: 16 * 1024 * 1024};
+/**
+ * DownloadPulse's own limits, exactly (1.0.8, WS-A11): a .torrent and a Metalink 16 MB decimal
+ * (MAX_TORRENT_BYTES, MAX_METALINK_BYTES), an NZB 8 MiB (MAX_NZB_BYTES). A file past them is
+ * refused here, before it is sent, as DownloadPulse would refuse it.
+ */
+const LIMITS: Record<CaptureKind, number> = {torrent: 16_000_000, nzb: 8 * 1024 * 1024, metalink: 16_000_000};
 const CAPTURE_TIMEOUT_MS = 30_000;
 /** At most this many plain links go in one selection's batch; the person is told when more were found. */
 export const BATCH_LIMIT = 100;

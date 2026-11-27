@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 import {test} from "node:test";
 import assert from "node:assert/strict";
-import {isLocal, isPrivateHost, readSession, ServerError, serverAddress, signInMayTravel, startPairing} from "../../src/shared/server";
+import {isLocal, isPrivateHost, readSession, ServerError, serverAddress, signInMayTravel, startPairing, submitJob} from "../../src/shared/server";
 
 const addr = (input: string) => {
   const found = serverAddress(input);
@@ -92,6 +92,31 @@ test("starting a pairing: a new DownloadPulse whose setup is unfinished is named
     // A server too old to pair is still "too old", whatever its body says.
     answering(404, {code: "browser.pairing.setup_incomplete"});
     await assert.rejects(startPairing("http://127.0.0.1:8095", "Firefox on Linux"), fails("too_old"));
+  } finally {
+    globalThis.fetch = real;
+  }
+});
+
+test("a submission refused as too large (413) is \"source_too_large\", whatever its body (1.0.8, WS-A11)", async () => {
+  const real = globalThis.fetch;
+  const answering = (status: number, body: string, type: string) => {
+    globalThis.fetch = async () => new Response(body, {status, headers: {"Content-Type": type}});
+  };
+  const source = {kind: "torrent" as const, filename: "a.torrent", torrent_base64: "AA=="};
+  try {
+    // A body cap in front of the route (DownloadPulse's own, or a proxy's): no JSON at all.
+    answering(413, "<html><body>413 Request Entity Too Large</body></html>", "text/html");
+    assert.deepEqual(await submitJob("http://127.0.0.1:8095", "t", "k", source),
+      {ok: false, code: "source_too_large", retryable: false});
+    answering(413, JSON.stringify({detail: "Request body too large"}), "application/json");
+    assert.deepEqual(await submitJob("http://127.0.0.1:8095", "t", "k", source),
+      {ok: false, code: "source_too_large", retryable: false});
+    // DownloadPulse's structured refusal is still read as it was.
+    answering(422, JSON.stringify({detail: {code: "invalid_source", retryable: false}}), "application/json");
+    assert.deepEqual(await submitJob("http://127.0.0.1:8095", "t", "k", source),
+      {ok: false, code: "invalid_source", retryable: false});
+    answering(500, "<html>proxy error</html>", "text/html");
+    assert.deepEqual(await submitJob("http://127.0.0.1:8095", "t", "k", source), {ok: false, code: "failed", retryable: false});
   } finally {
     globalThis.fetch = real;
   }
