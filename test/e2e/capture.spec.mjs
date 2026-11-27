@@ -56,9 +56,9 @@ const browserDownloads = () => worker.evaluate(() => chrome.downloads.search({})
 const bigInBrowser = async () => (await browserDownloads()).find((item) => item.url.endsWith("/dl/big.bin"));
 
 /** Start a download the way a person does: a click on an attachment link on a page. */
-async function download(id) {
+async function download(id, base = site.base) {
   const page = await context.newPage();
-  await page.goto(`${site.base}/downloads`);
+  await page.goto(`${base}/downloads`);
   await page.locator(`#${id}`).click();
   return page;
 }
@@ -102,6 +102,32 @@ test("turned on during setup, a download goes to DownloadPulse with its sign-in 
   // ... until DownloadPulse has it: then it is cancelled and off the browser's list.
   dp.setJob("job_1", {phase: "completed", reason: null, actionability: "none"});
   await expect.poll(async () => (await bigInBrowser()) === undefined, {timeout: 15_000}).toBe(true);
+});
+
+test("a download another site's page started goes without the site's SameSite=Strict cookies (1.0.8, WS-A5)", async () => {
+  await connect("Send them to DownloadPulse");
+  await context.addCookies([
+    {name: "STRICT", value: "strict-una", domain: "127.0.0.1", path: "/", sameSite: "Strict"},
+    {name: "LAX", value: "lax-una", domain: "127.0.0.1", path: "/", sameSite: "Lax"},
+  ]);
+  // The page is on localhost, the file on 127.0.0.1: two sites. The browser's own request would
+  // carry the Lax cookie and not the Strict one, and so does DownloadPulse's.
+  await download("big-127", site.base.replace("127.0.0.1", "localhost"));
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  const {body} = dp.state.jobs[0];
+  expect(body.source).toEqual({kind: "links", links: [`${site.base}/dl/big.bin`]});
+  expect(body.cookies.map((cookie) => [cookie.name, cookie.value])).toEqual([["LAX", "lax-una"]]);
+});
+
+test("a download its own site's page started goes with every cookie, Strict too (1.0.8, WS-A5)", async () => {
+  await connect("Send them to DownloadPulse");
+  await context.addCookies([
+    {name: "STRICT", value: "strict-una", domain: "127.0.0.1", path: "/", sameSite: "Strict"},
+    {name: "LAX", value: "lax-una", domain: "127.0.0.1", path: "/", sameSite: "Lax"},
+  ]);
+  await download("big");
+  await expect.poll(() => dp.state.jobs.length, {timeout: 15_000}).toBe(1);
+  expect(dp.state.jobs[0].body.cookies.map((cookie) => cookie.name).sort()).toEqual(["LAX", "STRICT"]);
 });
 
 test("\"Send my sign-in\" off: a download goes without it, and the browser's copy is never cancelled (1.0.4)", async () => {

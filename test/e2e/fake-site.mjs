@@ -258,7 +258,8 @@ https://send.now/ijn6gxxf9bj8</textarea>
         <p><a id="big" href="/dl/big.bin">big.bin</a></p>
         <p><a id="small" href="/dl/small.bin">small.bin</a></p>
         <p><a id="pdf" href="/dl/manual.pdf">manual.pdf</a></p>
-        <p><a id="unsized" href="/dl/unsized.bin">unsized.bin</a></p></body></html>`);
+        <p><a id="unsized" href="/dl/unsized.bin">unsized.bin</a></p>
+        <p><a id="big-127" href="http://127.0.0.1:${server.address().port}/dl/big.bin">big.bin on 127.0.0.1</a></p></body></html>`);
     }
     if (url.pathname.startsWith("/dl/")) {
       const name = url.pathname.slice(4);

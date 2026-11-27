@@ -341,9 +341,11 @@ export async function sendDownload(href: string, referrer: string, store: {cooki
       // Its capabilities unknown: the link goes alone, as any link would.
     }
     // Exactly the cookies this browser would send to that address, from the download's own
-    // cookie store (a Firefox container's); the page it started from names the partition.
+    // cookie store (a Firefox container's); the page it started from names the partition, and,
+    // another site's, keeps its Strict cookies back as the browser would (1.0.8, WS-A5).
+    const startedOn = /^https?:\/\//i.test(referrer) ? referrer : undefined;
     const found = await cookiesFor(href, {...(store.cookieStoreId ? {cookieStoreId: store.cookieStoreId} : {}),
-      url: /^https?:\/\//i.test(referrer) ? referrer : undefined} as chrome.tabs.Tab);
+      url: startedOn} as chrome.tabs.Tab, startedOn);
     // The person's "Send my sign-in" switch covers browser downloads as it does videos.
     const travels = (await settings()).videoCookies && taken.videoCookies && signInMayTravel(connected.server);
     const cookies = travels ? found.cookies : [];
