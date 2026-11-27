@@ -1133,6 +1133,55 @@
         "ai-review"
       ]
     },
+    "sendPageLimit": {
+      "source": "ec0bdbd8cc7fc1c8",
+      "translation": "f6c9384c7e5ad530",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "confirmTitle": {
+      "source": "fc675b931caa8f68",
+      "translation": "b3a9e65aa72e8f06",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "confirmHint": {
+      "source": "bd516ceea450ab8e",
+      "translation": "93e9c8c324265960",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "confirmFrom": {
+      "source": "b083d60e556aa1dc",
+      "translation": "8340ed5f1fa4d102",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "confirmLinks": {
+      "source": "86dfef45023f48d6",
+      "translation": "86dfef45023f48d6",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ],
+      "identical": true
+    },
+    "confirmSend": {
+      "source": "f6f4688ff23d50c6",
+      "translation": "a9c9fc52288eaebe",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
     "quickAddTitle": {
       "source": "a1c22d74f4587d16",
       "translation": "b7d93a3255925fb9",

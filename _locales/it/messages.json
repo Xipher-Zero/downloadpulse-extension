@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "Inviati i primi 100 link. Aggiungere i restanti con «Aggiunta rapida» in DownloadPulse."
   },
+  "sendPageLimit": {
+    "message": "Troppi invii da questa pagina in poco tempo. Attendere un momento e riprovare."
+  },
+  "confirmTitle": {
+    "message": "Inviare a DownloadPulse?"
+  },
+  "confirmHint": {
+    "message": "In una pagina è stato premuto un pulsante di DownloadPulse. Controllare cosa verrà inviato, poi scegliere «Invia»."
+  },
+  "confirmFrom": {
+    "message": "Sito: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "Link: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "Invia"
+  },
   "quickAddTitle": {
     "message": "Aggiunta rapida"
   },

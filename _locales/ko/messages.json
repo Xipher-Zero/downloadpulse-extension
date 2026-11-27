@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "처음 100개의 링크를 보냈습니다. 나머지는 DownloadPulse의 ‘빠른 추가’로 추가하세요."
   },
+  "sendPageLimit": {
+    "message": "이 페이지에서 짧은 시간에 너무 많이 보냈습니다. 잠시 후 다시 시도하세요."
+  },
+  "confirmTitle": {
+    "message": "DownloadPulse로 보낼까요?"
+  },
+  "confirmHint": {
+    "message": "페이지에서 DownloadPulse 버튼이 눌렸습니다. 보낼 내용을 확인한 후 ‘보내기’를 선택하세요."
+  },
+  "confirmFrom": {
+    "message": "사이트: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "링크: $COUNT$개",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "보내기"
+  },
   "quickAddTitle": {
     "message": "빠른 추가"
   },

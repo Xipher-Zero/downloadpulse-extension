@@ -63,7 +63,7 @@ async function sitePage() {
 }
 
 /** The extension's open in-page layers (light-DOM hosts; their content is a closed shadow root). */
-const openLayers = (page) => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+const openLayers = (page) => page.evaluate(() => [...document.querySelectorAll(":root > div[popover]")]
   .filter((host) => (host.matches(":popover-open") && getComputedStyle(host).display !== "none")).map((host) => {
     const r = host.getBoundingClientRect();
     return {left: r.left, top: r.top, width: r.width, height: r.height};
@@ -76,6 +76,7 @@ async function hoverAndClick(page, selector) {
   const [layer] = await openLayers(page);
   expect(layer.left).toBeGreaterThanOrEqual(box.x + box.width);   // beside the link, never over it
   await page.mouse.move(layer.left + layer.width / 2, layer.top + layer.height / 2, {steps: 3});
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
 }
 
@@ -145,7 +146,7 @@ test("the in-page surfaces are drawn in the person's DownloadPulse theme", async
     await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
     await expect.poll(async () => (await openLayers(page)).length).toBe(1);
     return page.evaluate(() => {
-      const host = [...document.querySelectorAll("downloadpulse-layer")].find((h) => h.matches(":popover-open"));
+      const host = [...document.querySelectorAll(":root > div[popover]")].find((h) => h.matches(":popover-open"));
       const style = getComputedStyle(host);
       return {primary: style.getPropertyValue("--dp-primary"), border: style.getPropertyValue("--dp-primary-border"),
         text: style.getPropertyValue("--dp-primary-text")};
@@ -190,7 +191,7 @@ test("the hover icon goes once the pointer moves off the link, withdrawn from th
     await page.mouse.move(980, box.y + box.height / 2, {steps: 6});   // off the link, into empty space
     await expect.poll(async () => (await openLayers(page)).length, {timeout: 1500}).toBe(0);
     // Withdrawn entirely: nothing of the extension's is left in the page.
-    expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length)).toBe(0);
+    expect(await page.evaluate(() => document.querySelectorAll(":root > div[popover]").length)).toBe(0);
   }
 });
 
@@ -213,7 +214,7 @@ test("the hover icon goes when the page scrolls or the pointer leaves the page",
 });
 
 /** The open layers other than the toast (which sits at the bottom corner). */
-const buttonLayers = (page) => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+const buttonLayers = (page) => page.evaluate(() => [...document.querySelectorAll(":root > div[popover]")]
   .filter((host) => (host.matches(":popover-open") && getComputedStyle(host).display !== "none") && host.style.bottom !== "16px").map((host) => {
     const r = host.getBoundingClientRect();
     return {left: r.left, top: r.top, width: r.width, height: r.height};
@@ -236,6 +237,7 @@ test("content moved with no scroll event (a page's own scroller): the icons leav
     getSelection().removeAllRanges();
     getSelection().addRange(range);
   });
+  await page.keyboard.press("Shift");   // the person's own key: the selection is theirs (1.0.8)
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
   await move(60);
   await expect.poll(async () => (await buttonLayers(page)).length, {timeout: 1000}).toBe(0);
@@ -257,7 +259,7 @@ test("selected links get a send button with their count, which sends them as one
     range.selectNodeContents(document.querySelector(sel));
     getSelection().removeAllRanges();
     getSelection().addRange(range);
-  }, selector);
+  }, selector).then(() => page.keyboard.press("Shift"));
   await page.locator("#live").scrollIntoViewIfNeeded();
   // One ordinary web link selected: nothing offered.
   await select("#one");
@@ -282,7 +284,7 @@ test("selected links get a send button with their count, which sends them as one
   expect(await page.evaluate(async () => {
     scrollBy(0, 60);
     await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
-    return [...document.querySelectorAll("downloadpulse-layer")]
+    return [...document.querySelectorAll(":root > div[popover]")]
       .filter((host) => (host.matches(":popover-open") && getComputedStyle(host).display !== "none") && host.style.bottom !== "16px").length;
   })).toBe(0);
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
@@ -296,6 +298,7 @@ test("selected links get a send button with their count, which sends them as one
   await page.locator("#live").scrollIntoViewIfNeeded();
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
   const [back] = await buttonLayers(page);
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(back.left + 8, back.top + 8);
   await expect.poll(() => dp.state.jobs.length).toBe(1);
   expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: ["https://1fichier.com/?j93yc0n4g08jsox2nipk",
@@ -318,8 +321,10 @@ test("selected links get a send button with their count, which sends them as one
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(0);
   // Two links selected in a text box.
   await page.locator("#box").evaluate((box) => { box.focus(); box.select(); });
+  await page.keyboard.press("Shift");   // the person's own key: the selection is theirs (1.0.8)
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
   const [boxed] = await buttonLayers(page);
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(boxed.left + 8, boxed.top + 8);
   await expect.poll(() => dp.state.jobs.length).toBe(2);
   expect(dp.state.jobs[1].body.source).toEqual({kind: "links", links: ["https://pixeldrain.com/u/a4J8buzm", "https://send.now/ijn6gxxf9bj8"]});
@@ -339,7 +344,7 @@ test("selected links get a send button with their count, which sends them as one
   await page.waitForTimeout(700);
   expect(await buttonLayers(page)).toEqual([only]);                  // the batch button alone, where it was
   // Not rendered at all: the batch button is the only extension element in the page (besides a toast).
-  expect(await page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+  expect(await page.evaluate(() => [...document.querySelectorAll(":root > div[popover]")]
     .filter((host) => host.style.bottom !== "16px").length)).toBe(1);
   // Selection cleared: the button goes.
   await page.evaluate(() => { document.activeElement.blur(); getSelection().removeAllRanges(); });
@@ -354,9 +359,10 @@ test("a toast leaves on its own, and at once when clicked", async () => {
     await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
     await expect.poll(async () => (await openLayers(page)).length).toBe(1);
     const [layer] = await openLayers(page);
+    await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
     await page.mouse.click(layer.left + 8, layer.top + 8);
   };
-  const toastOpen = () => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+  const toastOpen = () => page.evaluate(() => [...document.querySelectorAll(":root > div[popover]")]
     .filter((host) => (host.matches(":popover-open") && getComputedStyle(host).display !== "none") && host.style.bottom === "16px").length);
   await send();
   await expect.poll(toastOpen).toBe(1);
@@ -364,7 +370,7 @@ test("a toast leaves on its own, and at once when clicked", async () => {
   await send();
   await expect.poll(toastOpen).toBe(1);
   const box = await page.evaluate(() => {
-    const host = [...document.querySelectorAll("downloadpulse-layer")].find((h) => h.style.bottom === "16px");
+    const host = [...document.querySelectorAll(":root > div[popover]")].find((h) => h.style.bottom === "16px");
     const r = host.getBoundingClientRect();
     return {x: r.left + r.width / 2, y: r.top + r.height / 2};
   });
@@ -395,7 +401,7 @@ test("an indexer's download link gets no hover button; sent by selection (as by 
   const box = await page.locator("#indexer").boundingBox();
   await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
   await page.waitForTimeout(600);
-  expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length)).toBe(0);
+  expect(await page.evaluate(() => document.querySelectorAll(":root > div[popover]").length)).toBe(0);
   // Sent: captured -- the indexer's name, or the NZB's own; the key never reaches DownloadPulse.
   await page.locator("#indexer-text").scrollIntoViewIfNeeded();
   await page.evaluate(() => {
@@ -404,8 +410,10 @@ test("an indexer's download link gets no hover button; sent by selection (as by 
     getSelection().removeAllRanges();
     getSelection().addRange(range);
   });
+  await page.keyboard.press("Shift");   // the person's own key: the selection is theirs (1.0.8)
   await expect.poll(async () => (await openLayers(page)).length).toBe(1);
   const [layer] = await openLayers(page);
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(layer.left + 8, layer.top + 8);
   await expect.poll(() => dp.state.jobs.length).toBe(2);
   const sources = dp.state.jobs.map((job) => job.body.source);
@@ -420,8 +428,10 @@ test("an indexer's download link gets no hover button; sent by selection (as by 
     getSelection().removeAllRanges();
     getSelection().addRange(range);
   });
+  await page.keyboard.press("Shift");   // the person's own key: the selection is theirs (1.0.8)
   await expect.poll(async () => (await openLayers(page)).filter((l) => l.top < 700).length).toBeGreaterThan(0);
   const [limited] = (await openLayers(page)).filter((l) => l.top < 700);
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(limited.left + 8, limited.top + 8);
   await page.waitForTimeout(1500);
   expect(dp.state.jobs.length).toBe(2);
@@ -432,7 +442,7 @@ test("an indexer's download link gets no hover button; sent by selection (as by 
 test("the same link sent again is the same request, and an answer lost on the way is retried as it (review, 2026-11-19)", async () => {
   await connect();
   const page = await sitePage();
-  const toastText = () => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+  const toastText = () => page.evaluate(() => [...document.querySelectorAll(":root > div[popover]")]
     .filter((h) => h.style.bottom === "16px").length);
   // The answer to the first send is lost (made, but never answered): retried with the same key.
   dp.state.dropNext = true;
@@ -453,7 +463,7 @@ test("a captured file is read with its cap as it arrives: an oversize one withou
   const page = await sitePage();
   await hoverAndClick(page, "#endless");
   // Refused at the cap within seconds; a reader waiting for the whole body would only fail at its 30 s timeout.
-  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll(":root > div[popover]")]
     .filter((h) => h.style.bottom === "16px").length), {timeout: 8_000}).toBe(1);
   expect(dp.state.jobs).toEqual([]);
 });
@@ -468,20 +478,22 @@ test("more than 100 links selected: the first 100 are sent and the person is tol
     getSelection().removeAllRanges();
     getSelection().addRange(range);
   });
+  await page.keyboard.press("Shift");   // the person's own key: the selection is theirs (1.0.8)
   await expect.poll(async () => (await buttonLayers(page)).length).toBe(1);
   const [layer] = await buttonLayers(page);
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   await expect.poll(() => dp.state.jobs.length).toBe(1);
   expect(dp.state.jobs[0].body.source.links.length).toBe(100);
   // The toast is in a closed shadow root: that one is shown is checked here; its words ("the first 100") by the unit of meaning, the string.
-  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")]
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll(":root > div[popover]")]
     .filter((h) => h.style.bottom === "16px").length)).toBe(1);
 });
 
 test("captures follow no redirect and never use plain HTTP across the internet (store review)", async () => {
   await connect();
   const page = await sitePage();
-  const toast = () => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer")].filter((h) => h.style.bottom === "16px").length);
+  const toast = () => page.evaluate(() => [...document.querySelectorAll(":root > div[popover]")].filter((h) => h.style.bottom === "16px").length);
   await hoverAndClick(page, "#redirecting");
   await expect.poll(toast).toBe(1);
   await page.waitForTimeout(800);
@@ -509,6 +521,7 @@ test("a held connection fetches nothing: a button still offered from a page's ca
   await popup.evaluate(() => chrome.storage.local.remove("consent"));        // now held
   const [layer] = await openLayers(page);
   await page.mouse.move(layer.left + layer.width / 2, layer.top + layer.height / 2, {steps: 2});
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   await page.waitForTimeout(1500);
   expect(site.state.requests.some((r) => r.path.startsWith("/files/private.torrent"))).toBe(false);   // the site was never asked
@@ -533,6 +546,7 @@ test("a plain-text URL gets the icon beside it", async () => {
   await expect.poll(async () => (await openLayers(page)).length).toBe(1);
   const [layer] = await openLayers(page);
   await page.mouse.move(layer.left + 5, layer.top + 5, {steps: 3});
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   await expect.poll(() => dp.state.jobs.length).toBe(1);
   expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: ["https://203.0.113.20/releases/disc.iso"]});
@@ -550,6 +564,7 @@ test("the video button sends the page's own address", async () => {
   expect(Math.abs(layer.top - video.y)).toBeLessThanOrEqual(1);
   await page.mouse.move(layer.left + 5, layer.top + 5, {steps: 6});   // across the gap: it stays
   expect((await openLayers(page)).length).toBe(1);
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   await expect.poll(() => dp.state.jobs.length).toBe(1);
   expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: [`${site.base}/page`]});
@@ -570,6 +585,7 @@ test("a video goes with the person's sign-in on its site: that address's cookies
     await page.mouse.move(video.x + video.width / 2, video.y + video.height / 2, {steps: 3});
     await expect.poll(async () => (await openLayers(page)).length).toBe(1);
     const [layer] = await openLayers(page);
+    await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
     await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   };
   await sendVideo();
@@ -593,6 +609,7 @@ test("a single-page site's video is sent at its current address, not the one the
   await page.mouse.move(video.x + video.width / 2, video.y + video.height / 2, {steps: 3});
   await expect.poll(async () => (await openLayers(page)).length).toBe(1);
   const [layer] = await openLayers(page);
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   await expect.poll(() => dp.state.jobs.length).toBe(1);
   expect(dp.state.jobs[0].body.source).toEqual({kind: "links", links: [`${site.base}/watch?v=spa`]});
@@ -613,6 +630,7 @@ test("no cookies when switched off, nor to a DownloadPulse that doesn't say it t
     await page.mouse.move(video.x + video.width / 2, video.y + video.height / 2, {steps: 3});
     await expect.poll(async () => (await openLayers(page)).length).toBe(1);
     const [layer] = await openLayers(page);
+    await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
     await page.mouse.click(layer.left + layer.width / 2, layer.top + layer.height / 2);
   };
   // The video goes, without them.
@@ -653,7 +671,7 @@ test("the video button is not drawn fullscreen, nor where there is no room besid
   await page.waitForFunction(() => Boolean(document.fullscreenElement));
   await hoverVideo();
   await page.waitForTimeout(600);
-  expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length)).toBe(0);
+  expect(await page.evaluate(() => document.querySelectorAll(":root > div[popover]").length)).toBe(0);
   await page.evaluate(() => document.exitFullscreen());
   await page.waitForFunction(() => !document.fullscreenElement);
   // A frame spanning the window: no room to its right.
@@ -661,7 +679,7 @@ test("the video button is not drawn fullscreen, nor where there is no room besid
   await page.mouse.move(1, 1);
   await hoverVideo();
   await page.waitForTimeout(600);
-  expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length)).toBe(0);
+  expect(await page.evaluate(() => document.querySelectorAll(":root > div[popover]").length)).toBe(0);
 });
 
 test("a video preview (inside a link, or under one) gets no video button; the page's own video does", async () => {
@@ -673,7 +691,7 @@ test("a video preview (inside a link, or under one) gets no video button; the pa
     await page.mouse.move(1, 1);
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2, {steps: 3});
     await page.waitForTimeout(600);
-    expect(await page.evaluate(() => document.querySelectorAll("downloadpulse-layer").length), selector).toBe(0);
+    expect(await page.evaluate(() => document.querySelectorAll(":root > div[popover]").length), selector).toBe(0);
   }
   await page.locator("#video").scrollIntoViewIfNeeded();
   const main = await page.locator("#video").boundingBox();

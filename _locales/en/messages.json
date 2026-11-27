@@ -633,6 +633,42 @@
     "message": "Sent the first 100 links. Add the rest with Quick Add in DownloadPulse.",
     "description": "Toast after sending a selection that held more than 100 plain links: only the first 100 were sent. \"Quick Add\" is DownloadPulse's feature name."
   },
+  "sendPageLimit": {
+    "message": "Too many sends from this page in a short time. Wait a moment and try again.",
+    "description": "Toast: the send buttons on one browser tab's pages were used more often in a minute than the extension allows (a limit so a page can't send to DownloadPulse on its own); nothing was sent this time."
+  },
+  "confirmTitle": {
+    "message": "Send to DownloadPulse?",
+    "description": "Firefox: title of DownloadPulse's own small window that opens when a send button on a web page is pressed; nothing is sent until Send is chosen in it."
+  },
+  "confirmHint": {
+    "message": "A DownloadPulse button was pressed on a page. Check what will be sent, then choose Send.",
+    "description": "Firefox: the confirmation window's explanation. \"Send\" is the confirmSend button."
+  },
+  "confirmFrom": {
+    "message": "Site: $SITE$",
+    "description": "Firefox: the confirmation window, the site whose page asked to send (a host name such as example.com).",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "Links: $COUNT$",
+    "description": "Firefox: the confirmation window, how many links will be sent (a number), above the list of them.",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "Send",
+    "description": "Firefox: the confirmation window's button that sends the links to DownloadPulse (Cancel closes it)."
+  },
   "quickAddTitle": {
     "message": "Quick Add",
     "description": "Popup: title of the field for pasting a link or magnet to send to DownloadPulse. DownloadPulse's own feature name: use the exact term the catalog's other strings use for Quick Add."

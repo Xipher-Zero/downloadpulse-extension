@@ -1,0 +1,37 @@
+<!doctype html>
+<!-- SPDX-License-Identifier: GPL-2.0-or-later -->
+<!-- DownloadPulse's own window asking whether to send what a page's button was pressed for
+     (Firefox; background/confirm.ts). No page can cover or script it. -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="confirmTitle"></title>
+  <link rel="stylesheet" href="../popup/popup.css">
+  <style>
+    body { margin: 0; width: auto; background: var(--dp-bg-app); color: var(--dp-text-primary); font: 14px/1.4 system-ui, sans-serif; }
+    main { box-sizing: border-box; display: flex; flex-direction: column; gap: 10px; padding: 16px; height: 100vh; }
+    h1 { margin: 0; font-size: 17px; }
+    p { margin: 0; color: var(--dp-text-secondary); }
+    .dp-confirm__site { color: var(--dp-text-primary); font-weight: 600; overflow-wrap: anywhere; }
+    .dp-confirm__links { flex: 1 1 auto; min-height: 48px; margin: 0; padding: 8px 10px; overflow: auto; list-style: none;
+      border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1);
+      font: 12px/1.45 ui-monospace, monospace; color: var(--dp-text-primary); }
+    .dp-confirm__links li { overflow-wrap: anywhere; }
+    .dp-confirm__actions { display: flex; justify-content: flex-end; gap: 8px; }
+  </style>
+  <script src="confirm.js" defer></script>
+</head>
+<body>
+  <main class="dp-confirm">
+    <h1 data-i18n="confirmTitle"></h1>
+    <p data-i18n="confirmHint"></p>
+    <p class="dp-confirm__site" data-testid="site"></p>
+    <p data-testid="count"></p>
+    <ul class="dp-confirm__links" data-testid="links"></ul>
+    <div class="dp-confirm__actions">
+      <button type="button" class="dp-btn" data-action="cancel" data-i18n="popupCancel"></button>
+      <button type="button" class="dp-btn dp-btn--primary" data-action="send" data-i18n="confirmSend" disabled></button>
+    </div>
+  </main>
+</body>
+</html>

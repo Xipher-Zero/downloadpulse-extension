@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "最初の 100 件のリンクを送信しました。残りは DownloadPulse の「クイック追加」で追加してください。"
   },
+  "sendPageLimit": {
+    "message": "このページから短時間に送信した回数が多すぎます。少し待ってから、もう一度お試しください。"
+  },
+  "confirmTitle": {
+    "message": "DownloadPulse に送信しますか？"
+  },
+  "confirmHint": {
+    "message": "ページで DownloadPulse ボタンが押されました。送信される内容を確認してから、「送信」を選んでください。"
+  },
+  "confirmFrom": {
+    "message": "サイト：$SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "リンク：$COUNT$ 件",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "送信"
+  },
   "quickAddTitle": {
     "message": "クイック追加"
   },

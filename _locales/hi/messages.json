@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "पहले 100 लिंक भेजे गए। बाकी लिंक DownloadPulse में \"त्वरित जोड़ें\" से जोड़ें।"
   },
+  "sendPageLimit": {
+    "message": "इस पेज से कम समय में बहुत अधिक बार भेजा गया। थोड़ी देर रुकें और फिर से प्रयास करें।"
+  },
+  "confirmTitle": {
+    "message": "DownloadPulse को भेजें?"
+  },
+  "confirmHint": {
+    "message": "किसी पेज पर DownloadPulse बटन दबाया गया। जाँच लें कि क्या भेजा जाएगा, फिर \"भेजें\" चुनें।"
+  },
+  "confirmFrom": {
+    "message": "साइट: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "लिंक: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "भेजें"
+  },
   "quickAddTitle": {
     "message": "त्वरित जोड़ें"
   },

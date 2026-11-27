@@ -19,7 +19,9 @@ import {restIcon} from "./icon";
 import {popupOpen, wake} from "./monitor";
 import {message} from "../shared/i18n";
 import {cancel, connectLocal, connectRemote, pairLocal} from "./pairing";
-import {sendSelection, sendUrl, quickAdd, sendVideo} from "./submit";
+import {feedback, sendSelection, sendUrl, quickAdd, sendVideo, type Origin} from "./submit";
+import {forgetTab, pageSend, pageSingles} from "./page-sends";
+import {answer as answerConfirmation, ask as askConfirmation, shown as confirmationShown, type PageRequest} from "./confirm";
 import {forgetSentKey} from "./sent-keys";
 import {listen as listenForDownloads, settleHeld} from "./capture";
 
@@ -28,7 +30,8 @@ type Request =
   | {type: "cancel"} | {type: "dp-open"}
   | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-send-video"; url?: string} | {type: "dp-send-selection"; text: string} | {type: "dp-has-video"}
   | {type: "dp-popup-open"} | {type: "dp-quick-add"; text: string} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
-  | {type: "dp-disconnect"} | {type: "dp-settle-held"} | {type: "dp-capture-usable"};
+  | {type: "dp-disconnect"} | {type: "dp-settle-held"} | {type: "dp-capture-usable"}
+  | {type: "dp-confirm-get"; id: string} | {type: "dp-confirm-answer"; id: string; send: boolean};
 
 /** WS-E4: Disconnect revokes this browser's token on the server, then forgets it here (even if the server is unreachable). */
 async function disconnect(): Promise<{revoked: boolean}> {
@@ -72,6 +75,77 @@ async function frameState(sender: chrome.runtime.MessageSender):
   // The master switch first: off, the page offers nothing (its own choices are kept for when it is on).
   const on = chosen.inPage && !off;
   return {connected: true, hover: on && chosen.hover, video: on && chosen.video, appearance: await appearance()};
+}
+
+/**
+ * Whether a page's buttons may be offered in its frames, not only the tab's own page: only where the
+ * browser can say a button is drawn uncovered (Intersection Observer v2, Chromium). Elsewhere (Gecko)
+ * a framing page could fade or cover the frame unseen (operator, 2026-11-27; content/index.ts).
+ */
+const buttonsInFrames = chrome.runtime.getURL("").startsWith("chrome-extension:");
+
+/**
+ * Whether a press on a page's button is confirmed in DownloadPulse's own window before it sends
+ * (background/confirm.ts): where the browser can't say the button was drawn uncovered (Gecko;
+ * operator, 2026-11-27). A test build may ask for it everywhere (scripts/build.mjs).
+ */
+declare const __DP_CONFIRM_EVERYWHERE__: boolean;
+const confirmInWindow = !buttonsInFrames || (typeof __DP_CONFIRM_EVERYWHERE__ !== "undefined" && __DP_CONFIRM_EVERYWHERE__);
+
+const surfaceOf = (request: PageRequest): "hover" | "video" => (request.kind === "video" ? "video" : "hover");
+
+/** Whether a page's button may send for ``sender`` now (connected, offered there): told when not connected. */
+async function offered(sender: chrome.runtime.MessageSender, request: PageRequest, origin: Origin): Promise<boolean> {
+  const state = await frameState(sender);
+  // Held or gone since the page asked: told, as before; nothing is fetched or sent.
+  if (!state.connected) {
+    await feedback(origin, "sendNotConnected", false);
+    return false;
+  }
+  return state[surfaceOf(request)] && (buttonsInFrames || (sender.frameId ?? 0) === 0);
+}
+
+/** A page button's send, made: within the tab's allowance of separate jobs. */
+function perform(request: PageRequest, origin: Origin, tabId: number, tab: chrome.tabs.Tab | undefined): Promise<void> {
+  const allow = (wanted: number) => pageSingles(tabId, wanted);
+  if (request.kind === "link") return sendUrl(request.url, origin, allow);
+  if (request.kind === "selection") return sendSelection(request.text, origin, allow);
+  return sendVideo(request.url, origin, tab);
+}
+
+/**
+ * A send from a page's button (1.0.8, WS-A3): only while that button is offered there now -- the
+ * person's settings for the tab's site read again, never the content script's own record of an
+ * answer it was given -- and within the tab's allowance (background/page-sends.ts). Where it
+ * must be confirmed, it is only asked about here (``confirmInWindow``).
+ */
+async function fromButton(sender: chrome.runtime.MessageSender, request: PageRequest): Promise<void> {
+  const tabId = sender.tab?.id;
+  if (tabId === undefined) return;
+  const origin = {tabId, frameId: sender.frameId ?? 0};
+  if (!(await offered(sender, request, origin))) return;
+  if (!pageSend(tabId)) {
+    await feedback(origin, "sendPageLimit", false);
+    return;
+  }
+  if (!confirmInWindow) {
+    await perform(request, origin, tabId, sender.tab);
+    return;
+  }
+  const tab = sender.tab as chrome.tabs.Tab & {cookieStoreId?: string};
+  await askConfirmation({request, tabId, frameId: origin.frameId, tabUrl: tab.url ?? sender.url ?? "", frameUrl: sender.url ?? "",
+    ...(tab.cookieStoreId ? {cookieStoreId: tab.cookieStoreId} : {})});
+}
+
+/** Send, in a question's window: sent as the press would have been, its site's settings read again now. */
+async function confirmed(id: string, send: boolean): Promise<void> {
+  const asked = await answerConfirmation(id, send);
+  if (!asked) return;
+  const tab = {id: asked.tabId, url: asked.tabUrl, ...(asked.cookieStoreId ? {cookieStoreId: asked.cookieStoreId} : {})} as chrome.tabs.Tab;
+  const sender = {id: chrome.runtime.id, tab, url: asked.frameUrl, frameId: asked.frameId} as chrome.runtime.MessageSender;
+  const origin = {tabId: asked.tabId, frameId: asked.frameId};
+  if (!(await offered(sender, asked.request, origin))) return;
+  await perform(asked.request, origin, asked.tabId, tab);
 }
 
 chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
@@ -121,9 +195,7 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
       void frameState(sender).then(respond);
       return true;
     case "dp-send":
-      if (fromPage && typeof request.url === "string" && sender.tab?.id !== undefined) {
-        void sendUrl(request.url, {tabId: sender.tab.id, frameId: sender.frameId ?? 0});
-      }
+      if (fromPage && typeof request.url === "string") void fromButton(sender, {kind: "link", url: request.url});
       return undefined;
     case "dp-send-video": {
       // The frame's current address (a single-page site changes it in place; the browser's
@@ -131,17 +203,25 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
       // origin the browser reports for that frame: a frame sends only its own site's video,
       // with the cookies for exactly that address (2026-11-19).
       const href = videoAddress(request.url, sender.url);
-      if (fromPage && href && sender.tab?.id !== undefined) {
-        void sendVideo(href, {tabId: sender.tab.id, frameId: sender.frameId ?? 0}, sender.tab);
-      }
+      if (fromPage && href) void fromButton(sender, {kind: "video", url: href});
       return undefined;
     }
     case "dp-send-selection":
       // The page's selection, as the right-click "selection" item sends it (a site may block right-click).
-      if (fromPage && typeof request.text === "string" && request.text.length <= 200_000 && sender.tab?.id !== undefined) {
-        void sendSelection(request.text, {tabId: sender.tab.id, frameId: sender.frameId ?? 0});
+      // Offered with the hover icon (content/index.ts offerSelection), so only while that is on.
+      if (fromPage && typeof request.text === "string" && request.text.length <= 200_000) {
+        void fromButton(sender, {kind: "selection", text: request.text});
       }
       return undefined;
+    case "dp-confirm-get":
+      // The question's own window (an extension page) only: never a page's content script.
+      if (fromPage || typeof request.id !== "string") return undefined;
+      void confirmationShown(request.id).then(respond);
+      return true;
+    case "dp-confirm-answer":
+      if (fromPage || typeof request.id !== "string") return undefined;
+      void confirmed(request.id, request.send === true).then(() => respond({}), () => respond({}));
+      return true;
     case "dp-has-video":
       if (fromPage && pageAction && sender.tab?.id !== undefined) {
         const tabId = sender.tab.id;
@@ -151,6 +231,8 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
   }
   return undefined;
 });
+
+chrome.tabs?.onRemoved?.addListener((tabId) => forgetTab(tabId));
 
 // Browser downloads (1.0.2): listened to only while the optional "downloads" permission is granted.
 listenForDownloads();

@@ -51,7 +51,7 @@ test.afterEach(async () => {
   await site.close();
 });
 
-const openLayers = (page) => page.evaluate(() => [...document.querySelectorAll("downloadpulse-layer:popover-open")].filter((h) => getComputedStyle(h).display !== "none").length);
+const openLayers = (page) => page.evaluate(() => [...document.querySelectorAll(":root > div[popover]:popover-open")].filter((h) => getComputedStyle(h).display !== "none").length);
 
 async function hoverOffered(page, selector) {
   const box = await page.locator(selector).boundingBox();
@@ -429,10 +429,11 @@ test("a notification kind switched off is not raised", async () => {
   await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
   await expect.poll(() => openLayers(page)).toBe(1);
   const at = await page.evaluate(() => {
-    const r = document.querySelector("downloadpulse-layer:popover-open").getBoundingClientRect();
+    const r = document.querySelector(":root > div[popover]:popover-open").getBoundingClientRect();
     return {x: r.left + r.width / 2, y: r.top + r.height / 2};
   });
   await page.mouse.move(at.x, at.y, {steps: 3});
+  await page.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
   await page.mouse.click(at.x, at.y);
   await expect.poll(() => dp.state.views.size).toBe(1);
   const [id] = dp.state.views.keys();

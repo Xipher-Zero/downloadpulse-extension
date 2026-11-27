@@ -55,12 +55,13 @@ test("connect to a real DownloadPulse: sign in, approve, verified", async () => 
     await site.goto(`http://127.0.0.1:${server.address().port}/`);
     const box = await site.locator("#dl").boundingBox();
     await site.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
-    await expect.poll(() => site.evaluate(() => document.querySelectorAll("downloadpulse-layer:popover-open").length)).toBe(1);
+    await expect.poll(() => site.evaluate(() => document.querySelectorAll(":root > div[popover]:popover-open").length)).toBe(1);
     const layer = await site.evaluate(() => {
-      const r = document.querySelector("downloadpulse-layer:popover-open").getBoundingClientRect();
+      const r = document.querySelector(":root > div[popover]:popover-open").getBoundingClientRect();
       return {x: r.left + r.width / 2, y: r.top + r.height / 2};
     });
     await site.mouse.move(layer.x, layer.y, {steps: 3});
+    await site.waitForTimeout(400);   // a press counts once the button has stood still, seen (1.0.8)
     await site.mouse.click(layer.x, layer.y);
     const requests = async () => page.evaluate(async () =>
       (await (await window.debridPulseAuth.fetch("/api/requests")).json()).requests);

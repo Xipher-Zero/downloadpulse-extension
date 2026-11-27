@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "已发送前100个链接。请在DownloadPulse中使用“快速添加”添加其余链接。"
   },
+  "sendPageLimit": {
+    "message": "此页面在短时间内发送次数过多。请稍候再试。"
+  },
+  "confirmTitle": {
+    "message": "发送到DownloadPulse？"
+  },
+  "confirmHint": {
+    "message": "已在页面上按下DownloadPulse按钮。请检查将要发送的内容，然后选择“发送”。"
+  },
+  "confirmFrom": {
+    "message": "网站：$SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "链接：$COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "发送"
+  },
   "quickAddTitle": {
     "message": "快速添加"
   },

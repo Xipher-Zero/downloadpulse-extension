@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "100 tautan pertama terkirim. Tambahkan sisanya dengan “Tambah cepat” di DownloadPulse."
   },
+  "sendPageLimit": {
+    "message": "Terlalu banyak pengiriman dari halaman ini dalam waktu singkat. Tunggu sebentar, lalu coba lagi."
+  },
+  "confirmTitle": {
+    "message": "Kirim ke DownloadPulse?"
+  },
+  "confirmHint": {
+    "message": "Tombol DownloadPulse ditekan di sebuah halaman. Periksa apa yang akan dikirim, lalu pilih “Kirim”."
+  },
+  "confirmFrom": {
+    "message": "Situs: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "Tautan: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "Kirim"
+  },
   "quickAddTitle": {
     "message": "Tambah cepat"
   },

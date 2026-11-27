@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "已傳送前100個連結。請在DownloadPulse中使用「快速新增」新增其餘連結。"
   },
+  "sendPageLimit": {
+    "message": "此頁面在短時間內傳送次數過多。請稍候再試。"
+  },
+  "confirmTitle": {
+    "message": "傳送到DownloadPulse？"
+  },
+  "confirmHint": {
+    "message": "已在頁面上按下DownloadPulse按鈕。請檢查將要傳送的內容，然後選擇「傳送」。"
+  },
+  "confirmFrom": {
+    "message": "網站：$SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "連結：$COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "傳送"
+  },
   "quickAddTitle": {
     "message": "快速新增"
   },

@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "Надіслано перші 100 посилань. Додайте решту через «Швидке додавання» в DownloadPulse."
   },
+  "sendPageLimit": {
+    "message": "Забагато спроб надсилання з цієї сторінки за короткий час. Зачекайте трохи й спробуйте ще раз."
+  },
+  "confirmTitle": {
+    "message": "Надіслати в DownloadPulse?"
+  },
+  "confirmHint": {
+    "message": "На сторінці натиснуто кнопку DownloadPulse. Перевірте, що буде надіслано, і виберіть «Надіслати»."
+  },
+  "confirmFrom": {
+    "message": "Сайт: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "Посилання: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "Надіслати"
+  },
   "quickAddTitle": {
     "message": "Швидке додавання"
   },

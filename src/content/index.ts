@@ -7,6 +7,14 @@
 // This script makes no network request, reads no storage and holds no
 // secret (WS-E2 §3): it asks the background whether it may offer anything,
 // and hands the background a URL to send.
+//
+// The page it runs in is not trusted to drive it (1.0.8, WS-A3): a button is
+// placed, shown and pressed only by the person's own input (``isTrusted``),
+// its host is a built-in element whose look and place no page style or script
+// can change unnoticed, and a press counts only on a button that was drawn,
+// unhidden and uncovered, where the person pressed, for long enough to be seen.
+// Where the browser can't say whether a button is covered (Gecko), a frame
+// offers no buttons, nor a page with anything of its own in the top layer.
 
 import {parseAppearance} from "../shared/appearance";
 import {extractUrls, isDownloadCandidate, isIndexerLink, urlAt} from "../shared/classify";
@@ -18,6 +26,16 @@ const HIDE_DELAY_MS = 300;
 const GAP = 8;   // between a link's text and the icon
 const SLACK = 4; // around a link's text, still on it
 const TOAST_MS = 3500;
+/**
+ * A press counts only on a button that had stood still where it is drawn this long when the person
+ * pressed it (operator, 2026-11-27): about the quickest a person reacts to something that appears
+ * (simple visual reaction time is some 200-250 ms), so a press this soon can't be aimed at the
+ * button -- it was already on its way to whatever the button came up over. A person who sees the
+ * button and moves to it takes longer, so they never meet this.
+ */
+const STILL_MS = 200;
+/** A selection made this soon after the person's own pointer or key input is theirs; later, the page's. */
+const INPUT_WINDOW_MS = 1000;
 interface Offer { hover: boolean; video: boolean; colours: PageColours }
 const prefersDark = () => matchMedia("(prefers-color-scheme: dark)").matches;
 let offer: Offer | null = null;
@@ -51,8 +69,32 @@ async function ask(): Promise<Offer> {
 // The page surfaces in the person's DownloadPulse theme (src/shared/page-theme.ts):
 // the send button is DownloadPulse's primary button material, a toast its
 // surface with the state colour along its edge. Set on each layer's host.
+// The host's look and place (1.0.8, WS-A3): set here with !important, which outranks any page rule
+// or inline style on the host (an important declaration inside a shadow tree wins over the outer
+// one), so a page can't hide, fade, scale, clip or cover the button. Where it stands is its inline
+// left/top, also !important, checked against the extension's own record before a press counts.
+const HOST_STYLE: Record<string, string> = {
+  position: "fixed", margin: "0", padding: "0", border: "0", background: "transparent", overflow: "visible",
+  width: "auto", height: "auto", "min-width": "0", "min-height": "0", "max-width": "none", "max-height": "none",
+  "box-sizing": "content-box", "box-shadow": "none", outline: "none", float: "none", opacity: "1", visibility: "visible",
+  transform: "none", translate: "none", scale: "none", rotate: "none", "offset-path": "none", zoom: "1",
+  filter: "none", "backdrop-filter": "none", "clip-path": "none", clip: "auto", mask: "none", "-webkit-mask-box-image": "none",
+  "mix-blend-mode": "normal", "z-index": "2147483647", "pointer-events": "auto", transition: "none", animation: "none",
+  "content-visibility": "visible", contain: "none", "will-change": "auto", perspective: "none",
+  // Anchor positioning and self-alignment move an absolutely placed box without touching its left/top
+  // (review, 2026-11-27); view transitions and anchors let a page draw over or beside it as its own.
+  "position-area": "none", "inset-area": "none", "position-anchor": "auto", "position-try-fallbacks": "none",
+  "position-try-order": "normal", "position-visibility": "always", "anchor-name": "none", "anchor-scope": "none",
+  "justify-self": "auto", "align-self": "auto", "place-self": "auto", "view-transition-name": "none",
+  "writing-mode": "horizontal-tb",
+};
+const HOST_RULES = Object.entries(HOST_STYLE).map(([name, value]) => `${name}: ${value} !important;`).join(" ");
 const STYLE = `
   :host { all: initial; }
+  :host(:popover-open) { ${HOST_RULES} display: block !important; }
+  :host(:not(:popover-open)) { display: none !important; }
+  :host::before, :host::after { content: none !important; display: none !important; }
+  :host::backdrop { display: none !important; background: none !important; }
   button { all: unset; box-sizing: border-box; width: ${BUTTON}px; height: ${BUTTON}px; border-radius: 50%;
     display: grid; place-items: center; cursor: pointer; background: var(--dp-primary);
     border: 1px solid var(--dp-primary-border); color: var(--dp-primary-text);
@@ -74,17 +116,20 @@ const STYLE = `
   .toast.error { border-inline-start-color: var(--dp-error); }`;
 const layers: Layer[] = [];
 
-/** Every layer in the theme's colours (custom properties cross into the closed shadow root). */
+/** Every layer in the theme's colours. */
 function paint(colours: PageColours): void {
   for (const made of layers) colour(made, colours);
 }
 
+/** The theme's colours as the layer's own custom properties, set inside its shadow root with
+ * !important: a page rule on the host (``--dp-primary: transparent !important``) can't blank the button. */
 function colour(made: Layer, colours: PageColours): void {
-  for (const [name, value] of Object.entries({primary: colours.primary, "primary-border": colours.primaryBorder,
+  made.colours.textContent = `:host { ${Object.entries({primary: colours.primary, "primary-border": colours.primaryBorder,
     "primary-text": colours.primaryText, focus: colours.focus, surface: colours.surface, text: colours.text,
-    border: colours.border, success: colours.success, error: colours.error})) {
-    made.host.style.setProperty(`--dp-${name}`, value);
-  }
+    border: colours.border, success: colours.success, error: colours.error})
+    // The extension's own palette values; anything that could end the declaration is left out.
+    .filter(([, value]) => !/[;{}<>\\]/.test(value))
+    .map(([name, value]) => `--dp-${name}: ${value} !important;`).join(" ")} }`;
 }
 const SVG = "http://www.w3.org/2000/svg";
 
@@ -103,29 +148,109 @@ function arrow(): SVGSVGElement {
   return svg;
 }
 
-/** A layer the extension draws on a page, and whether it is shown -- its own record, never read back from the page. */
-interface Layer { host: HTMLElement; root: ShadowRoot; shown: boolean }
+/**
+ * A layer the extension draws on a page, and whether it is shown -- its own record, never read
+ * back from the page: where it put it (``at``), where it is drawn (``drawn``: the box the browser
+ * reports, looked at every frame) and since when it has been drawn there (``placedAt``), since when
+ * it has been up (``shownAt``), since when the browser has seen it drawn and uncovered
+ * (``seenSince``), and the person's last press on its button (``pressedAt``).
+ */
+interface Layer {
+  host: HTMLElement; root: ShadowRoot; colours: HTMLStyleElement; shown: boolean;
+  at: Record<string, string>; drawn: DOMRect | null; placedAt: number; shownAt: number; seenSince: number | null;
+  pressedAt: number;
+}
+
+/**
+ * Whether the browser can say a layer is drawn uncovered (Intersection Observer v2, Chromium):
+ * then it is watched, and a press counts only while it is. Elsewhere (Gecko) the page's own
+ * top-layer elements are compared instead (``coveredByPage``).
+ */
+const seesCover = typeof IntersectionObserverEntry !== "undefined" && "isVisible" in IntersectionObserverEntry.prototype;
+/**
+ * Whether this frame may draw buttons at all. In a frame, the page around it can fade or cover it
+ * where nothing inside the frame can see (an iframe at opacity 0, a decoy above it): only where the
+ * browser itself says a button is drawn uncovered (Chromium) are buttons offered in frames
+ * (operator, 2026-11-27). Elsewhere a frame offers none; right-click and Firefox's URL-bar icon still send.
+ */
+const buttonsHere = seesCover || window === window.top;
+const sight = seesCover ? new IntersectionObserver((entries) => {
+  for (const entry of entries) {
+    const made = layers.find((item) => item.host === entry.target);
+    if (!made) continue;
+    const seen = entry.isIntersecting && (entry as IntersectionObserverEntry & {isVisible?: boolean}).isVisible === true;
+    made.seenSince = seen ? (made.seenSince ?? entry.time) : null;
+  }
+}, {threshold: [0, 1], trackVisibility: true, delay: 100} as IntersectionObserverInit) : null;
+
+/** Its look and place, set on the host itself as well, !important (a page's own rules lose to both). */
+function harden(made: Layer): void {
+  for (const [name, value] of [...Object.entries(HOST_STYLE), ...Object.entries(made.at)]) {
+    made.host.style.setProperty(name, value, "important");
+  }
+}
 
 function layer(): Layer {
-  const host = document.createElement("downloadpulse-layer");
+  // A built-in element (1.0.8, WS-A3): a page can define a custom element of any name the
+  // extension might use, run its own code as it is made and take its closed shadow root
+  // (attachInternals); it can define no element called div.
+  const host = document.createElement("div");
   host.setAttribute("popover", "manual");
-  Object.assign(host.style, {position: "fixed", inset: "auto", margin: "0", padding: "0", border: "0",
-    background: "transparent", overflow: "visible", width: "auto", height: "auto"});
   const root = host.attachShadow({mode: "closed"});
   const style = document.createElement("style");
   style.textContent = STYLE;
-  root.append(style);
-  const made = {host, root, shown: false};
+  const colours = document.createElement("style");
+  root.append(style, colours);
+  const made: Layer = {host, root, colours, shown: false, at: {inset: "auto"}, drawn: null, placedAt: 0, shownAt: 0,
+    seenSince: null, pressedAt: -Infinity};
   layers.push(made);
   colour(made, offer?.colours ?? pageColours(null, prefersDark() ? "dark" : "light"));
+  harden(made);
+  sight?.observe(host);
   return made;
 }
 
+/** Where a layer stands: its own record, set on the host (!important). Moved, it must stand still again before a press counts. */
+function stand(target: Layer, at: Record<string, string>): void {
+  for (const [name, value] of Object.entries(at)) target.host.style.setProperty(name, value, "important");
+  // Kept as the browser writes it (it rounds a length), to compare with what the host says later.
+  const written = Object.fromEntries(Object.keys(at).map((name) => [name, target.host.style.getPropertyValue(name)]));
+  if (JSON.stringify(written) !== JSON.stringify(target.at)) target.placedAt = performance.now();
+  target.at = written;
+  harden(target);
+}
+
+/**
+ * Where the layer is drawn now, as the browser lays it out -- whatever moved it (its place, a page
+ * rule, a zoom): changed, it has just been placed there, and must stand still again before a press
+ * counts. Answers whether it moved.
+ */
+function settle(target: Layer): boolean {
+  const box = target.host.getBoundingClientRect();
+  const was = target.drawn;
+  if (was && Math.abs(box.left - was.left) <= 1 && Math.abs(box.top - was.top) <= 1
+      && Math.abs(box.width - was.width) <= 1 && Math.abs(box.height - was.height) <= 1) return false;
+  target.drawn = box;
+  // Seen uncovered only from now on, where it now stands.
+  if (target.seenSince !== null) target.seenSince = performance.now();
+  target.placedAt = performance.now();
+  return true;
+}
+
+/** A send button: placed and shown, only where this frame may draw one and nothing of the page's is in the top layer it can't see past. */
 function place(target: Layer, left: number, top: number): void {
-  const x = Math.max(2, Math.min(left, innerWidth - BUTTON - 2));
-  const y = Math.max(2, Math.min(top, innerHeight - BUTTON - 2));
-  Object.assign(target.host.style, {left: `${x}px`, top: `${y}px`});
+  if (!buttonsHere || (!seesCover && pageTopLayerOpen())) {
+    withdraw(target);
+    return;
+  }
+  // A page that zooms its root (html { zoom: 1.5 }) zooms the layer too, its place with it: the place
+  // is given in the root's zoomed pixels, so the button stands where it was meant to (review, 2026-11-27).
+  const zoom = Number(getComputedStyle(document.documentElement).zoom) || 1;
+  const x = Math.max(2, Math.min(left, innerWidth - BUTTON * zoom - 2));
+  const y = Math.max(2, Math.min(top, innerHeight - BUTTON * zoom - 2));
+  stand(target, {left: `${x / zoom}px`, top: `${y / zoom}px`, right: "auto", bottom: "auto"});
   reveal(target);
+  settle(target);
 }
 
 /**
@@ -136,11 +261,21 @@ function place(target: Layer, left: number, top: number): void {
  */
 function reveal(target: Layer): void {
   if (!target.host.isConnected) document.documentElement.append(target.host);
+  const fresh = !target.shown;
+  if (fresh) target.placedAt = target.shownAt = performance.now();
+  harden(target);
   target.shown = true;
   try {
     if (!target.host.matches(":popover-open")) target.host.showPopover();
   } catch {
     // already in the top layer: it is in the page and drawn either way
+  }
+  // Up again: watched afresh, so the browser says anew whether it is drawn uncovered (it reports only
+  // changes, and one taken out and put back between two looks has not changed for it).
+  if (fresh && sight) {
+    target.seenSince = null;
+    sight.unobserve(target.host);
+    sight.observe(target.host);
   }
 }
 
@@ -148,6 +283,8 @@ function reveal(target: Layer): void {
 function withdraw(target: Layer | null): void {
   if (!target) return;
   target.shown = false;
+  target.seenSince = null;
+  target.drawn = null;
   try {
     if (target.host.matches(":popover-open")) target.host.hidePopover();
   } catch {
@@ -156,11 +293,159 @@ function withdraw(target: Layer | null): void {
   target.host.remove();
 }
 
+// ── what the person saw (1.0.8, WS-A3) ────────────────────────────────────
+
+const TOP_LAYER = [":popover-open", ":modal", ":fullscreen"];
+const SHADOW_DEPTH = 8;
+
+/**
+ * Whether anything of the page's own is in the top layer (a popover, a modal dialog, fullscreen),
+ * in its shadow trees too: drawn above the extension's layers or not, the extension can't tell
+ * where the browser can't say (Gecko). Shadow trees nested deeper than it looks count as such.
+ */
+function pageTopLayerScan(): boolean {
+  const ours = new Set<Element>(layers.map((item) => item.host));
+  const look = (root: Document | ShadowRoot, depth: number): boolean => {
+    for (const selector of TOP_LAYER) {
+      try {
+        for (const element of root.querySelectorAll(selector)) if (!ours.has(element)) return true;
+      } catch {
+        // a selector this browser does not know
+      }
+    }
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      const inner = ours.has(node as Element) ? null : shadowOf(node as Element);
+      if (!inner) continue;
+      if (depth >= SHADOW_DEPTH || look(inner, depth + 1)) return true;
+    }
+    return false;
+  };
+  return look(document, 0);
+}
+
+/** ``pageTopLayerScan``, its full walk at most every 100 ms (it is asked every frame a button is up); the page's own document every time. */
+let scannedAt = -Infinity;
+let scanned = false;
+function pageTopLayerOpen(): boolean {
+  const ours = new Set<Element>(layers.map((item) => item.host));
+  for (const selector of TOP_LAYER) {
+    try {
+      for (const element of document.querySelectorAll(selector)) if (!ours.has(element)) return true;
+    } catch {
+      // a selector this browser does not know
+    }
+  }
+  const now = performance.now();
+  if (now - scannedAt >= 100) {
+    scanned = pageTopLayerScan();
+    scannedAt = now;
+  }
+  return scanned;
+}
+
+/** When the page last put something of its own into the top layer (above any layer already there). */
+let pageRaisedAt = -Infinity;
+const raised = (event: Event) => {
+  if (layers.some((item) => item.host === event.target)) return;
+  if ((event as Event & {newState?: string}).newState === "closed") return;
+  if (event.type !== "fullscreenchange" && !(event.target instanceof HTMLElement && (event.target.hasAttribute("popover")
+    || event.target instanceof HTMLDialogElement))) return;
+  pageRaisedAt = performance.now();
+};
+for (const type of ["beforetoggle", "toggle", "fullscreenchange"]) addEventListener(type, raised, {capture: true});
+
+/**
+ * Where the browser can't say whether a layer is covered (Gecko): covered, as far as the extension
+ * can tell, while anything of the page's own is in the top layer, or once the page has put anything
+ * there since the layer went up -- drawn above it, even if it lets the press through
+ * (``pointer-events: none``). (While a button is up, one found makes it go: ``watch``.)
+ */
+function coveredByPage(made: Layer): boolean {
+  if (pageRaisedAt >= made.shownAt) return true;
+  scannedAt = -Infinity;
+  return pageTopLayerOpen();
+}
+
+/** Whether a computed look is as the extension drew it: shown, opaque, unscaled, unfiltered, unclipped. */
+function drawnPlainly(style: CSSStyleDeclaration): boolean {
+  const none = (name: string) => ["", "none"].includes(style.getPropertyValue(name).trim());
+  return style.display !== "none" && style.visibility === "visible" && Number(style.opacity) >= 0.99
+    && ["transform", "translate", "scale", "rotate", "filter", "clip-path", "mask-image", "offset-path", "position-area"].every(none)
+    && ["", "normal"].includes(style.getPropertyValue("mix-blend-mode").trim())
+    && ["", "1", "normal"].includes(style.getPropertyValue("zoom").trim());
+}
+
+/**
+ * Whether a press on ``made``'s ``button`` is the person's, on the button as the extension drew it
+ * (1.0.8, WS-A3): their own input (never a page's ``click()``), on the layer the extension shows,
+ * still in its place in the page and the top layer, drawn where it was when they pressed and as
+ * drawn (opaque, unscaled, unhidden), uncovered, standing still long enough before the press to
+ * have been seen, and where they pressed. Anything else does nothing.
+ */
+function genuine(made: Layer, button: HTMLButtonElement, event: MouseEvent): boolean {
+  if (!event.isTrusted || !made.shown || !buttonsHere) return false;
+  const host = made.host;
+  if (!host.isConnected || host.parentNode !== document.documentElement) return false;
+  try {
+    if (!host.matches(":popover-open")) return false;
+  } catch {
+    return false;
+  }
+  const now = performance.now();
+  // Drawn where it was: moved by anything since the last look (a frame ago, or the press), it doesn't count.
+  if (settle(made)) return false;
+  // Where the extension put it, unchanged (a page's script may rewrite the host's inline style).
+  if (Object.entries(made.at).some(([name, value]) => host.style.getPropertyValue(name) !== value)) return false;
+  const hostStyle = getComputedStyle(host);
+  // The button itself: no page rule reaches into its shadow root, only what it inherits from the host
+  // (its own hover brightens it with a filter, so only these are looked at there).
+  const buttonStyle = getComputedStyle(button);
+  if (hostStyle.position !== "fixed" || !drawnPlainly(hostStyle) || buttonStyle.visibility !== "visible"
+      || Number(buttonStyle.opacity) < 0.99) return false;
+  // The page's own root: its opacity, clip and mask don't reach the top layer (either engine, measured
+  // 2026-11-27); its filter does in Gecko (opacity(0) hides a top-layer box there, not in Chromium).
+  const rootStyle = getComputedStyle(document.documentElement);
+  if (rootStyle.display === "none" || (!seesCover && /opacity|url\(/.test(rootStyle.filter))) return false;
+  const shown = button as HTMLButtonElement & {checkVisibility?(options?: object): boolean};
+  if (shown.checkVisibility && !shown.checkVisibility({visibilityProperty: true, contentVisibilityAuto: true})) return false;
+  const box = button.getBoundingClientRect();
+  if (box.width < BUTTON / 2 || box.width > BUTTON * 2 || box.height < BUTTON / 2 || box.height > BUTTON * 2) return false;
+  const drawn = made.drawn!;
+  if (box.left < drawn.left - 1 || box.right > drawn.right + 1 || box.top < drawn.top - 1 || box.bottom > drawn.bottom + 1) return false;
+  let pressed: number;
+  if (event.detail === 0) {
+    // A key on the focused button (Enter, Space): the person's focus is on it, pressed now.
+    if (made.root.activeElement !== button) return false;
+    pressed = now;
+  } else {
+    // A pointer: pressed and released on the button itself, where it is drawn.
+    pressed = made.pressedAt;
+    if (now - pressed > 10_000) return false;
+    if (event.clientX < box.left - 1 || event.clientX > box.right + 1 || event.clientY < box.top - 1 || event.clientY > box.bottom + 1) {
+      return false;
+    }
+  }
+  // Standing still where it is drawn, long enough before the press to have been seen there.
+  if (pressed - made.placedAt < STILL_MS) return false;
+  // Seen uncovered by the browser, without a break, for as long as it has to stand still before the
+  // press (a page flicking a cover over it, leaving it bare a frame now and then, never gets there),
+  // and nothing of the page's put into the top layer meanwhile.
+  if (sight) return made.seenSince !== null && pressed - made.seenSince >= STILL_MS && pageRaisedAt < pressed - STILL_MS;
+  return !coveredByPage(made);
+}
+
 function sendButton(label: string, onSend: () => void): Layer {
   const made = layer();
   const button = document.createElement("button");
-  // Pressing it must not take the page's selection away (the batch button sends it).
-  button.addEventListener("pointerdown", (event) => event.preventDefault());
+  button.addEventListener("pointerdown", (event) => {
+    if (!event.isTrusted) return;
+    // Pressing it must not take the page's selection away (the batch button sends it).
+    event.preventDefault();
+    // Where it is drawn as it is pressed: moved since the last frame, it has only just stood there.
+    settle(made);
+    made.pressedAt = performance.now();
+  });
   button.type = "button";
   button.append(arrow());
   button.setAttribute("aria-label", label);
@@ -168,7 +453,9 @@ function sendButton(label: string, onSend: () => void): Layer {
   button.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
-    onSend();
+    const person = genuine(made, button, event);
+    made.pressedAt = -Infinity;
+    if (person) onSend();
   });
   made.root.append(button);
   return made;
@@ -420,6 +707,8 @@ async function track(event: Pointer): Promise<void> {
 document.addEventListener("fullscreenchange", () => { if (document.fullscreenElement) withdraw(video); });
 
 document.addEventListener("pointermove", (event) => {
+  // Only the person's own pointer places a button (a page's synthetic events never do).
+  if (!event.isTrusted) return;
   if (!pending) requestAnimationFrame(() => {
     const latest = pending;
     pending = null;
@@ -453,6 +742,8 @@ let batch: Layer | null = null;
 let batchText = "";
 let batchAt: DOMRect | null = null;   // where the selection's end was when the button was placed
 let selectionTimer = 0;
+/** The selection the person made (by their own pointer or keys), the only one offered again after a scroll or move. */
+let chosenText = "";
 
 /** Whether ``rect`` (of ``element``) is drawn and inside the window: only there can a button stand by it. */
 function onScreen(rect: DOMRect, element: Element | null): boolean {
@@ -502,12 +793,28 @@ function selected(): {text: string; rect: DOMRect; rtl: boolean} | null {
   return {text: chosen.toString(), rect: end.rect, rtl: getComputedStyle(end.holder).direction === "rtl"};
 }
 
-async function offerSelection(): Promise<void> {
+/** Whether anything is selected at all, on screen or not (a text box's selection too). */
+function anySelection(): boolean {
+  const field = document.activeElement;
+  if ((field instanceof HTMLTextAreaElement || field instanceof HTMLInputElement) && field.selectionStart !== null
+      && field.selectionEnd !== null && field.selectionEnd > field.selectionStart) return true;
+  const chosen = getSelection();
+  return Boolean(chosen && !chosen.isCollapsed && chosen.rangeCount);
+}
+
+/**
+ * The batch button for the selection: offered for one the person just made (``byPerson``), and
+ * otherwise only again for that same one (after a scroll or a move) -- never for a selection a
+ * page's script made on its own (1.0.8, WS-A3).
+ */
+async function offerSelection(byPerson: boolean): Promise<void> {
   const may = await mayOffer();
   const found = may.hover ? selected() : null;
   const urls = found ? extractUrls(found.text) : [];
   const worth = urls.length >= 2 || urls.some((url) => /^magnet:\?/i.test(url) || isDownloadCandidate(url));
-  if (!found || !worth) {
+  if (!anySelection()) chosenText = "";
+  if (found && worth && byPerson) chosenText = found.text;
+  if (!found || !worth || found.text !== chosenText) {
     withdraw(batch);
     return;
   }
@@ -534,10 +841,24 @@ async function offerSelection(): Promise<void> {
 }
 
 // A page's selection (selectionchange), and a text box's own (its select event,
-// which a page's selectionchange need not report), settled for a moment.
-function selectionChanged(): void {
+// which a page's selectionchange need not report), settled for a moment. The
+// browser reports a selection a page's script makes just as it does the person's,
+// so it is the person's only when it follows their own pointer or keys.
+let lastInput = -Infinity;
+let selectionByPerson = false;
+const input = (event: Event) => { if (event.isTrusted) lastInput = performance.now(); };
+for (const type of ["pointerdown", "pointerup", "mousedown", "mouseup", "keydown", "keyup", "touchstart", "touchend"]) {
+  document.addEventListener(type, input, {passive: true, capture: true});
+}
+function selectionChanged(event: Event): void {
+  const direct = event.type === "mouseup" || event.type === "keyup";
+  selectionByPerson ||= event.isTrusted && (direct || performance.now() - lastInput < INPUT_WINDOW_MS);
   clearTimeout(selectionTimer);
-  selectionTimer = window.setTimeout(() => void offerSelection(), 250);
+  selectionTimer = window.setTimeout(() => {
+    const byPerson = selectionByPerson;
+    selectionByPerson = false;
+    void offerSelection(byPerson);
+  }, 250);
 }
 document.addEventListener("selectionchange", selectionChanged);
 document.addEventListener("select", selectionChanged, {capture: true});
@@ -549,7 +870,7 @@ let scrollTimer = 0;
 addEventListener("scroll", () => {
   withdraw(batch);
   clearTimeout(scrollTimer);
-  scrollTimer = window.setTimeout(() => void offerSelection(), 200);
+  scrollTimer = window.setTimeout(() => void offerSelection(false), 200);
 }, {passive: true, capture: true});
 
 // ── keeping the icons on what they belong to ───────────────────────────────
@@ -566,6 +887,13 @@ function watch(): void {
   if (watching) return;
   watching = true;
   const look = () => {
+    // Where each button is drawn, every frame: moved (by anything), it must stand still again before a press counts.
+    for (const made of [hover, batch, video]) if (made?.shown) settle(made);
+    // Where the browser can't say a button is covered: anything of the page's in the top layer, and the buttons go.
+    if (!seesCover && (hover?.shown || batch?.shown || video?.shown) && pageTopLayerOpen()) {
+      withdrawPointerSurfaces();
+      withdraw(batch);
+    }
     const hoverShown = Boolean(hover?.shown);
     const batchShown = Boolean(batch?.shown);
     if (hoverShown && hoverAnchor && moved(hoverAnchor(), hoverAt)) withdrawPointerSurfaces();
@@ -573,7 +901,7 @@ function watch(): void {
     if (batchShown && moved(selected()?.rect ?? null, batchAt)) {
       withdraw(batch);
       clearTimeout(scrollTimer);
-      scrollTimer = window.setTimeout(() => void offerSelection(), 200);
+      scrollTimer = window.setTimeout(() => void offerSelection(false), 200);
     }
     if (hover?.shown || batch?.shown || video?.shown) requestAnimationFrame(look);
     else watching = false;
@@ -608,7 +936,7 @@ chrome.runtime.onMessage.addListener((request: {type?: string; text?: string; ok
   box.textContent = String(request.text ?? "");
   box.addEventListener("click", () => withdraw(toast));
   toast.root.append(box);
-  Object.assign(toast.host.style, {right: "16px", bottom: "16px", left: "auto", top: "auto"});
+  stand(toast, {right: "16px", bottom: "16px", left: "auto", top: "auto"});
   reveal(toast);
   clearTimeout(toastTimer);
   toastTimer = window.setTimeout(() => withdraw(toast), TOAST_MS + 300);

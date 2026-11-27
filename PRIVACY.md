@@ -70,7 +70,7 @@ The extension does not run in private or incognito windows.
 ## Permissions
 
 - **Every web page (http and https)**, including the frames inside them:
-  - to show its download buttons beside links, video players and selected links;
+  - to show its download buttons beside links, video players and selected links. In Firefox they appear only on the page itself, not in frames inside it (there, right-click and the address-bar icon still send), and a press on one opens a small DownloadPulse window showing what would be sent; nothing is sent until you choose Send there;
   - to fetch a `.torrent`, `.nzb` or indexer file with your sign-in on the site serving it;
   - to reach your DownloadPulse.
 - **Storage:** to keep the items listed above.

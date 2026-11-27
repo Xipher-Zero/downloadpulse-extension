@@ -22,23 +22,32 @@ const ENTRIES = {
   "background": "src/background/index.ts",
   "content": "src/content/index.ts",
   "popup/popup": "src/popup/popup.ts",
+  "confirm/confirm": "src/confirm/confirm.ts",
 };
 const STATIC = [
   ["src/popup/popup.css", "popup/popup.css"],
+  ["src/confirm/confirm.html", "confirm/confirm.html"],
   ["_locales", "_locales"],
   ["static/icons", "icons"],
   ["static/fonts", "fonts"],
   ["LICENSE", "LICENSE"],
 ];
 
+// A test build only (DP_CONFIRM_EVERYWHERE=1, into dist/test-confirm): an in-page press is confirmed in
+// DownloadPulse's own window in every browser, as Firefox always does (background/confirm.ts), so
+// that flow can be driven in Chromium's end-to-end tests. Never in a package (scripts/package.mjs uses dist/).
+const confirmEverywhere = process.env.DP_CONFIRM_EVERYWHERE === "1";
+const DIST = confirmEverywhere ? "dist/test-confirm" : "dist";
+
 for (const browser of ["chromium", "firefox"]) {
-  const out = path(`dist/${browser}/`);
+  const out = path(`${DIST}/${browser}/`);
   await rm(out, { recursive: true, force: true });
   await mkdir(out, { recursive: true });
   await build({
     entryPoints: Object.fromEntries(Object.entries(ENTRIES).map(([k, v]) => [k, path(v)])),
     outdir: out, bundle: true, format: "iife", target: ["chrome120", "firefox140"],
     legalComments: "none", logLevel: "warning",
+    define: {__DP_CONFIRM_EVERYWHERE__: confirmEverywhere ? "true" : "false"},
   });
   for (const [from, to] of STATIC) await cp(path(from), out + to, { recursive: true });
   // DownloadPulse's mark, drawn inline so its colours follow the theme
@@ -69,4 +78,4 @@ for (const browser of ["chromium", "firefox"]) {
   if (browser === "chromium" && commit) made.version_name = `${version} (${commit})`;
   await writeFile(out + "manifest.json", JSON.stringify(made, null, 2) + "\n");
 }
-console.log(`built dist/chromium and dist/firefox (version ${version})`);
+console.log(`built ${DIST}/chromium and ${DIST}/firefox (version ${version})`);

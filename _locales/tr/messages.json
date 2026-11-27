@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "İlk 100 bağlantı gönderildi. Kalanları DownloadPulse'ta Hızlı ekle ile ekleyin."
   },
+  "sendPageLimit": {
+    "message": "Bu sayfadan kısa sürede çok fazla gönderim yapıldı. Biraz bekleyip yeniden deneyin."
+  },
+  "confirmTitle": {
+    "message": "DownloadPulse'a gönderilsin mi?"
+  },
+  "confirmHint": {
+    "message": "Bir sayfada DownloadPulse düğmesine basıldı. Neyin gönderileceğini kontrol edin, ardından Gönder'i seçin."
+  },
+  "confirmFrom": {
+    "message": "Site: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "Bağlantılar: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "Gönder"
+  },
   "quickAddTitle": {
     "message": "Hızlı ekle"
   },

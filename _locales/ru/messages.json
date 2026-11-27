@@ -490,6 +490,36 @@
   "sendSelectionCapped": {
     "message": "Отправлены первые 100 ссылок. Добавьте остальные через «Быстрое добавление» в DownloadPulse."
   },
+  "sendPageLimit": {
+    "message": "Слишком много отправок с этой страницы за короткое время. Подождите немного и повторите попытку."
+  },
+  "confirmTitle": {
+    "message": "Отправить в DownloadPulse?"
+  },
+  "confirmHint": {
+    "message": "На странице нажата кнопка DownloadPulse. Проверьте, что будет отправлено, и выберите «Отправить»."
+  },
+  "confirmFrom": {
+    "message": "Сайт: $SITE$",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "example.com"
+      }
+    }
+  },
+  "confirmLinks": {
+    "message": "Ссылки: $COUNT$",
+    "placeholders": {
+      "count": {
+        "content": "$1",
+        "example": "3"
+      }
+    }
+  },
+  "confirmSend": {
+    "message": "Отправить"
+  },
   "quickAddTitle": {
     "message": "Быстрое добавление"
   },

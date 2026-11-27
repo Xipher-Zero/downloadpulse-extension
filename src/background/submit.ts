@@ -20,7 +20,16 @@ import {forgetDigest, keyAnswered, keyFor} from "./sent-keys";
 const LIMITS: Record<CaptureKind, number> = {torrent: 16 * 1024 * 1024, nzb: 8 * 1024 * 1024, metalink: 16 * 1024 * 1024};
 const CAPTURE_TIMEOUT_MS = 30_000;
 /** At most this many plain links go in one selection's batch; the person is told when more were found. */
-const BATCH_LIMIT = 100;
+export const BATCH_LIMIT = 100;
+/**
+ * At most this many magnets and captured files from one selection (1.0.8, WS-A3), the batch's own
+ * limit: each is a job of its own and a captured one is fetched with the person's sign-in, so a
+ * page's hidden text can't turn one press into thousands of either. The person is told, as for links.
+ */
+export const SINGLE_LIMIT = 100;
+
+/** How many of ``wanted`` separate jobs a page's send may still make (background/page-sends.ts); none given, all. */
+export type Allowance = (wanted: number) => number;
 
 export interface Origin {
   tabId?: number;
@@ -256,11 +265,13 @@ async function mayUseConnection(): Promise<void> {
   if (!(await token())) throw new Refused("sendNotConnected");
 }
 
-export function sendUrl(href: string, origin: Origin): Promise<void> {
+export function sendUrl(href: string, origin: Origin, allow?: Allowance): Promise<void> {
   return settle(origin, async () => {
     // Only a web page or file (http, https) or a magnet is ever sent (review, 2026-11-19).
     if (!/^magnet:\?/i.test(href) && !/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
     await mayUseConnection();
+    // A magnet or captured file from a page's button: within its tab's allowance.
+    if (allow && (/^magnet:\?/i.test(href) || captureKind(href)) && allow(1) < 1) throw new Refused("sendPageLimit");
     await send(await sourceFor(href));
   });
 }
@@ -343,8 +354,11 @@ export async function sendDownload(href: string, referrer: string, store: {cooki
 }
 
 /** A selection: its http(s) URLs as one batch, each magnet on its own (B2). */
-export function sendSelection(text: string, origin: Origin): Promise<void> {
-  return settle(origin, () => sendText(text, "sendNothingFound"));
+export function sendSelection(text: string, origin: Origin, allow?: Allowance): Promise<void> {
+  return settle(origin, () => sendText(text, "sendNothingFound", (wanted) => {
+    const capped = Math.min(wanted, SINGLE_LIMIT);
+    return allow ? allow(capped) : capped;
+  }));
 }
 
 /**
@@ -360,7 +374,7 @@ export async function quickAdd(text: string): Promise<{ok: boolean; text: string
   }
 }
 
-async function sendText(text: string, nothing: string): Promise<string | void> {
+async function sendText(text: string, nothing: string, allow?: Allowance): Promise<string | void> {
   {
     await mayUseConnection();
     const urls = extractUrls(text);
@@ -370,9 +384,13 @@ async function sendText(text: string, nothing: string): Promise<string | void> {
     const single = urls.filter((url) => /^magnet:\?/i.test(url) || captureKind(url));
     const plain = urls.filter((url) => !single.includes(url));
     const links = plain.slice(0, BATCH_LIMIT);
+    // A selection's magnets and captured files: as many as it may make (Quick Add, typed in the popup: all).
+    const singles = allow ? single.slice(0, single.length ? allow(single.length) : 0) : single;
+    // Nothing it may still make (a tab's pages over their minute's allowance): refused, and the person told why.
+    if (!links.length && !singles.length) throw new Refused("sendPageLimit");
     if (links.length) await send({kind: "links", links});
-    for (const url of single) await send(await sourceFor(url));
-    // More plain links than one batch takes: the person is told, never a silent drop.
-    return plain.length > BATCH_LIMIT ? "sendSelectionCapped" : undefined;
+    for (const url of singles) await send(await sourceFor(url));
+    // More than one selection takes: the person is told, never a silent drop.
+    return plain.length > BATCH_LIMIT || singles.length < single.length ? "sendSelectionCapped" : undefined;
   }
 }
