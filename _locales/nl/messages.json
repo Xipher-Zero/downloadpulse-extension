@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "DownloadPulse kwam een tijdje niet verder met die download, dus de browser heeft hem voortgezet."
+  },
+  "popupSomeConnected": {
+    "message": "$CONNECTED$ van $TOTAL$ verbonden",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "Niet bereikbaar"
+  },
+  "addServer": {
+    "message": "Nog een DownloadPulse verbinden"
+  },
+  "addServerLimit": {
+    "message": "Maximaal 3 servers"
+  },
+  "failureTooMany": {
+    "message": "Deze browser is al verbonden met 3 DownloadPulse-servers, het maximum. Koppel er eerst een los in Instellingen."
+  },
+  "optionsConnections": {
+    "message": "Verbindingen:"
+  },
+  "disconnectServer": {
+    "message": "$NAME$ loskoppelen",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "Loskoppelen van $NAME$?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "Deze browser wordt weggehaald uit het account $ACCOUNT$ op $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "Downloads die al zijn verstuurd, gaan daar gewoon door. $NAME$ wordt niet meer aangeboden op pagina's of in het rechtsklikmenu. Om hem weer te gebruiken, moet u hem opnieuw verbinden.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ is uw standaardserver.\n$NEXT$ wordt uw nieuwe standaardserver.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "Loskoppelen…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$ is niet bereikbaar",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "Deze browser kon niet worden weggehaald uit het account $ACCOUNT$ op $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "U kunt $NAME$ toch uit deze browser weghalen. De server blijft deze browser vermelden totdat u hem daar weghaalt, onder Mijn account › Verbonden browsers.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "Toch weghalen"
+  },
+  "noteDisconnectedFrom": {
+    "message": "Losgekoppeld van $NAME$. Die server accepteert deze browser niet meer.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "Uit deze browser weggehaald. $NAME$ vermeldt hem nog wel.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$ is nu uw standaardserver.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "Als standaard instellen"
+  },
+  "serverDefault": {
+    "message": "Standaard"
+  },
+  "serverRename": {
+    "message": "$NAME$ hernoemen",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "Servernaam"
+  },
+  "serverNameBlank": {
+    "message": "Voer een naam in."
+  },
+  "serverNameTaken": {
+    "message": "Een andere server heeft deze naam al."
+  },
+  "serverMoveLabel": {
+    "message": "$NAME$ verplaatsen. Sleep, of druk op Alt+↑ of Alt+↓.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ verplaatst naar positie $POSITION$ van $TOTAL$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "Naar $NAME$ gestuurd.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "Aan $NAME$ toegevoegd",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "Aan andere server toevoegen"
+  },
+  "openChoose": {
+    "message": "Kies welke DownloadPulse u wilt openen"
+  },
+  "captureToggleNamed": {
+    "message": "Browserdownloads naar DownloadPulse sturen ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "Naar andere DownloadPulse sturen"
+  },
+  "sendServerGone": {
+    "message": "Die DownloadPulse is niet meer verbonden met deze browser."
+  },
+  "confirmTo": {
+    "message": "Bestemming: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (standaard)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

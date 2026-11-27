@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "DownloadPulse でそのダウンロードがしばらく進まなかったため、ブラウザーでダウンロードを続けました。"
+  },
+  "popupSomeConnected": {
+    "message": "$CONNECTED$/$TOTAL$ 接続済み",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "接続できません"
+  },
+  "addServer": {
+    "message": "別の DownloadPulse を接続"
+  },
+  "addServerLimit": {
+    "message": "サーバーは最大 3 台"
+  },
+  "failureTooMany": {
+    "message": "このブラウザーはすでに上限の 3 台の DownloadPulse サーバーに接続されています。先に設定でいずれかの接続を解除してください。"
+  },
+  "optionsConnections": {
+    "message": "接続："
+  },
+  "disconnectServer": {
+    "message": "$NAME$ の接続を解除",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "$NAME$ との接続を解除しますか？",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "このブラウザーは $ADDRESS$ のアカウント $ACCOUNT$ から除去されます。",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "送信済みのダウンロードはそのまま続行されます。$NAME$ はページ上や右クリックメニューに表示されなくなります。再び使うには、もう一度接続する必要があります。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ は既定のサーバーです。\n$NEXT$ が新しい既定のサーバーになります。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "接続を解除しています…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$ に接続できません",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "$ADDRESS$ のアカウント $ACCOUNT$ からこのブラウザーを除去できませんでした。",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "それでも、このブラウザーから $NAME$ を除去できます。サーバー側で「マイアカウント › 接続済みブラウザー」から除去するまで、このブラウザーはそこに表示されたままになります。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "それでも除去"
+  },
+  "noteDisconnectedFrom": {
+    "message": "$NAME$ との接続を解除しました。$NAME$ はこのブラウザーを受け付けなくなりました。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "このブラウザーから除去しました。$NAME$ には引き続き表示されます。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$ が既定のサーバーになりました。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "既定にする"
+  },
+  "serverDefault": {
+    "message": "既定"
+  },
+  "serverRename": {
+    "message": "$NAME$ の名前を変更",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "サーバー名"
+  },
+  "serverNameBlank": {
+    "message": "名前を入力してください。"
+  },
+  "serverNameTaken": {
+    "message": "この名前は別のサーバーで使われています。"
+  },
+  "serverMoveLabel": {
+    "message": "$NAME$ を移動。ドラッグするか、Alt+↑ または Alt+↓ を押します。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ を $TOTAL$ 台中 $POSITION$ 番目に移動しました",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "$NAME$ に送信しました。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "$NAME$ に追加しました",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "別のサーバーに追加"
+  },
+  "openChoose": {
+    "message": "開く DownloadPulse を選択"
+  },
+  "captureToggleNamed": {
+    "message": "ブラウザーのダウンロードを DownloadPulse に送信する（$NAME$）",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "別の DownloadPulse に送信"
+  },
+  "sendServerGone": {
+    "message": "その DownloadPulse はこのブラウザーに接続されなくなりました。"
+  },
+  "confirmTo": {
+    "message": "送信先：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$（既定）",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

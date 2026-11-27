@@ -1395,6 +1395,300 @@
         "ai-generated",
         "ai-review"
       ]
+    },
+    "popupSomeConnected": {
+      "source": "8a9e1afbd3625eb1",
+      "translation": "304f8e559bb8c1ef",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverUnreachable": {
+      "source": "abaa46adb4e13ab2",
+      "translation": "8c44376bf75d10ce",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "addServer": {
+      "source": "48f078b8a2161e64",
+      "translation": "d9ce29b24856973e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "addServerLimit": {
+      "source": "b9193ae4afdb10bc",
+      "translation": "2c137f60b33e4d19",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "failureTooMany": {
+      "source": "dfa6d850751132e4",
+      "translation": "9bf2c0f87c6788cd",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "ai-review-corrected"
+      ]
+    },
+    "optionsConnections": {
+      "source": "1b40c8a8412e0d39",
+      "translation": "bbbada3ce41ae23f",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "disconnectServer": {
+      "source": "bfc73418e5fcfbcf",
+      "translation": "f6880701e7b52eaf",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "dialogDisconnectTitle": {
+      "source": "fe8ee3a57ebe9e22",
+      "translation": "0e964127d5057012",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "dialogDisconnectAccount": {
+      "source": "f0e78ead1b6d5ea1",
+      "translation": "1efaf11632c83673",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "dialogDisconnectAfter": {
+      "source": "c8a4c7862d91307b",
+      "translation": "aab9a8cbcd05f314",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "dialogDefaultNote": {
+      "source": "8db6e2e9db43ac9d",
+      "translation": "0936e15e23b83912",
+      "provenance": [
+        "ai-generated",
+        "ai-review",
+        "line-break-added"
+      ]
+    },
+    "dialogDisconnecting": {
+      "source": "cb2b6a572a8588d8",
+      "translation": "9e6db404ed899a43",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "dialogUnreachableTitle": {
+      "source": "add6bf3d609c8d23",
+      "translation": "49f6c04d38e90585",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "dialogUnreachableAccount": {
+      "source": "be74bd060184dbf4",
+      "translation": "4726156c0dba23e9",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "dialogUnreachableAnyway": {
+      "source": "202dd717237beb96",
+      "translation": "40287887aa8fda44",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "dialogRemoveAnyway": {
+      "source": "ec52bdc0ffac0ce0",
+      "translation": "b941899d0e826475",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "noteDisconnectedFrom": {
+      "source": "80152bc8184f3edc",
+      "translation": "e3a45a7f152cc1d8",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "noteRemovedLocally": {
+      "source": "53ef644cb489d069",
+      "translation": "51570ad77efa5af7",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "noteNewDefault": {
+      "source": "220b0902ef4d8223",
+      "translation": "b3c055cc519cd539",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverMakeDefault": {
+      "source": "f43b94251094a888",
+      "translation": "a02e4c13b23aeb75",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverDefault": {
+      "source": "21b111cbfe6e8fca",
+      "translation": "09f725209f4b3f7e",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverRename": {
+      "source": "7392a49e1d95e67b",
+      "translation": "b98c50cc8adc0b8a",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverNameLabel": {
+      "source": "21babfed6c382998",
+      "translation": "4752c15229a65160",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverNameBlank": {
+      "source": "099f9079ba79b851",
+      "translation": "a09eac99c4534414",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverNameTaken": {
+      "source": "606af828738902c4",
+      "translation": "f5db331875b7f46d",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverMoveLabel": {
+      "source": "59da80bf89fb6d41",
+      "translation": "421c77cc5bda1886",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "serverMoved": {
+      "source": "5d2d11cb09d8e70f",
+      "translation": "9729e9a0281b9ce4",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "sendDoneTo": {
+      "source": "10cafe1311c372ea",
+      "translation": "c5f2ca3f21a51dec",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "quickAddDoneTo": {
+      "source": "04fb253bb2f4f9c5",
+      "translation": "cf759272d24c800f",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "quickAddChoose": {
+      "source": "94fce17af83b1949",
+      "translation": "1392eb30d345f488",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "openChoose": {
+      "source": "3eda92cfab8831ec",
+      "translation": "edcd2bb2b3ed58a1",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "captureToggleNamed": {
+      "source": "795c07ad208ce1e7",
+      "translation": "c4b994e3dbd3c114",
+      "provenance": [
+        "ai-generated",
+        "ai-review"
+      ]
+    },
+    "pageChooseServer": {
+      "source": "ab23f2fac10573be",
+      "translation": "640419484c5c3525",
+      "provenance": [
+        "ai-generated",
+        "ai-self-review",
+        "ai-review"
+      ]
+    },
+    "sendServerGone": {
+      "source": "737c169bb7003235",
+      "translation": "75c849b65ab89fe5",
+      "provenance": [
+        "ai-generated",
+        "ai-self-review",
+        "ai-review"
+      ]
+    },
+    "confirmTo": {
+      "source": "4bb073fdd54e082a",
+      "translation": "24730b3deb5dfd81",
+      "provenance": [
+        "ai-generated",
+        "ai-self-review",
+        "ai-review"
+      ]
+    },
+    "menuServerDefault": {
+      "source": "85a2e9428407a3bc",
+      "translation": "e5aae8b27a6901f1",
+      "provenance": [
+        "ai-generated",
+        "ai-self-review",
+        "ai-review"
+      ]
     }
   }
 }

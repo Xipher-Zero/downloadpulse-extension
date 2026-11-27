@@ -36,7 +36,9 @@ const TOAST_MS = 3500;
 const STILL_MS = 200;
 /** A selection made this soon after the person's own pointer or key input is theirs; later, the page's. */
 const INPUT_WINDOW_MS = 1000;
-interface Offer { hover: boolean; video: boolean; colours: PageColours }
+/** A server as the ▾ list shows it (WS-X1): an ID that means nothing outside the extension, never an address. */
+interface PageServer { id: string; name: string; reachable: boolean; isDefault: boolean }
+interface Offer { hover: boolean; video: boolean; colours: PageColours; servers: PageServer[] }
 const prefersDark = () => matchMedia("(prefers-color-scheme: dark)").matches;
 let offer: Offer | null = null;
 let askedAt = 0;
@@ -54,16 +56,26 @@ async function ask(): Promise<Offer> {
   let fresh: Offer;
   try {
     const state = await chrome.runtime.sendMessage({type: "dp-state"}) as
-      {hover?: boolean; video?: boolean; appearance?: unknown} | undefined;
+      {hover?: boolean; video?: boolean; appearance?: unknown; servers?: unknown} | undefined;
     fresh = {hover: Boolean(state?.hover), video: Boolean(state?.video),
-      colours: pageColours(parseAppearance(state?.appearance), prefersDark() ? "dark" : "light")};
+      colours: pageColours(parseAppearance(state?.appearance), prefersDark() ? "dark" : "light"),
+      servers: pageServers(state?.servers)};
   } catch {
-    fresh = {hover: false, video: false, colours: pageColours(null, prefersDark() ? "dark" : "light")};
+    fresh = {hover: false, video: false, colours: pageColours(null, prefersDark() ? "dark" : "light"), servers: []};
   }
   offer = fresh;
   askedAt = Date.now();
   paint(fresh.colours);
   return fresh;
+}
+
+/** The background's list of servers, as far as it is well formed (two or more, or none). */
+function pageServers(value: unknown): PageServer[] {
+  if (!Array.isArray(value)) return [];
+  const list = value.filter((item): item is PageServer => typeof item?.id === "string" && Boolean(item.id)
+    && typeof item.name === "string").map((item) => ({id: item.id, name: item.name, reachable: item.reachable === true,
+    isDefault: item.isDefault === true}));
+  return list.length > 1 ? list : [];
 }
 
 // The page surfaces in the person's DownloadPulse theme (src/shared/page-theme.ts):
@@ -113,7 +125,27 @@ const STYLE = `
     /* It fades out as it is withdrawn from the page (TOAST_MS + 300 ms: removed). */
     animation: dp-toast-leave .3s ease ${TOAST_MS}ms forwards; }
   @keyframes dp-toast-leave { to { opacity: 0; visibility: hidden; } }
-  .toast.error { border-inline-start-color: var(--dp-error); }`;
+  .toast.error { border-inline-start-color: var(--dp-error); }
+  /* Two or more servers (WS-X1): [↓|▾], the ▾ shown while the pointer is on it (always, on a touch
+     screen), and the servers' list under it, in the same layer. */
+  .split { display: grid; justify-items: start; gap: 4px; }
+  .row { display: flex; align-items: center; }
+  .row > button.main { border-start-end-radius: 0; border-end-end-radius: 0; }
+  button.more { width: 14px; border-radius: 0 999px 999px 0; border-inline-start-width: 0; visibility: hidden; }
+  :host(:hover) button.more, .row:focus-within button.more, .split.touch button.more, .split.open button.more { visibility: visible; }
+  button.more svg { width: 10px; height: 10px; }
+  .list { display: none; min-width: 140px; max-width: 260px; padding: 4px; border-radius: 8px; background: var(--dp-surface);
+    border: 1px solid var(--dp-border); box-shadow: 0 4px 16px rgba(0,0,0,.3); }
+  .split.open .list { display: grid; }
+  button.item { width: auto; height: auto; min-height: 26px; border-radius: 6px; padding: 3px 8px; display: flex; gap: 7px;
+    align-items: center; justify-content: flex-start; background: transparent; border: 0; box-shadow: none; color: var(--dp-text);
+    font: 600 12.5px/1.2 system-ui, sans-serif; text-align: start; white-space: nowrap; }
+  button.item:hover:not([aria-disabled="true"]), button.item:focus-visible { background: color-mix(in srgb, var(--dp-primary) 18%, transparent); filter: none; }
+  button.item[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--dp-success); flex: 0 0 auto; }
+  .dot.away { background: var(--dp-error); }
+  .name { overflow: hidden; text-overflow: ellipsis; }
+  button.item svg { width: 12px; height: 12px; fill: currentColor; }`;
 const layers: Layer[] = [];
 
 /** Every layer in the theme's colours. */
@@ -147,6 +179,23 @@ function arrow(): SVGSVGElement {
   }
   return svg;
 }
+
+/** A small glyph from path data (the ▾, the default's ★). */
+function glyphOf(paths: string[], fill = false): SVGSVGElement {
+  const svg = document.createElementNS(SVG, "svg");
+  for (const [name, value] of [["viewBox", "0 0 24 24"], ["fill", fill ? "currentColor" : "none"], ["stroke", "currentColor"],
+    ["stroke-width", "2.5"], ["stroke-linecap", "round"], ["stroke-linejoin", "round"], ["aria-hidden", "true"]]) {
+    svg.setAttribute(name!, value!);
+  }
+  for (const d of paths) {
+    const path = document.createElementNS(SVG, "path");
+    path.setAttribute("d", d);
+    svg.append(path);
+  }
+  return svg;
+}
+const CHEVRON = ["m6 9 6 6 6-6"];
+const STAR = ["M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"];
 
 /**
  * A layer the extension draws on a page, and whether it is shown -- its own record, never read
@@ -383,8 +432,10 @@ function drawnPlainly(style: CSSStyleDeclaration): boolean {
  * drawn (opaque, unscaled, unhidden), uncovered, standing still long enough before the press to
  * have been seen, and where they pressed. Anything else does nothing.
  */
-function genuine(made: Layer, button: HTMLButtonElement, event: MouseEvent): boolean {
+function genuine(made: Layer, button: HTMLButtonElement, event: MouseEvent, item = false): boolean {
   if (!event.isTrusted || !made.shown || !buttonsHere) return false;
+  // A server in the ▾ list (WS-X1) that can't be chosen now (unreachable) does nothing.
+  if (item && button.getAttribute("aria-disabled") === "true") return false;
   const host = made.host;
   if (!host.isConnected || host.parentNode !== document.documentElement) return false;
   try {
@@ -410,7 +461,9 @@ function genuine(made: Layer, button: HTMLButtonElement, event: MouseEvent): boo
   const shown = button as HTMLButtonElement & {checkVisibility?(options?: object): boolean};
   if (shown.checkVisibility && !shown.checkVisibility({visibilityProperty: true, contentVisibilityAuto: true})) return false;
   const box = button.getBoundingClientRect();
-  if (box.width < BUTTON / 2 || box.width > BUTTON * 2 || box.height < BUTTON / 2 || box.height > BUTTON * 2) return false;
+  // A button is the size it is drawn; a list's entry, a line of it.
+  const [low, wide, high] = item ? [BUTTON, 320, 48] : [BUTTON / 2, BUTTON * 2, BUTTON * 2];
+  if (box.width < (item ? 40 : low) || box.width > wide || box.height < low / 2 + (item ? 5 : 0) || box.height > high) return false;
   const drawn = made.drawn!;
   if (box.left < drawn.left - 1 || box.right > drawn.right + 1 || box.top < drawn.top - 1 || box.bottom > drawn.bottom + 1) return false;
   let pressed: number;
@@ -426,8 +479,10 @@ function genuine(made: Layer, button: HTMLButtonElement, event: MouseEvent): boo
       return false;
     }
   }
-  // Standing still where it is drawn, long enough before the press to have been seen there.
+  // Standing still where it is drawn, long enough before the press to have been seen there -- a list's
+  // entry as long since the list opened (it grows the layer, which then stands anew: ``settle``).
   if (pressed - made.placedAt < STILL_MS) return false;
+  if (item && pressed - (splits.get(made)?.openedAt ?? Infinity) < STILL_MS) return false;
   // Seen uncovered by the browser, without a break, for as long as it has to stand still before the
   // press (a page flicking a cover over it, leaving it bare a frame now and then, never gets there),
   // and nothing of the page's put into the top layer meanwhile.
@@ -435,9 +490,8 @@ function genuine(made: Layer, button: HTMLButtonElement, event: MouseEvent): boo
   return !coveredByPage(made);
 }
 
-function sendButton(label: string, onSend: () => void): Layer {
-  const made = layer();
-  const button = document.createElement("button");
+/** A press on one of a layer's buttons: where it is drawn as it is pressed, and when (``genuine`` reads both). */
+function pressable(made: Layer, button: HTMLButtonElement): void {
   button.addEventListener("pointerdown", (event) => {
     if (!event.isTrusted) return;
     // Pressing it must not take the page's selection away (the batch button sends it).
@@ -446,7 +500,23 @@ function sendButton(label: string, onSend: () => void): Layer {
     settle(made);
     made.pressedAt = performance.now();
   });
+}
+
+/**
+ * Two or more servers (WS-X1): the layer's [↓|▾] -- its row, the ▾, the list under it -- and since
+ * when the list has been open. ``send`` is the layer's own (to a server by its ID; none: the default).
+ */
+interface Split { box: HTMLElement; row: HTMLElement; more: HTMLButtonElement; list: HTMLElement; openedAt: number;
+  send: (server?: string) => void }
+const splits = new WeakMap<Layer, Split>();
+const touchScreen = () => matchMedia("(hover: none)").matches;
+
+function sendButton(label: string, onSend: (server?: string) => void): Layer {
+  const made = layer();
+  const button = document.createElement("button");
+  pressable(made, button);
   button.type = "button";
+  button.className = "main";
   button.append(arrow());
   button.setAttribute("aria-label", label);
   button.title = label;
@@ -458,7 +528,129 @@ function sendButton(label: string, onSend: () => void): Layer {
     if (person) onSend();
   });
   made.root.append(button);
+  // The split, made now and used only while there are two or more servers (``fitServers``).
+  const box = document.createElement("div");
+  box.className = "split";
+  const row = document.createElement("div");
+  row.className = "row";
+  const more = document.createElement("button");
+  more.type = "button";
+  more.className = "more";
+  more.setAttribute("aria-haspopup", "menu");
+  more.setAttribute("aria-expanded", "false");
+  more.setAttribute("aria-label", message("pageChooseServer"));
+  more.title = message("pageChooseServer");
+  more.append(glyphOf(CHEVRON));
+  pressable(made, more);
+  const list = document.createElement("div");
+  list.className = "list";
+  list.setAttribute("role", "menu");
+  list.setAttribute("aria-label", message("pageChooseServer"));
+  const split: Split = {box, row, more, list, openedAt: Infinity, send: onSend};
+  splits.set(made, split);
+  more.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    // Only the person's own press on the ▾ as drawn opens the list (it sends nothing itself).
+    const person = genuine(made, more, event);
+    made.pressedAt = -Infinity;
+    if (!person) return;
+    if (box.classList.contains("open")) closeList(made, true);
+    // Opened by a key, or by the pointer on a link's or a video's button, the first server it can go
+    // to has the focus (arrows, Enter, Esc); the selection's keeps the focus where it is, with the selection.
+    else openList(made, event.detail === 0 || made !== batch);
+  });
+  list.addEventListener("keydown", (event) => {
+    if (!event.isTrusted) return;
+    const items = [...list.querySelectorAll<HTMLButtonElement>("button.item")];
+    const at = items.indexOf(made.root.activeElement as HTMLButtonElement);
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeList(made, true);
+    } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      const step = event.key === "ArrowDown" ? 1 : -1;
+      items[(at + step + items.length) % items.length]?.focus({preventScroll: true});
+    }
+  });
   return made;
+}
+
+/** The layer as one button, or [↓|▾] with two or more servers: set before it is placed. */
+function fitServers(made: Layer, servers: PageServer[]): void {
+  const split = splits.get(made);
+  if (!split) return;
+  const main = made.root.querySelector<HTMLButtonElement>("button.main")!;
+  if (servers.length < 2) {
+    if (split.box.isConnected) {
+      made.root.append(main);
+      split.box.remove();
+    }
+    return;
+  }
+  if (!split.box.isConnected) {
+    split.row.append(main, split.more);
+    split.box.append(split.row, split.list);
+    made.root.append(split.box);
+  }
+  split.box.classList.toggle("touch", touchScreen());
+  closeList(made, false);
+}
+
+function openList(made: Layer, byKey: boolean): void {
+  const split = splits.get(made);
+  if (!split) return;
+  const servers = offer?.servers ?? [];
+  split.list.replaceChildren(...servers.map((server) => {
+    const item = document.createElement("button");
+    item.type = "button";
+    item.className = "item";
+    item.setAttribute("role", "menuitem");
+    const dot = document.createElement("span");
+    dot.className = server.reachable ? "dot" : "dot away";
+    dot.setAttribute("aria-hidden", "true");
+    const name = document.createElement("span");
+    name.className = "name";
+    name.textContent = server.name;
+    item.append(dot, name);
+    if (server.isDefault) {
+      const star = glyphOf(STAR, true);
+      star.setAttribute("aria-hidden", "false");
+      star.setAttribute("role", "img");
+      star.setAttribute("aria-label", message("serverDefault"));
+      item.append(star);
+    }
+    if (!server.reachable) {
+      item.setAttribute("aria-disabled", "true");
+      item.title = message("serverUnreachable");
+    }
+    pressable(made, item);
+    item.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      // As the ↓ itself: the person's own press, on the entry as drawn, the list open and still long enough.
+      const person = genuine(made, item, event, true);
+      made.pressedAt = -Infinity;
+      if (person) split.send(server.id);
+    });
+    return item;
+  }));
+  split.box.classList.add("open");
+  split.more.setAttribute("aria-expanded", "true");
+  split.openedAt = performance.now();
+  // The layer grew: it must stand still again before anything in it counts.
+  settle(made);
+  if (byKey) split.list.querySelector<HTMLButtonElement>('button.item:not([aria-disabled="true"])')?.focus({preventScroll: true});
+}
+
+function closeList(made: Layer, focusMore: boolean): void {
+  const split = splits.get(made);
+  if (!split) return;
+  split.box.classList.remove("open");
+  split.more.setAttribute("aria-expanded", "false");
+  split.openedAt = Infinity;
+  split.list.replaceChildren();
+  if (focusMore) split.more.focus({preventScroll: true});
 }
 
 // ── the hover icon (B3) ────────────────────────────────────────────────────
@@ -562,10 +754,11 @@ function candidateAt(event: Pointer): Found | null {
 }
 
 function showHover(found: Found): void {
-  hover ??= sendButton(message("hoverSend"), () => {
-    void chrome.runtime.sendMessage({type: "dp-send", url: hoverUrl});
+  hover ??= sendButton(message("hoverSend"), (server) => {
+    void chrome.runtime.sendMessage({type: "dp-send", url: hoverUrl, ...(server ? {server} : {})});
     withdraw(hover);
   });
+  if (!hover.shown || hoverUrl !== found.url) fitServers(hover, offer?.servers ?? []);
   hoverUrl = found.url;
   hoverRect = found.rect;
   hoverAnchor = found.anchor;
@@ -655,13 +848,14 @@ function showVideo(element: HTMLVideoElement): void {
     withdraw(video);
     return;
   }
-  video ??= sendButton(message("videoSend"), () => {
+  video ??= sendButton(message("videoSend"), (server) => {
     // The frame's own address: the embed, or the page itself (S3) -- its CURRENT address: a
     // single-page site (YouTube) changes it in place, which the browser's own record of the
     // frame does not follow (2026-11-19: videos were sent as the site's home page).
-    void chrome.runtime.sendMessage({type: "dp-send-video", url: location.href});
+    void chrome.runtime.sendMessage({type: "dp-send-video", url: location.href, ...(server ? {server} : {})});
     withdraw(video);
   });
+  if (!video.shown) fitServers(video, offer?.servers ?? []);
   videoBox = rect;
   videoElement = element;
   place(video, left, Math.max(rect.top, 2));
@@ -818,13 +1012,14 @@ async function offerSelection(byPerson: boolean): Promise<void> {
     withdraw(batch);
     return;
   }
-  batch ??= sendButton(message("selectionSend"), () => {
-    void chrome.runtime.sendMessage({type: "dp-send-selection", text: batchText});
+  batch ??= sendButton(message("selectionSend"), (server) => {
+    void chrome.runtime.sendMessage({type: "dp-send-selection", text: batchText, ...(server ? {server} : {})});
     withdraw(batch);
   });
+  if (!batch.shown) fitServers(batch, may.servers);
   batchText = found.text;
   withdrawPointerSurfaces();   // the batch button stands alone
-  const button = batch.root.querySelector("button")!;
+  const button = batch.root.querySelector<HTMLButtonElement>("button.main")!;
   button.classList.add("batch");
   let count = button.querySelector(".count");
   if (!count) {

@@ -8,7 +8,11 @@
 // requested here, on the person's click (L20).
 
 import {appearance, applyAppearance} from "../shared/appearance";
-import {choosePlainHttp, connection, connectionState, forgetConnection, pairing, setPairing, activeServer} from "../shared/connection";
+import {
+  choosePlainHttp, connection, connections, connectionState, defaultServer, forgetConnection, pairing, renameServer, servers,
+  serverOrder, setDefaultServer, setPairing, setServerOrder, successor, type Server,
+} from "../shared/connection";
+import {MAX_SERVERS, moved, NAME_MAX} from "../shared/servers";
 import {isStateKey, stateKey} from "../shared/server-state";
 import {glyph, placeGlyphs, type GlyphName} from "../shared/glyphs";
 import {localize, message} from "../shared/i18n";
@@ -21,7 +25,7 @@ const FAILURE_KEYS: Record<Failure, string> = {
   too_old: "failureTooOld", denied: "failureDenied", expired: "failureExpired", permission: "failurePermission",
   unauthorized: "failureUnauthorized", failed: "failureFailed",
   https_only: "failureHttpsOnly", insecure_refused: "failureInsecureRefused", blocked: "failureBlocked",
-  setup_incomplete: "failureSetupIncomplete",
+  setup_incomplete: "failureSetupIncomplete", too_many: "failureTooMany",
 };
 const PRIVACY_URL = "https://github.com/Xipher-Zero/downloadpulse-extension/blob/main/PRIVACY.md";
 
@@ -56,17 +60,289 @@ function serverName(server: string): string {
 
 // ── the connection's status ─────────────────────────────────────────────
 
+type Reach = "ok" | "checking" | "unreachable";
+
+/** Each server's last look, by origin: answered, not answered, or too old to say (checking). */
+async function reaches(list: readonly Server[]): Promise<Record<string, Reach>> {
+  const stored = await chrome.storage.session.get(list.map((item) => stateKey(item.server, "reach")));
+  return Object.fromEntries(list.map((item) => {
+    const reach = stored[stateKey(item.server, "reach")] as {ok: boolean; at: number} | undefined;
+    return [item.server, !reach || Date.now() - reach.at > REACH_FRESH_MS ? "checking" : reach.ok ? "ok" : "unreachable"];
+  }));
+}
+
+/**
+ * The status row. One server: as 1.0.7 (its dot and its words). Two or more (WS-X1): a dot per
+ * server in display order -- reachability only, never an identity colour -- and the summary
+ * ("Connected", "2 of 3 connected", "Unreachable"); the list's dots follow.
+ */
 async function renderReach(): Promise<void> {
   const element = document.querySelector<HTMLElement>('[data-testid="reach"]');
   if (!element) return;
-  const server = await activeServer();
-  const key = server ? stateKey(server, "reach") : "";
-  const reach = key ? (await chrome.storage.session.get(key))[key] as {ok: boolean; at: number} | undefined : undefined;
-  const state = !reach || Date.now() - reach.at > REACH_FRESH_MS ? "checking" : reach.ok ? "ok" : "unreachable";
-  element.dataset["reach"] = state;
-  text('[data-testid="reach-text"]', message(state === "ok" ? "popupConnected" : state === "unreachable"
-    ? "popupUnreachable" : "popupChecking"));
+  const list = await servers();
+  if (!list.length) return;
+  const states = await reaches(list);
+  reachNow = states;
+  const dots = $('[data-testid="dots"]');
+  if (list.length === 1) {
+    const state = states[list[0]!.server]!;
+    if (dots.children.length !== 1 || (dots.firstElementChild as HTMLElement).dataset["reach"]) {
+      const dot = span("dp-conn__dot", "");
+      dot.setAttribute("aria-hidden", "true");
+      dots.replaceChildren(dot);
+    }
+    element.dataset["reach"] = state;
+    text('[data-testid="reach-text"]', message(state === "ok" ? "popupConnected" : state === "unreachable"
+      ? "popupUnreachable" : "popupChecking"));
+    return;
+  }
+  dots.replaceChildren(...list.map((item) => {
+    const dot = span("dp-conn__dot dp-conn__dot--server", "");
+    dot.dataset["reach"] = states[item.server]!;
+    dot.setAttribute("aria-hidden", "true");
+    return dot;
+  }));
+  const values = Object.values(states);
+  const ok = values.filter((state) => state === "ok").length;
+  const unreachable = values.filter((state) => state === "unreachable").length;
+  const overall = ok === values.length ? "ok" : unreachable === values.length ? "unreachable" : unreachable === 0 ? "checking" : "partial";
+  element.dataset["reach"] = overall;
+  text('[data-testid="reach-text"]', overall === "ok" ? message("popupConnected") : overall === "unreachable"
+    ? message("serverUnreachable") : overall === "checking" ? message("popupChecking")
+      : message("popupSomeConnected", [String(ok), String(values.length)]));
+  for (const block of document.querySelectorAll<HTMLElement>("li.dp-server[data-server]")) {
+    const state = states[block.dataset["server"] ?? ""] ?? "checking";
+    block.querySelector<HTMLElement>(".dp-server__dot")!.dataset["reach"] = state;
+    block.querySelector<HTMLElement>(".dp-server__unreachable")!.hidden = state !== "unreachable";
+  }
 }
+
+// The last look at each server (renderReach): what the ▾ lists may choose.
+let reachNow: Record<string, Reach> = {};
+
+// ── more than one server (WS-X1): the expanded list ─────────────────────
+
+let renaming: {server: string; problem: "blank" | "duplicate" | null} | null = null;
+let dragging: {server: string; pointer: number; moved: boolean} | null = null;
+// After the list is drawn again: this server's handle (a keyboard move) or rename field gets the focus.
+let refocus: {server: string; what: "handle" | "rename" | "pencil" | "star"} | null = null;
+
+function announce(value: string): void {
+  const region = $('[data-testid="announce"]');
+  region.textContent = "";
+  // A fresh text node each time, so the same words are announced again.
+  window.setTimeout(() => { region.textContent = value; }, 30);
+}
+
+function serverBlock(item: Server, state: Reach, many: boolean): HTMLLIElement {
+  const block = document.createElement("li");
+  block.className = "dp-server";
+  block.dataset["server"] = item.server;
+  block.setAttribute("aria-label", item.name);
+  const top = document.createElement("div");
+  top.className = "dp-server__top";
+  if (many) {
+    const handle = glyphButton("gripVertical", "", "bare", {action: "server-move", server: item.server});
+    handle.classList.add("dp-server__handle");
+    handle.setAttribute("aria-label", message("serverMoveLabel", [item.name]));
+    handle.title = message("serverMoveLabel", [item.name]);
+    top.append(handle);
+  }
+  const dot = span("dp-server__dot", "");
+  dot.dataset["reach"] = state;
+  dot.setAttribute("aria-hidden", "true");
+  top.append(dot);
+  if (renaming?.server === item.server) {
+    const field = document.createElement("input");
+    field.type = "text";
+    field.className = "dp-server__field";
+    field.maxLength = NAME_MAX;
+    field.value = item.name;
+    field.spellcheck = false;
+    field.autocomplete = "off";
+    field.dataset["rename"] = item.server;
+    field.dataset["testid"] = "rename";
+    field.setAttribute("aria-label", message("serverNameLabel"));
+    if (renaming.problem) field.setAttribute("aria-invalid", "true");
+    top.append(field);
+  } else {
+    top.append(span("dp-server__name", item.name));
+    const pencil = glyphButton("pencil", "", "bare", {action: "server-rename", server: item.server});
+    pencil.classList.add("dp-server__rename");
+    pencil.setAttribute("aria-label", message("serverRename", [item.name]));
+    pencil.title = message("serverRename", [item.name]);
+    top.append(pencil);
+  }
+  const away = span("dp-server__unreachable", message("serverUnreachable"));
+  away.hidden = state !== "unreachable";
+  top.append(away);
+  const star = glyphButton("star", item.isDefault ? "serverDefault" : "serverMakeDefault", "bare",
+    {action: "server-default", server: item.server});
+  star.classList.add("dp-server__star");
+  star.setAttribute("aria-pressed", String(item.isDefault));
+  top.append(star);
+  block.append(top);
+  if (renaming?.server === item.server && renaming.problem) {
+    const problem = span("dp-server__problem", message(renaming.problem === "blank" ? "serverNameBlank" : "serverNameTaken"));
+    problem.setAttribute("role", "alert");
+    problem.dataset["testid"] = "rename-problem";
+    block.append(problem);
+  }
+  block.append(span("dp-server__line", serverName(item.server)));
+  const who = document.createElement("span");
+  who.className = "dp-server__line dp-server__who";
+  who.append(span("dp-server__label", message("popupAccount")), " ", span("", item.account), " · ",
+    span("dp-server__label", message("popupBrowser")), " ", span("", item.label));
+  block.append(who);
+  return block;
+}
+
+/** The expanded list: one block per server, in display order (drawn again unless one is being moved or renamed). */
+let serversDrawn = "";
+
+function renderServers(list: readonly Server[], states: Record<string, Reach>, force = false): void {
+  const container = $<HTMLUListElement>('[data-testid="servers"]');
+  const field = document.activeElement;
+  if (dragging) return;
+  if (!force && renaming && field instanceof HTMLInputElement && field.dataset["rename"] !== undefined) return;
+  // Drawn again only when something it shows changed (the list refreshes every few seconds),
+  // and the focus stays on the same control of the same server.
+  const drawn = JSON.stringify([list, states, renaming]);
+  if (drawn === serversDrawn && !refocus) return;
+  serversDrawn = drawn;
+  const was = (field as HTMLElement | null)?.closest<HTMLElement>("li.dp-server[data-server]");
+  if (!refocus && was && container.contains(was)) {
+    const what = field?.classList.contains("dp-server__handle") ? "handle" : field?.classList.contains("dp-server__rename") ? "pencil"
+      : field?.classList.contains("dp-server__star") ? "star" : null;
+    if (what) refocus = {server: was.dataset["server"] ?? "", what};
+  }
+  container.replaceChildren(...list.map((item) => serverBlock(item, states[item.server] ?? "checking", list.length > 1)));
+  if (refocus) {
+    const {server, what} = refocus;
+    refocus = null;
+    const block = container.querySelector<HTMLElement>(`li[data-server="${CSS.escape(server)}"]`);
+    const target = block?.querySelector<HTMLElement>(what === "handle" ? ".dp-server__handle" : what === "rename"
+      ? ".dp-server__field" : what === "pencil" ? ".dp-server__rename" : ".dp-server__star");
+    target?.focus();
+    if (target instanceof HTMLInputElement) target.select();
+  }
+}
+
+async function moveServer(server: string, by: number): Promise<void> {
+  const order = await serverOrder();
+  const at = order.indexOf(server);
+  if (at < 0 || at + by < 0 || at + by >= order.length) return;
+  const next = moved(order, server, at + by);
+  refocus = {server, what: "handle"};
+  await setServerOrder(next);
+  await movedSay(server, next);
+}
+
+async function movedSay(server: string, order: readonly string[]): Promise<void> {
+  const name = (await servers()).find((item) => item.server === server)?.name ?? "";
+  announce(message("serverMoved", [name, String(order.indexOf(server) + 1), String(order.length)]));
+}
+
+async function commitRename(field: HTMLInputElement): Promise<void> {
+  const server = field.dataset["rename"] ?? "";
+  if (renaming?.server !== server) return;
+  if (committing) return;
+  committing = true;
+  try {
+    const typed = field.value;
+    const problem = await renameServer(server, typed);
+    if (problem) {
+      renaming = {server, problem};
+      refocus = {server, what: "rename"};
+      renderServers(await servers(), reachNow, true);
+      const again = document.querySelector<HTMLInputElement>(`[data-rename="${CSS.escape(server)}"]`);
+      if (again) again.value = typed;
+      return;
+    }
+    renaming = null;
+    refocus = {server, what: "pencil"};
+    renderServers(await servers(), reachNow, true);
+  } finally {
+    committing = false;
+  }
+}
+let committing = false;
+
+// ── the ▾ lists: Quick Add's, Open DownloadPulse's (WS-X1) ─────────────
+
+function closeMenus(focusAnchor = false): void {
+  for (const menu of document.querySelectorAll<HTMLElement>("[data-menu]")) {
+    if (menu.hidden) continue;
+    menu.hidden = true;
+    const anchor = document.querySelector<HTMLElement>(`[aria-controls="${menu.id}"]`);
+    anchor?.setAttribute("aria-expanded", "false");
+    if (focusAnchor) anchor?.focus();
+  }
+}
+
+/** A list of the servers in display order (a dot, the name, ★ on the default); ``usable`` says which may be chosen. */
+async function openMenu(kind: "quick" | "open", anchor: HTMLElement, usable: (state: Reach) => boolean,
+                        choose: (server: string) => void): Promise<void> {
+  const menu = $(`[data-menu="${kind}"]`);
+  if (!menu.hidden) return closeMenus(true);
+  closeMenus();
+  const list = await servers();
+  const states = await reaches(list);
+  menu.id = `menu-${kind}`;
+  anchor.setAttribute("aria-controls", menu.id);
+  menu.replaceChildren(...list.map((item) => {
+    const entry = document.createElement("button");
+    entry.type = "button";
+    entry.className = "dp-menu__item";
+    entry.setAttribute("role", "menuitem");
+    entry.dataset["server"] = item.server;
+    const state = states[item.server] ?? "checking";
+    const dot = span("dp-server__dot", "");
+    dot.dataset["reach"] = state;
+    dot.setAttribute("aria-hidden", "true");
+    entry.append(dot, span("dp-menu__name", item.name));
+    if (item.isDefault) {
+      const star = glyph("star");
+      star.classList.add("dp-menu__star");
+      entry.append(star);
+    }
+    if (state === "unreachable") entry.append(span("dp-menu__away", message("serverUnreachable")));
+    if (!usable(state)) entry.setAttribute("aria-disabled", "true");
+    entry.addEventListener("click", () => {
+      if (entry.getAttribute("aria-disabled") === "true") return;
+      closeMenus();
+      choose(item.server);
+    });
+    return entry;
+  }));
+  menu.hidden = false;
+  anchor.setAttribute("aria-expanded", "true");
+  (menu.querySelector<HTMLElement>('[role="menuitem"]:not([aria-disabled="true"])') ?? menu.querySelector<HTMLElement>('[role="menuitem"]'))?.focus();
+}
+
+document.addEventListener("keydown", (event) => {
+  const item = (event.target as HTMLElement).closest<HTMLElement>('[role="menuitem"]');
+  if (!item) return;
+  const items = [...item.parentElement!.querySelectorAll<HTMLElement>('[role="menuitem"]')];
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeMenus(true);
+  } else if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+    event.preventDefault();
+    const step = event.key === "ArrowDown" ? 1 : -1;
+    const at = items.indexOf(item);
+    items[(at + step + items.length) % items.length]?.focus();
+  } else if (event.key === "Home" || event.key === "End") {
+    event.preventDefault();
+    items[event.key === "Home" ? 0 : items.length - 1]?.focus();
+  } else if (event.key === "Tab") {
+    closeMenus();
+  }
+});
+document.addEventListener("pointerdown", (event) => {
+  const target = event.target as HTMLElement;
+  if (!target.closest("[data-menu]") && !target.closest('[aria-haspopup="menu"]')) closeMenus();
+});
 
 // ── Sent Downloads (WS-E3) ──────────────────────────────────────────────
 
@@ -133,23 +409,39 @@ function span(className: string, value: string): HTMLSpanElement {
   return element;
 }
 
-function renderJobs(jobs: Job[]): void {
+/** A download in the list, with the server it is on (WS-X1: the list is every server's, merged). */
+interface Listed { job: Job; server: string }
+
+/** The notes' key: two servers may each have a job of the same ID. */
+const noteKey = (server: string, id: string): string => `${server}\n${id}`;
+
+function renderJobs(entries: Listed[], names: Record<string, string> | null): void {
   const list = $<HTMLUListElement>('[data-testid="jobs"]');
-  $('[data-testid="list-empty"]').hidden = jobs.length > 0;
+  $('[data-testid="list-empty"]').hidden = entries.length > 0;
   // A control keeps its focus across a refresh.
   const focused = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>("[data-job-action]");
-  const keep = focused ? [focused.dataset["job"], focused.dataset["jobAction"]] : null;
+  const keep = focused ? [focused.dataset["job"], focused.dataset["jobAction"], focused.dataset["server"]] : null;
   const locale = chrome.i18n.getUILanguage();
   const share = new Intl.NumberFormat(locale, {style: "percent", maximumFractionDigits: 0});
-  list.replaceChildren(...jobs.map((job) => {
+  list.replaceChildren(...entries.map(({job, server}) => {
     const {key, tone} = state(job);
     const row = document.createElement("li");
     row.className = "dp-job";
     row.dataset["jobId"] = job.id;
+    row.dataset["server"] = server;
     row.dataset["phase"] = job.phase;
     row.dataset["tone"] = tone;
-    const name = span("dp-job__name", jobName(job));
-    name.title = jobName(job);
+    const title = span("dp-job__name", jobName(job));
+    title.title = jobName(job);
+    // Two or more servers: each row names the server its download is on.
+    let name: HTMLElement = title;
+    if (names) {
+      name = document.createElement("div");
+      name.className = "dp-job__head";
+      const tag = span("dp-job__server", names[server] ?? "");
+      tag.dataset["testid"] = "job-server";
+      name.append(title, tag);
+    }
     const line = document.createElement("div");
     line.className = "dp-job__line";
     const status = document.createElement("span");
@@ -189,8 +481,8 @@ function renderJobs(jobs: Job[]): void {
       const resumable = job.reason === "paused" && job.paused_by !== "administrator";
       controls.append(
         glyphButton(resumable ? "play" : "pause", resumable ? "jobResume" : "jobPause", "blue",
-          {job: job.id, jobAction: resumable ? "resume" : "pause"}),
-        glyphButton("trash2", "jobRemove", "danger", {job: job.id, jobAction: "remove"}));
+          {job: job.id, server, jobAction: resumable ? "resume" : "pause"}),
+        glyphButton("trash2", "jobRemove", "danger", {job: job.id, server, jobAction: "remove"}));
       line.append(controls);
       const value = percent(job);
       const progress = document.createElement("div");
@@ -215,11 +507,11 @@ function renderJobs(jobs: Job[]): void {
     if (!unsettled(job)) {
       // A finished download leaves this list alone (as Clear does for all of them): the
       // footer's trash, on the title line, shown while the row is hovered or focused.
-      const forget = glyphButton("trash2", "listRemove", "danger", {job: job.id, jobAction: "forget"});
+      const forget = glyphButton("trash2", "listRemove", "danger", {job: job.id, server, jobAction: "forget"});
       forget.classList.add("dp-job__forget");
       row.append(forget);
     }
-    const note = notes.get(job.id);
+    const note = notes.get(noteKey(server, job.id));
     if (note) {
       const said = document.createElement("p");
       said.className = "dp-job__note";
@@ -228,15 +520,19 @@ function renderJobs(jobs: Job[]): void {
     }
     return row;
   }));
-  if (keep) list.querySelector<HTMLElement>(`[data-job="${CSS.escape(keep[0] ?? "")}"][data-job-action="${keep[1]}"]`)?.focus();
+  if (keep) {
+    list.querySelector<HTMLElement>(`[data-job="${CSS.escape(keep[0] ?? "")}"][data-server="${CSS.escape(keep[2] ?? "")}"]`
+      + `[data-job-action="${keep[1]}"]`)?.focus();
+  }
 }
 
-async function act(id: string, action: string): Promise<void> {
-  notes.delete(id);
-  if (action === "forget") return forget(id);
-  const request = action === "remove" ? {type: "dp-withdraw", id} : {type: "dp-control", id, kind: action};
+/** A row's control, sent to that job's own server (WS-X1). */
+async function act(id: string, server: string, action: string): Promise<void> {
+  notes.delete(noteKey(server, id));
+  if (action === "forget") return forget(id, server);
+  const request = action === "remove" ? {type: "dp-withdraw", id, server} : {type: "dp-control", id, kind: action, server};
   const answer = await chrome.runtime.sendMessage(request) as {ok: boolean; reason?: string} | undefined;
-  if (answer && !answer.ok) notes.set(id, message(DECLINED[answer.reason ?? ""] ?? "controlFailed"));
+  if (answer && !answer.ok) notes.set(noteKey(server, id), message(DECLINED[answer.reason ?? ""] ?? "controlFailed"));
   await renderList();
 }
 
@@ -247,63 +543,80 @@ async function act(id: string, action: string): Promise<void> {
  */
 const finished = (job: Job): boolean => !unsettled(job);
 
-/** The server in use's list keys (each server's own: server-state.ts). */
-async function listKeys(): Promise<{jobs: string; cleared: string} | null> {
-  const server = await activeServer();
-  return server ? {jobs: stateKey(server, "jobs"), cleared: stateKey(server, "jobsCleared")} : null;
+/** One server's list keys (each server's own: server-state.ts). */
+const listKeys = (server: string): {jobs: string; cleared: string} =>
+  ({jobs: stateKey(server, "jobs"), cleared: stateKey(server, "jobsCleared")});
+
+/**
+ * Every server's downloads, merged (WS-X1), less what the person cleared. One server: its
+ * change order, as 1.0.7. Two or more: newest sent first (servers' change cursors are their own).
+ */
+async function listed(): Promise<Listed[]> {
+  const order = await serverOrder();
+  const keys = order.flatMap((server) => Object.values(listKeys(server)));
+  const stored = keys.length ? await chrome.storage.session.get(keys) : {};
+  const entries = order.flatMap((server) => {
+    const jobs = (stored[listKeys(server).jobs] ?? {}) as Record<string, Job>;
+    const cleared = (stored[listKeys(server).cleared] ?? {}) as Record<string, number>;
+    return Object.values(jobs).filter((job) => !(job.id in cleared) || job.cursor > cleared[job.id]!)
+      .map((job) => ({job, server}));
+  });
+  if (order.length < 2) return entries.sort((a, b) => b.job.cursor - a.job.cursor);
+  const sent = (entry: Listed): number => Date.parse(entry.job.submitted_at ?? "") || 0;
+  return entries.sort((a, b) => sent(b) - sent(a) || b.job.cursor - a.job.cursor);
 }
 
-async function listed(): Promise<Job[]> {
-  const keys = await listKeys();
-  if (!keys) return [];
-  const stored = await chrome.storage.session.get([keys.jobs, keys.cleared]);
-  const jobs = (stored[keys.jobs] ?? {}) as Record<string, Job>;
-  const cleared = (stored[keys.cleared] ?? {}) as Record<string, number>;
-  return Object.values(jobs).filter((job) => !(job.id in cleared) || job.cursor > cleared[job.id]!)
-    .sort((a, b) => b.cursor - a.cursor);
-}
-
+/** Clear: every server's finished entries leave this browser's list (WS-X1). */
 async function clearFinished(): Promise<void> {
-  const keys = await listKeys();
-  if (!keys) return;
-  const cleared = ((await chrome.storage.session.get(keys.cleared))[keys.cleared] ?? {}) as Record<string, number>;
-  for (const job of (await listed()).filter(finished)) cleared[job.id] = job.cursor;
-  await chrome.storage.session.set({[keys.cleared]: cleared});
+  const done = (await listed()).filter((entry) => finished(entry.job));
+  const servers_ = [...new Set(done.map((entry) => entry.server))];
+  if (!servers_.length) return;
+  const stored = await chrome.storage.session.get(servers_.map((server) => listKeys(server).cleared));
+  const writes: Record<string, Record<string, number>> = {};
+  for (const {job, server} of done) {
+    const key = listKeys(server).cleared;
+    writes[key] ??= {...((stored[key] ?? {}) as Record<string, number>)};
+    writes[key][job.id] = job.cursor;
+  }
+  await chrome.storage.session.set(writes);
 }
 
 /** One finished entry leaves this browser's list, as Clear does for all of them. */
-async function forget(id: string): Promise<void> {
-  const keys = await listKeys();
-  if (!keys) return;
-  const job = (await listed()).find((item) => item.id === id);
-  if (!job || !finished(job)) return;
+async function forget(id: string, server: string): Promise<void> {
+  const keys = listKeys(server);
+  const entry = (await listed()).find((item) => item.job.id === id && item.server === server);
+  if (!entry || !finished(entry.job)) return;
   const cleared = ((await chrome.storage.session.get(keys.cleared))[keys.cleared] ?? {}) as Record<string, number>;
-  cleared[id] = job.cursor;
+  cleared[id] = entry.job.cursor;
   await chrome.storage.session.set({[keys.cleared]: cleared});
   // The focus moves on to the list's next entry, or to the footer's Clear.
   const rows = [...document.querySelectorAll<HTMLElement>("li[data-job-id]")];
-  const next = rows[rows.findIndex((item) => item.dataset["jobId"] === id) + 1]?.dataset["jobId"];
+  const next = rows[rows.findIndex((item) => item.dataset["jobId"] === id && item.dataset["server"] === server) + 1];
   await renderList();
-  const target = next ? document.querySelector<HTMLElement>(`li[data-job-id="${CSS.escape(next)}"] button`) : null;
+  const target = next ? document.querySelector<HTMLElement>(`li[data-job-id="${CSS.escape(next.dataset["jobId"] ?? "")}"]`
+    + `[data-server="${CSS.escape(next.dataset["server"] ?? "")}"] button`) : null;
   (target ?? $<HTMLElement>('[data-testid="clear-list"]')).focus();
 }
 
 async function renderList(): Promise<void> {
-  const jobs = await listed();
-  renderJobs(jobs);
+  const entries = await listed();
+  const list = await servers();
+  renderJobs(entries, list.length > 1 ? Object.fromEntries(list.map((item) => [item.server, item.name])) : null);
   // Nothing finished to clear: the control stays in its place, disabled.
-  $<HTMLButtonElement>('[data-testid="clear-list"]').disabled = !jobs.some(finished);
+  $<HTMLButtonElement>('[data-testid="clear-list"]').disabled = !entries.some((entry) => finished(entry.job));
 }
 
 /** Opened from a notification: show that download (once). */
 async function focusNotified(): Promise<void> {
-  const fromUrl = new URLSearchParams(location.search).get("job");
-  const stored = (await chrome.storage.session.get("focusJob"))["focusJob"] as string | undefined;
-  const id = fromUrl || stored;
+  const params = new URLSearchParams(location.search);
+  const stored = await chrome.storage.session.get(["focusJob", "focusServer"]);
+  const id = params.get("job") || stored["focusJob"] as string | undefined;
+  const server = params.get("server") || stored["focusServer"] as string | undefined;
   if (!id) return;
-  const row = document.querySelector<HTMLElement>(`li[data-job-id="${CSS.escape(id)}"]`);
+  const row = document.querySelector<HTMLElement>(`li[data-job-id="${CSS.escape(id)}"]`
+    + (server ? `[data-server="${CSS.escape(server)}"]` : ""));
   if (!row) return;
-  if (stored) await chrome.storage.session.remove("focusJob");
+  if (stored["focusJob"]) await chrome.storage.session.remove(["focusJob", "focusServer"]);
   row.classList.add("dp-job--focus");
   row.scrollIntoView({block: "nearest"});
 }
@@ -403,14 +716,70 @@ async function renderSiteSwitch(offSites: string[]): Promise<void> {
 // never puts the earlier state back (the edit's own save redraws it).
 let settingsEdits = 0;
 
+/** Settings, two or more servers (WS-X1): a block per server, titled with its name, its trash icon at the end. */
+function settingsBlock(item: Server): HTMLLIElement {
+  const block = document.createElement("li");
+  block.className = "dp-settings__server";
+  block.dataset["server"] = item.server;
+  const title = document.createElement("p");
+  title.className = "dp-settings__server-title";
+  title.append(span("", item.name));
+  if (item.isDefault) {
+    const star = glyph("star");
+    star.classList.add("dp-settings__star");
+    const marker = span("dp-settings__default", "");
+    marker.setAttribute("role", "img");
+    marker.setAttribute("aria-label", message("serverDefault"));
+    marker.title = message("serverDefault");
+    marker.append(star);
+    title.append(" ", marker);
+  }
+  const facts = document.createElement("dl");
+  facts.className = "dp-facts";
+  for (const [label, value] of [["popupServer", serverName(item.server)], ["popupAccount", item.account], ["popupBrowser", item.label]]) {
+    const row = document.createElement("div");
+    const term = document.createElement("dt");
+    term.textContent = message(label!);
+    const detail = document.createElement("dd");
+    detail.textContent = value!;
+    row.append(term, detail);
+    facts.append(row);
+  }
+  const trash = glyphButton("trash2", "", "danger", {action: "disconnect", server: item.server});
+  trash.classList.add("dp-settings__trash");
+  trash.setAttribute("aria-label", message("disconnectServer", [item.name]));
+  trash.title = message("disconnectServer", [item.name]);
+  block.append(title, facts, trash);
+  return block;
+}
+
+let settingsDrawn = "";
+
 async function renderSettings(): Promise<void> {
-  const connected = await connection();
-  $("[data-connection='connected']").hidden = !connected;
+  const list = await servers();
+  const connected = list[0] ?? null;
+  const many = list.length > 1;
+  $("[data-connection='connected']").hidden = !connected || many;
+  $("[data-connection='multi']").hidden = !many;
   $("[data-connection='disconnected']").hidden = Boolean(connected);
-  if (connected) {
+  text("#connection-title", message(many ? "optionsConnections" : "optionsConnection"));
+  if (connected && !many) {
     text('[data-testid="settings-server"]', serverName(connected.server));
     text('[data-testid="settings-account"]', connected.account);
     text('[data-testid="settings-label"]', connected.label);
+    $("[data-connection='connected'] [data-action='disconnect']").dataset["server"] = connected.server;
+  }
+  // Not drawn again while the dialog is open: its return target stays in place.
+  if (many && !$<HTMLDialogElement>("dialog.dp-dialog").open) {
+    const drawn = JSON.stringify(list);
+    if (drawn !== settingsDrawn) {
+      settingsDrawn = drawn;
+      const focused = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>(".dp-settings__trash")?.dataset["server"];
+      $('[data-testid="settings-servers"]').replaceChildren(...list.map(settingsBlock));
+      if (focused) document.querySelector<HTMLElement>(`.dp-settings__trash[data-server="${CSS.escape(focused)}"]`)?.focus();
+    }
+  } else if (!many) {
+    settingsDrawn = "";
   }
   const edits = settingsEdits;
   const chosen = await settings();
@@ -441,17 +810,119 @@ async function renderSettings(): Promise<void> {
   await renderCapture(chosen);
 }
 
-function note(key: string): void {
+function note(said: string): void {
   const element = $('[data-testid="connection-note"]');
-  element.textContent = message(key);
+  element.textContent = said;
   element.hidden = false;
+}
+
+// ── Disconnect (WS-X1): the confirmation dialog, for every server ──────
+
+let dialogFor: {server: string; name: string; next: string | null; from: HTMLElement | null; index: number} | null = null;
+
+function dialogStep(step: "confirm" | "busy" | "unreachable"): void {
+  const dialog = $<HTMLDialogElement>("dialog.dp-dialog");
+  dialog.dataset["step"] = step;
+  const cancel = $<HTMLButtonElement>('[data-testid="dialog-cancel"]');
+  const go = $<HTMLButtonElement>('[data-testid="dialog-confirm"]');
+  cancel.disabled = go.disabled = step === "busy";
+  go.textContent = message(step === "busy" ? "dialogDisconnecting" : step === "unreachable" ? "dialogRemoveAnyway" : "optionsDisconnect");
+}
+
+async function openDisconnect(server: string, from: HTMLElement | null): Promise<void> {
+  const list = await servers();
+  const target = list.find((item) => item.server === server);
+  if (!target) return;
+  const many = list.length > 1;
+  // One server: it has no name of its own on any screen, so it is DownloadPulse.
+  const name = many ? target.name : message("extName");
+  const nextServer = many && target.isDefault ? successor(list.map((item) => item.server), server) : null;
+  const next = list.find((item) => item.server === nextServer)?.name ?? null;
+  dialogFor = {server, name, next, from, index: list.indexOf(target)};
+  fillDialog("confirm", target);
+  dialogStep("confirm");
+  const dialog = $<HTMLDialogElement>("dialog.dp-dialog");
+  if (!dialog.open) dialog.showModal();
+  $<HTMLButtonElement>('[data-testid="dialog-cancel"]').focus();
+}
+
+function fillDialog(step: "confirm" | "unreachable", target: Server): void {
+  if (!dialogFor) return;
+  const {name, next} = dialogFor;
+  const address = new URL(target.server).host;
+  text('[data-testid="dialog-title"]', message(step === "confirm" ? "dialogDisconnectTitle" : "dialogUnreachableTitle", [name]));
+  text('[data-testid="dialog-account"]', message(step === "confirm" ? "dialogDisconnectAccount" : "dialogUnreachableAccount",
+    [target.account, address]));
+  text('[data-testid="dialog-after"]', message(step === "confirm" ? "dialogDisconnectAfter" : "dialogUnreachableAnyway", [name]));
+  const notice = $('[data-testid="dialog-default"]');
+  notice.hidden = !next;
+  notice.textContent = next ? message("dialogDefaultNote", [name, next]) : "";
+}
+
+/** The dialog's red button: Disconnect (revoke, then forget), or Remove anyway (forget here only). */
+async function confirmDisconnect(): Promise<void> {
+  const dialog = $<HTMLDialogElement>("dialog.dp-dialog");
+  if (!dialogFor) return dialog.close();
+  const {server, name, next} = dialogFor;
+  const force = dialog.dataset["step"] === "unreachable";
+  dialogStep("busy");
+  const answer = await chrome.runtime.sendMessage({type: "dp-disconnect", server, force})
+    .catch(() => undefined) as {result?: string} | undefined;
+  if (answer?.result === "unreachable") {
+    // Nothing has been removed: the person chooses.
+    const target = (await servers()).find((item) => item.server === server);
+    if (!target) return dialog.close();
+    fillDialog("unreachable", target);
+    dialogStep("unreachable");
+    $<HTMLButtonElement>('[data-testid="dialog-cancel"]').focus();
+    return;
+  }
+  const left = (await servers()).length;
+  if (answer?.result === "none") {
+    // Already gone from this browser (removed elsewhere meanwhile): nothing to say about it.
+    dialog.close();
+    await render();
+    returnFocus();
+    return;
+  }
+  const said = answer?.result === "revoked"
+    ? message(left > 0 ? "noteDisconnectedFrom" : "optionsDisconnected", [name])
+    : message("noteRemovedLocally", [name]);
+  dialog.close();
+  note(next ? `${said} ${message("noteNewDefault", [next])}` : said);
+  // In the dropdown, nothing is left to set without a connection: back to the screen that
+  // connects (operator, 2026-11-22). The standalone settings page stays, saying so.
+  if (!standalone && left === 0) {
+    view = "main";
+    await render();
+  } else {
+    await render();
+  }
+  returnFocus();
+}
+
+/** When the dialog closes: back on the trash icon, or the next block's if that server was removed. */
+function returnFocus(): void {
+  if (!dialogFor) return;
+  const {server, from, index} = dialogFor;
+  dialogFor = null;
+  if (from?.isConnected && (from.dataset["server"] ?? server) === server && from.offsetParent) return from.focus();
+  const trashes = [...document.querySelectorAll<HTMLElement>('[data-view="settings"] [data-action="disconnect"]')]
+    .filter((button) => button.offsetParent);
+  (trashes.find((button) => button.dataset["server"] === server) ?? trashes[index] ?? trashes.at(-1))?.focus();
 }
 
 // ── the whole dropdown ──────────────────────────────────────────────────
 
+/** The default server's connection (the one the held-connection screens settle). */
+async function defaultConnection(): Promise<Awaited<ReturnType<typeof connection>>> {
+  const server = await defaultServer();
+  return server ? connection(server) : null;
+}
+
 async function render(): Promise<void> {
-  const held = await connection();
-  if (held && (await connectionState(held)) === "insecure") {
+  for (const held of Object.values(await connections())) {
+    if ((await connectionState(held)) !== "insecure") continue;
     // Plain HTTP across the internet: never usable. Settled first on every redraw, each step
     // safe to repeat, so a popup closed half-way (or reloaded) leaves nothing half done:
     // the refusal recorded, then that server's connection forgotten by name.
@@ -461,8 +932,11 @@ async function render(): Promise<void> {
     }
     await forgetConnection(false, held.server);
   }
-  const connected = await connection();
+  const connected = await defaultConnection();
+  const list = await servers();
   const pending = await pairing();
+  // Adding a server (WS-X1): the pairing screens offer a way back to the main view.
+  for (const button of document.querySelectorAll<HTMLElement>("[data-adding]")) button.hidden = list.length === 0;
   if (screen && !connected && pending?.state !== "waiting" && pending?.state !== "probing") {
     show(screen);
     if (view === "settings") await renderSettings();
@@ -491,7 +965,9 @@ async function render(): Promise<void> {
     text('[data-testid="server"]', serverName(connected.server));
     text('[data-testid="account"]', connected.account);
     text('[data-testid="label"]', connected.label);
+    renderMany(list);
     await renderReach();
+    renderServers(list, reachNow);
     await renderList();
     await focusNotified();
   } else {
@@ -530,6 +1006,41 @@ function showInsecure(origin: string): void {
   hint.replaceChildren(document.createTextNode(parts[0] ?? ""), span("dp-literal", origin), document.createTextNode(parts[1] ?? ""));
   // Tailscale's range is also carrier-grade NAT's: said, so the person knows which one this is.
   $('[data-testid="insecure-shared-range"]').hidden = !isSharedAddressRange(new URL(origin).hostname);
+}
+
+/**
+ * What changes with two or more servers (WS-X1), on the main view: the details become the
+ * server list, Add gets its ▾, the capture switch names the default, Open lists the servers.
+ * [+] is there with any number, disabled at the cap.
+ */
+function renderMany(list: readonly Server[]): void {
+  const many = list.length > 1;
+  const add = $<HTMLButtonElement>('[data-testid="add-server"]');
+  const full = list.length >= MAX_SERVERS;
+  add.setAttribute("aria-disabled", String(full));
+  add.setAttribute("aria-label", message(full ? "addServerLimit" : "addServer"));
+  add.title = message(full ? "addServerLimit" : "addServer");
+  const toggle = $<HTMLElement>("[data-action='details']");
+  toggle.setAttribute("aria-controls", many ? "servers" : "facts");
+  const open = toggle.getAttribute("aria-expanded") === "true";
+  $("#facts").hidden = many || !open;
+  $("#servers").hidden = !many || !open;
+  $('[data-testid="quick-more"]').hidden = !many;
+  $("form[data-action='quick-add']").classList.toggle("dp-quick__form--split", many);
+  const chosen = list.find((item) => item.isDefault);
+  text('[data-testid="capture-main-label"]', many && chosen ? message("captureToggleNamed", [chosen.name]) : message("captureToggle"));
+  const openButton = $('[data-testid="open-server"]');
+  $(".dp-foot__more").hidden = !many;
+  if (many) {
+    openButton.setAttribute("aria-haspopup", "menu");
+    openButton.setAttribute("aria-expanded", String(!$('[data-menu="open"]').hidden));
+    openButton.title = message("openChoose");
+  } else {
+    openButton.removeAttribute("aria-haspopup");
+    openButton.removeAttribute("aria-expanded");
+    openButton.removeAttribute("title");
+  }
+  if (!many) closeMenus();
 }
 
 /** Connecting begins with the disclosure until the person has agreed to it. */
@@ -576,8 +1087,8 @@ $<HTMLFormElement>("#remote-found").addEventListener("submit", (event) => {
   void connectRemote(event.currentTarget as HTMLFormElement);
 });
 
-async function openDownloadPulse(): Promise<void> {
-  await chrome.runtime.sendMessage({type: "dp-open"});
+async function openDownloadPulse(server?: string): Promise<void> {
+  await chrome.runtime.sendMessage({type: "dp-open", ...(server ? {server} : {})});
   if (!standalone) window.close();
 }
 
@@ -661,7 +1172,7 @@ document.addEventListener("click", (event) => {
   }
   const job = target.closest<HTMLElement>("button[data-job-action]");
   if (job) {
-    void act(job.dataset["job"] ?? "", job.dataset["jobAction"] ?? "");
+    void act(job.dataset["job"] ?? "", job.dataset["server"] ?? "", job.dataset["jobAction"] ?? "");
     return;
   }
   const site = target.closest<HTMLElement>("[data-remove-site]")?.dataset["removeSite"];
@@ -678,11 +1189,41 @@ document.addEventListener("click", (event) => {
   } else if (action === "details") {
     const open = button!.getAttribute("aria-expanded") !== "true";
     button!.setAttribute("aria-expanded", String(open));
-    $("#facts").hidden = !open;
+    const many = button!.getAttribute("aria-controls") === "servers";
+    $("#facts").hidden = many || !open;
+    $("#servers").hidden = !many || !open;
   } else if (action === "clear-list") {
     void clearFinished();
   } else if (action === "open") {
-    void openDownloadPulse();
+    // Two or more servers: [Open ▾] lists them; one: it opens, as before.
+    if (button!.getAttribute("aria-haspopup") === "menu") {
+      void openMenu("open", button!, () => true, (server) => void openDownloadPulse(server));
+    } else {
+      void openDownloadPulse();
+    }
+  } else if (action === "quick-more") {
+    // Add to another server: an unreachable one can't be chosen (a send never falls back).
+    void openMenu("quick", button!, (reach) => reach !== "unreachable", (server) => quickAdd(server));
+  } else if (action === "add-server") {
+    if (button!.getAttribute("aria-disabled") === "true") return;
+    // Already agreed to: the pairing starts at discovery, skipping the welcome and the disclosure.
+    void startConnecting();
+  } else if (action === "add-cancel") {
+    screen = null;
+    void chrome.runtime.sendMessage({type: "cancel"});
+  } else if (action === "server-default") {
+    const server = button!.dataset["server"] ?? "";
+    refocus = {server, what: "star"};
+    void setDefaultServer(server);
+  } else if (action === "server-rename") {
+    const server = button!.dataset["server"] ?? "";
+    renaming = {server, problem: null};
+    refocus = {server, what: "rename"};
+    void servers().then((list) => renderServers(list, reachNow, true));
+  } else if (action === "dialog-cancel") {
+    $<HTMLDialogElement>("dialog.dp-dialog").close();
+  } else if (action === "dialog-confirm") {
+    void confirmDisconnect();
   } else if (action === "connect-chosen") {
     if (chosen === "remote") {
       const form = $<HTMLFormElement>("#remote-found");
@@ -693,22 +1234,16 @@ document.addEventListener("click", (event) => {
       });
     }
   } else if (action === "disconnect") {
-    void chrome.runtime.sendMessage({type: "dp-disconnect"}).then(async (answer: {revoked?: boolean} | undefined) => {
-      note(answer?.revoked ? "optionsDisconnected" : "optionsDisconnectedLocally");
-      // In the dropdown, nothing is left to set without a connection: back to the screen that
-      // connects (operator, 2026-11-22). The standalone settings page stays, saying so.
-      if (!standalone) {
-        view = "main";
-        await render();
-      }
-    });
+    // Never removed silently (WS-X1): the dialog says what happens, and the person confirms.
+    $('[data-testid="connection-note"]').hidden = true;
+    void openDisconnect(button!.dataset["server"] ?? "", button!);
   } else if (action === "connect-local") {
     void startConnecting();
   } else if (action === "agree") {
     const named = $<HTMLInputElement>('[data-testid="device-name"]').checked;
     screen = null;
     // Already connected (paired before the disclosure, or it changed): agreeing unlocks that connection.
-    void Promise.all([recordConsent(named), connection()]).then(([, connected]) =>
+    void Promise.all([recordConsent(named), defaultConnection()]).then(([, connected]) =>
       connected ? render() : chrome.runtime.sendMessage({type: "connect-local"}));
   } else if (action === "screen-back") {
     screen = null;
@@ -716,7 +1251,7 @@ document.addEventListener("click", (event) => {
   } else if (action === "insecure-continue") {
     screen = null;
     // A saved connection held for its plain HTTP: the choice is recorded; else connect with it.
-    void connection().then((connected) => connected ? choosePlainHttp().then(render)
+    void defaultConnection().then((connected) => connected ? choosePlainHttp(connected.server).then(render)
       : connectTo(insecureTarget, insecureTarget, true));
   } else if (action === "cancel") {
     void chrome.runtime.sendMessage({type: action});
@@ -747,12 +1282,18 @@ $<HTMLInputElement>("#quick").addEventListener("paste", (event) => {
 });
 $<HTMLFormElement>("form[data-action='quick-add']").addEventListener("submit", (event) => {
   event.preventDefault();
+  quickAdd();
+});
+
+/** Quick Add: to ``server``, else (Add itself) the default. */
+function quickAdd(server?: string): void {
   const input = $<HTMLInputElement>("#quick");
   const button = $<HTMLButtonElement>("form[data-action='quick-add'] button");
   const result = $('[data-testid="quick-result"]');
   if (!input.value.trim()) return;
   button.disabled = true;
-  void (chrome.runtime.sendMessage({type: "dp-quick-add", text: input.value}) as Promise<{ok: boolean; text: string} | undefined>)
+  void (chrome.runtime.sendMessage({type: "dp-quick-add", text: input.value, ...(server ? {server} : {})}) as
+      Promise<{ok: boolean; text: string} | undefined>)
     .then((answer) => {
       const ok = Boolean(answer?.ok);
       result.textContent = answer?.text ?? message("sendFailed");
@@ -763,7 +1304,7 @@ $<HTMLFormElement>("form[data-action='quick-add']").addEventListener("submit", (
       quickTimer = window.setTimeout(() => { result.textContent = ""; result.title = ""; delete result.dataset["ok"]; }, 4000);
     })
     .finally(() => { button.disabled = false; });
-});
+}
 $<HTMLFormElement>("form[data-action='add-site']").addEventListener("submit", (event) => {
   event.preventDefault();
   const input = $<HTMLInputElement>("#site");
@@ -771,6 +1312,80 @@ $<HTMLFormElement>("form[data-action='add-site']").addEventListener("submit", (e
   if (!site) return;
   void saveSettings((chosen) => ({offSites: [...chosen.offSites, site]})).then(() => { input.value = ""; });
 });
+// ── the server list's keys and pointer (WS-X1) ─────────────────────────
+document.addEventListener("keydown", (event) => {
+  const target = event.target as HTMLElement;
+  if (target instanceof HTMLInputElement && target.dataset["rename"] !== undefined) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      void commitRename(target);
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      const server = target.dataset["rename"]!;
+      renaming = null;
+      refocus = {server, what: "pencil"};
+      void servers().then((list) => renderServers(list, reachNow, true));
+    }
+    return;
+  }
+  // The grab handle: Alt+Up / Alt+Down moves that server by one place, announced.
+  const handle = target.closest<HTMLElement>(".dp-server__handle");
+  if (handle && event.altKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
+    event.preventDefault();
+    void moveServer(handle.dataset["server"] ?? "", event.key === "ArrowUp" ? -1 : 1);
+  }
+});
+document.addEventListener("focusout", (event) => {
+  const field = event.target as HTMLElement;
+  // Leaving the rename field keeps what was typed (Esc is the way out without it).
+  if (field instanceof HTMLInputElement && field.dataset["rename"] !== undefined && renaming?.server === field.dataset["rename"]
+      && field.isConnected) {
+    void commitRename(field);
+  }
+});
+document.addEventListener("pointerdown", (event) => {
+  const handle = (event.target as HTMLElement).closest<HTMLElement>(".dp-server__handle");
+  if (!handle || event.button !== 0) return;
+  event.preventDefault();
+  handle.setPointerCapture(event.pointerId);
+  dragging = {server: handle.dataset["server"] ?? "", pointer: event.pointerId, moved: false};
+  handle.closest("li")!.classList.add("dp-server--dragging");
+});
+document.addEventListener("pointermove", (event) => {
+  if (!dragging || event.pointerId !== dragging.pointer) return;
+  const container = $('[data-testid="servers"]');
+  const block = container.querySelector<HTMLElement>(`li[data-server="${CSS.escape(dragging.server)}"]`);
+  if (!block) return;
+  // The block goes where the pointer is among the others' middles.
+  const others = [...container.querySelectorAll<HTMLElement>("li[data-server]")].filter((item) => item !== block);
+  const before = others.find((item) => {
+    const box = item.getBoundingClientRect();
+    return event.clientY < box.top + box.height / 2;
+  });
+  if (before ? block.nextElementSibling === before : block === container.lastElementChild) return;
+  container.insertBefore(block, before ?? null);
+  dragging.moved = true;
+});
+function endDrag(event: PointerEvent): void {
+  if (!dragging || event.pointerId !== dragging.pointer) return;
+  const {server, moved: changed} = dragging;
+  dragging = null;
+  const container = $('[data-testid="servers"]');
+  container.querySelector(".dp-server--dragging")?.classList.remove("dp-server--dragging");
+  if (!changed) return;
+  const order = [...container.querySelectorAll<HTMLElement>("li[data-server]")].map((item) => item.dataset["server"] ?? "");
+  refocus = {server, what: "handle"};
+  void setServerOrder(order).then(() => movedSay(server, order));
+}
+document.addEventListener("pointerup", endDrag);
+document.addEventListener("pointercancel", endDrag);
+{
+  const dialog = $<HTMLDialogElement>("dialog.dp-dialog");
+  // Esc cancels -- except while it disconnects, when both buttons wait too.
+  dialog.addEventListener("cancel", (event) => { if (dialog.dataset["step"] === "busy") event.preventDefault(); });
+  // Closed by Cancel or Esc: the focus goes back. (After a disconnect, confirmDisconnect returns it once the views are redrawn.)
+  dialog.addEventListener("close", () => { if (dialog.dataset["step"] !== "busy") returnFocus(); });
+}
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "local" && "appearance" in changes) void appearance().then((value) => applyAppearance(document.documentElement, value));
   // The status alone changes every look: redraw only it, so the list (and a focused control) stays put.

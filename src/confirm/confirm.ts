@@ -36,13 +36,17 @@ async function reply(yes: boolean): Promise<void> {
 async function start(): Promise<void> {
   localize(document);
   const question = await chrome.runtime.sendMessage({type: "dp-confirm-get", id}) as
-    {kind: string; site: string; links: string[]} | null;
+    {kind: string; site: string; links: string[]; to?: string} | null;
   if (!question) {
     window.close();
     return;
   }
   document.querySelector('[data-testid="site"]')!.textContent = message("confirmFrom", [question.site]);
   document.querySelector('[data-testid="count"]')!.textContent = message("confirmLinks", [String(question.links.length)]);
+  // Two or more servers (WS-X1): the one it goes to.
+  const to = document.querySelector<HTMLElement>('[data-testid="to"]')!;
+  to.hidden = !question.to;
+  if (question.to) to.textContent = message("confirmTo", [question.to]);
   const list = document.querySelector('[data-testid="links"]')!;
   for (const link of question.links) {
     const item = document.createElement("li");

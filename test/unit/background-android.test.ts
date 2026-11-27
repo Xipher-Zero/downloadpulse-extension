@@ -72,11 +72,12 @@ test("the background loads without the APIs Firefox for Android lacks, and answe
 
   // A page's buttons: what the frame may offer (nothing until connected).
   assert.deepEqual(await ask({type: "dp-state"}, {url: "https://example.com/", tab: {id: 1}, frameId: 0}),
-    {connected: false, hover: false, video: false, appearance: null});
+    {connected: false, hover: false, video: false, appearance: null, servers: []});
   // The popup: downloads cannot be held here, and disconnecting with nothing connected answers.
   const popup = {url: EXTENSION + "popup/popup.html"};
   assert.equal(await ask({type: "dp-capture-usable"}, popup), false);
-  assert.deepEqual(await ask({type: "dp-disconnect"}, popup), {revoked: false});
+  // 1.0.8 (WS-X1): Disconnect names its server; none saved, there is nothing to disconnect.
+  assert.deepEqual(await ask({type: "dp-disconnect", server: "https://dp.example.com"}, popup), {result: "none"});
   assert.deepEqual(await ask({type: "dp-settle-held"}, popup), {});
   assert.deepEqual(await ask({type: "dp-open"}, popup), {tab: false});
 

@@ -73,6 +73,7 @@
 
     <section data-state="probing" hidden>
       <p class="dp-popup__status" role="status" data-i18n="popupProbing"></p>
+      <button type="button" class="dp-btn dp-btn--ghost dp-disclosure__back" data-action="add-cancel" data-adding hidden data-i18n="popupCancel"></button>
     </section>
 
     <!-- Found on this computer: choose it or a remote server, as DownloadPulse's
@@ -104,6 +105,8 @@
         </form>
       </div>
       <button type="button" class="dp-btn dp-btn--primary" data-action="connect-chosen" data-i18n="popupConnectAction"></button>
+      <!-- Adding a server (WS-X1): back to the main view, nothing connected. -->
+      <button type="button" class="dp-btn dp-btn--ghost dp-disclosure__back" data-action="add-cancel" data-adding hidden data-i18n="popupCancel"></button>
     </section>
 
     <section data-state="not_found" hidden>
@@ -115,6 +118,7 @@
                data-i18n-placeholder="popupServerPlaceholder">
         <button type="submit" class="dp-btn dp-btn--primary" data-i18n="popupConnectServer"></button>
       </form>
+      <button type="button" class="dp-btn dp-btn--ghost dp-disclosure__back" data-action="add-cancel" data-adding hidden data-i18n="popupCancel"></button>
     </section>
 
     <section data-state="waiting" hidden>
@@ -134,6 +138,7 @@
       <button type="button" class="dp-btn dp-btn--primary dp-failed__again" data-action="connect-local">
         <span class="dp-failed__plug" data-glyph-slot="plug"></span><span data-i18n="popupConnectAgain"></span>
       </button>
+      <button type="button" class="dp-btn dp-btn--ghost dp-disclosure__back" data-action="add-cancel" data-adding hidden data-i18n="popupCancel"></button>
     </section>
 
     <!-- Right after connecting, once (1.0.2, operator 2026-11-22): browser downloads to DownloadPulse
@@ -147,20 +152,29 @@
     </section>
 
     <section data-state="connected" hidden>
+      <!-- [+] at the start (WS-X1: connect another server), the status centred as before. -->
       <div class="dp-conn">
-        <span class="dp-conn__status" data-testid="reach" data-reach="checking">
-          <span class="dp-conn__dot" aria-hidden="true"></span><span data-testid="reach-text"></span>
-        </span>
-        <button type="button" class="dp-glyph-btn dp-glyph-btn--bare dp-conn__toggle" data-action="details"
-                aria-expanded="false" aria-controls="facts" data-i18n-label="popupConnectionDetails">
-          <span data-glyph-slot="chevronRight"></span>
+        <button type="button" class="dp-glyph-btn dp-glyph-btn--bare dp-conn__add" data-action="add-server" data-testid="add-server">
+          <span data-glyph-slot="plus"></span>
         </button>
+        <span class="dp-conn__centre">
+          <span class="dp-conn__status" data-testid="reach" data-reach="checking">
+            <span class="dp-conn__dots" data-testid="dots"><span class="dp-conn__dot" aria-hidden="true"></span></span><span data-testid="reach-text"></span>
+          </span>
+          <button type="button" class="dp-glyph-btn dp-glyph-btn--bare dp-conn__toggle" data-action="details"
+                  aria-expanded="false" aria-controls="facts" data-i18n-label="popupConnectionDetails">
+            <span data-glyph-slot="chevronRight"></span>
+          </button>
+        </span>
       </div>
       <dl class="dp-facts" id="facts" hidden>
         <div><dt data-i18n="popupServer"></dt><dd data-testid="server"></dd></div>
         <div><dt data-i18n="popupAccount"></dt><dd data-testid="account"></dd></div>
         <div><dt data-i18n="popupBrowser"></dt><dd data-testid="label"></dd></div>
       </dl>
+      <!-- Two or more servers: one block each, in display order (reorder, rename, the default). -->
+      <ul class="dp-servers" id="servers" data-testid="servers" hidden></ul>
+      <p class="dp-visually-hidden" role="status" aria-live="polite" data-testid="announce"></p>
       <section class="dp-quick" aria-labelledby="quick-title">
         <div class="dp-quick__head">
           <h2 class="dp-popup__heading" id="quick-title" data-i18n="quickAddTitle"></h2>
@@ -170,15 +184,24 @@
           <label class="dp-visually-hidden" for="quick" data-i18n="quickAddPlaceholder"></label>
           <input id="quick" type="text" spellcheck="false" autocomplete="off" data-i18n-placeholder="quickAddPlaceholder">
           <button type="submit" class="dp-btn dp-btn--primary dp-btn--sm" data-i18n="quickAddButton"></button>
+          <!-- Two or more servers: [Add|▾], the ▾ listing them (WS-X1). -->
+          <button type="button" class="dp-btn dp-btn--primary dp-btn--sm dp-quick__more" data-action="quick-more" data-testid="quick-more"
+                  aria-haspopup="menu" aria-expanded="false" data-i18n-label="quickAddChoose" hidden>
+            <span data-glyph-slot="chevronDown"></span>
+          </button>
         </form>
+        <div class="dp-menu dp-menu--quick" role="menu" data-menu="quick" data-testid="quick-menu" hidden></div>
       </section>
       <label class="dp-check dp-capture-switch"><input type="checkbox" disabled data-capture-switch data-testid="capture-main">
-        <span data-i18n="captureToggle"></span></label>
+        <span data-i18n="captureToggle" data-testid="capture-main-label"></span></label>
       <h2 class="dp-popup__heading" data-i18n="listTitle"></h2>
       <p class="dp-popup__hint" data-i18n="listEmpty" data-testid="list-empty"></p>
       <ul class="dp-jobs" data-testid="jobs"></ul>
       <footer class="dp-foot">
-        <button type="button" class="dp-btn dp-btn--ghost" data-action="open" data-testid="open-server" data-i18n="popupOpenServer"></button>
+        <div class="dp-menu dp-menu--open" role="menu" data-menu="open" data-testid="open-menu" hidden></div>
+        <button type="button" class="dp-btn dp-btn--ghost" data-action="open" data-testid="open-server">
+          <span data-i18n="popupOpenServer"></span><span class="dp-foot__more" data-glyph-slot="chevronDown" hidden></span>
+        </button>
         <button type="button" class="dp-glyph-btn dp-glyph-btn--danger" data-action="clear-list" data-testid="clear-list"
                 data-i18n-label="listClear">
           <span data-glyph-slot="trash2"></span>
@@ -199,6 +222,12 @@
           </dl>
           <p class="dp-settings__centred" data-i18n="optionsDisconnectHint"></p>
           <button type="button" class="dp-btn dp-btn--danger dp-btn--sm dp-settings__disconnect" data-action="disconnect" data-i18n="optionsDisconnect"></button>
+        </div>
+        <!-- Two or more servers (WS-X1): one block each, in display order, each with its trash icon;
+             the hint below them, as it is below the one server's details. -->
+        <div class="dp-settings__connection" data-connection="multi" hidden>
+          <ul class="dp-settings__servers" data-testid="settings-servers"></ul>
+          <p class="dp-settings__centred" data-i18n="optionsDisconnectHint"></p>
         </div>
         <p class="dp-settings__centred" data-connection="disconnected" data-i18n="optionsNotConnected" hidden></p>
         <p class="dp-settings__centred" role="status" data-testid="connection-note" hidden></p>
@@ -254,5 +283,17 @@
       </section>
     </section>
   </main>
+  <!-- Disconnect (WS-X1, every server): a modal dialog -- the rest is inert, Esc cancels,
+       Cancel has the focus first and stands on the left, the red action on the right. -->
+  <dialog class="dp-dialog" data-testid="disconnect-dialog" aria-labelledby="dialog-title" data-step="confirm">
+    <h2 class="dp-dialog__title" id="dialog-title" data-testid="dialog-title"></h2>
+    <p class="dp-dialog__text" data-testid="dialog-account"></p>
+    <p class="dp-dialog__text" data-testid="dialog-after"></p>
+    <p class="dp-dialog__note" data-testid="dialog-default" hidden></p>
+    <div class="dp-dialog__actions">
+      <button type="button" class="dp-btn" data-action="dialog-cancel" data-testid="dialog-cancel" data-i18n="popupCancel"></button>
+      <button type="button" class="dp-btn dp-btn--danger dp-dialog__go" data-action="dialog-confirm" data-testid="dialog-confirm"></button>
+    </div>
+  </dialog>
 </body>
 </html>

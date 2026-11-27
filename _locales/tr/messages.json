@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "DownloadPulse bir süre boyunca bu indirmede ilerleme kaydetmedi; bu nedenle tarayıcı indirmeye devam etti."
+  },
+  "popupSomeConnected": {
+    "message": "$CONNECTED$/$TOTAL$ bağlı",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "Ulaşılamıyor"
+  },
+  "addServer": {
+    "message": "Başka bir DownloadPulse bağla"
+  },
+  "addServerLimit": {
+    "message": "En fazla 3 sunucu"
+  },
+  "failureTooMany": {
+    "message": "Bu tarayıcı zaten izin verilen en fazla sayıda, yani 3 DownloadPulse sunucusuna bağlı. Önce Ayarlar'dan birinin bağlantısını kesin."
+  },
+  "optionsConnections": {
+    "message": "Bağlantılar:"
+  },
+  "disconnectServer": {
+    "message": "$NAME$ bağlantısını kes",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "$NAME$ ile bağlantı kesilsin mi?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "Bu tarayıcı, $ADDRESS$ üzerindeki $ACCOUNT$ hesabından kaldırılacak.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "Önceden gönderilen indirmeler orada devam eder. $NAME$ artık sayfalarda veya sağ tıklama menüsünde sunulmayacak. Yeniden kullanmak için yeniden bağlamanız gerekecek.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ varsayılan sunucunuz.\nYeni varsayılan sunucunuz $NEXT$ olacak.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "Bağlantı kesiliyor…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$ sunucusuna ulaşılamıyor",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "Bu tarayıcı, $ADDRESS$ üzerindeki $ACCOUNT$ hesabından kaldırılamadı.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "$NAME$ sunucusunu yine de bu tarayıcıdan kaldırabilirsiniz. Siz orada Hesabım › Bağlı tarayıcılar bölümünden kaldırana kadar bu tarayıcı orada listelenmeye devam edecek.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "Yine de kaldır"
+  },
+  "noteDisconnectedFrom": {
+    "message": "$NAME$ ile bağlantı kesildi. Artık bu tarayıcıyı kabul etmiyor.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "Bu tarayıcıdan kaldırıldı. $NAME$ hâlâ onu listeliyor.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$ artık varsayılan sunucunuz.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "Varsayılan yap"
+  },
+  "serverDefault": {
+    "message": "Varsayılan"
+  },
+  "serverRename": {
+    "message": "$NAME$ adını değiştir",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "Sunucu adı"
+  },
+  "serverNameBlank": {
+    "message": "Bir ad girin."
+  },
+  "serverNameTaken": {
+    "message": "Başka bir sunucu zaten bu adı kullanıyor."
+  },
+  "serverMoveLabel": {
+    "message": "$NAME$ sunucusunu taşı. Sürükleyin veya Alt+↑ ya da Alt+↓ tuşuna basın.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$, $TOTAL$ sunucu arasında $POSITION$. sıraya taşındı",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "$NAME$ sunucusuna gönderildi.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "$NAME$ sunucusuna eklendi",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "Başka bir sunucuya ekle"
+  },
+  "openChoose": {
+    "message": "Açılacak DownloadPulse'u seçin"
+  },
+  "captureToggleNamed": {
+    "message": "Tarayıcı indirmelerini DownloadPulse'a gönder ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "Başka bir DownloadPulse'a gönder"
+  },
+  "sendServerGone": {
+    "message": "O DownloadPulse artık bu tarayıcıya bağlı değil."
+  },
+  "confirmTo": {
+    "message": "Hedef: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (varsayılan)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

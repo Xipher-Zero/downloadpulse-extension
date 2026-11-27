@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "Завантаження в DownloadPulse деякий час не просувалося, тому браузер продовжив його."
+  },
+  "popupSomeConnected": {
+    "message": "Підключено: $CONNECTED$ із $TOTAL$",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "Недоступний"
+  },
+  "addServer": {
+    "message": "Підключити ще один DownloadPulse"
+  },
+  "addServerLimit": {
+    "message": "Не більше 3 серверів"
+  },
+  "failureTooMany": {
+    "message": "Цей браузер уже підключено до 3 серверів DownloadPulse — це максимум. Спочатку відключіть один із них у параметрах."
+  },
+  "optionsConnections": {
+    "message": "Підключення:"
+  },
+  "disconnectServer": {
+    "message": "Відключити $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "Відключитися від $NAME$?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "Цей браузер буде видалено з облікового запису $ACCOUNT$ на $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "Уже надіслані завантаження триватимуть там. $NAME$ більше не пропонуватиметься на сторінках і в контекстному меню. Щоб знову ним користуватися, доведеться підключити його ще раз.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ — ваш сервер за замовчуванням.\nСервером за замовчуванням стане $NEXT$.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "Відключення…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$ недоступний",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "Не вдалося видалити цей браузер з облікового запису $ACCOUNT$ на $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "Ви все одно можете видалити $NAME$ із цього браузера. Сервер і далі показуватиме цей браузер, доки ви не видалите його там, у розділі «Мій обліковий запис › Підключені браузери».",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "Усе одно видалити"
+  },
+  "noteDisconnectedFrom": {
+    "message": "Відключено від $NAME$. Він більше не приймає цей браузер.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "Видалено з цього браузера. $NAME$ досі його показує.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "Тепер $NAME$ — ваш сервер за замовчуванням.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "Використовувати за замовчуванням"
+  },
+  "serverDefault": {
+    "message": "За замовчуванням"
+  },
+  "serverRename": {
+    "message": "Перейменувати $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "Назва сервера"
+  },
+  "serverNameBlank": {
+    "message": "Введіть назву."
+  },
+  "serverNameTaken": {
+    "message": "Цю назву вже має інший сервер."
+  },
+  "serverMoveLabel": {
+    "message": "Перемістити $NAME$. Перетягніть або натисніть Alt+↑ чи Alt+↓.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ переміщено на позицію $POSITION$ із $TOTAL$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "Надіслано в $NAME$.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "Додано в $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "Додати на інший сервер"
+  },
+  "openChoose": {
+    "message": "Виберіть, який DownloadPulse відкрити"
+  },
+  "captureToggleNamed": {
+    "message": "Надсилати завантаження браузера в DownloadPulse ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "Надіслати в інший DownloadPulse"
+  },
+  "sendServerGone": {
+    "message": "Вибраний DownloadPulse більше не підключений до цього браузера."
+  },
+  "confirmTo": {
+    "message": "Куди: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (за замовчуванням)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

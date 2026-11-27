@@ -76,6 +76,8 @@ test("Disconnect revokes this browser on the server and forgets it here", async 
   const settings = await options();
   await expect(settings.getByTestId("account")).toHaveText("Una");
   await settings.getByRole("button", {name: "Disconnect"}).click();
+  // 1.0.8 (WS-X1): confirmed in the dialog.
+  await settings.getByTestId("dialog-confirm").click();
   await expect(settings.getByTestId("connection-note")).toHaveText("Disconnected. DownloadPulse no longer accepts this browser.");
   expect(dp.state.disconnects).toBe(1);
   await expect(settings.getByText("This browser isn't connected to DownloadPulse.", {exact: false})).toBeVisible();
@@ -94,6 +96,8 @@ test("Disconnect revokes this browser on the server and forgets it here", async 
 test("Disconnect in the dropdown's settings goes back to the screen that connects (operator, 2026-11-22)", async () => {
   await popup.getByRole("button", {name: "Settings"}).click();
   await popup.getByRole("button", {name: "Disconnect"}).click();
+  // 1.0.8 (WS-X1): confirmed in the dialog.
+  await popup.getByTestId("dialog-confirm").click();
   await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
   await expect(popup.locator("[data-view='settings']")).toBeHidden();
   expect(dp.state.disconnects).toBe(1);
@@ -110,6 +114,8 @@ test("a listing in flight when this browser disconnects never brings the old ide
   await expect.poll(() => dp.state.listPolls.length, {timeout: 10_000}).toBeGreaterThan(polls);
   await popup.getByRole("button", {name: "Settings"}).click();
   await popup.getByRole("button", {name: "Disconnect"}).click();
+  // 1.0.8 (WS-X1): confirmed in the dialog.
+  await popup.getByTestId("dialog-confirm").click();
   await expect(popup.getByRole("button", {name: "Connect to DownloadPulse", exact: true})).toBeVisible();
   await popup.waitForTimeout(5000);                                   // the late answer has arrived
   const cached = () => popup.evaluate(async () => Object.entries(await chrome.storage.session.get(null))
@@ -181,8 +187,11 @@ test("forgetting one server keeps another's connection, token and downloads (mul
   }, other);
   await slot(popup, `token@${other}`, "dp_second-token");
   const settings = await options();
-  await settings.getByRole("button", {name: "Disconnect"}).click();
-  await expect(settings.getByTestId("connection-note")).toHaveText("Disconnected. DownloadPulse no longer accepts this browser.");
+  // 1.0.8 (WS-X1): two servers, a block each; this one's trash, confirmed in the dialog.
+  await settings.getByRole("button", {name: "Disconnect localhost", exact: true}).click();
+  await settings.getByTestId("dialog-confirm").click();
+  await expect(settings.getByTestId("connection-note")).toHaveText(
+    "Disconnected from localhost. It no longer accepts this browser. second.example.invalid is now your default server.");
   const after = await popup.evaluate(async (server) => ({
     local: await chrome.storage.local.get(["connections", "activeServer"]),
     session: await chrome.storage.session.get(null),

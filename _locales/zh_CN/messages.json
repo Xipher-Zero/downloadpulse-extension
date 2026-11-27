@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "DownloadPulse一段时间内未能推进该下载，因此浏览器继续下载。"
+  },
+  "popupSomeConnected": {
+    "message": "已连接$CONNECTED$/$TOTAL$",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "无法访问"
+  },
+  "addServer": {
+    "message": "连接另一个DownloadPulse"
+  },
+  "addServerLimit": {
+    "message": "最多3个服务器"
+  },
+  "failureTooMany": {
+    "message": "此浏览器已连接到3个DownloadPulse服务器，已达上限。请先在设置中断开其中一个。"
+  },
+  "optionsConnections": {
+    "message": "连接："
+  },
+  "disconnectServer": {
+    "message": "断开与$NAME$的连接",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "要断开与$NAME$的连接吗？",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "此浏览器将从$ADDRESS$上的账户$ACCOUNT$中移除。",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "已发送的下载会在那里继续进行。网页上和右键菜单中将不再提供$NAME$。如需再次使用，您需要重新连接它。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$是您的默认服务器。\n$NEXT$将成为您的默认服务器。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "正在断开连接…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "无法访问$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "无法将此浏览器从$ADDRESS$上的账户$ACCOUNT$中移除。",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "您仍可以从此浏览器中移除$NAME$。在您于该服务器的“我的账户 › 已连接的浏览器”中将其移除之前，该服务器仍会列出此浏览器。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "仍然移除"
+  },
+  "noteDisconnectedFrom": {
+    "message": "已断开与$NAME$的连接。它不再接受此浏览器。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "已从此浏览器中移除。$NAME$仍会列出此浏览器。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$现在是您的默认服务器。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "设为默认"
+  },
+  "serverDefault": {
+    "message": "默认"
+  },
+  "serverRename": {
+    "message": "重命名$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "服务器名称"
+  },
+  "serverNameBlank": {
+    "message": "请输入名称。"
+  },
+  "serverNameTaken": {
+    "message": "其他服务器已使用此名称。"
+  },
+  "serverMoveLabel": {
+    "message": "移动$NAME$。拖动，或按Alt+↑或Alt+↓。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "已将$NAME$移至第$POSITION$位（共$TOTAL$个）",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "已发送到$NAME$。",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "已添加到$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "添加到其他服务器"
+  },
+  "openChoose": {
+    "message": "选择要打开的DownloadPulse"
+  },
+  "captureToggleNamed": {
+    "message": "将浏览器下载发送到DownloadPulse（$NAME$）",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "发送到另一个DownloadPulse"
+  },
+  "sendServerGone": {
+    "message": "该DownloadPulse已不再连接到此浏览器。"
+  },
+  "confirmTo": {
+    "message": "发送到：$NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$（默认）",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

@@ -9,11 +9,11 @@
 
 import {saveAppearance} from "../shared/appearance";
 import {consented, deviceNameAllowed} from "../shared/consent";
-import {deviceCode, keepCapabilities, saveConnection, setPairing} from "../shared/connection";
+import {connections, defaultServer, deviceCode, keepCapabilities, mayConnect, saveConnection, setPairing} from "../shared/connection";
 import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
 import {
-  LOCAL_ORIGINS, ServerError, effectiveAddress, pollPairing, probe, proveIdentity, readSession, startPairing,
+  LOCAL_ORIGINS, ServerError, effectiveAddress, isLocal, pollPairing, probe, proveIdentity, readSession, startPairing,
   type Failure,
 } from "../shared/server";
 
@@ -57,7 +57,11 @@ export async function connectLocal(): Promise<void> {
   if (!(await consented())) return;
   const generation = ++active;
   await setPairing({state: "probing"});
+  // Adding a server (WS-X1): one already connected is not offered again. This computer's
+  // DownloadPulse answers at either loopback name, on the same port.
+  const connected = Object.keys(await connections()).filter(isLocal).map((origin) => new URL(origin).port);
   for (const origin of LOCAL_ORIGINS) {
+    if (connected.includes(new URL(origin).port)) continue;
     if (await probe(origin) === "downloadpulse") {
       if (generation === active) await setPairing({state: "found", server: origin});
       return;
@@ -103,6 +107,9 @@ export async function cancel(): Promise<void> {
 }
 
 async function pair(origin: string, generation: number, plainHttp = false): Promise<void> {
+  // At most three servers (WS-X1): a fourth is refused before DownloadPulse is asked to pair
+  // (saveConnection refuses it too).
+  if (!(await mayConnect(origin))) return fail("too_many", generation);
   try {
     const started = await startPairing(origin, await clientName());
     if (generation !== active) return;
@@ -153,7 +160,8 @@ async function waitForApproval(origin: string, interval: number, expiresAt: numb
     await saveConnection({server: origin, tokenId: session.token.id, label: session.token.label,
       account: session.account.display_name, ...(plainHttp ? {plainHttp: true} : {})}, answer.token);
     await keepCapabilities(origin, answer.token, session);
-    await saveAppearance(session.appearance);
+    // The pages and the toolbar are drawn in the default server's colours (WS-X1): another server's never replace them.
+    if ((await defaultServer()) === origin) await saveAppearance(session.appearance);
     // Newly connected: browser downloads to DownloadPulse are offered once (popup capture-offer),
     // unless the person already chose either way.
     const chosen = await settings();

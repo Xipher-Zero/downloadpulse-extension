@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "DownloadPulse tidak membuat kemajuan pada unduhan itu selama beberapa waktu, jadi peramban melanjutkannya."
+  },
+  "popupSomeConnected": {
+    "message": "$CONNECTED$ dari $TOTAL$ terhubung",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "Tidak dapat dijangkau"
+  },
+  "addServer": {
+    "message": "Hubungkan DownloadPulse lain"
+  },
+  "addServerLimit": {
+    "message": "Maksimal 3 server"
+  },
+  "failureTooMany": {
+    "message": "Peramban ini sudah terhubung ke 3 server DownloadPulse, jumlah maksimal. Putuskan sambungan salah satunya di Pengaturan terlebih dahulu."
+  },
+  "optionsConnections": {
+    "message": "Sambungan:"
+  },
+  "disconnectServer": {
+    "message": "Putuskan sambungan $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "Putuskan sambungan dari $NAME$?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "Peramban ini akan dikeluarkan dari akun $ACCOUNT$ di $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "Unduhan yang sudah dikirim tetap berjalan di sana. $NAME$ tidak akan lagi ditawarkan di halaman atau di menu klik kanan. Untuk menggunakannya lagi, Anda perlu menghubungkannya lagi.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ adalah server bawaan Anda.\n$NEXT$ akan menjadi server bawaan Anda.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "Memutuskan sambungan…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$ tidak dapat dijangkau",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "Peramban ini tidak dapat dikeluarkan dari akun $ACCOUNT$ di $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "Anda tetap dapat mengeluarkan $NAME$ dari peramban ini. Server itu akan tetap mencantumkan peramban ini sampai Anda mengeluarkannya di sana, melalui Akun saya › Peramban terhubung.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "Tetap keluarkan"
+  },
+  "noteDisconnectedFrom": {
+    "message": "Sambungan dari $NAME$ diputus. Server itu tidak lagi menerima peramban ini.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "Dikeluarkan dari peramban ini. $NAME$ masih mencantumkannya.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$ kini menjadi server bawaan Anda.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "Jadikan bawaan"
+  },
+  "serverDefault": {
+    "message": "Bawaan"
+  },
+  "serverRename": {
+    "message": "Ganti nama $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "Nama server"
+  },
+  "serverNameBlank": {
+    "message": "Masukkan nama."
+  },
+  "serverNameTaken": {
+    "message": "Server lain sudah memakai nama ini."
+  },
+  "serverMoveLabel": {
+    "message": "Pindahkan $NAME$. Seret, atau tekan Alt+↑ atau Alt+↓.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ dipindahkan ke posisi $POSITION$ dari $TOTAL$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "Terkirim ke $NAME$.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "Ditambahkan ke $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "Tambah ke server lain"
+  },
+  "openChoose": {
+    "message": "Pilih DownloadPulse yang akan dibuka"
+  },
+  "captureToggleNamed": {
+    "message": "Kirim unduhan peramban ke DownloadPulse ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "Kirim ke DownloadPulse lain"
+  },
+  "sendServerGone": {
+    "message": "DownloadPulse itu tidak lagi terhubung ke peramban ini."
+  },
+  "confirmTo": {
+    "message": "Tujuan: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (bawaan)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

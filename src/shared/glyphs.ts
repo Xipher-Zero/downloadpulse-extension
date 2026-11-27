@@ -33,6 +33,14 @@ const GEOMETRY = {
     ["path", {d: "M6 6h.01"}], ["path", {d: "M6 18h.01"}],
   ],
   chevronLeft: [["path", {d: "m15 18-6-6 6-6"}]],
+  // More than one server (WS-X1): connect another, the lists' ▾, rename, the default, the grab handle.
+  plus: [["path", {d: "M5 12h14"}], ["path", {d: "M12 5v14"}]],
+  chevronDown: [["path", {d: "m6 9 6 6 6-6"}]],
+  pencil: [["path", {d: "M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"}],
+    ["path", {d: "m15 5 4 4"}]],
+  star: [["path", {d: "M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"}]],
+  gripVertical: [["circle", {cx: "9", cy: "12", r: "1"}], ["circle", {cx: "9", cy: "5", r: "1"}], ["circle", {cx: "9", cy: "19", r: "1"}],
+    ["circle", {cx: "15", cy: "12", r: "1"}], ["circle", {cx: "15", cy: "5", r: "1"}], ["circle", {cx: "15", cy: "19", r: "1"}]],
 } satisfies Record<string, Shape[]>;
 
 export type GlyphName = keyof typeof GEOMETRY;

@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "DownloadPulse에서 해당 다운로드가 한동안 진행되지 않아 브라우저가 이어서 진행했습니다."
+  },
+  "popupSomeConnected": {
+    "message": "$TOTAL$개 중 $CONNECTED$개 연결됨",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "연결할 수 없음"
+  },
+  "addServer": {
+    "message": "다른 DownloadPulse 연결"
+  },
+  "addServerLimit": {
+    "message": "최대 3개 서버"
+  },
+  "failureTooMany": {
+    "message": "이 브라우저는 이미 최대 개수인 3개의 DownloadPulse 서버에 연결되어 있습니다. 먼저 설정에서 하나의 연결을 해제하세요."
+  },
+  "optionsConnections": {
+    "message": "연결:"
+  },
+  "disconnectServer": {
+    "message": "$NAME$ 연결 해제",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "$NAME$에서 연결을 해제할까요?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "이 브라우저가 $ADDRESS$의 $ACCOUNT$ 계정에서 제거됩니다.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "이미 보낸 다운로드는 그곳에서 계속 진행됩니다. $NAME$은(는) 더 이상 페이지나 마우스 오른쪽 클릭 메뉴에 표시되지 않습니다. 다시 사용하려면 다시 연결해야 합니다.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$은(는) 기본 서버입니다.\n$NEXT$이(가) 새 기본 서버가 됩니다.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "연결 해제 중…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$에 연결할 수 없음",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "$ADDRESS$의 $ACCOUNT$ 계정에서 이 브라우저를 제거할 수 없었습니다.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "그래도 이 브라우저에서 $NAME$을(를) 제거할 수 있습니다. 서버의 ‘내 계정 › 연결된 브라우저’에서 제거하기 전까지는 그곳에 이 브라우저가 계속 표시됩니다.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "그래도 제거"
+  },
+  "noteDisconnectedFrom": {
+    "message": "$NAME$에서 연결이 해제되었습니다. 더 이상 이 브라우저를 허용하지 않습니다.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "이 브라우저에서 제거했습니다. $NAME$에는 아직 표시됩니다.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "이제 $NAME$이(가) 기본 서버입니다.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "기본으로 설정"
+  },
+  "serverDefault": {
+    "message": "기본"
+  },
+  "serverRename": {
+    "message": "$NAME$ 이름 바꾸기",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "서버 이름"
+  },
+  "serverNameBlank": {
+    "message": "이름을 입력하세요."
+  },
+  "serverNameTaken": {
+    "message": "다른 서버가 이미 이 이름을 사용하고 있습니다."
+  },
+  "serverMoveLabel": {
+    "message": "$NAME$ 이동. 드래그하거나 Alt+↑ 또는 Alt+↓를 누르세요.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$을(를) $TOTAL$개 중 $POSITION$번째로 이동했습니다",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "$NAME$(으)로 보냈습니다.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "$NAME$에 추가했습니다",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "다른 서버에 추가"
+  },
+  "openChoose": {
+    "message": "열 DownloadPulse 선택"
+  },
+  "captureToggleNamed": {
+    "message": "브라우저 다운로드를 DownloadPulse로 보내기($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "다른 DownloadPulse로 보내기"
+  },
+  "sendServerGone": {
+    "message": "해당 DownloadPulse는 더 이상 이 브라우저에 연결되어 있지 않습니다."
+  },
+  "confirmTo": {
+    "message": "보낼 곳: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$(기본)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

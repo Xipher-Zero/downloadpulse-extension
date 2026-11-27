@@ -1,6 +1,6 @@
 # DownloadPulse browser extension: privacy policy
 
-_Last updated: 2026-11-24. Applies to the DownloadPulse extension for Firefox and Chromium-based browsers._
+_Last updated: 2026-11-27. Applies to the DownloadPulse extension for Firefox and Chromium-based browsers._
 
 The extension sends downloads you choose from your browser to **your own DownloadPulse**, a server or desktop application that you, or whoever runs it for you, operate. It has no servers of its own, no analytics and no telemetry, and sends nothing to its authors.
 
@@ -12,7 +12,9 @@ It contacts only two kinds of place:
 
 Nothing is sent before you agree to the disclosure shown when you first connect.
 
-- **Connecting.** The extension first checks whether DownloadPulse is running on this computer (a request to `127.0.0.1:8095` and `localhost:8095`), or contacts the server address you enter. It asks to connect, under a name for this connection:
+**More than one DownloadPulse.** You can connect this browser to up to three DownloadPulse servers. A send goes only to the server you choose for it, or to your default server when you don't choose one; it never goes to another server instead. Browser downloads sent to DownloadPulse, and the Firefox address-bar icon, always go to your default server. Each server is asked only about its own downloads. Nothing about one server (its name, its address or anything else) is ever sent to another.
+
+- **Connecting.** The extension first checks whether DownloadPulse is running on this computer (a request to `127.0.0.1:8095` and `localhost:8095`), or contacts the server address you enter (up to three servers in all). It asks to connect, under a name for this connection:
   - **"Browser"**, by default;
   - **this browser and system** (for example "Brave on Linux"), only if you tick that option. In Firefox, that also needs its optional technical-data consent.
 
@@ -45,6 +47,7 @@ Stored by the extension in your browser profile only:
 - the connection key (in the extension's own storage, not readable by websites);
 - for a DownloadPulse that proves it is yours (above): that it does, with the connection's ID and a one-way digest of the connection key (DownloadPulse keeps the same digest), in the same storage as the key;
 - the server's address, your DownloadPulse account's display name (which may be your name or user name) and the connection's name;
+- with more than one DownloadPulse (up to three): the short name you give each one, the order you put them in, and which one is your default. These are never sent to any server;
 - your settings;
 - your agreement to the disclosure;
 - your DownloadPulse theme's palette names;
@@ -54,7 +57,7 @@ The list of sent downloads is kept only until the browser closes. So is, for 10 
 
 ## What DownloadPulse records
 
-Your DownloadPulse records each download you send as yours, sent from this browser's connection (under its name), and keeps a journal of connections and disconnections. What it does with downloads is governed by DownloadPulse and by whoever operates it. You can see and remove this browser's connection in DownloadPulse under **My Account › Connected browsers**, and an administrator can do the same.
+Your DownloadPulse records each download you send as yours, sent from this browser's connection (under its name), and keeps a journal of connections and disconnections. What it does with downloads is governed by DownloadPulse and by whoever operates it. You can see and remove this browser's connection in DownloadPulse under **My Account › Connected browsers**, and an administrator can do the same. **Disconnect** in the extension first removes this browser from that DownloadPulse. If that DownloadPulse can't be reached, **Remove anyway** removes it from this browser only: the server still lists this browser under **My Account › Connected browsers** until you remove it there.
 
 ## Transport
 

@@ -7,21 +7,25 @@
 // revoked token is the monitor's to handle.
 
 import {saveAppearance} from "../shared/appearance";
-import {connection, keepCapabilities, token} from "../shared/connection";
+import {connection, defaultServer, keepCapabilities, token} from "../shared/connection";
 import {readSession} from "../shared/server";
 
 const REFRESH_MS = 2_000;
 let readAt = 0;
 
-export async function refreshAppearance(): Promise<void> {
-  if (Date.now() - readAt < REFRESH_MS) return;
-  const connected = await connection();
+/** ``now``: whatever was read a moment ago (the default server changed, WS-X1). */
+export async function refreshAppearance(now = false): Promise<void> {
+  if (!now && Date.now() - readAt < REFRESH_MS) return;
+  // The pages and the toolbar icon are drawn in the default server's colours (WS-X1).
+  const server = await defaultServer();
+  const connected = server ? await connection(server) : null;
   const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) return;
   readAt = Date.now();
   try {
     const session = await readSession(connected.server, browserToken);
-    await saveAppearance(session.appearance);
+    // Still the default when it answered: a read begun before the default changed never paints the old one's colours.
+    if ((await defaultServer()) === connected.server) await saveAppearance(session.appearance);
     // The same answer keeps what this DownloadPulse takes with a link current (connection.ts).
     await keepCapabilities(connected.server, browserToken, session);
   } catch {

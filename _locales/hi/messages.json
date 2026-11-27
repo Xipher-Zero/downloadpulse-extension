@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "DownloadPulse ने कुछ समय तक उस डाउनलोड में कोई प्रगति नहीं की, इसलिए ब्राउज़र ने उसे जारी रखा।"
+  },
+  "popupSomeConnected": {
+    "message": "$TOTAL$ में से $CONNECTED$ कनेक्ट हैं",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "पहुँच से बाहर"
+  },
+  "addServer": {
+    "message": "एक और DownloadPulse कनेक्ट करें"
+  },
+  "addServerLimit": {
+    "message": "अधिकतम 3 सर्वर"
+  },
+  "failureTooMany": {
+    "message": "यह ब्राउज़र पहले से 3 DownloadPulse सर्वर से कनेक्ट है, जो अधिकतम सीमा है। पहले सेटिंग्स में किसी एक को डिस्कनेक्ट करें।"
+  },
+  "optionsConnections": {
+    "message": "कनेक्शन:"
+  },
+  "disconnectServer": {
+    "message": "$NAME$ को डिस्कनेक्ट करें",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "$NAME$ से डिस्कनेक्ट करें?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "यह ब्राउज़र $ADDRESS$ पर खाते $ACCOUNT$ से हटा दिया जाएगा।",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "पहले से भेजे गए डाउनलोड वहाँ चलते रहेंगे। $NAME$ अब पेजों पर या राइट-क्लिक मेनू में नहीं दिखाया जाएगा। इसे फिर से उपयोग करने के लिए, आपको इसे फिर से कनेक्ट करना होगा।",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ आपका डिफ़ॉल्ट सर्वर है।\nअब $NEXT$ आपका डिफ़ॉल्ट सर्वर बन जाएगा।",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "डिस्कनेक्ट हो रहा है…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$ तक नहीं पहुँचा जा सकता",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "यह ब्राउज़र $ADDRESS$ पर खाते $ACCOUNT$ से हटाया नहीं जा सका।",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "आप फिर भी $NAME$ को इस ब्राउज़र से हटा सकते हैं। जब तक आप वहाँ मेरा खाता › कनेक्ट किए गए ब्राउज़र में से इसे नहीं हटाते, तब तक वहाँ यह ब्राउज़र सूची में दिखता रहेगा।",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "फिर भी हटाएँ"
+  },
+  "noteDisconnectedFrom": {
+    "message": "$NAME$ से डिस्कनेक्ट हो गया। वह अब इस ब्राउज़र को स्वीकार नहीं करता।",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "इस ब्राउज़र से हटा दिया गया। $NAME$ में यह अब भी सूचीबद्ध है।",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$ अब आपका डिफ़ॉल्ट सर्वर है।",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "डिफ़ॉल्ट बनाएँ"
+  },
+  "serverDefault": {
+    "message": "डिफ़ॉल्ट"
+  },
+  "serverRename": {
+    "message": "$NAME$ का नाम बदलें",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "सर्वर का नाम"
+  },
+  "serverNameBlank": {
+    "message": "कोई नाम दर्ज करें।"
+  },
+  "serverNameTaken": {
+    "message": "यह नाम पहले से किसी दूसरे सर्वर का है।"
+  },
+  "serverMoveLabel": {
+    "message": "$NAME$ को खिसकाएँ। खींचें, या Alt+↑ या Alt+↓ दबाएँ।",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ को $TOTAL$ में से स्थान $POSITION$ पर ले जाया गया",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "$NAME$ को भेजा गया।",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "$NAME$ में जोड़ा गया",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "किसी दूसरे सर्वर में जोड़ें"
+  },
+  "openChoose": {
+    "message": "चुनें कि कौन-सा DownloadPulse खोलना है"
+  },
+  "captureToggleNamed": {
+    "message": "ब्राउज़र डाउनलोड DownloadPulse को भेजें ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "किसी दूसरे DownloadPulse को भेजें"
+  },
+  "sendServerGone": {
+    "message": "वह DownloadPulse अब इस ब्राउज़र से कनेक्ट नहीं है।"
+  },
+  "confirmTo": {
+    "message": "गंतव्य: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (डिफ़ॉल्ट)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

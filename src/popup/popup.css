@@ -299,7 +299,12 @@ input[type="text"]:focus-visible, input[type="number"]:focus-visible { outline: 
 .dp-choice__text { color: var(--dp-text-muted); font-size: 11.5px; line-height: 1.4; }
 
 /* ── the connection: its status by colour, its details behind the chevron ── */
-.dp-conn { display: flex; align-items: center; justify-content: center; gap: 4px; }
+/* [+] at the row's start (WS-X1), the status and its chevron centred as before. */
+.dp-conn { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 4px; }
+.dp-conn__add { justify-self: start; }
+.dp-conn__add[aria-disabled="true"] { opacity: .45; cursor: not-allowed; }
+.dp-conn__centre { display: inline-flex; align-items: center; gap: 4px; }
+.dp-conn__dots { display: inline-flex; align-items: center; gap: 4px; }
 .dp-conn__status { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; color: var(--dp-text-secondary); }
 .dp-conn__dot { inline-size: 8px; block-size: 8px; border-radius: 50%; background: var(--dp-text-muted); }
 .dp-conn__status[data-reach="ok"] { color: var(--dp-state-success); }
@@ -422,3 +427,89 @@ input[type="text"]:focus-visible, input[type="number"]:focus-visible { outline: 
 .dp-sites { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
 .dp-sites li { display: flex; gap: 8px; align-items: center; justify-content: space-between; }
 .dp-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ── more than one server (WS-X1) ── */
+/* A server's dot: reachability only (never an identity colour): green, amber while checking, red. */
+.dp-conn__dot--server, .dp-server__dot { inline-size: 8px; block-size: 8px; flex: 0 0 auto; border-radius: 50%; background: var(--dp-state-caution); }
+:is(.dp-conn__dot--server, .dp-server__dot)[data-reach="ok"] { background: var(--dp-state-success); }
+:is(.dp-conn__dot--server, .dp-server__dot)[data-reach="unreachable"] { background: var(--dp-state-error); }
+.dp-conn__status[data-reach] .dp-conn__dot--server[data-reach="ok"] { background: var(--dp-state-success); }
+.dp-conn__status[data-reach] .dp-conn__dot--server[data-reach="unreachable"] { background: var(--dp-state-error); }
+.dp-conn__status[data-reach] .dp-conn__dot--server[data-reach="checking"] { background: var(--dp-state-caution); }
+.dp-conn__status[data-reach="partial"] { color: var(--dp-state-caution); }
+.dp-conn__status[data-reach="unreachable"]:has(.dp-conn__dot--server) { color: var(--dp-state-error); }
+
+.dp-servers { list-style: none; margin: 0; padding: 0; display: grid; border: 1px solid var(--dp-border-default); border-radius: 8px;
+  background: var(--dp-surface-1); overflow: hidden; }
+.dp-server { display: grid; gap: 2px; padding: 6px 8px 8px; min-width: 0; }
+.dp-server + .dp-server { border-top: 1px solid var(--dp-border-default); }
+.dp-server--dragging { background: color-mix(in srgb, var(--dp-accent-purple) 8%, var(--dp-surface-1)); }
+.dp-server__top { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.dp-server__name { font-weight: 650; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.dp-server__field { flex: 1 1 auto; min-width: 0; padding: 2px 6px !important; }
+.dp-server__unreachable { color: var(--dp-state-error); font-size: 12px; font-weight: 600; white-space: nowrap; }
+.dp-server__star { margin-inline-start: auto; }
+.dp-server .dp-glyph-btn { inline-size: 24px; block-size: 24px; }
+.dp-server .dp-glyph-btn svg { inline-size: 14px; block-size: 14px; }
+.dp-server__handle { cursor: grab; touch-action: none; color: var(--dp-text-muted); }
+.dp-server--dragging .dp-server__handle { cursor: grabbing; }
+.dp-server__star[aria-pressed="true"] { color: var(--dp-state-caution); }
+.dp-server__star[aria-pressed="true"] svg, .dp-menu__star, .dp-settings__star { fill: currentColor; }
+.dp-server__line { padding-inline-start: 44px; color: var(--dp-text-secondary); font-size: 12px; overflow-wrap: anywhere; }
+.dp-servers:not(:has(.dp-server__handle)) .dp-server__line { padding-inline-start: 14px; }
+.dp-server__label { color: var(--dp-text-muted); }
+.dp-server__problem { padding-inline-start: 44px; color: var(--dp-state-error); font-size: 12px; }
+
+/* A download's server, on its title line. */
+.dp-job__head { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.dp-job__head .dp-job__name { flex: 0 1 auto; }
+.dp-job__server { flex: 0 0 auto; margin-inline-start: auto; max-inline-size: 40%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  font-size: 11.5px; font-weight: 600; color: var(--dp-text-muted); }
+.dp-job:is(:hover, :focus-within):has(.dp-job__forget) .dp-job__server { visibility: hidden; }
+
+/* [Add|▾]: the two halves of one button. */
+.dp-quick { position: relative; }
+.dp-quick__form--split input[type="text"] { padding-inline-end: 118px; }
+.dp-quick__form--split .dp-btn[type="submit"] { inset-inline-end: 34px; border-start-end-radius: 0; border-end-end-radius: 0; }
+.dp-quick__form .dp-quick__more { inline-size: 30px; padding: 0 !important; border-start-start-radius: 0; border-end-start-radius: 0;
+  border-inline-start-color: color-mix(in srgb, var(--dp-accent-contrast) 35%, transparent); }
+.dp-quick__more svg { inline-size: 14px; block-size: 14px; }
+
+/* The ▾ lists: the servers in display order. */
+.dp-menu { position: absolute; z-index: 5; display: grid; min-inline-size: 180px; max-inline-size: 260px; padding: 4px;
+  border: 1px solid var(--dp-border-default); border-radius: 8px; background: var(--dp-surface-1);
+  box-shadow: 0 8px 24px -8px rgba(0,0,15,.35); }
+.dp-menu--quick { inset-inline-end: 0; inset-block-start: calc(100% + 4px); }
+.dp-menu--open { inset-inline-start: 14px; inset-block-end: calc(100% + 4px); }
+.dp-foot { position: relative; }
+.dp-menu__item { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border: 0; border-radius: 6px; background: transparent;
+  color: var(--dp-text-primary); font: inherit; text-align: start; cursor: pointer; }
+.dp-menu__item:is(:hover, :focus-visible):not([aria-disabled="true"]) { outline: none; background: color-mix(in srgb, var(--dp-accent-purple) 10%, transparent); }
+.dp-menu__item[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
+.dp-menu__name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; }
+.dp-menu__star { inline-size: 14px; block-size: 14px; color: var(--dp-state-caution); }
+.dp-menu__away { font-size: 11.5px; color: var(--dp-state-error); }
+.dp-foot__more { display: contents; }
+.dp-foot__more svg { inline-size: 14px; block-size: 14px; }
+
+/* Settings, two or more servers: a block each, its trash icon at its end. */
+.dp-settings__servers { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+/* One bordered block per server, its name (★ on the default) inside it, above its rows (the operator's mockup). */
+.dp-settings__server { position: relative; display: grid; gap: 6px; padding: 8px 10px; border: 1px solid var(--dp-border-default);
+  border-radius: 8px; background: var(--dp-surface-1); }
+.dp-settings__server .dp-facts { padding: 0; padding-inline-end: 34px; border: 0; border-radius: 0; background: none; }
+.dp-settings__server-title { margin: 0; font-weight: 650; display: flex; align-items: center; gap: 4px; }
+.dp-settings__default { display: inline-flex; color: var(--dp-state-caution); }
+.dp-settings__star { inline-size: 14px; block-size: 14px; }
+.dp-settings__trash { position: absolute; inset-inline-end: 8px; inset-block-end: 8px; }
+
+/* The disconnect dialog: DownloadPulse-styled, modal; the title left, the explanation centred,
+   the default note left; Cancel on the left, the red action on the right. */
+.dp-dialog { box-sizing: border-box; inline-size: min(320px, calc(100vw - 24px)); padding: 16px; border: 1px solid var(--dp-border-default);
+  border-radius: 10px; background: var(--dp-surface-1); color: var(--dp-text-primary); box-shadow: 0 18px 48px -12px rgba(0,0,15,.5); }
+.dp-dialog::backdrop { background: rgba(5, 8, 20, .55); }
+.dp-dialog__title { margin: 0 0 var(--dp-row); font-size: 14px; font-weight: 650; text-align: start; }
+.dp-dialog__text { margin: 0 0 var(--dp-row); text-align: center; color: var(--dp-text-secondary); font-size: 12.5px; }
+/* The default's handover: its two sentences on two lines, as written (the message's own line break). */
+.dp-dialog__note { margin: 0 0 var(--dp-row); text-align: start; color: var(--dp-text-primary); font-size: 12.5px; white-space: pre-line; }
+.dp-dialog__actions { display: flex; justify-content: space-between; gap: 12px; }

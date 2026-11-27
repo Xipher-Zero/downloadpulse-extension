@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "Загрузка в DownloadPulse какое-то время не продвигалась, поэтому браузер продолжил её."
+  },
+  "popupSomeConnected": {
+    "message": "Подключено: $CONNECTED$ из $TOTAL$",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "Недоступен"
+  },
+  "addServer": {
+    "message": "Подключить ещё один DownloadPulse"
+  },
+  "addServerLimit": {
+    "message": "Не более 3 серверов"
+  },
+  "failureTooMany": {
+    "message": "Этот браузер уже подключён к 3 серверам DownloadPulse — это максимум. Сначала отключите один из них в настройках."
+  },
+  "optionsConnections": {
+    "message": "Подключения:"
+  },
+  "disconnectServer": {
+    "message": "Отключить $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "Отключиться от $NAME$?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "Этот браузер будет удалён из учётной записи $ACCOUNT$ на $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "Уже отправленные загрузки продолжатся там. $NAME$ больше не будет предлагаться на страницах и в контекстном меню. Чтобы снова использовать его, нужно будет подключить его заново.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ — ваш сервер по умолчанию.\nСервером по умолчанию станет $NEXT$.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "Отключение…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$ недоступен",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "Не удалось удалить этот браузер из учётной записи $ACCOUNT$ на $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "Вы всё равно можете удалить $NAME$ из этого браузера. Сервер будет по-прежнему показывать этот браузер, пока вы не удалите его там, в разделе «Моя учётная запись › Подключённые браузеры».",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "Всё равно удалить"
+  },
+  "noteDisconnectedFrom": {
+    "message": "Отключено от $NAME$. Он больше не принимает этот браузер.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "Удалено из этого браузера. $NAME$ по-прежнему его показывает.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "Теперь $NAME$ — ваш сервер по умолчанию.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "Использовать по умолчанию"
+  },
+  "serverDefault": {
+    "message": "По умолчанию"
+  },
+  "serverRename": {
+    "message": "Переименовать $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "Имя сервера"
+  },
+  "serverNameBlank": {
+    "message": "Введите имя."
+  },
+  "serverNameTaken": {
+    "message": "Это имя уже занято другим сервером."
+  },
+  "serverMoveLabel": {
+    "message": "Переместить $NAME$. Перетащите или нажмите Alt+↑ или Alt+↓.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ перемещён на позицию $POSITION$ из $TOTAL$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "Отправлено в $NAME$.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "Добавлено в $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "Добавить на другой сервер"
+  },
+  "openChoose": {
+    "message": "Выберите, какой DownloadPulse открыть"
+  },
+  "captureToggleNamed": {
+    "message": "Отправлять загрузки браузера в DownloadPulse ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "Отправить в другой DownloadPulse"
+  },
+  "sendServerGone": {
+    "message": "Выбранный DownloadPulse больше не подключён к этому браузеру."
+  },
+  "confirmTo": {
+    "message": "Куда: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (по умолчанию)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

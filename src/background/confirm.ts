@@ -9,6 +9,7 @@
 // the session store, so an event page stopped while the window is open still knows it.
 
 import {captureKind, extractUrls} from "../shared/classify";
+import {servers} from "../shared/connection";
 import {BATCH_LIMIT, SINGLE_LIMIT} from "./submit";
 
 /** What a page's button asked to send. */
@@ -21,6 +22,8 @@ export type PageRequest =
 export interface Asked {
   id: string; request: PageRequest; tabId: number; frameId: number; tabUrl: string; frameUrl: string;
   cookieStoreId?: string; windowId?: number; viewTabId?: number;
+  /** The server it would go to (WS-X1): the one chosen on the page, else the default. */
+  server?: string;
 }
 
 const KEY = "confirmations";
@@ -90,7 +93,7 @@ export function ask(question: Omit<Asked, "id" | "windowId" | "viewTabId">): Pro
 }
 
 /** What a question's window shows: the site, and the links that would go (as a selection would send them). */
-export async function shown(id: string): Promise<{kind: PageRequest["kind"]; site: string; links: string[]} | null> {
+export async function shown(id: string): Promise<{kind: PageRequest["kind"]; site: string; links: string[]; to?: string} | null> {
   const asked = (await all())[id];
   if (!asked) return null;
   let site = "";
@@ -99,12 +102,16 @@ export async function shown(id: string): Promise<{kind: PageRequest["kind"]; sit
   } catch {
     site = "";
   }
+  // With two or more servers, the one it would go to, by its short name (never its address).
+  const saved = await servers();
+  const name = saved.length > 1 ? saved.find((item) => item.server === asked.server)?.name : undefined;
+  const to = name ? {to: name} : {};
   const request = asked.request;
-  if (request.kind !== "selection") return {kind: request.kind, site, links: [request.url]};
+  if (request.kind !== "selection") return {kind: request.kind, site, links: [request.url], ...to};
   const urls = extractUrls(request.text);
   const single = urls.filter((url) => /^magnet:\?/i.test(url) || captureKind(url));
   const plain = urls.filter((url) => !single.includes(url));
-  return {kind: request.kind, site, links: [...plain.slice(0, BATCH_LIMIT), ...single.slice(0, SINGLE_LIMIT)]};
+  return {kind: request.kind, site, links: [...plain.slice(0, BATCH_LIMIT), ...single.slice(0, SINGLE_LIMIT)], ...to};
 }
 
 /** The person answered (Send, or Cancel): the question is gone and its window closed; Send hands it back to be sent. */

@@ -42,7 +42,7 @@
 // of a size the browser does not know yet (unless the minimum is 0: decide()), and a file type
 // they listed.
 
-import {connections, token, whileConnectedWith} from "../shared/connection";
+import {connections, defaultServer, token, whileConnectedWith} from "../shared/connection";
 import {decide, downloadsUsable} from "../shared/downloads";
 import type {Job} from "../shared/server";
 import {isStateKey, stateKey} from "../shared/server-state";
@@ -58,8 +58,10 @@ async function onCreated(item: chrome.downloads.DownloadItem): Promise<void> {
   if (handling.has(item.id)) return;
   const chosen = await settings();
   if (decide(item, chosen) !== "capture") return;
-  // Not connected (or the connection held): the browser keeps it, as if this were off.
-  if (!(await token())) return;
+  // Not connected (or the connection held): the browser keeps it, as if this were off. A browser
+  // download goes to the default server: it is paused while it is sent, so there is no time to ask (WS-X1).
+  const server = await defaultServer();
+  if (!server || !(await token(server))) return;
   handling.add(item.id);
   try {
     // Held while DownloadPulse answers. A download the browser cannot pause goes on meanwhile;

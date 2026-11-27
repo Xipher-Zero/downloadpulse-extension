@@ -273,7 +273,8 @@ test("the status is centred on its row; the footer holds Open DownloadPulse at i
   const centre = (box) => box.x + box.width / 2;
   const [row, status, page] = await Promise.all([popup.locator(".dp-conn").boundingBox(),
     popup.locator(".dp-conn").evaluate((el) => {
-      const kids = [...el.children].map((child) => child.getBoundingClientRect());
+      // The status and its chevron (1.0.8: [+] stands at the row's start, outside them).
+      const kids = [...el.querySelector(".dp-conn__centre").children].map((child) => child.getBoundingClientRect());
       return {left: Math.min(...kids.map((r) => r.left)), right: Math.max(...kids.map((r) => r.right))};
     }), popup.locator("main").boundingBox()]);
   expect(Math.abs((status.left + status.right) / 2 - centre(page))).toBeLessThanOrEqual(1.5);

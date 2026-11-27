@@ -41,7 +41,9 @@ export const UPLOAD_TIMEOUT_MS = 120_000;
 
 export type Failure =
   | "unreachable" | "certificate" | "not_downloadpulse" | "too_old" | "denied" | "expired"
-  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused" | "blocked" | "setup_incomplete";
+  | "permission" | "unauthorized" | "failed" | "https_only" | "insecure_refused" | "blocked" | "setup_incomplete"
+  // This browser is connected to as many servers as it may be (WS-X1).
+  | "too_many";
 
 export class ServerError extends Error {
   constructor(public readonly failure: Failure, message = failure) {
@@ -515,7 +517,27 @@ export async function showApplication(origin: string, browserToken: string): Pro
 }
 
 /** The extension's Disconnect: this browser's token revokes itself on the server. */
-export async function disconnectBrowser(origin: string, browserToken: string): Promise<void> {
+/**
+ * This browser's access revoked on the server (Disconnect): ``revoked``, or ``already`` when
+ * DownloadPulse itself refuses the token (removed there before). Anything else -- no answer, a
+ * time-out, a certificate error, something in front of DownloadPulse answering, a server error --
+ * throws: nothing is known to be revoked (WS-X1: the person then chooses what happens).
+ */
+export async function disconnectBrowser(origin: string, browserToken: string): Promise<"revoked" | "already"> {
   const response = await request(origin, "/api/browser/v1/session", {method: "DELETE", headers: authorized(browserToken)});
-  if (!response.ok && response.status !== 401) throw new ServerError("failed");
+  if (response.status === 401) {
+    const refused = await tokenRefused(response);
+    if (refused.failure === "unauthorized") return "already";
+    throw refused;
+  }
+  // DownloadPulse's own refusal that this browser is not there (since 1.0.0, code
+  // account.browser_token_not_found): already removed there. Any other 404 -- a proxy's page, another
+  // JSON service, a framework's generic "Not Found" -- says nothing about this browser.
+  if (response.status === 404) {
+    const body = await response.json().catch(() => null);
+    if ((body as {code?: unknown} | null)?.code === "account.browser_token_not_found") return "already";
+    throw new ServerError("failed");
+  }
+  if (!response.ok) throw new ServerError("failed");
+  return "revoked";
 }

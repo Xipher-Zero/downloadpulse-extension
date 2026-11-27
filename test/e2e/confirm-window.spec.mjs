@@ -181,3 +181,51 @@ test("the audit's hostile page opens no window and sends nothing", async () => {
   expect(confirmations()).toEqual([]);
   expect(dp.state.jobs).toEqual([]);
 });
+
+test("with two servers (WS-X1), the window names the one chosen in the page's list, and it goes there only", async () => {
+  test.setTimeout(90_000);
+  await connect();
+  const second = await fakeDownloadPulse();
+  try {
+    const popup = await context.newPage();
+    await popup.goto(`chrome-extension://${extensionId}/popup/popup.html`);
+    await popup.getByTestId("add-server").click();
+    await expect(popup.locator('section[data-state="not_found"]')).toBeVisible({timeout: 10_000});
+    await popup.getByLabel("Server address").filter({visible: true}).fill(`http://localhost:${second.port}`);
+    await popup.getByRole("button", {name: "Connect to this server"}).click();
+    await expect(popup.getByTestId("code")).toBeVisible();
+    second.answer("approved");
+    await expect(popup.locator('section[data-state="connected"]')).toBeVisible({timeout: 15_000});
+    await popup.close();
+    const page = await open("/page");
+    const box = await page.locator("#magnet").boundingBox();
+    await page.mouse.move(box.x + 5, box.y + box.height / 2, {steps: 3});
+    const layer = () => page.evaluate(() => {
+      const host = [...document.documentElement.children].find((item) => item.localName === "div" && item.matches(":popover-open"));
+      const r = host.getBoundingClientRect();
+      return {left: r.left, top: r.top, height: r.height};
+    });
+    await expect.poll(async () => (await buttons(page)).length).toBe(1);
+    let at = await layer();
+    await page.mouse.move(at.left + 29, at.top + 11, {steps: 3});
+    await page.waitForTimeout(400);
+    await page.mouse.click(at.left + 29, at.top + 11);                  // ▾
+    await expect.poll(async () => (await layer()).height).toBeGreaterThan(70);
+    at = await layer();
+    const asked = context.waitForEvent("page");
+    await page.mouse.move(at.left + 40, at.top + 70, {steps: 2});
+    await page.waitForTimeout(400);
+    await page.mouse.click(at.left + 40, at.top + 70);                  // the second server
+    const window = await asked;
+    await window.waitForLoadState();
+    await expect(window.getByTestId("to")).toHaveText("To: localhost 2");
+    await page.waitForTimeout(800);
+    const closed = window.waitForEvent("close");
+    await window.getByRole("button", {name: "Send", exact: true}).click();
+    await closed;
+    await expect.poll(() => second.state.jobs.length).toBe(1);
+    expect(dp.state.jobs).toEqual([]);
+  } finally {
+    await second.close();
+  }
+});

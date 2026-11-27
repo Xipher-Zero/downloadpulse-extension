@@ -248,6 +248,8 @@ test("disconnected while held: the browser carries on with its own copy, never e
   await expect.poll(async () => (await bigInBrowser())?.paused, {timeout: 15_000}).toBe(true);
   await popup.getByRole("button", {name: "Settings"}).click();
   await popup.getByRole("button", {name: "Disconnect"}).click();
+  // 1.0.8 (WS-X1): confirmed in the dialog.
+  await popup.getByTestId("dialog-confirm").click();
   await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
 });
 
@@ -272,6 +274,8 @@ test("disconnected while held: the held list is cleared too", async () => {
   await expect.poll(async () => Object.keys(await held()).length, {timeout: 15_000}).toBe(1);
   await popup.getByRole("button", {name: "Settings"}).click();
   await popup.getByRole("button", {name: "Disconnect"}).click();
+  // 1.0.8 (WS-X1): confirmed in the dialog.
+  await popup.getByTestId("dialog-confirm").click();
   await expect.poll(async () => (await bigInBrowser())?.state, {timeout: 30_000}).toBe("complete");
   expect(await held()).toEqual({});
 });

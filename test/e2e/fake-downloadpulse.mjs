@@ -28,7 +28,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current", identity = 
   const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
     views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null,
     desktop: false, shows: 0, down: false, keys: new Map(), dropNext: false, submits: 0, videoCookies: true, referrer: true,
-    settleAs: null, proxy401: false, proxied: 0, failPolls: 0, unlisted: false, hidden: new Set(),
+    settleAs: null, hang: false, removedThere: false, proxy401: false, proxied: 0, failPolls: 0, unlisted: false, hidden: new Set(),
     appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"},
     identity, identityToken, verificationPath, identityChecks: [], requests: []};
   // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
@@ -47,6 +47,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current", identity = 
     // Every request, with what it carried: the identity tests look for a token or a sign-in.
     state.requests.push({method: req.method, path: url.pathname, authorization: req.headers.authorization ?? null,
       cookies: Array.isArray(body.cookies) ? body.cookies.length : 0});
+    // ``hang``: an address that never answers (the connection is taken, nothing comes back).
+    if (state.hang) return;
     if (state.mode === "not-downloadpulse") return send(200, "<html>a router</html>", "text/html");
     // ``proxy``: a sign-in gate in front of DownloadPulse, redirecting everything to its login.
     if (state.mode === "proxy") { res.writeHead(302, {Location: "/login"}); return res.end(); }
@@ -100,7 +102,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current", identity = 
     }
     if (url.pathname === "/api/browser/v1/session" && req.method === "DELETE") {
       state.disconnects = (state.disconnects ?? 0) + 1;
-      if (req.headers.authorization !== "Bearer dp_fake-token") return send(401, DP_UNAUTHORIZED);
+      // ``removedThere``: this browser was already removed in DownloadPulse, which refuses its token.
+      if (req.headers.authorization !== "Bearer dp_fake-token" || state.removedThere) return send(401, DP_UNAUTHORIZED);
       state.revoked = true;
       return send(200, {ok: true});
     }
@@ -195,6 +198,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current", identity = 
     answer(status) {
       for (const pairing of state.pairings.values()) if (pairing.status === "pending") pairing.status = status;
     },
-    close: () => new Promise((resolve) => server.close(resolve)),
+    // Every open connection too (a ``hang``ing one, a browser's kept-alive one): closed means unreachable.
+    close: () => new Promise((resolve) => { server.close(resolve); server.closeAllConnections(); }),
   };
 }

@@ -6,7 +6,7 @@
 // is never sent, stored or logged. Feedback goes to the frame the gesture
 // came from, else to the toolbar badge (B6).
 
-import {capabilities, connection, forgetConnection, forgetCapabilities, token} from "../shared/connection";
+import {capabilities, defaultServer, forgetConnection, forgetCapabilities, servers, token} from "../shared/connection";
 import {message} from "../shared/i18n";
 import {capturedName, isIndexerRefusal} from "../shared/capture";
 import {captureKind, extractUrls, type CaptureKind} from "../shared/classify";
@@ -159,9 +159,17 @@ function displayName(source: Source): string {
 /** Where a send went: the connection it used (its server and token) and DownloadPulse's job. */
 export interface Sent { server: string; browserToken: string; job: string }
 
-async function send(source: Source, cookies: Cookie[] = [], referrer = ""): Promise<Sent> {
-  const connected = await connection();
-  const browserToken = connected ? await token(connected.server) : null;
+/**
+ * Where a send goes (WS-X1): the server it names, else the default. ``null``: it named one that
+ * is not (or no longer) saved, which is refused -- a send never falls back to another server.
+ */
+async function target(server: string | null | undefined): Promise<string | null> {
+  return server === undefined ? defaultServer() : server;
+}
+
+async function send(source: Source, server: string, cookies: Cookie[] = [], referrer = ""): Promise<Sent> {
+  const browserToken = await token(server);
+  const connected = browserToken ? {server} : null;
   if (!connected || !browserToken) throw new Refused("sendNotConnected");
   let {digest, key, job} = await keyFor(connected.server, source, cookies);
   // Sent again while its download is paused (operator, 2026-11-22): the person wants it now, and
@@ -234,8 +242,18 @@ async function sourceFor(href: string): Promise<Source> {
   return kind ? capture(href, kind) : {kind: "links", links: [href]};
 }
 
-export async function feedback(origin: Origin, key: string, ok: boolean): Promise<void> {
-  const text = message(key);
+/** ``key``'s words; "Sent to DownloadPulse." names the server it went to when there are two or more (WS-X1). */
+async function said(key: string, server?: string): Promise<string> {
+  if (key === "sendDone" && server) {
+    const all = await servers();
+    const to = all.find((item) => item.server === server);
+    if (all.length > 1 && to) return message("sendDoneTo", [to.name]);
+  }
+  return message(key);
+}
+
+export async function feedback(origin: Origin, key: string, ok: boolean, server?: string): Promise<void> {
+  const text = await said(key, server);
   if (origin.tabId !== undefined && origin.tabId >= 0) {
     try {
       await chrome.tabs.sendMessage(origin.tabId, {type: "dp-toast", text, ok}, {frameId: origin.frameId ?? 0});
@@ -250,10 +268,12 @@ export async function feedback(origin: Origin, key: string, ok: boolean): Promis
   setTimeout(() => void chrome.action.setBadgeText({text: ""}), 4000);
 }
 
-async function settle(origin: Origin, work: () => Promise<string | void>): Promise<void> {
+async function settle(origin: Origin, server: string | null | undefined,
+                      work: (to: string | null) => Promise<string | void>): Promise<void> {
   try {
-    const said = await work();
-    await feedback(origin, said || "sendDone", true);
+    const to = await target(server);
+    const answer = await work(to);
+    await feedback(origin, answer || "sendDone", true, to ?? undefined);
   } catch (error) {
     await feedback(origin, error instanceof Refused ? error.key : "sendFailed", false);
   }
@@ -266,18 +286,20 @@ async function settle(origin: Origin, work: () => Promise<string | void>): Promi
  * cannot go anywhere (store review of cd9556b: a page's buttons may still be offered for a
  * few seconds after a connection is held). send() checks again before submitting.
  */
-async function mayUseConnection(): Promise<void> {
-  if (!(await token())) throw new Refused("sendNotConnected");
+async function mayUseConnection(server: string | null): Promise<string> {
+  if (!server || !(await token(server))) throw new Refused("sendNotConnected");
+  return server;
 }
 
-export function sendUrl(href: string, origin: Origin, allow?: Allowance): Promise<void> {
-  return settle(origin, async () => {
+/** ``server``: where it goes (WS-X1); none named, the default. */
+export function sendUrl(href: string, origin: Origin, allow?: Allowance, server?: string | null): Promise<void> {
+  return settle(origin, server, async (to) => {
     // Only a web page or file (http, https) or a magnet is ever sent (review, 2026-11-19).
     if (!/^magnet:\?/i.test(href) && !/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
-    await mayUseConnection();
+    const chosen = await mayUseConnection(to);
     // A magnet or captured file from a page's button: within its tab's allowance.
     if (allow && (/^magnet:\?/i.test(href) || captureKind(href)) && allow(1) < 1) throw new Refused("sendPageLimit");
-    await send(await sourceFor(href));
+    await send(await sourceFor(href), chosen);
   });
 }
 
@@ -286,16 +308,16 @@ export function sendUrl(href: string, origin: Origin, allow?: Allowance): Promis
  * embedded one -- with the person's sign-in on that site, unless switched off, and only to a
  * DownloadPulse that says it takes it (operator, 2026-11-19).
  */
-export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | undefined): Promise<void> {
-  return settle(origin, async () => {
+export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | undefined, server?: string | null): Promise<void> {
+  return settle(origin, server, async (to) => {
     if (!/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
-    await mayUseConnection();
+    const chosen = await mayUseConnection(to);
     let cookies: Cookie[] = [];
     // Switched on, yet sent without them: said in the toast, never silently (review, 2026-11-19).
     let withoutSignIn = false;
     if ((await settings()).videoCookies) {
-      const connected = await connection();
-      const browserToken = connected ? await token(connected.server) : null;
+      const browserToken = await token(chosen);
+      const connected = browserToken ? {server: chosen} : null;
       // A sign-in goes only over HTTPS or to this computer: never over plain HTTP, even to a
       // server on the person's network chosen on the plain-HTTP warning (review, 2026-11-19).
       try {
@@ -311,7 +333,7 @@ export function sendVideo(href: string, origin: Origin, tab: chrome.tabs.Tab | u
         withoutSignIn = true;   // its capabilities unknown: the video goes without
       }
     }
-    await send({kind: "links", links: [href]}, cookies);
+    await send({kind: "links", links: [href]}, chosen, cookies);
     return withoutSignIn ? "sendDoneWithoutSignIn" : undefined;
   });
 }
@@ -329,9 +351,11 @@ export async function sendDownload(href: string, referrer: string, store: {cooki
     Promise<{ok: true; said: string; sent: Sent; withoutSignIn: boolean} | {ok: false; said: string}> {
   try {
     if (!/^https?:\/\//i.test(href)) throw new Refused("sendNothingFound");
-    await mayUseConnection();
-    const connected = await connection();
-    const browserToken = connected ? await token(connected.server) : null;
+    // A browser download is held paused while it is sent: there is no time to ask, so it goes
+    // to the default server (WS-X1).
+    const server = await mayUseConnection(await defaultServer());
+    const browserToken = await token(server);
+    const connected = browserToken ? {server} : null;
     if (!connected || !browserToken) throw new Refused("sendNotConnected");
     let taken = {videoCookies: false, referrer: false};
     try {
@@ -353,7 +377,7 @@ export async function sendDownload(href: string, referrer: string, store: {cooki
     // cookies are only looked at here, to know it; none of them leaves the browser.
     const withoutSignIn = found.dropped || (!travels && found.cookies.length > 0);
     const page = taken.referrer && /^https?:\/\//i.test(referrer) && referrer.length <= 2048 ? referrer : "";
-    const sent = await send({kind: "links", links: [href]}, cookies, page);
+    const sent = await send({kind: "links", links: [href]}, server, cookies, page);
     return {ok: true, said: withoutSignIn ? "captureDoneWithoutSignIn" : "captureDone", sent, withoutSignIn};
   } catch (error) {
     return {ok: false, said: error instanceof Refused ? error.key : "sendFailed"};
@@ -361,8 +385,8 @@ export async function sendDownload(href: string, referrer: string, store: {cooki
 }
 
 /** A selection: its http(s) URLs as one batch, each magnet on its own (B2). */
-export function sendSelection(text: string, origin: Origin, allow?: Allowance): Promise<void> {
-  return settle(origin, () => sendText(text, "sendNothingFound", (wanted) => {
+export function sendSelection(text: string, origin: Origin, allow?: Allowance, server?: string | null): Promise<void> {
+  return settle(origin, server, (to) => sendText(text, "sendNothingFound", to, (wanted) => {
     const capped = Math.min(wanted, SINGLE_LIMIT);
     return allow ? allow(capped) : capped;
   }));
@@ -372,18 +396,22 @@ export function sendSelection(text: string, origin: Origin, allow?: Allowance): 
  * Quick Add in the popup (operator, 2026-11-19): the typed or pasted text sent as a selection is,
  * its result answered to the popup (which shows it on its title row) instead of a toast.
  */
-export async function quickAdd(text: string): Promise<{ok: boolean; text: string}> {
+export async function quickAdd(text: string, server: string | null): Promise<{ok: boolean; text: string}> {
   try {
-    const said = await sendText(text, "quickAddNothing");
-    return {ok: true, text: message(said || "quickAddDone")};
+    const answer = await sendText(text, "quickAddNothing", server);
+    if (answer) return {ok: true, text: message(answer)};
+    // With two or more servers, the one it went to is named (WS-X1).
+    const all = await servers();
+    const to = all.find((item) => item.server === server);
+    return {ok: true, text: all.length > 1 && to ? message("quickAddDoneTo", [to.name]) : message("quickAddDone")};
   } catch (error) {
     return {ok: false, text: message(error instanceof Refused ? error.key : "sendFailed")};
   }
 }
 
-async function sendText(text: string, nothing: string, allow?: Allowance): Promise<string | void> {
+async function sendText(text: string, nothing: string, server: string | null, allow?: Allowance): Promise<string | void> {
   {
-    await mayUseConnection();
+    const chosen = await mayUseConnection(server);
     const urls = extractUrls(text);
     if (!urls.length) throw new Refused(nothing);
     // Plain links go as one batch; a magnet, and a file DownloadPulse takes
@@ -395,8 +423,8 @@ async function sendText(text: string, nothing: string, allow?: Allowance): Promi
     const singles = allow ? single.slice(0, single.length ? allow(single.length) : 0) : single;
     // Nothing it may still make (a tab's pages over their minute's allowance): refused, and the person told why.
     if (!links.length && !singles.length) throw new Refused("sendPageLimit");
-    if (links.length) await send({kind: "links", links});
-    for (const url of singles) await send(await sourceFor(url));
+    if (links.length) await send({kind: "links", links}, chosen);
+    for (const url of singles) await send(await sourceFor(url), chosen);
     // More than one selection takes: the person is told, never a silent drop.
     return plain.length > BATCH_LIMIT || singles.length < single.length ? "sendSelectionCapped" : undefined;
   }

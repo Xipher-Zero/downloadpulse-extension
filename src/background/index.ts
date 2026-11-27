@@ -8,7 +8,10 @@
 // can pause (MDN browser-compat-data): every API not every browser has is looked for before it
 // is used, and the requests are listened for first, so a missing one can never stop them.
 
-import {connection, forgetConnection, token} from "../shared/connection";
+import {
+  connection, connectionState, defaultServer, forgetConnection, revocationToken, serverForId, servers, token, upgradeConnections,
+} from "../shared/connection";
+import {stateKey} from "../shared/server-state";
 import {controlJob, disconnectBrowser, isLocal, showApplication, withdrawJob} from "../shared/server";
 import {isOffSite, settings} from "../shared/settings";
 import {videoAddress} from "../shared/classify";
@@ -27,27 +30,52 @@ import {listen as listenForDownloads, settleHeld} from "./capture";
 
 type Request =
   | {type: "connect-local"} | {type: "pair-local"; origin: string} | {type: "connect-remote"; address: string; insecure?: boolean}
-  | {type: "cancel"} | {type: "dp-open"}
-  | {type: "dp-state"} | {type: "dp-send"; url: string} | {type: "dp-send-video"; url?: string} | {type: "dp-send-selection"; text: string} | {type: "dp-has-video"}
-  | {type: "dp-popup-open"} | {type: "dp-quick-add"; text: string} | {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}
-  | {type: "dp-disconnect"} | {type: "dp-settle-held"} | {type: "dp-capture-usable"}
+  | {type: "cancel"} | {type: "dp-open"; server?: string}
+  | {type: "dp-state"} | {type: "dp-send"; url: string; server?: unknown} | {type: "dp-send-video"; url?: string; server?: unknown}
+  | {type: "dp-send-selection"; text: string; server?: unknown} | {type: "dp-has-video"}
+  | {type: "dp-popup-open"} | {type: "dp-quick-add"; text: string; server?: string}
+  | {type: "dp-control"; id: string; kind: "pause" | "resume"; server: string} | {type: "dp-withdraw"; id: string; server: string}
+  | {type: "dp-disconnect"; server: string; force?: boolean} | {type: "dp-settle-held"} | {type: "dp-capture-usable"}
   | {type: "dp-confirm-get"; id: string} | {type: "dp-confirm-answer"; id: string; send: boolean};
 
-/** WS-E4: Disconnect revokes this browser's token on the server, then forgets it here (even if the server is unreachable). */
-async function disconnect(): Promise<{revoked: boolean}> {
-  const connected = await connection();
-  const browserToken = connected ? await token(connected.server) : null;
-  let revoked = false;
-  if (connected && browserToken) {
-    try {
-      await disconnectBrowser(connected.server, browserToken);
-      revoked = true;
-    } catch {
-      revoked = false;
+/** The server an extension page named (by origin, as the popup knows them), if it is a saved one; else the default. */
+async function named(server: unknown): Promise<string | null> {
+  if (typeof server === "string" && server) return (await connection(server)) ? server : null;
+  return defaultServer();
+}
+
+/**
+ * Disconnect ``server`` (WS-E4; WS-X1: the popup's confirmation dialog): this browser's token is
+ * revoked there, and only then forgotten here -- also when DownloadPulse says it was removed
+ * already. Unanswered, nothing is removed (``unreachable``) until the person chooses Remove
+ * anyway (``force``), which forgets it here only. Revoked with the stored token even while the
+ * connection is held for the disclosure or the plain-HTTP choice (EXT-6), never over plain HTTP
+ * across the internet (no token is then sent, and the connection is only forgotten).
+ */
+const DISCONNECT_MS = 10_000;
+
+async function disconnect(server: unknown, force: boolean): Promise<{result: "revoked" | "removed" | "unreachable" | "none"}> {
+  if (typeof server !== "string" || !(await connection(server))) return {result: "none"};
+  if (!force) {
+    const browserToken = await revocationToken(server);
+    if (browserToken) {
+      // The dialog gives up after about 10 seconds, the identity proof included (WS-X1): then
+      // nothing has been removed here, and the person chooses.
+      let timer = 0;
+      const timeout = new Promise<never>((_, reject) => { timer = setTimeout(() => reject(new Error("timeout")), DISCONNECT_MS); });
+      try {
+        await Promise.race([disconnectBrowser(server, browserToken), timeout]);
+      } catch {
+        return {result: "unreachable"};
+      } finally {
+        clearTimeout(timer);
+      }
+      await forgetConnection(false, server);
+      return {result: "revoked"};
     }
   }
-  if (connected) await forgetConnection(false, connected.server);
-  return {revoked};
+  await forgetConnection(false, server);
+  return {result: "removed"};
 }
 
 /**
@@ -55,8 +83,8 @@ async function disconnect(): Promise<{revoked: boolean}> {
  * brings its own window forward; anything else (a server, an older
  * DownloadPulse, no answer) opens in a tab. Answers whether a tab opened.
  */
-async function openDownloadPulse(): Promise<{tab: boolean}> {
-  const connected = await connection();
+async function openDownloadPulse(server: string | null): Promise<{tab: boolean}> {
+  const connected = server ? await connection(server) : null;
   if (!connected) return {tab: false};
   const browserToken = connected ? await token(connected.server) : null;
   if (isLocal(connected.server) && browserToken && await showApplication(connected.server, browserToken)) return {tab: false};
@@ -65,16 +93,38 @@ async function openDownloadPulse(): Promise<{tab: boolean}> {
 }
 
 /** What a frame may offer: nothing unless connected, then as the settings say for its tab's site. */
+/**
+ * A server as a page's ▾ list shows it (WS-X1): its ID, which means nothing outside the extension,
+ * its short name, whether it can be chosen now, and whether it is the default -- never its address.
+ */
+interface PageServer { id: string; name: string; reachable: boolean; isDefault: boolean }
+
+/** The servers a page may offer, in display order: only with two or more (one is the plain button). */
+async function pageServers(): Promise<PageServer[]> {
+  const all = await servers();
+  if (all.length < 2) return [];
+  const reach = await chrome.storage.session.get(all.map((item) => stateKey(item.server, "reach")));
+  return Promise.all(all.map(async (item) => {
+    // Held by the gate, or not answering its last look: shown, but it can't be chosen.
+    const answered = (reach[stateKey(item.server, "reach")] as {ok?: boolean} | undefined)?.ok !== false;
+    const usable = (await connectionState(item)) === "ok";
+    return {id: item.id, name: item.name, reachable: answered && usable, isDefault: item.isDefault};
+  }));
+}
+
 async function frameState(sender: chrome.runtime.MessageSender):
-    Promise<{connected: boolean; hover: boolean; video: boolean; appearance: Appearance | null}> {
+    Promise<{connected: boolean; hover: boolean; video: boolean; appearance: Appearance | null; servers: PageServer[]}> {
   // A connection held by the gate (connection.ts connectionState) offers nothing on a page.
-  if (!(await token())) return {connected: false, hover: false, video: false, appearance: null};
+  // A page's buttons send to the default server, or one chosen from their ▾ list (WS-X1).
+  const server = await defaultServer();
+  if (!server || !(await token(server))) return {connected: false, hover: false, video: false, appearance: null, servers: []};
   const chosen = await settings();
   const off = isOffSite(sender.tab?.url ?? sender.url ?? "", chosen.offSites);
   // The person's theme, by palette ID (not a secret): what the page's surfaces are drawn in.
   // The master switch first: off, the page offers nothing (its own choices are kept for when it is on).
   const on = chosen.inPage && !off;
-  return {connected: true, hover: on && chosen.hover, video: on && chosen.video, appearance: await appearance()};
+  return {connected: true, hover: on && chosen.hover, video: on && chosen.video, appearance: await appearance(),
+    servers: on ? await pageServers() : []};
 }
 
 /**
@@ -105,12 +155,23 @@ async function offered(sender: chrome.runtime.MessageSender, request: PageReques
   return state[surfaceOf(request)] && (buttonsInFrames || (sender.frameId ?? 0) === 0);
 }
 
-/** A page button's send, made: within the tab's allowance of separate jobs. */
-function perform(request: PageRequest, origin: Origin, tabId: number, tab: chrome.tabs.Tab | undefined): Promise<void> {
+/** A page button's send, made: within the tab's allowance of separate jobs; to ``server``, else the default. */
+function perform(request: PageRequest, origin: Origin, tabId: number, tab: chrome.tabs.Tab | undefined,
+                 server: string | undefined): Promise<void> {
   const allow = (wanted: number) => pageSingles(tabId, wanted);
-  if (request.kind === "link") return sendUrl(request.url, origin, allow);
-  if (request.kind === "selection") return sendSelection(request.text, origin, allow);
-  return sendVideo(request.url, origin, tab);
+  if (request.kind === "link") return sendUrl(request.url, origin, allow, server);
+  if (request.kind === "selection") return sendSelection(request.text, origin, allow, server);
+  return sendVideo(request.url, origin, tab, server);
+}
+
+/**
+ * The server a page's ▾ list chose (WS-X1): only by an ID one of the saved servers has, never an
+ * address. None given: the default (``undefined``). An ID that is not (or no longer) a saved
+ * server's: ``null``, refused -- a send never falls back to another server.
+ */
+async function chosenServer(id: unknown): Promise<string | null | undefined> {
+  if (id === undefined) return undefined;
+  return serverForId(id);
 }
 
 /**
@@ -119,22 +180,29 @@ function perform(request: PageRequest, origin: Origin, tabId: number, tab: chrom
  * answer it was given -- and within the tab's allowance (background/page-sends.ts). Where it
  * must be confirmed, it is only asked about here (``confirmInWindow``).
  */
-async function fromButton(sender: chrome.runtime.MessageSender, request: PageRequest): Promise<void> {
+async function fromButton(sender: chrome.runtime.MessageSender, request: PageRequest, serverId: unknown): Promise<void> {
   const tabId = sender.tab?.id;
   if (tabId === undefined) return;
   const origin = {tabId, frameId: sender.frameId ?? 0};
+  const server = await chosenServer(serverId);
+  if (server === null) {
+    await feedback(origin, "sendServerGone", false);
+    return;
+  }
   if (!(await offered(sender, request, origin))) return;
   if (!pageSend(tabId)) {
     await feedback(origin, "sendPageLimit", false);
     return;
   }
   if (!confirmInWindow) {
-    await perform(request, origin, tabId, sender.tab);
+    await perform(request, origin, tabId, sender.tab, server);
     return;
   }
   const tab = sender.tab as chrome.tabs.Tab & {cookieStoreId?: string};
+  // The window names the server it would go to (WS-X1): the one chosen, else the default.
+  const to = server ?? await defaultServer() ?? undefined;
   await askConfirmation({request, tabId, frameId: origin.frameId, tabUrl: tab.url ?? sender.url ?? "", frameUrl: sender.url ?? "",
-    ...(tab.cookieStoreId ? {cookieStoreId: tab.cookieStoreId} : {})});
+    ...(tab.cookieStoreId ? {cookieStoreId: tab.cookieStoreId} : {}), ...(to ? {server: to} : {})});
 }
 
 /** Send, in a question's window: sent as the press would have been, its site's settings read again now. */
@@ -145,7 +213,8 @@ async function confirmed(id: string, send: boolean): Promise<void> {
   const sender = {id: chrome.runtime.id, tab, url: asked.frameUrl, frameId: asked.frameId} as chrome.runtime.MessageSender;
   const origin = {tabId: asked.tabId, frameId: asked.frameId};
   if (!(await offered(sender, asked.request, origin))) return;
-  await perform(asked.request, origin, asked.tabId, tab);
+  // To the server the window named, never another (gone since: refused there).
+  await perform(asked.request, origin, asked.tabId, tab, asked.server);
 }
 
 chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
@@ -159,12 +228,12 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
     case "connect-remote": if (!fromPage) void connectRemote(String(request.address || ""), request.insecure === true); return undefined;
     case "dp-open":
       if (fromPage) return undefined;
-      void openDownloadPulse().then(respond);
+      void named(request.server).then(openDownloadPulse).then(respond);
       return true;
     case "cancel": if (!fromPage) void cancel(); return undefined;
     case "dp-quick-add":
       if (fromPage || typeof request.text !== "string" || request.text.length > 200_000) return undefined;
-      void quickAdd(request.text).then(respond);
+      void named(request.server).then((server) => quickAdd(request.text, server)).then(respond);
       return true;
     case "dp-popup-open":
       if (!fromPage) {
@@ -174,7 +243,7 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
       return undefined;
     case "dp-disconnect":
       if (fromPage) return undefined;
-      void disconnect().then(respond);
+      void disconnect(request.server, request.force === true).then(respond);
       return true;
     case "dp-capture-usable":
       if (fromPage) return undefined;
@@ -195,7 +264,7 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
       void frameState(sender).then(respond);
       return true;
     case "dp-send":
-      if (fromPage && typeof request.url === "string") void fromButton(sender, {kind: "link", url: request.url});
+      if (fromPage && typeof request.url === "string") void fromButton(sender, {kind: "link", url: request.url}, request.server);
       return undefined;
     case "dp-send-video": {
       // The frame's current address (a single-page site changes it in place; the browser's
@@ -203,14 +272,14 @@ chrome.runtime.onMessage.addListener((request: Request, sender, respond) => {
       // origin the browser reports for that frame: a frame sends only its own site's video,
       // with the cookies for exactly that address (2026-11-19).
       const href = videoAddress(request.url, sender.url);
-      if (fromPage && href) void fromButton(sender, {kind: "video", url: href});
+      if (fromPage && href) void fromButton(sender, {kind: "video", url: href}, request.server);
       return undefined;
     }
     case "dp-send-selection":
       // The page's selection, as the right-click "selection" item sends it (a site may block right-click).
       // Offered with the hover icon (content/index.ts offerSelection), so only while that is on.
       if (fromPage && typeof request.text === "string" && request.text.length <= 200_000) {
-        void fromButton(sender, {kind: "selection", text: request.text});
+        void fromButton(sender, {kind: "selection", text: request.text}, request.server);
       }
       return undefined;
     case "dp-confirm-get":
@@ -240,16 +309,36 @@ listenForDownloads();
 const MENU_LINK = "dp-send-link";
 const MENU_SELECTION = "dp-send-selection";
 
-async function refreshMenus(): Promise<void> {
+/**
+ * The right-click menu: "Download with DownloadPulse" for links and selected text; with two or more
+ * servers (WS-X1), a submenu of their names in display order (the default named so), each item by
+ * the server's page ID, never its address. Made again whenever the servers change.
+ */
+let menusMade: Promise<void> = Promise.resolve();
+function refreshMenus(): Promise<void> {
+  menusMade = menusMade.then(makeMenus, makeMenus);
+  return menusMade;
+}
+
+async function makeMenus(): Promise<void> {
   if (!chrome.contextMenus) return;   // no right-click menu (Firefox for Android)
   await chrome.contextMenus.removeAll();
-  if (!(await token())) return;
+  const server = await defaultServer();
+  if (!server || !(await token(server))) return;
   const title = message("menuSend");
   chrome.contextMenus.create({id: MENU_LINK, title, contexts: ["link"]});
   chrome.contextMenus.create({id: MENU_SELECTION, title, contexts: ["selection"]});
+  const all = await servers();
+  if (all.length < 2) return;
+  for (const item of all) {
+    const name = item.isDefault ? message("menuServerDefault", [item.name]) : item.name;
+    chrome.contextMenus.create({id: `${MENU_LINK}@${item.id}`, parentId: MENU_LINK, title: name, contexts: ["link"]});
+    chrome.contextMenus.create({id: `${MENU_SELECTION}@${item.id}`, parentId: MENU_SELECTION, title: name, contexts: ["selection"]});
+  }
 }
 
 chrome.runtime.onInstalled.addListener(() => {
+  void upgradeConnections();   // 1.0.7's connection: its name, page ID and place (WS-X1)
   void refreshMenus();
   void restIcon();
 });
@@ -260,9 +349,10 @@ chrome.runtime.onStartup.addListener(() => {
 });
 
 /** A control or Remove from the popup, answered with DebridPulse's decision. */
-async function act(request: {type: "dp-control"; id: string; kind: "pause" | "resume"} | {type: "dp-withdraw"; id: string}):
-    Promise<{ok: boolean; reason?: string}> {
-  const connected = await connection();
+async function act(request: {type: "dp-control"; id: string; kind: "pause" | "resume"; server: string}
+    | {type: "dp-withdraw"; id: string; server: string}): Promise<{ok: boolean; reason?: string}> {
+  // That job's own server, named by the popup's row: never another one.
+  const connected = typeof request.server === "string" ? await connection(request.server) : null;
   const browserToken = connected ? await token(connected.server) : null;
   if (!connected || !browserToken) return {ok: false, reason: "not_connected"};
   try {
@@ -280,15 +370,24 @@ async function act(request: {type: "dp-control"; id: string; kind: "pause" | "re
   }
 }
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area === "local" && ("connections" in changes || "activeServer" in changes || "consent" in changes)) void refreshMenus();
+  if (area === "local" && ["connections", "activeServer", "consent", "serverOrder", "serverNames", "serverIds"]
+    .some((key) => key in changes)) void refreshMenus();
   // The toolbar icon in the person's theme, redrawn when it changes (or the connection goes).
   if (area === "local" && "appearance" in changes) void restIcon();
+  // Another default server (☆, or the default disconnected): its colours, now (WS-X1).
+  if (area === "local" && "activeServer" in changes && changes["activeServer"]?.newValue) void refreshAppearance(true);
 });
 
 chrome.contextMenus?.onClicked.addListener((info, tab) => {
   const origin = {...(tab?.id !== undefined ? {tabId: tab.id} : {}), frameId: info.frameId ?? 0};
-  if (info.menuItemId === MENU_LINK && info.linkUrl) void sendUrl(info.linkUrl, origin);
-  else if (info.menuItemId === MENU_SELECTION && info.selectionText) void sendSelection(info.selectionText, origin);
+  const [item = "", id] = String(info.menuItemId).split("@");
+  void (async () => {
+    // A submenu item (two or more servers): that server, by its ID; gone since the menu was made, refused.
+    const server = id === undefined ? undefined : await serverForId(id);
+    if (server === null) return feedback(origin, "sendServerGone", false);
+    if (item === MENU_LINK && info.linkUrl) await sendUrl(info.linkUrl, origin, undefined, server);
+    else if (item === MENU_SELECTION && info.selectionText) await sendSelection(info.selectionText, origin, undefined, server);
+  })();
 });
 
 // Firefox only: the URL-bar icon, shown on a tab whose content script saw a video.

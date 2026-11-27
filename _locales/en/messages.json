@@ -764,5 +764,293 @@
   "captureResumedNoProgress": {
     "message": "DownloadPulse made no progress with that download for a while, so the browser carried on with it.",
     "description": "Toast: a browser download handed to DownloadPulse was kept paused in the browser, but DownloadPulse did not start or continue downloading it for 10 minutes (still queued, stuck, or not answering; a download paused in DownloadPulse is never handed back), so the browser's own paused copy resumes. 'for a while' means that time limit."
+  },
+  "popupSomeConnected": {
+    "message": "$CONNECTED$ of $TOTAL$ connected",
+    "description": "Popup status with two or more DownloadPulse servers, when only some answer, e.g. '2 of 3 connected'. Short: it shares one row with the status dots.",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "Unreachable",
+    "description": "Popup, with two or more servers: one server (or, as the overall status, every server) doesn't answer right now. One or two words."
+  },
+  "addServer": {
+    "message": "Connect another DownloadPulse",
+    "description": "Popup: tooltip and accessible label of the [+] button beside the connection status; it starts connecting this browser to one more DownloadPulse server."
+  },
+  "addServerLimit": {
+    "message": "Up to 3 servers",
+    "description": "Popup: tooltip of the disabled [+] button when this browser is already connected to 3 DownloadPulse servers, the most it can be."
+  },
+  "failureTooMany": {
+    "message": "This browser is already connected to 3 DownloadPulse servers, the most it can be. Disconnect one in Settings first.",
+    "description": "Popup: connecting one more server was refused because 3 are already connected."
+  },
+  "optionsConnections": {
+    "message": "Connections:",
+    "description": "Settings heading, with two or more DownloadPulse servers connected (the plural of optionsConnection 'Connection:'); keep its punctuation."
+  },
+  "disconnectServer": {
+    "message": "Disconnect $NAME$",
+    "description": "Settings: tooltip and accessible label of the trash icon on one server's block. NAME is the server's short name, chosen by the person.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "Disconnect from $NAME$?",
+    "description": "Disconnect confirmation dialog: its title. NAME is the server's short name (or 'DownloadPulse' with only one server).",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "This browser will be removed from the account $ACCOUNT$ on $ADDRESS$.",
+    "description": "Disconnect confirmation dialog, first paragraph. ACCOUNT is the DownloadPulse account's display name, ADDRESS the server's address (a host name).",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "Downloads already sent keep going there. $NAME$ will no longer be offered on pages or in the right-click menu. To use it again, you will need to connect it again.",
+    "description": "Disconnect confirmation dialog, second paragraph. NAME is the server's short name (or 'DownloadPulse' with only one server).",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ is your default server.\n$NEXT$ will become your default.",
+    "description": "Disconnect dialog, shown only when the server being removed is the default one (the one that receives every send that names no server). NEXT is the server that becomes the default instead. Two lines, as shown: keep the line break between the two sentences.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "Disconnecting…",
+    "description": "Disconnect dialog: on its red button while this browser's access is being revoked on the server."
+  },
+  "dialogUnreachableTitle": {
+    "message": "$NAME$ can't be reached",
+    "description": "Disconnect dialog, second state: the server did not answer (no answer, a time-out or a certificate error), so nothing has been removed yet.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "This browser could not be removed from the account $ACCOUNT$ on $ADDRESS$.",
+    "description": "Disconnect dialog, 'can't be reached' state, first paragraph. ACCOUNT is the account's display name, ADDRESS the server's address.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "You can remove $NAME$ from this browser anyway. It will still list this browser until you remove it there, in My Account › Connected browsers.",
+    "description": "Disconnect dialog, 'can't be reached' state, second paragraph. 'My Account › Connected browsers' are DownloadPulse's own screen titles (DebridPulse account.title › account.browsers.title): use exactly the words of optionsDisconnectedLocally in your catalog.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "Remove anyway",
+    "description": "Disconnect dialog, 'can't be reached' state: the red button that removes the server from this browser only."
+  },
+  "noteDisconnectedFrom": {
+    "message": "Disconnected from $NAME$. It no longer accepts this browser.",
+    "description": "Settings note after a disconnect was confirmed by the server, with two or more servers.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "Removed from this browser. $NAME$ still lists it.",
+    "description": "Settings note after 'Remove anyway': the server was not told, so it still lists this browser.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$ is now your default server.",
+    "description": "Settings note after the default server was disconnected: which server became the default.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "Make default",
+    "description": "Popup server list: tooltip and label of the empty star; makes that server the default (the one that receives every send that names no server)."
+  },
+  "serverDefault": {
+    "message": "Default",
+    "description": "Popup server list and Settings: tooltip and label of the filled star on the default server."
+  },
+  "serverRename": {
+    "message": "Rename $NAME$",
+    "description": "Popup server list: tooltip and label of the pencil button beside a server's short name.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "Server name",
+    "description": "Popup server list: label of the field that renames a server (a short name kept only in this browser)."
+  },
+  "serverNameBlank": {
+    "message": "Enter a name.",
+    "description": "Popup server list: the rename field was left empty."
+  },
+  "serverNameTaken": {
+    "message": "Another server already has this name.",
+    "description": "Popup server list: the name typed is already another server's."
+  },
+  "serverMoveLabel": {
+    "message": "Move $NAME$. Drag, or press Alt+Up or Alt+Down.",
+    "description": "Popup server list: tooltip and accessible label of the grab handle that reorders the servers. Keep 'Alt+Up' and 'Alt+Down' as key names your language's keyboards use.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ moved to position $POSITION$ of $TOTAL$",
+    "description": "Popup server list: announced to screen readers after a server was moved, e.g. 'Seedbox moved to position 1 of 3'.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "Sent to $NAME$.",
+    "description": "Toast after a download was sent, with two or more servers: NAME is the server it went to (its short name).",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "Added to $NAME$",
+    "description": "Popup, with two or more servers: shown on the Quick Add title row after a successful Add. NAME is the server's short name. No final period; short.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "Add to another server",
+    "description": "Popup, with two or more servers: tooltip and label of the small ▾ beside Add, which lists the servers to add to."
+  },
+  "openChoose": {
+    "message": "Choose which DownloadPulse to open",
+    "description": "Popup footer, with two or more servers: tooltip of the Open DownloadPulse button, which then lists the servers."
+  },
+  "captureToggleNamed": {
+    "message": "Send browser downloads to DownloadPulse ($NAME$)",
+    "description": "Popup checkbox, with two or more servers: as captureToggle, naming the default server they go to.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "Send to another DownloadPulse",
+    "description": "On a web page, with two or more DownloadPulse servers: tooltip and label of the small ▾ beside the download button; it opens a list of the servers to send to. Also the list's accessible name."
+  },
+  "sendServerGone": {
+    "message": "That DownloadPulse is no longer connected to this browser.",
+    "description": "In-page message: the server chosen in the list was disconnected in the meantime, so nothing was sent."
+  },
+  "confirmTo": {
+    "message": "To: $NAME$",
+    "description": "Firefox's confirmation window for a page's download button, with two or more servers: which DownloadPulse it would be sent to (its short name, chosen by the person).",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (default)",
+    "description": "Right-click menu, with two or more servers: the default server's entry in the 'Download with DownloadPulse' submenu. NAME is its short name.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

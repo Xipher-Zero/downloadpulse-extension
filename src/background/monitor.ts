@@ -6,7 +6,7 @@
 // a notification when a job completes, fails or needs attention. It runs
 // only while a job is unsettled or the popup is open.
 
-import {connections, forgetConnection, token, whileConnectedWith} from "../shared/connection";
+import {connections, forgetConnection, servers, token, whileConnectedWith} from "../shared/connection";
 import {stateKey} from "../shared/server-state";
 import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
@@ -129,8 +129,12 @@ async function notify(server: string, job: Job, kind: string): Promise<void> {
   if (notified.includes(id)) return;
   await chrome.storage.session.set({[seen]: [...notified, id].slice(-300)});
   const key = kind === "completed" ? "notifyCompleted" : kind === "failed" ? "notifyFailed" : "notifyAttention";
-  await chrome.notifications.create(id, {type: "basic", iconUrl: "icons/icon-128.png", title: message("extName"),
-    message: message(key, [jobName(job)])});
+  // With two or more servers, the notification names the one the download is on, and its ID
+  // carries it (two servers may each have a job of the same ID) (WS-X1).
+  const all = await servers();
+  const named = all.length > 1 ? all.find((item) => item.server === server)?.name : undefined;
+  await chrome.notifications.create(named ? `${id}:${encodeURIComponent(server)}` : id, {type: "basic", iconUrl: "icons/icon-128.png",
+    title: named ? `${message("extName")} · ${named}` : message("extName"), message: message(key, [jobName(job)])});
 }
 
 /** Every saved connection that may be used is looked at; whether any could be. */
@@ -226,14 +230,14 @@ chrome.alarms.onAlarm.addListener((alarm) => { if (alarm.name === ALARM) wake();
 // without windows (Firefox for Android), in a tab.
 chrome.notifications?.onClicked.addListener((id) => {
   if (!id.startsWith("dp:")) return;
-  const job = id.split(":")[1] ?? "";
+  const [, job = "", , server = ""] = id.split(":");
   void (async () => {
-    await chrome.storage.session.set({focusJob: job});
+    await chrome.storage.session.set({focusJob: job, focusServer: decodeURIComponent(server)});
     await chrome.notifications.clear(id);
     try {
       await chrome.action.openPopup();
     } catch {
-      const url = chrome.runtime.getURL(`popup/popup.html?job=${encodeURIComponent(job)}`);
+      const url = chrome.runtime.getURL(`popup/popup.html?job=${encodeURIComponent(job)}&server=${server}`);
       if (chrome.windows?.create) await chrome.windows.create({url, type: "popup", width: 380, height: 600, focused: true});
       else await chrome.tabs.create({url});
     }

@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "لم يُحرز DownloadPulse أي تقدّم في هذا التنزيل منذ مدة، لذا تابعه المتصفح."
+  },
+  "popupSomeConnected": {
+    "message": "مرتبط: $CONNECTED$ من $TOTAL$",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "يتعذر الوصول"
+  },
+  "addServer": {
+    "message": "ربط DownloadPulse آخر"
+  },
+  "addServerLimit": {
+    "message": "حتى 3 خوادم"
+  },
+  "failureTooMany": {
+    "message": "هذا المتصفح مرتبط بالفعل بـ 3 خوادم DownloadPulse، وهو الحد الأقصى. ألغِ ربط أحدها من الإعدادات أولًا."
+  },
+  "optionsConnections": {
+    "message": "عمليات الربط:"
+  },
+  "disconnectServer": {
+    "message": "إلغاء ربط $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "إلغاء الربط بـ $NAME$؟",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "ستتم إزالة هذا المتصفح من الحساب $ACCOUNT$ على $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "تستمر التنزيلات التي أُرسلت بالفعل هناك. لن يُعرض $NAME$ بعد الآن على الصفحات أو في قائمة النقر بزر الماوس الأيمن. لاستخدامه مرة أخرى، ستحتاج إلى ربطه من جديد.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ هو خادمك الافتراضي.\nسيصبح $NEXT$ خادمك الافتراضي.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "جارٍ إلغاء الربط…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "يتعذر الوصول إلى $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "تعذرت إزالة هذا المتصفح من الحساب $ACCOUNT$ على $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "يمكنك إزالة $NAME$ من هذا المتصفح على أي حال. سيظل هذا المتصفح مُدرجًا هناك إلى أن تزيله من حسابي › المتصفحات المرتبطة.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "الإزالة على أي حال"
+  },
+  "noteDisconnectedFrom": {
+    "message": "تم إلغاء الربط بـ $NAME$. لم يعد يقبل هذا المتصفح.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "أُزيل من هذا المتصفح. لا يزال $NAME$ يُدرجه.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "أصبح $NAME$ خادمك الافتراضي.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "تعيين كافتراضي"
+  },
+  "serverDefault": {
+    "message": "الافتراضي"
+  },
+  "serverRename": {
+    "message": "إعادة تسمية $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "اسم الخادم"
+  },
+  "serverNameBlank": {
+    "message": "أدخل اسمًا."
+  },
+  "serverNameTaken": {
+    "message": "يوجد خادم آخر بهذا الاسم بالفعل."
+  },
+  "serverMoveLabel": {
+    "message": "نقل $NAME$. اسحبه، أو اضغط Alt+↑ أو Alt+↓.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "نُقل $NAME$ إلى الموضع $POSITION$ من $TOTAL$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "أُرسل إلى $NAME$.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "أُضيف إلى $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "الإضافة إلى خادم آخر"
+  },
+  "openChoose": {
+    "message": "اختيار نسخة DownloadPulse المراد فتحها"
+  },
+  "captureToggleNamed": {
+    "message": "إرسال تنزيلات المتصفح إلى DownloadPulse ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "الإرسال إلى DownloadPulse آخر"
+  },
+  "sendServerGone": {
+    "message": "لم يعد DownloadPulse المحدد مرتبطًا بهذا المتصفح."
+  },
+  "confirmTo": {
+    "message": "الوجهة: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (الافتراضي)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

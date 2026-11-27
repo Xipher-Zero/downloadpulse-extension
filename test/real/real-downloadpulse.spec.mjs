@@ -80,6 +80,8 @@ test("connect to a real DownloadPulse: sign in, approve, verified", async () => 
     const settings = await context.newPage();
     await settings.goto(popup.url().replace("popup/popup.html", "options/options.html"));
     await settings.getByRole("button", {name: "Disconnect"}).click();
+    // 1.0.8 (WS-X1): confirmed in the dialog.
+    await settings.getByTestId("dialog-confirm").click();
     await expect(settings.getByTestId("connection-note")).toHaveText("Disconnected. DownloadPulse no longer accepts this browser.");
     const remaining = await page.evaluate(async () =>
       (await (await window.debridPulseAuth.fetch("/api/account/browsers")).json()).browsers.map((b) => b.label));

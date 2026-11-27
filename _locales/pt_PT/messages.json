@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "O DownloadPulse esteve algum tempo sem avançar nesse download, por isso o navegador continuou-o."
+  },
+  "popupSomeConnected": {
+    "message": "$CONNECTED$ de $TOTAL$ ligados",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "Inacessível"
+  },
+  "addServer": {
+    "message": "Ligar outro DownloadPulse"
+  },
+  "addServerLimit": {
+    "message": "Até 3 servidores"
+  },
+  "failureTooMany": {
+    "message": "Este navegador já está ligado a 3 servidores DownloadPulse, o máximo possível. Desligue primeiro um deles nas Definições."
+  },
+  "optionsConnections": {
+    "message": "Ligações:"
+  },
+  "disconnectServer": {
+    "message": "Desligar $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "Desligar de $NAME$?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "Este navegador será removido da conta $ACCOUNT$ em $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "Os downloads já enviados continuam lá. $NAME$ deixará de ser apresentado nas páginas e no menu do botão direito. Para voltar a utilizá-lo, terá de o ligar novamente.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ é o seu servidor predefinido.\n$NEXT$ passará a ser o predefinido.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "A desligar…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "Não é possível aceder a $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "Não foi possível remover este navegador da conta $ACCOUNT$ em $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "Pode remover $NAME$ deste navegador mesmo assim. Este navegador continuará listado lá até que o remova em A minha conta › Navegadores ligados.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "Remover mesmo assim"
+  },
+  "noteDisconnectedFrom": {
+    "message": "Desligado de $NAME$. Já não aceita este navegador.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "Removido deste navegador. $NAME$ ainda o lista.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$ é agora o seu servidor predefinido.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "Definir como predefinido"
+  },
+  "serverDefault": {
+    "message": "Predefinido"
+  },
+  "serverRename": {
+    "message": "Mudar o nome de $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "Nome do servidor"
+  },
+  "serverNameBlank": {
+    "message": "Introduza um nome."
+  },
+  "serverNameTaken": {
+    "message": "Outro servidor já tem este nome."
+  },
+  "serverMoveLabel": {
+    "message": "Mover $NAME$. Arraste ou prima Alt+↑ ou Alt+↓.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ movido para a posição $POSITION$ de $TOTAL$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "Enviado para $NAME$.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "Adicionado a $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "Adicionar a outro servidor"
+  },
+  "openChoose": {
+    "message": "Escolha que DownloadPulse abrir"
+  },
+  "captureToggleNamed": {
+    "message": "Enviar os downloads do navegador para o DownloadPulse ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "Enviar para outro DownloadPulse"
+  },
+  "sendServerGone": {
+    "message": "Esse DownloadPulse já não está ligado a este navegador."
+  },
+  "confirmTo": {
+    "message": "Destino: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (predefinido)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }

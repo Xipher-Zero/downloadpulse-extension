@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // The stored connections and the pending pairing: their one reader and
 // writer. Connections are kept by server (multi-server preparation,
-// 2026-11-19): a map of server origin to its connection, and which one is in
-// use. The extension uses one at a time; nothing here assumes there is only one. What is shown (server, names, the pairing's state) is in
+// 2026-11-19): a map of server origin to its connection. Up to three (WS-X1,
+// 1.0.8), each with a short name, in one display order, one of them the default
+// (the storage key "activeServer", as 1.0.7 named the one in use) -- all kept in
+// this browser only (servers.ts holds the rules). What is shown (server, names, the pairing's state) is in
 // chrome.storage for the popup; the token and the device code are secrets
 // and live only in the extension origin's IndexedDB (src/shared/secrets.ts,
 // WS-E2 B10).
 
 import {consent} from "./consent";
-import {effectiveAddress, readSession, type Failure, type Session} from "./server";
+import {effectiveAddress, readSession, ServerError, type Failure, type Session} from "./server";
 import {secret, setSecret} from "./secrets";
 import {SERVER_STATE, stateKey} from "./server-state";
+import {cleanName, displayNames, displayOrder, MAX_SERVERS, nameFromHost, nameProblem} from "./servers";
 
 export interface Connection {
   server: string;
@@ -51,8 +54,8 @@ function serialized<T>(write: () => Promise<T>): Promise<T> {
   return next;
 }
 
-/** The person chose plain HTTP for a saved private-network connection (the warning screen). */
-export function choosePlainHttp(server?: string): Promise<void> {
+/** The person chose plain HTTP for ``server``'s saved private-network connection (the warning screen). */
+export function choosePlainHttp(server: string): Promise<void> {
   return serialized(async () => {
     const value = await connection(server);
     if (!value) return;
@@ -71,8 +74,13 @@ export type Pairing =
 /** An earlier build's single connection (and, from WS-E1, its token in chrome.storage): read once, then moved. */
 const LEGACY_CONNECTION = "connection";
 const CONNECTIONS = "connections";
+/** The default server: every send that names no server goes to it (1.0.7: the one in use). */
 const ACTIVE = "activeServer";
 const PAIRING = "pairing";
+/** The display order (server origins), each server's short name and its page ID (WS-X1): this browser only. */
+const ORDER = "serverOrder";
+const NAMES = "serverNames";
+const IDS = "serverIds";
 
 /** Where a server's browser token is kept (IndexedDB, secrets.ts). */
 const tokenSlot = (server: string): `token@${string}` => `token@${server}`;
@@ -107,30 +115,142 @@ async function migrateLegacy(): Promise<void> {
   }
 }
 
-/** The server in use, if any. */
-export async function activeServer(): Promise<string | null> {
+/** The saved servers in display order (a 1.0.7 connection's: the order they were stored in). */
+export async function serverOrder(): Promise<string[]> {
+  const all = await connections();
+  return displayOrder(Object.keys(all), (await chrome.storage.local.get(ORDER))[ORDER] as string[] | undefined);
+}
+
+/** The default server, if any: the one chosen (1.0.7's one in use), else the first in display order. */
+export async function defaultServer(): Promise<string | null> {
   const all = await connections();
   const chosen = (await chrome.storage.local.get(ACTIVE))[ACTIVE] as string | undefined;
   if (chosen && all[chosen]) return chosen;
-  return Object.keys(all)[0] ?? null;
+  return (await serverOrder())[0] ?? null;
 }
 
-/** A saved connection: ``server``'s, else the one in use. */
-export async function connection(server?: string): Promise<Connection | null> {
+/** A saved server as the person's views show it. ``id``: what a page may call it (meaningless outside the extension). */
+export interface Server extends Connection { name: string; id: string; isDefault: boolean }
+
+/**
+ * Every saved server, in display order, each with its short name and page ID. A server without an
+ * ID yet (saved before IDs, or by a write that raced the upgrade) gets one now, kept: an ID is
+ * never empty, so a page's list or a menu item always names a server it can be told apart by.
+ */
+export async function servers(): Promise<Server[]> {
+  const found = await readServers();
+  if (found.every((item) => item.id)) return found;
+  await serialized(async () => {
+    const all = await connections();
+    const ids = {...(((await chrome.storage.local.get(IDS))[IDS] as Record<string, string> | undefined) ?? {})};
+    let added = false;
+    for (const server of Object.keys(all)) {
+      if (ids[server]) continue;
+      ids[server] = newId();
+      added = true;
+    }
+    if (added) await chrome.storage.local.set({[IDS]: ids});
+  });
+  return readServers();
+}
+
+/** ``servers()`` as stored, without writing (also inside a write already under way). */
+async function readServers(): Promise<Server[]> {
   const all = await connections();
-  const chosen = server ?? (await activeServer());
-  return (chosen && all[chosen]) || null;
+  const stored = await chrome.storage.local.get([ORDER, NAMES, IDS, ACTIVE]);
+  const order = displayOrder(Object.keys(all), stored[ORDER] as string[] | undefined);
+  const names = displayNames(order, (stored[NAMES] as Record<string, string> | undefined) ?? {});
+  const ids = (stored[IDS] as Record<string, string> | undefined) ?? {};
+  const chosen = stored[ACTIVE] as string | undefined;
+  const fallback = chosen && all[chosen] ? chosen : order[0];
+  return order.map((server) => ({...all[server]!, name: names[server]!, id: ids[server] ?? "", isDefault: server === fallback}));
+}
+
+/** The server a page named by its ID, if that ID is one of the saved servers' (never an address). */
+export async function serverForId(id: unknown): Promise<string | null> {
+  if (typeof id !== "string" || !id) return null;
+  return (await servers()).find((server) => server.id === id)?.server ?? null;
+}
+
+/** The server that becomes the default when ``server`` (the default) goes: the next in display order, else the first. */
+export function successor(order: readonly string[], server: string): string | null {
+  const rest = order.filter((item) => item !== server);
+  const at = order.indexOf(server);
+  return rest[at] ?? rest[0] ?? null;
+}
+
+/** A saved connection: ``server``'s. Every caller names its server (WS-X1). */
+export async function connection(server: string): Promise<Connection | null> {
+  return (await connections())[server] ?? null;
 }
 
 /**
  * A server's browser token: background only (content scripts never ask for it), and only while
  * that connection may be used (connectionState): every request that carries it goes through here.
- * ``server``: that one's, else the one in use.
  */
-export async function token(server?: string): Promise<string | null> {
+export async function token(server: string): Promise<string | null> {
   const value = await connection(server);
   if (!value || (await connectionState(value)) !== "ok") return null;
   return secret(tokenSlot(value.server));
+}
+
+/**
+ * The token that revokes ``server``'s connection on Disconnect (EXT-6): also while the connection
+ * is held for the disclosure or the plain-HTTP choice -- the person is removing it, and the server
+ * should forget this browser too -- but never over plain HTTP across the internet.
+ */
+export async function revocationToken(server: string): Promise<string | null> {
+  const value = await connection(server);
+  if (!value || (await connectionState(value)) === "insecure") return null;
+  return secret(tokenSlot(value.server));
+}
+
+/** The default server is now ``server`` (☆ in the popup). The display order is not changed. */
+export function setDefaultServer(server: string): Promise<void> {
+  return serialized(async () => {
+    if (!(await connections())[server]) return;
+    await chrome.storage.local.set({[ACTIVE]: server});
+  });
+}
+
+/** The display order, as the person arranged it (the default is not changed). */
+export function setServerOrder(order: readonly string[]): Promise<void> {
+  return serialized(async () => {
+    await chrome.storage.local.set({[ORDER]: displayOrder(Object.keys(await connections()), order)});
+  });
+}
+
+/** ``server`` renamed (this browser only): refused when blank or another server's name. */
+export function renameServer(server: string, typed: string): Promise<"blank" | "duplicate" | null> {
+  return serialized(async () => {
+    const all = await readServers();
+    if (!all.some((item) => item.server === server)) return null;
+    const problem = nameProblem(typed, all.filter((item) => item.server !== server).map((item) => item.name));
+    if (problem) return problem;
+    const names = ((await chrome.storage.local.get(NAMES))[NAMES] as Record<string, string> | undefined) ?? {};
+    await chrome.storage.local.set({[NAMES]: {...names, [server]: cleanName(typed)}});
+    return null;
+  });
+}
+
+const newId = (): string => crypto.randomUUID();
+
+/**
+ * 1.0.7's storage made 1.0.8's (on install or update): each server gets the name its host gives
+ * it and a page ID, the stored order becomes the display order, and the server in use stays
+ * the default. Nothing visible changes for one server. Safe to repeat.
+ */
+export function upgradeConnections(): Promise<void> {
+  return serialized(async () => {
+    const all = await connections();
+    const stored = await chrome.storage.local.get([ORDER, NAMES, IDS]);
+    const order = displayOrder(Object.keys(all), stored[ORDER] as string[] | undefined);
+    const names = displayNames(order, (stored[NAMES] as Record<string, string> | undefined) ?? {});
+    const ids = {...((stored[IDS] as Record<string, string> | undefined) ?? {})};
+    for (const server of order) ids[server] ||= newId();
+    await chrome.storage.local.set({[ORDER]: order, [NAMES]: names,
+      [IDS]: Object.fromEntries(order.map((server) => [server, ids[server]!]))});
+  });
 }
 
 /**
@@ -147,12 +267,34 @@ export function whileConnectedWith(server: string, browserToken: string, write: 
   });
 }
 
-/** A new or renewed connection to ``value.server``, which becomes the one in use. */
+/** Whether one more server may be connected (a saved one may always be connected again). */
+export async function mayConnect(server: string): Promise<boolean> {
+  const all = await connections();
+  return server in all || Object.keys(all).length < MAX_SERVERS;
+}
+
+/**
+ * A new or renewed connection to ``value.server``. A new one joins the end of the display order
+ * with the name its host gives it, and is the default only if there is none (the first server).
+ * A fourth server is refused (``too_many``): nothing is saved.
+ */
 export function saveConnection(value: Connection, browserToken: string): Promise<void> {
   return serialized(async () => {
-    await setSecret(tokenSlot(value.server), browserToken);
     const all = await connections();
-    await chrome.storage.local.set({[CONNECTIONS]: {...all, [value.server]: value}, [ACTIVE]: value.server});
+    if (!(value.server in all) && Object.keys(all).length >= MAX_SERVERS) throw new ServerError("too_many");
+    await setSecret(tokenSlot(value.server), browserToken);
+    const stored = await chrome.storage.local.get([ORDER, NAMES, IDS, ACTIVE]);
+    const order = displayOrder(Object.keys(all), stored[ORDER] as string[] | undefined);
+    const names = displayNames(order, (stored[NAMES] as Record<string, string> | undefined) ?? {});
+    const ids = {...((stored[IDS] as Record<string, string> | undefined) ?? {})};
+    if (!order.includes(value.server)) {
+      order.push(value.server);
+      names[value.server] = nameFromHost(value.server, Object.values(names));
+    }
+    ids[value.server] ||= newId();
+    const chosen = stored[ACTIVE] as string | undefined;
+    await chrome.storage.local.set({[CONNECTIONS]: {...all, [value.server]: value}, [ORDER]: order, [NAMES]: names,
+      [IDS]: ids, ...(chosen && all[chosen] ? {} : {[ACTIVE]: value.server})});
   });
 }
 
@@ -211,30 +353,41 @@ export async function deviceCode(): Promise<string | null> {
 }
 
 /**
- * Forget one connection here -- ``server``'s, else the one in use -- and only it: its token,
- * what is shown, and its cached downloads. Another server's connection and state are kept;
- * if the one in use is forgotten, another (if any) is used. ``revoked``: DownloadPulse no
- * longer accepts the token (disconnected there), which the popup then says.
+ * Forget ``server``'s connection here, and only it: its token, what is shown, its name and
+ * place, and its cached downloads. Another server's connection and state are kept; if the
+ * default is forgotten, the next in display order becomes the default. ``revoked``:
+ * DownloadPulse no longer accepts the token (disconnected there), which the popup then says
+ * when no server is left.
  */
-export function forgetConnection(revoked = false, server?: string): Promise<void> {
+export function forgetConnection(revoked: boolean, server: string): Promise<void> {
   return serialized(() => forget(revoked, server));
 }
 
-async function forget(revoked: boolean, server?: string): Promise<void> {
-  const target = server ?? (await activeServer());
-  if (!target) return;
-  const wasActive = target === (await activeServer());
+async function forget(revoked: boolean, target: string): Promise<void> {
+  const all = await connections();
+  if (!all[target]) {
+    await setSecret(tokenSlot(target), null);
+    return;
+  }
+  const order = await serverOrder();
+  const wasDefault = target === (await defaultServer());
   await setSecret(tokenSlot(target), null);
   await setSecret(`identity@${target}`, null);   // whether it proves its identity, for that token (identity.ts)
-  const {[target]: _forgotten, ...rest} = await connections();
-  const next = Object.keys(rest)[0];
-  // The connections and the server in use change in one write: no reader ever sees a
-  // server in use whose connection is already gone.
-  await chrome.storage.local.set({[CONNECTIONS]: rest, ...(wasActive && next ? {[ACTIVE]: next} : {})});
-  if (wasActive) {
+  const {[target]: _forgotten, ...rest} = all;
+  const next = wasDefault ? successor(order, target) : null;
+  const stored = await chrome.storage.local.get([NAMES, IDS]);
+  const {[target]: _name, ...names} = (stored[NAMES] as Record<string, string> | undefined) ?? {};
+  const {[target]: _id, ...ids} = (stored[IDS] as Record<string, string> | undefined) ?? {};
+  // The connections and the default change in one write: no reader ever sees a default
+  // whose connection is already gone.
+  await chrome.storage.local.set({[CONNECTIONS]: rest, [ORDER]: order.filter((item) => item !== target),
+    [NAMES]: names, [IDS]: ids, ...(wasDefault && next ? {[ACTIVE]: next} : {})});
+  if (wasDefault) {
     await chrome.storage.local.remove(["appearance", ...(next ? [] : [ACTIVE])]);
-    await chrome.storage.session.remove("focusJob");
+    await chrome.storage.session.remove(["focusJob", "focusServer"]);
   }
   await chrome.storage.session.remove(SERVER_STATE.map((name) => stateKey(target, name)));
-  if (revoked && wasActive) await chrome.storage.session.set({[PAIRING]: {state: "failed", failure: "unauthorized"} satisfies Pairing});
+  // The last server gone: the popup says why (with others left, it shows them).
+  const last = Object.keys(rest).length === 0;
+  if (revoked && last) await chrome.storage.session.set({[PAIRING]: {state: "failed", failure: "unauthorized"} satisfies Pairing});
 }

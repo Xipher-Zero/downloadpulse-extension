@@ -591,5 +591,257 @@
   },
   "captureResumedNoProgress": {
     "message": "DownloadPulse no avanzó con esa descarga durante un rato, así que el navegador la continuó."
+  },
+  "popupSomeConnected": {
+    "message": "$CONNECTED$ de $TOTAL$ conectados",
+    "placeholders": {
+      "connected": {
+        "content": "$1",
+        "example": "2"
+      },
+      "total": {
+        "content": "$2",
+        "example": "3"
+      }
+    }
+  },
+  "serverUnreachable": {
+    "message": "Inaccesible"
+  },
+  "addServer": {
+    "message": "Conectar otro DownloadPulse"
+  },
+  "addServerLimit": {
+    "message": "Hasta 3 servidores"
+  },
+  "failureTooMany": {
+    "message": "Este navegador ya está conectado a 3 servidores DownloadPulse, el máximo posible. Primero desconecte uno en Ajustes."
+  },
+  "optionsConnections": {
+    "message": "Conexiones:"
+  },
+  "disconnectServer": {
+    "message": "Desconectar $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectTitle": {
+    "message": "¿Desconectarse de $NAME$?",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDisconnectAccount": {
+    "message": "Este navegador se quitará de la cuenta $ACCOUNT$ en $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogDisconnectAfter": {
+    "message": "Las descargas ya enviadas siguen su curso allí. $NAME$ dejará de ofrecerse en las páginas y en el menú del clic derecho. Para volver a usarlo, tendrá que conectarlo de nuevo.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogDefaultNote": {
+    "message": "$NAME$ es su servidor predeterminado.\n$NEXT$ pasará a ser el predeterminado.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "next": {
+        "content": "$2",
+        "example": "Home"
+      }
+    }
+  },
+  "dialogDisconnecting": {
+    "message": "Desconectando…"
+  },
+  "dialogUnreachableTitle": {
+    "message": "No se puede acceder a $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogUnreachableAccount": {
+    "message": "No se pudo quitar este navegador de la cuenta $ACCOUNT$ en $ADDRESS$.",
+    "placeholders": {
+      "account": {
+        "content": "$1",
+        "example": "xz"
+      },
+      "address": {
+        "content": "$2",
+        "example": "seed.example.net"
+      }
+    }
+  },
+  "dialogUnreachableAnyway": {
+    "message": "Puede quitar $NAME$ de este navegador de todos modos. El servidor seguirá mostrando este navegador hasta que lo quite allí, en Mi cuenta › Navegadores conectados.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "dialogRemoveAnyway": {
+    "message": "Quitar de todos modos"
+  },
+  "noteDisconnectedFrom": {
+    "message": "Desconectado de $NAME$. Ya no acepta este navegador.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteRemovedLocally": {
+    "message": "Quitado de este navegador. $NAME$ todavía lo muestra.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "noteNewDefault": {
+    "message": "$NAME$ es ahora su servidor predeterminado.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "serverMakeDefault": {
+    "message": "Establecer como predeterminado"
+  },
+  "serverDefault": {
+    "message": "Predeterminado"
+  },
+  "serverRename": {
+    "message": "Cambiar el nombre de $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverNameLabel": {
+    "message": "Nombre del servidor"
+  },
+  "serverNameBlank": {
+    "message": "Introduzca un nombre."
+  },
+  "serverNameTaken": {
+    "message": "Otro servidor ya tiene este nombre."
+  },
+  "serverMoveLabel": {
+    "message": "Mover $NAME$. Arrastre o pulse Alt+↑ o Alt+↓.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "serverMoved": {
+    "message": "$NAME$ movido a la posición $POSITION$ de $TOTAL$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      },
+      "position": {
+        "content": "$2",
+        "example": "1"
+      },
+      "total": {
+        "content": "$3",
+        "example": "3"
+      }
+    }
+  },
+  "sendDoneTo": {
+    "message": "Enviado a $NAME$.",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddDoneTo": {
+    "message": "Añadido a $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "quickAddChoose": {
+    "message": "Añadir a otro servidor"
+  },
+  "openChoose": {
+    "message": "Elija qué DownloadPulse abrir"
+  },
+  "captureToggleNamed": {
+    "message": "Enviar las descargas del navegador a DownloadPulse ($NAME$)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
+  },
+  "pageChooseServer": {
+    "message": "Enviar a otro DownloadPulse"
+  },
+  "sendServerGone": {
+    "message": "Ese DownloadPulse ya no está conectado a este navegador."
+  },
+  "confirmTo": {
+    "message": "Destino: $NAME$",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Seedbox"
+      }
+    }
+  },
+  "menuServerDefault": {
+    "message": "$NAME$ (predeterminado)",
+    "placeholders": {
+      "name": {
+        "content": "$1",
+        "example": "Home"
+      }
+    }
   }
 }
