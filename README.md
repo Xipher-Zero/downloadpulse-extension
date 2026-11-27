@@ -42,6 +42,8 @@ The onboarding tests (`test/e2e`) need `127.0.0.1:8095` to themselves and refuse
 unshare -rn sh -c 'ip link set lo up && npm test'
 ```
 
+Releases are built from a pushed `v<version>` tag by `.github/workflows/release.yml`, with `SHA256SUMS` and build provenance: see [BUILDING.md](BUILDING.md#releasing) for the steps and how to verify a release.
+
 `test/real` (outside `npm test`) connects to a real, disposable DownloadPulse on port 8095: `DP_REAL_USER=… DP_REAL_PASSWORD=… npx playwright test --config playwright.real.config.mjs`.
 
 `npm run build` writes unpacked extensions to `dist/chromium/` and `dist/firefox/`. To load one by hand:
