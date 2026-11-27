@@ -225,6 +225,7 @@ async function forget(revoked: boolean, server?: string): Promise<void> {
   if (!target) return;
   const wasActive = target === (await activeServer());
   await setSecret(tokenSlot(target), null);
+  await setSecret(`identity@${target}`, null);   // whether it proves its identity, for that token (identity.ts)
   const {[target]: _forgotten, ...rest} = await connections();
   const next = Object.keys(rest)[0];
   // The connections and the server in use change in one write: no reader ever sees a

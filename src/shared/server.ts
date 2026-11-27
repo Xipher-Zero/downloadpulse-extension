@@ -3,6 +3,8 @@
 // credentials (a session cookie must never ride along with the browser
 // token; DebridPulse BROWSER_CLIENT.md §4), has a timeout, and fails typed.
 
+import {freshNonce, identityProof, knownIdentity, rememberIdentity} from "./identity";
+
 // The pairing protocol, by the name the server gives it: DownloadPulse 1.0.0
 // names it downloadpulse.browser/1; the same protocol was debridpulse.browser/1
 // before the rename (1.0.14). Either is this extension's protocol.
@@ -139,6 +141,10 @@ export async function effectiveAddress(input: string): Promise<ServerAddress | n
 async function request(origin: string, path: string, init: RequestInit = {}, timeout = TIMEOUT_MS): Promise<Response> {
   // Never plain HTTP across the internet, whatever asked (the transport rule's last guard).
   if ((await effectiveAddress(origin))?.transport === "public-http") throw new ServerError("insecure_refused");
+  // The token goes only to a server proven to be the one that issued it, once it said it proves
+  // itself (identity.ts, 1.0.8): every request that carries a token comes through here.
+  const bearer = /^Bearer (.+)$/.exec((init.headers as Record<string, string> | undefined)?.["Authorization"] ?? "")?.[1];
+  if (bearer) await proveIdentity(origin, bearer);
   let response: Response;
   try {
     // No redirect is followed: DownloadPulse's API doesn't redirect, so one means something in
@@ -147,12 +153,90 @@ async function request(origin: string, path: string, init: RequestInit = {}, tim
       ...init, credentials: "omit", cache: "no-store", redirect: "manual", signal: AbortSignal.timeout(timeout),
     });
   } catch {
+    // Not reached: whatever answers next may be something else, so it proves itself again.
+    forgetProofs(origin);
     // A TLS failure and an unreachable host look the same to fetch; an https
     // origin is named for the certificate case too (WS-E1 B6, PLAN D7).
     throw new ServerError(origin.startsWith("https:") ? "certificate" : "unreachable");
   }
-  if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) throw new ServerError("blocked");
+  if (response.status >= 500) forgetProofs(origin);
+  if (response.type === "opaqueredirect" || (response.status >= 300 && response.status < 400)) {
+    forgetProofs(origin);
+    throw new ServerError("blocked");
+  }
   return response;
+}
+
+/** How long a server's proof stands for the requests that follow it (a sign-in is always proven anew). */
+const PROOF_MS = 30_000;
+const IDENTITY_PATH = "/api/browser/v1/identity";
+
+/** Proofs this background has seen, by server and token digest: when, and the check itself (shared while it runs). */
+const proven = new Map<string, {at: number; check: Promise<void>}>();
+
+function forgetProofs(origin: string): void {
+  for (const key of proven.keys()) if (key.startsWith(`${origin} `)) proven.delete(key);
+}
+
+/**
+ * Before ``browserToken`` goes to ``origin``: when that server said it proves its identity
+ * (identity.ts), it proves it now -- or did within PROOF_MS, with no failed request since; with
+ * ``fresh``, now whatever it did before (a send carrying a sign-in). A proof that fails sends
+ * nothing: the server counts as unreachable. Answers whether the server proved itself (false: it
+ * never said it does, as DownloadPulse before 1.0.8, and the token goes as it always did).
+ */
+export async function proveIdentity(origin: string, browserToken: string, fresh = false): Promise<boolean> {
+  const known = await knownIdentity(origin, browserToken);
+  if (!known) return false;
+  const key = `${origin} ${known.digest}`;
+  const kept = proven.get(key);
+  if (!fresh && kept && Date.now() - kept.at < PROOF_MS) {
+    await kept.check;
+    return true;
+  }
+  const check = challenge(origin, known.tokenId, browserToken);
+  proven.set(key, {at: Date.now(), check});
+  try {
+    await check;
+  } catch (error) {
+    if (proven.get(key)?.check === check) proven.delete(key);
+    throw error;
+  }
+  return true;
+}
+
+/** One identity check: a fresh nonce, no credential; anything but the right proof is refused. */
+async function challenge(origin: string, tokenId: string, browserToken: string): Promise<void> {
+  const nonce = freshNonce();
+  const response = await request(origin, IDENTITY_PATH, {
+    method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({token_id: tokenId, nonce, origin}),
+  });
+  // A sign-in demanded in front of it (an Authelia and the like) is named so, as for any request.
+  if ([401, 403, 407].includes(response.status)) throw new ServerError("blocked");
+  let proof: unknown;
+  try {
+    proof = response.ok ? (await json(response))["proof"] : undefined;
+  } catch {
+    proof = undefined;
+  }
+  if (typeof proof !== "string" || proof !== (await identityProof(browserToken, nonce, origin))) {
+    throw new ServerError("unreachable");
+  }
+}
+
+/**
+ * The approval page for a pairing: ``verificationPath`` on ``origin`` itself, never another site
+ * (1.0.8, EXT-3: ``@evil.example/x`` appended to the origin would name evil.example). Exactly one
+ * leading slash, and the same origin once resolved; else null.
+ */
+export function approvalUrl(origin: string, verificationPath: string): string | null {
+  if (!/^\/(?![/\\])/.test(verificationPath)) return null;
+  try {
+    const url = new URL(verificationPath, origin);
+    return url.origin === origin ? url.href : null;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -206,6 +290,8 @@ export interface PairingStart {
   device_code: string;
   user_code: string;
   verification_path: string;
+  /** ``verification_path`` on this server (approvalUrl): the page the approval tab opens. */
+  approval_url: string;
   expires_in: number;
   interval: number;
 }
@@ -232,8 +318,12 @@ export async function startPairing(origin: string, clientName: string): Promise<
       || typeof body["verification_path"] !== "string") {
     throw new ServerError("too_old");
   }
+  // An approval page anywhere but on this server is refused, and the pairing with it.
+  const approval = approvalUrl(origin, body["verification_path"]);
+  if (!approval) throw new ServerError("failed");
   return {
     device_code: body["device_code"], user_code: body["user_code"], verification_path: body["verification_path"],
+    approval_url: approval,
     expires_in: Number(body["expires_in"]) || 600, interval: Math.max(2, Number(body["interval"]) || 2),
   };
 }
@@ -278,11 +368,17 @@ export async function readSession(origin: string, token: string): Promise<Sessio
   const account = body["account"] as Record<string, unknown> | undefined;
   if (!speaks(body["protocol"]) || !token_ || !account) throw new ServerError("too_old");
   const capabilities = (body["capabilities"] ?? {}) as Record<string, unknown>;
-  return {token: {id: String(token_["id"] ?? ""), label: String(token_["label"] ?? "")},
+  const tokenId = String(token_["id"] ?? "");
+  // A DownloadPulse that proves its identity (1.0.8) is asked to before this token goes to it again.
+  const identity = Number(capabilities["identity"]) >= 1 && Boolean(tokenId);
+  await rememberIdentity(origin, token, identity ? tokenId : null);
+  return {token: {id: tokenId, label: String(token_["label"] ?? "")},
     account: {display_name: String(account["display_name"] ?? "")}, appearance: body["appearance"],
     // Only a DownloadPulse that says it takes the links' cookies (or referrer) is ever sent them:
-    // an older one refuses a field it does not know.
-    videoCookies: takesForLinks(capabilities["cookies"]), referrer: takesForLinks(capabilities["referrer"])};
+    // an older one refuses a field it does not know. A sign-in goes to DownloadPulse on this
+    // computer only when it proves its identity (1.0.8): anything else may be listening there.
+    videoCookies: takesForLinks(capabilities["cookies"]) && (identity || !isLocal(origin)),
+    referrer: takesForLinks(capabilities["referrer"])};
 }
 
 function takesForLinks(capability: unknown): boolean {
@@ -311,6 +407,9 @@ export type Submitted = {ok: true; id: string} | {ok: false; code: string; retry
 /** One submission under one idempotency key (DebridPulse BROWSER_CLIENT.md §2a). */
 export async function submitJob(origin: string, browserToken: string, key: string, source: Source,
                                 displayName = "", cookies: Cookie[] = [], referrer = ""): Promise<Submitted> {
+  // A sign-in goes only to a server that proves its identity now, if it ever said it does; and to
+  // DownloadPulse on this computer only when it does (1.0.8): never to whatever else may listen there.
+  if (cookies.length && !(await proveIdentity(origin, browserToken, true)) && isLocal(origin)) cookies = [];
   const response = await request(origin, "/api/browser/v1/jobs", {
     method: "POST",
     headers: {"Content-Type": "application/json", Authorization: `Bearer ${browserToken}`},

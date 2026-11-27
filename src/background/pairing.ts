@@ -13,7 +13,7 @@ import {deviceCode, keepCapabilities, saveConnection, setPairing} from "../share
 import {settings} from "../shared/settings";
 import {message} from "../shared/i18n";
 import {
-  LOCAL_ORIGINS, ServerError, effectiveAddress, pollPairing, probe, readSession, startPairing,
+  LOCAL_ORIGINS, ServerError, effectiveAddress, pollPairing, probe, proveIdentity, readSession, startPairing,
   type Failure,
 } from "../shared/server";
 
@@ -108,7 +108,8 @@ async function pair(origin: string, generation: number, plainHttp = false): Prom
     if (generation !== active) return;
     const expiresAt = Date.now() + started.expires_in * 1000;
     await setPairing({state: "waiting", server: origin, userCode: started.user_code, expiresAt}, started.device_code);
-    await chrome.tabs.create({url: origin + started.verification_path});
+    // Only a page on this server (startPairing refuses any other, 1.0.8).
+    await chrome.tabs.create({url: started.approval_url});
     await waitForApproval(origin, started.interval, expiresAt, generation, plainHttp);
   } catch (error) {
     await fail(error instanceof ServerError ? error.failure : "failed", generation);
@@ -146,6 +147,8 @@ async function waitForApproval(origin: string, interval: number, expiresAt: numb
       continue;
     }
     const session = await readSession(origin, answer.token);
+    // A DownloadPulse that says it proves its identity proves it now, before the connection is kept.
+    await proveIdentity(origin, answer.token, true);
     if (generation !== active) return;
     await saveConnection({server: origin, tokenId: session.token.id, label: session.token.label,
       account: session.account.display_name, ...(plainHttp ? {plainHttp: true} : {})}, answer.token);

@@ -3,17 +3,34 @@
 // BROWSER_CLIENT.md §1-2), for the onboarding tests. A test sets ``mode``
 // and answers the pending pairing as a person would on the server.
 import http from "node:http";
+import {createHash, createHmac} from "node:crypto";
 
 // DownloadPulse's own refusal of a token (auth/middleware.py _unauthorized): its code is what tells it
 // apart from a sign-in proxy's 401 in front of it.
 const DP_UNAUTHORIZED = {detail: "Unauthorized", code: "auth.unauthorized", params: {}};
 
-export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
+/**
+ * DownloadPulse's identity proof (1.0.8, BROWSER_CLIENT.md 2c): HMAC-SHA256 keyed by the token's
+ * SHA-256 over the context, the nonce and the address as the extension knows it.
+ */
+export function identityProof(token, nonce, origin) {
+  return createHmac("sha256", createHash("sha256").update(token).digest())
+    .update(`downloadpulse.browser/identity/1\n${nonce}\n${origin}`).digest("hex");
+}
+
+/**
+ * ``identity``: this fake proves its identity (a 1.0.8 DownloadPulse); false, an older one that
+ * never says it does. ``identityToken``: the token whose digest it proves with -- another than
+ * the one it issued is an impostor that does not know the key.
+ */
+export async function fakeDownloadPulse({port = 0, mode = "current", identity = true, identityToken = "dp_fake-token",
+  verificationPath = null} = {}) {
   const state = {mode, pairings: new Map(), lastClientName: "", sessionAuth: [], jobs: [], refuse: null,
     views: new Map(), seq: 0, listPolls: [], controls: [], declineControl: null,
     desktop: false, shows: 0, down: false, keys: new Map(), dropNext: false, submits: 0, videoCookies: true, referrer: true,
     settleAs: null, proxy401: false, proxied: 0, failPolls: 0, unlisted: false, hidden: new Set(),
-    appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"}};
+    appearance: {mode: "dark", dark_palette: "debridpulse-dark", light_palette: "debridpulse-light"},
+    identity, identityToken, verificationPath, identityChecks: [], requests: []};
   // A job's public view (DebridPulse BROWSER_CLIENT.md §2a), moved by ``setJob``.
   const touch = (view) => { view.cursor = ++state.seq; state.views.set(view.id, view); return view; };
   const server = http.createServer(async (req, res) => {
@@ -27,6 +44,9 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       res.end(type === "application/json" ? JSON.stringify(value) : value);
     };
     const url = new URL(req.url, "http://fake");
+    // Every request, with what it carried: the identity tests look for a token or a sign-in.
+    state.requests.push({method: req.method, path: url.pathname, authorization: req.headers.authorization ?? null,
+      cookies: Array.isArray(body.cookies) ? body.cookies.length : 0});
     if (state.mode === "not-downloadpulse") return send(200, "<html>a router</html>", "text/html");
     // ``proxy``: a sign-in gate in front of DownloadPulse, redirecting everything to its login.
     if (state.mode === "proxy") { res.writeHead(302, {Location: "/login"}); return res.end(); }
@@ -58,7 +78,7 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       const deviceCode = `device-${userCode}`;
       state.pairings.set(deviceCode, {userCode, status: "pending"});
       return send(200, {protocol: state.mode === "previous-name" ? "debridpulse.browser/1" : "downloadpulse.browser/1", device_code: deviceCode, user_code: userCode,
-        verification_path: `/?connect-browser=${userCode}`, expires_in: 600, interval: 2});
+        verification_path: state.verificationPath ?? `/?connect-browser=${userCode}`, expires_in: 600, interval: 2});
     }
     if (url.pathname === "/api/browser/v1/pairings/poll" && req.method === "POST") {
       const pairing = state.pairings.get(body.device_code);
@@ -69,6 +89,14 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
       }
       if (pairing.status !== "pending") state.pairings.delete(body.device_code);
       return send(200, {status: pairing.status, interval: 2});
+    }
+    // The identity check (1.0.8): no credential; a DownloadPulse before 1.0.8 has no such route.
+    if (url.pathname === "/api/browser/v1/identity" && req.method === "POST") {
+      state.identityChecks.push(body);
+      if (!state.identity) return send(404, {detail: "Not Found"});
+      if (body.token_id !== "tok-1") return send(404, {detail: "Connected browser not found.", code: "browser.identity.unknown"});
+      return send(200, {protocol: "downloadpulse.browser/1", identity: 1,
+        proof: identityProof(state.identityToken, String(body.nonce), String(body.origin))});
     }
     if (url.pathname === "/api/browser/v1/session" && req.method === "DELETE") {
       state.disconnects = (state.disconnects ?? 0) + 1;
@@ -94,7 +122,8 @@ export async function fakeDownloadPulse({port = 0, mode = "current"} = {}) {
         ...(state.appearance ? {appearance: state.appearance} : {}),
         // A DownloadPulse that takes the links' cookies says so (``videoCookies``; an older one says
         // nothing); 1.0.2 also takes the page they came from (``referrer``).
-        ...(state.videoCookies || state.referrer ? {capabilities: {
+        ...(state.videoCookies || state.referrer || state.identity ? {capabilities: {
+          ...(state.identity ? {identity: 1} : {}),
           ...(state.videoCookies ? {cookies: {max_count: 300, max_bytes: 32768, sources: ["links"]}} : {}),
           ...(state.referrer ? {referrer: {max_length: 2048, sources: ["links"]}} : {})}} : {})});
     }

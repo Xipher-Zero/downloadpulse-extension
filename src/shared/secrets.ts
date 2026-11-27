@@ -31,8 +31,11 @@ async function run<T>(mode: IDBTransactionMode, act: (store: IDBObjectStore) => 
   }
 }
 
-/** ``token``: an earlier build's single token slot, read only to move it (connection.ts). */
-export type SecretName = "token" | `token@${string}` | "device";
+/**
+ * ``token``: an earlier build's single token slot, read only to move it (connection.ts).
+ * ``identity@<server>``: that server proves its identity for its token (identity.ts, 1.0.8).
+ */
+export type SecretName = "token" | `token@${string}` | `identity@${string}` | "device";
 
 export async function secret(name: SecretName): Promise<string | null> {
   const value = await run("readonly", (store) => store.get(name) as IDBRequest<unknown>);
