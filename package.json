@@ -20,7 +20,7 @@
     "check:locales": "node scripts/check-locales.mjs --report"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.1",
+    "@playwright/test": "1.65.1",
     "@types/chrome": "0.3.7",
     "esbuild": "0.28.2",
     "typescript": "7.0.2",
